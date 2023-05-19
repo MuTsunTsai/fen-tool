@@ -113,7 +113,7 @@
 			</div>
 			<div>
 				Input FEN: <input type="text" class="form-control w-unset" size="60" id="FEN" value="8/8/8/8/8/8/8/8"
-					   onchange="toSquares()">
+					   onchange="toSquares(true)">
 				<input type="button" class="btn btn-primary" value="Generate BBS Code" onclick="generateBBS()">
 			</div>
 
@@ -341,7 +341,7 @@
 			draw();
 		}
 
-		function toSquares() {
+		function toSquares(check) {
 			let cursor = 0, fen = [...FEN.value];
 			function slice(n) {
 				return fen.slice(cursor, cursor + n).join("");
@@ -349,7 +349,7 @@
 			for(let i = 0; i < 8; i++) {
 				for(let j = 0; j < 8; j++) {
 					const index = i * 8 + j;
-					let char = fen[cursor];
+					let char = fen[cursor] || "";
 					if(char == "/") {
 						cursor++;
 						j--;
@@ -385,12 +385,13 @@
 							squares[i * 8 + j].value = "";
 						} cursor++;
 					} else {
-						squares[index].value = char;
+						squares[index].value = char.match(test) ? char : "";
 						cursor++;
 					}
 				}
 			}
-			draw();
+			if(check) toFEN();
+			else draw();
 		}
 
 		function squareOnFocus() { this.select(); }
@@ -412,8 +413,10 @@
 			}
 		}
 
+		const test = /^(-?(\*\d)?[kqbnrpcx]|'.|''..)$/iu;
+
 		function checkInput() {
-			if(!this.value.match(/^(-?(\*\d)?[kqbnrpcx]|'.|''..)$/iu)) this.value = "";
+			if(!this.value.match(test)) this.value = "";
 			toFEN();
 		}
 
@@ -422,7 +425,7 @@
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const text = await response.text();
 			FEN.value = text.match(/<b>FEN:<\/b> (.+)/)[1];
-			toSquares();
+			toSquares(true);
 		}
 
 		function generateBBS() {
