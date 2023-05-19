@@ -32,6 +32,7 @@
 			line-height: 24px;
 			font-family: Arial;
 			font-size: 16px;
+			position: absolute;
 		}
 
 		.ghost {
@@ -46,7 +47,6 @@
 			height: 208px;
 			position: relative;
 			border: 1px solid black;
-			white-space: nowrap;
 		}
 
 		#TemplateGhost {
@@ -62,6 +62,7 @@
 			width: unset;
 			display: inline-block;
 		}
+
 		.btn {
 			margin-bottom: 5px;
 		}
@@ -170,6 +171,7 @@
 		const CN = document.getElementById("CN");
 		const ctx = CN.getContext("2d");
 		const gCtx = document.getElementById("CanvasGhost").getContext("2d");
+		ctx.font = gCtx.font = "22px arial";
 		ctx.fillRect(0, 0, 210, 210);
 		createSquares();
 
@@ -227,7 +229,7 @@
 		}
 
 		function drawPiece(i, j, value, light) {
-			const neutral = value.startsWith("-");
+			const neutral = value.startsWith("-") || value.startsWith("~");
 			if(neutral) value = value.substring(1);
 
 			let rotate = value.match(/^\*(\d)/)?.[1];
@@ -236,16 +238,26 @@
 
 			const lower = value.toLowerCase();
 			const typeIndex = types.indexOf(lower);
-			if(typeIndex < 0) return false;
+			const isText = value.startsWith("'");
+			if(typeIndex < 0 && !isText) return false;
 
+			if(isText) drawBlank(i, j, light);
 			bCtx.save();
 			const sx = neutral ? 2 : value == lower ? 0 : 1;
 			const bx = light ? 3 : 0;
 			const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
 			bCtx.translate((j + rx) * size + 1, (i + ry) * size + 1);
 			if(rotate !== 0) bCtx.rotate(Math.PI / 2 * rotate);
-			ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size, size, 0, 0, size, size);
-			gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size, size, 0, 0, size, size);
+			if(isText) {
+				const c = value.substring(1);
+				const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
+				ctx.fillStyle = gCtx.fillStyle = "black";
+				const dx = Math.max((26 - ctx.measureText(text).width) / 2, 0);
+				bCtx.fillText(text, dx, 22, 26);
+			} else {
+				ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size, size, 0, 0, size, size);
+				gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size, size, 0, 0, size, size);
+			}
 			bCtx.restore();
 			return true;
 		}
@@ -330,31 +342,34 @@
 		}
 
 		function toSquares() {
-			let cursor = 0, fen = FEN.value;
+			let cursor = 0, fen = [...FEN.value];
+			function slice(n) {
+				return fen.slice(cursor, cursor + n).join("");
+			}
 			for(let i = 0; i < 8; i++) {
 				for(let j = 0; j < 8; j++) {
 					const index = i * 8 + j;
-					let char = fen.substr(cursor, 1);
+					let char = fen[cursor];
 					if(char == "/") {
 						cursor++;
 						j--;
 					} else if(char == "*") {
-						squares[index].value = fen.substr(cursor, 3);
+						squares[index].value = slice(3);
 						cursor += 3;
 					} else if(char == "-" || char == "~") {
-						if(fen.substr(cursor + 1, 1) == "*") {
-							squares[index].value = fen.substr(cursor, 4);
+						if(fen[cursor + 1] == "*") {
+							squares[index].value = slice(4);
 							cursor += 4;
 						} else {
-							squares[index].value = fen.substr(cursor, 2);
+							squares[index].value = slice(2);
 							cursor += 2;
 						}
 					} else if(char == "'") {
-						if(fen.substr(cursor + 1, 1) == "'") {
-							squares[index].value = fen.substr(cursor, 4);
+						if(fen[cursor + 1] == "'") {
+							squares[index].value = slice(4);
 							cursor += 4;
 						} else {
-							squares[index].value = fen.substr(cursor, 2);
+							squares[index].value = slice(2);
 							cursor += 2;
 						}
 					} else if(char.match(/\d/)) {
@@ -370,7 +385,7 @@
 							squares[i * 8 + j].value = "";
 						} cursor++;
 					} else {
-						squares[index].value = fen.substr(cursor, 1);
+						squares[index].value = char;
 						cursor++;
 					}
 				}
@@ -386,7 +401,7 @@
 					const index = i * 8 + j;
 					squares[index] = document.createElement("input");
 					squares[index].type = "text";
-					squares[index].onchange = toFEN;
+					squares[index].onchange = checkInput;
 					squares[index].onfocus = squareOnFocus;
 					squares[index].style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
 					squares[index].style.top = i * 26 + "px";
@@ -394,8 +409,12 @@
 					squares[index].classList.add("square");
 					S.appendChild(squares[index]);
 				}
-				S.appendChild(document.createElement("br"));
 			}
+		}
+
+		function checkInput() {
+			if(!this.value.match(/^(-?(\*\d)?[kqbnrpcx]|'.|''..)$/iu)) this.value = "";
+			toFEN();
 		}
 
 		async function getPDB_FEN() {
@@ -407,7 +426,7 @@
 		}
 
 		function generateBBS() {
-			let fen = FEN.value.replace(/\//g, "");
+			let fen = [...FEN.value.replace(/\//g, "")];
 			let result = "";
 			let char;
 			let cursor = 0;
@@ -415,35 +434,35 @@
 			function ignoreRotation() { // 忽略旋轉
 				if(char == "*") {
 					cursor += 2;
-					char = fen.substr(cursor, 1);
+					char = fen[cursor];
 				}
 			}
 
 			for(let i = 0; i < 8; i++) {
 				if(C.checked) result += us + "[m" + A1[8 - i] + "　";
 				for(let j = 0; j < 8; j++) {
-					char = fen.substr(cursor, 1);
+					char = fen[cursor];
 					ignoreRotation();
 					if(char == "~") {
 						cursor++;
-						char = fen.substr(cursor, 1);
+						char = fen[cursor];
 					}
 					if(char == "-") {
 						cursor++;
-						char = fen.substr(cursor, 1);
+						char = fen[cursor];
 						ignoreRotation();
 						result += us + "[0;37;" + BackgroundColor(i, j) + fullWidth(char, true);
 					} else if(char == "'") {
 						result += us + "[0;30;";
 						result += BackgroundColor(i, j);
-						if(fen.substr(cursor + 1, 1) == "'") {
-							result += fen.substr(cursor + 2, 2);
+						if(fen[cursor + 1] == "'") {
+							result += fen.slice(cursor + 2, cursor + 4).join("");
 							cursor += 3;
 						} else {
-							if(fen.substr(cursor + 1, 1).match(/\d/)) {
-								result += A1[Number(fen.substr(cursor + 1, 1))];
+							if(fen[cursor + 1].match(/\d/)) {
+								result += A1[Number(fen[cursor + 1])];
 							} else {
-								result += fullWidth(fen.substr(cursor + 1, 1), false);
+								result += fullWidth(fen[cursor + 1], false);
 							}
 							cursor++;
 						}
