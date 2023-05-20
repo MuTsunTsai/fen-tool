@@ -1,0 +1,419 @@
+const squares = new Array(64);
+
+const CN = document.getElementById("CN");
+const ctx = CN.getContext("2d");
+const gCtx = document.getElementById("CanvasGhost").getContext("2d");
+ctx.font = gCtx.font = "22px arial";
+ctx.fillRect(0, 0, 210, 210);
+createSquares();
+
+const fullWidthMap = (function() {
+	const map = new Map();
+	const FW1 = ("abcdefghijklmnopqrstuvwxyz"
+		+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		+ ",./<>?;':\"[]\\{}|!@#$%^&*()_+-=`~").split("");
+	const FW2 = ("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
+		+ "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ"
+		+ "，．／＜＞？；’：”〔〕＼｛｝｜！＠＃＄％︿＆＊（）ˍ＋－＝‘～").split("");
+	for(let i = 0; i < FW1.length; i++) map.set(FW1[i], FW2[i]);
+	return map;
+})();
+
+const us = unescape("%1B");
+const A1 = "０１２３４５６７８９".split("");
+const A2 = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");
+const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝ 皇后,ｋ ＝ 國王,".split(",");
+
+const FEN = document.getElementById("FEN");
+const PDB = document.getElementById("PDB");
+
+const PI = document.getElementById('PI');
+const C = document.getElementById('C');
+const F = document.getElementById('F');
+const UF = document.getElementById('UF');
+const B = document.getElementById('B');
+const U = document.getElementById("U");
+const R = document.getElementById("R");
+
+const img = new Image();
+const imgReady = new Promise(resolve => {
+	if(location.protocol == "https:") img.crossOrigin = "anonymous";
+	else document.getElementById("B64").disabled = true;
+	img.src = "sprite.png";
+	img.onload = resolve;
+});
+
+draw();
+
+const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
+const size = 26;
+
+async function draw() {
+	await imgReady;
+	if(!dragging) gCtx.clearRect(0, 0, 210, 210);
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const light = U.checked || R.checked == Boolean((i + j) % 2);
+			const value = squares[i * 8 + j].value;
+			drawPiece(i, j, value, light) || drawBlank(i, j, light);
+		}
+	}
+}
+
+function drawPiece(i, j, value, light) {
+	const neutral = value.startsWith("-") || value.startsWith("~");
+	if(neutral) value = value.substring(1);
+
+	let rotate = value.match(/^\*(\d)/)?.[1];
+	if(rotate !== undefined) value = value.substring(2);
+	rotate = Number(rotate) % 4;
+
+	const lower = value.toLowerCase();
+	const typeIndex = types.indexOf(lower);
+	const isText = value.startsWith("'");
+	if(typeIndex < 0 && !isText) return false;
+
+	if(isText) drawBlank(i, j, light);
+	bCtx.save();
+	const sx = neutral ? 2 : value == lower ? 0 : 1;
+	const bx = light ? 3 : 0;
+	const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
+	bCtx.translate((j + rx) * size + 1, (i + ry) * size + 1);
+	if(rotate !== 0) bCtx.rotate(Math.PI / 2 * rotate);
+	if(isText) {
+		const c = value.substring(1);
+		const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
+		ctx.fillStyle = gCtx.fillStyle = "black";
+		const dx = Math.max((26 - ctx.measureText(text).width) / 2, 0);
+		bCtx.fillText(text, dx, 22, 26);
+	} else {
+		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size, size, 0, 0, size, size);
+		gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size, size, 0, 0, size, size);
+	}
+	bCtx.restore();
+	return true;
+}
+
+const bCtx = new Proxy({}, {
+	get(target, name) {
+		return function(...args) {
+			ctx[name](...args);
+			if(!dragging) gCtx[name](...args);
+		};
+	},
+});
+
+function drawBlank(i, j, light) {
+	ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";
+	ctx.fillRect(j * size + 1, i * size + 1, size, size);
+}
+
+function rotate(d) {
+	const temp = squares.map(s => s.value);
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const target = d == 1 ? (7 - j) * 8 + i : j * 8 + (7 - i);
+			squares[i * 8 + j].value = temp[target];
+		}
+	}
+	toFEN();
+}
+
+function color(c) {
+	for(let i = 0; i < 64; i++) {
+		let s = squares[i].value;
+		if(s.substr(0, 1) == "'" || s == "") continue;
+		if(s.substr(0, 1) == "-" || s.substr(0, 1) == "~") s = s.substr(1);
+		s = s.toLowerCase();
+		if(c == 0) s = "-" + s;
+		if(c == 1) s = s.toUpperCase();
+		squares[i].value = s;
+	}
+	toFEN();
+}
+
+function invertColor(l) {
+	for(let i = 0; i < 64; i++) {
+		let s = squares[i].value;
+		if(s == "" || s.substr(0, 1) == "-") continue;
+		if(!l && s.substr(0, 1) == "'") continue;
+		t = s.toLowerCase();
+		if(s == t) s = s.toUpperCase(); else s = t;
+		squares[i].value = s;
+	}
+	toFEN();
+}
+
+function toBase64() {
+	navigator.clipboard.writeText(CN.toDataURL());
+}
+
+function toFEN() {
+	let i, j, s = 0, t = "";
+	for(i = 0; i < 8; i++) {
+		for(j = 0; j < 8; j++) {
+			const index = i * 8 + j;
+			if(s && squares[index].value != "") {
+				t += s;
+				s = 0;
+			}
+			if(squares[index].value == "") {
+				s++;
+				if(j == 7) {
+					t += s;
+					s = 0;
+				}
+			} else {
+				t += squares[index].value;
+			}
+		}
+		if(i < 7) t += "/";
+	}
+	FEN.value = t;
+	draw();
+}
+
+function toSquares(check) {
+	let cursor = 0, fen = [...FEN.value];
+	function slice(n) {
+		return fen.slice(cursor, cursor + n).join("");
+	}
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const index = i * 8 + j;
+			let char = fen[cursor] || "";
+			if(char == "/") {
+				cursor++;
+				j--;
+			} else if(char == "*") {
+				squares[index].value = slice(3);
+				cursor += 3;
+			} else if(char == "-" || char == "~") {
+				if(fen[cursor + 1] == "*") {
+					squares[index].value = slice(4);
+					cursor += 4;
+				} else {
+					squares[index].value = slice(2);
+					cursor += 2;
+				}
+			} else if(char == "'") {
+				if(fen[cursor + 1] == "'") {
+					squares[index].value = slice(4);
+					cursor += 4;
+				} else {
+					squares[index].value = slice(2);
+					cursor += 2;
+				}
+			} else if(char.match(/\d/)) {
+				let n = Number(char);
+				for(let k = 0; k < n; k++) {
+					if(k) {
+						j++;
+						if(j == 8) {
+							i++;
+							j = 0;
+						}
+					}
+					squares[i * 8 + j].value = "";
+				} cursor++;
+			} else {
+				squares[index].value = char.match(test) ? char : "";
+				cursor++;
+			}
+		}
+	}
+	if(check) toFEN();
+	else draw();
+}
+
+function squareOnFocus() { this.select(); }
+
+function createSquares() {
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const index = i * 8 + j;
+			squares[index] = document.createElement("input");
+			squares[index].type = "text";
+			squares[index].onchange = checkInput;
+			squares[index].onfocus = squareOnFocus;
+			squares[index].style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
+			squares[index].style.top = i * 26 + "px";
+			squares[index].style.left = j * 26 + "px";
+			squares[index].classList.add("square");
+			S.appendChild(squares[index]);
+		}
+	}
+}
+
+const test = /^(-?(\*\d)?[kqbnrpcx]|'.|''..)$/iu;
+
+function checkInput() {
+	if(!this.value.match(test)) this.value = "";
+	toFEN();
+}
+
+async function getPDB_FEN() {
+	const url = `https://pdb.dieschwalbe.de/search.jsp?expression=PROBID%3D%3D%27${PDB.value}%27`;
+	const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
+	const text = await response.text();
+	FEN.value = text.match(/<b>FEN:<\/b> (.+)/)[1];
+	toSquares(true);
+}
+
+function generateBBS() {
+	let fen = [...FEN.value.replace(/\//g, "")];
+	let result = "";
+	let char;
+	let cursor = 0;
+
+	function ignoreRotation() { // 忽略旋轉
+		if(char == "*") {
+			cursor += 2;
+			char = fen[cursor];
+		}
+	}
+
+	for(let i = 0; i < 8; i++) {
+		if(C.checked) result += us + "[m" + A1[8 - i] + "　";
+		for(let j = 0; j < 8; j++) {
+			char = fen[cursor];
+			ignoreRotation();
+			if(char == "~") {
+				cursor++;
+				char = fen[cursor];
+			}
+			if(char == "-") {
+				cursor++;
+				char = fen[cursor];
+				ignoreRotation();
+				result += us + "[0;37;" + BackgroundColor(i, j) + fullWidth(char, true);
+			} else if(char == "'") {
+				result += us + "[0;30;";
+				result += BackgroundColor(i, j);
+				if(fen[cursor + 1] == "'") {
+					result += fen.slice(cursor + 2, cursor + 4).join("");
+					cursor += 3;
+				} else {
+					if(fen[cursor + 1].match(/\d/)) {
+						result += A1[Number(fen[cursor + 1])];
+					} else {
+						result += fullWidth(fen[cursor + 1], false);
+					}
+					cursor++;
+				}
+			} else if(char.match(/\d/)) {
+				let n = Number(char);
+				for(let k = 0; k < n; k++) {
+					if(k) {
+						j++;
+						if(j == 8) {
+							i++;
+							j = 0;
+						}
+					}
+					result += us + "[0;30;";
+					result += BackgroundColor(i, j);
+					result += "　";
+				}
+			} else {
+				result += us + "[";
+				if(B.checked) {
+					if(char == char.toUpperCase()) result += "1;31;";
+					else result += "1;34;";
+					result += BackgroundColor(i, j) + fullWidth(char.toLowerCase(), true);
+				} else {
+					if(char == char.toUpperCase()) result += "1;37;";
+					else result += "0;30;";
+					result += BackgroundColor(i, j) + fullWidth(char, true);
+				}
+			}
+			cursor++;
+		}
+		if(F.checked) result += us + "[m　　" + (UF.checked ? A3[i] : A2[i]);
+		if(i < 7) result += "\r\n";
+	}
+	result += us + "[m\r\n";
+	if(PI.checked) result += us + "[0;30;40m" + PDB.value + us + "[m";
+	if(C.checked) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
+	result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
+	navigator.clipboard.writeText(result);
+}
+
+function BackgroundColor(i, j) {
+	if(U.checked) return "43;m";
+	else return (i + j) % 2 ? "42;m" : "43;m";
+}
+
+function fullWidth(s, t) {
+	if(t && s.toLowerCase() == "c") return "‧";
+	if(t && s.toLowerCase() == "x") return "╳";
+	return fullWidthMap.get(s);
+}
+
+CN.onmousedown = dragStart;
+document.getElementById('TP').onmousedown = dragStart;
+
+const TPv = "k,K,-k,q,Q,-q,b,B,-B,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
+let startX, startY, sqX, sqY, sq;
+let ghost, draggingValue, offset;
+let dragging = false;
+
+document.body.onmousemove = function(event) {
+	if(dragging) dragMove(event);
+}
+
+document.body.onmouseup = function(event) {
+	if(!dragging) return;
+	dragging = false;
+	var r = CN.getBoundingClientRect();
+	var y = Math.floor((event.clientY - r.top - 1) / 26);
+	var x = Math.floor((event.clientX - r.left - 1) / 26);
+	var nsq = y * 8 + x, up = false;
+	ghost.style.display = "none";
+	if(y > -1 && y < 8 && x > -1 && x < 8) {
+		const updated = squares[nsq].value !== draggingValue;
+		squares[nsq].value = draggingValue;
+		if(updated) toFEN();
+	}
+}
+
+function dragStart(event) {
+	event.preventDefault();
+	if(event.button != 0) return;
+
+	const isCN = this == CN;
+	startX = event.offsetX;
+	startY = event.offsetY;
+	sqX = Math.floor((startX - 1) / 26);
+	sqY = Math.floor((startY - 1) / 26);
+	sq = sqY * (isCN ? 8 : 3) + sqX;
+	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
+	if(!isCN || squares[sq].value != "") {
+		dragging = true;
+		ghost.style.clip = `rect(${2 + sqY * 26}px,${(sqX + 1) * 26}px,${(sqY + 1) * 26}px,${2 + sqX * 26}px)`;
+		ghost.style.display = "block";
+		offset = isCN ? 0 : 1;
+		if(isCN) {
+			const index = sqY * 8 + sqX;
+			draggingValue = squares[index].value
+			squares[index].value = "";
+			toFEN();
+		} else {
+			draggingValue = TPv[sq];
+		}
+		dragMove(event);
+	}
+}
+
+function dragMove(event) {
+	var r = CN.getBoundingClientRect();
+	var y = Math.floor((event.clientY - r.top - 1) / 26);
+	var x = Math.floor((event.clientX - r.left - 1) / 26);
+	if(y > -1 && y < 8 && x > -1 && x < 8) {
+		ghost.style.left = r.left + (x - sqX) * 26 + offset + document.body.scrollLeft + "px";
+		ghost.style.top = r.top + (y - sqY) * 26 + offset + document.body.scrollTop + "px";
+	} else {
+		ghost.style.left = event.clientX + document.body.scrollLeft - startX + "px";
+		ghost.style.top = event.clientY + document.body.scrollTop - startY + "px";
+	}
+}

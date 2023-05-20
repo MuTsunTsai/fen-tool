@@ -1,0 +1,87 @@
+html,
+body {
+	font-size: 10pt;
+}
+
+.square {
+	width: 26px;
+	height: 26px;
+	border: none;
+	outline: none;
+	padding: 1px;
+	text-align: center;
+	line-height: 24px;
+	font-family: Arial;
+	font-size: 16px;
+	position: absolute;
+}
+
+.ghost {
+	display: none;
+	position: absolute;
+	opacity: 0.75;
+	pointer-events: none;
+}
+
+#S {
+	width: 208px;
+	height: 208px;
+	position: relative;
+	border: 1px solid black;
+}
+
+#TemplateGhost {
+	object-fit: none;
+	object-position: -156px 0;
+}
+
+td {
+	vertical-align: top;
+}
+
+.w-unset {
+	width: unset;
+	display: inline-block;
+}
+
+.btn {
+	margin-bottom: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		overflow-y: scroll;
+	}
+
+	:root {
+		--bs-body-bg: #444;
+		--bs-body-color: #eee;
+		--bs-light-rgb: 70, 70, 70;
+		--bs-border-color: #666;
+	}
+
+	.modal {
+		--bs-modal-bg: #444;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #aaa6 !important;
+	}
+
+	a.btn {
+		color: inherit !important;
+	}
+
+	.form-control,
+	.form-select,
+	.form-control:focus,
+	.form-check-input {
+		background-color: var(--bs-gray-800);
+		border-color: var(--bs-gray-600);
+		color: white;
+	}
+
+	.card {
+		--bs-card-bg: #555;
+	}
+}
