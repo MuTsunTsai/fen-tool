@@ -96,7 +96,7 @@ function drawTemplate() {
 	}
 }
 
-function draw() {
+async function draw() {
 	const full = 8 * size + 2;
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, full, full);
@@ -108,6 +108,19 @@ function draw() {
 			drawPiece(i, j, value, light) || drawBlank(i, j, light);
 		}
 	}
+	const a = document.getElementById("Save");
+	if(a.href) URL.revokeObjectURL(a.href);
+	a.href = URL.createObjectURL(await getBlob());
+}
+
+async function share() {
+	const blob = await getBlob();
+	const files = [new File([blob], "board.png", { type: "image/png" })];
+	navigator.share({ files });
+}
+
+function getBlob() {
+	return new Promise(resolve => CN.toBlob(resolve));
 }
 
 function drawPiece(i, j, value, light) {

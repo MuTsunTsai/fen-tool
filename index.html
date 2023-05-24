@@ -90,7 +90,7 @@
 						</div>
 						<input type="button" class="btn btn-secondary" id="B64" value="Copy base64 link" onClick="toBase64()">
 					</div>
-					<div class="row gx-3">
+					<div class="row gx-3 mb-3">
 						<div class="col-12 col-sm-6 mb-2">
 							<div v-scope="Checkbox('board.uncolored', 'Uncolored Chessboard', draw)"></div>
 							<div v-scope="Checkbox('board.inverted', 'Reverse Square Color', draw)"></div>
@@ -118,6 +118,10 @@
 								</div>
 							</div>
 						</div>
+					</div>
+					<div class="text-end">
+						<button class="btn btn-primary" onclick="share()">Share image</button>
+						<a class="btn btn-primary" download="board.png" id="Save">Save image</a>
 					</div>
 				</div>
 
