@@ -53,20 +53,20 @@
 				</div>
 			</div>
 
-			<div v-scope v-cloak width="100%">
+			<div v-scope v-cloak width="100%" v-effect="saveSettings()">
 				<ul class="nav nav-tabs mb-3">
 					<li class="nav-item">
-						<div class="nav-link" :class="{active:store.tab==0}" @click="store.tab=0">General</div>
+						<div class="nav-link" :class="{active:tab==0}" @click="tab=0">General</div>
 					</li>
 					<li class="nav-item">
-						<div class="nav-link" :class="{active:store.tab==1}" @click="store.tab=1">PDB tool</div>
+						<div class="nav-link" :class="{active:tab==1}" @click="tab=1">PDB tool</div>
 					</li>
 					<li class="nav-item">
-						<div class="nav-link" :class="{active:store.tab==2}" @click="store.tab=2">BBS tool</div>
+						<div class="nav-link" :class="{active:tab==2}" @click="tab=2">BBS tool</div>
 					</li>
 				</ul>
 
-				<div v-show="store.tab==0">
+				<div v-show="tab==0">
 					<div class="mb-3">
 						<div class="d-inline-block">
 							<input type="button" class="btn btn-secondary" value="Rotate CCW" onClick="rotate(-1)">
@@ -100,8 +100,8 @@
 							<div class="row gx-3 mb-2">
 								<label class="col-auto col-form-label">Chess set:</label>
 								<div class="col">
-									<select class="form-select" onchange="load(this.value)">
-										<option value="1echecs" selected>1Echecs</option>
+									<select class="form-select" v-model="store.board.set" onchange="load(this.value)">
+										<option value="1echecs">1Echecs</option>
 										<option value="merida">Merida</option>
 										<option value="skak">Skak</option>
 									</select>
@@ -110,8 +110,9 @@
 							<div class="row gx-3">
 								<label class="col-auto col-form-label">Square size:</label>
 								<div class="col">
-									<select class="form-select" onchange="setSize(Number(this.value))">
-										<option value="26" selected>26</option>
+									<select class="form-select" v-model.number="store.board.size"
+											onchange="setSize(Number(this.value))">
+										<option value="26">26</option>
 										<option value="32">32</option>
 										<option value="38">38</option>
 										<option value="44">44</option>
@@ -126,7 +127,7 @@
 					</div>
 				</div>
 
-				<div class="row gx-3" v-show="store.tab==1">
+				<div class="row gx-3" v-show="tab==1">
 					<label class="col-12 col-sm-auto col-form-label">Chess Problem Database No:</label>
 					<div class="col">
 						<input type="text" class="form-control" id="PDB">
@@ -136,7 +137,7 @@
 					</div>
 				</div>
 
-				<div class="row gx-3" v-show="store.tab==2">
+				<div class="row gx-3" v-show="tab==2">
 					<div class="col-12 col-sm-8 mb-3">
 						<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
 						<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>

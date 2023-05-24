@@ -1,5 +1,33 @@
-let size = undefined;
-let set = "1echecs";
+const { createApp, reactive } = PetiteVue;
+
+const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
+const settings = {
+	BBS: {
+		PDB: true,
+		coordinates: true,
+		notes: true,
+		uncoloredNotes: false,
+		redBlue: false,
+	},
+	board: {
+		uncolored: false,
+		inverted: false,
+		grayBG: false,
+		size: 26,
+		set: "1echecs",
+	},
+};
+
+for(let key in settings) {
+	Object.assign(settings[key], savedSettings[key]);
+}
+const store = reactive(settings);
+
+function saveSettings() {
+	console.log("save");
+	localStorage.setItem("settings", JSON.stringify(store));
+}
+
 let horMode = false;
 
 const squares = new Array(64);
@@ -35,12 +63,12 @@ const PDB = document.getElementById("PDB");
 const img = new Image();
 
 function load(s) {
-	set = s;
+	store.board.set = s;
 	new Promise(resolve => {
 		if(location.protocol == "https:") img.crossOrigin = "anonymous";
 		else document.getElementById("B64").disabled = true;
 		const t = document.getElementById("TemplateGhost");
-		img.src = t.src = `assets/${set}${size}.png`;
+		img.src = t.src = `assets/${store.board.set}${store.board.size}.png`;
 		img.onload = resolve;
 	}).then(() => {
 		drawTemplate();
@@ -48,37 +76,38 @@ function load(s) {
 	});
 }
 
-window.addEventListener("resize", () => setSize(size));
+window.addEventListener("resize", () => setSize(store.board.size));
 
-function setSize(s) {
+function setSize(s, force) {
 	const newMode = document.body.clientWidth < 12 * s;
-	if(newMode === horMode && s === size) return;
+	if(newMode === horMode && s === store.board.size && !force) return;
 	horMode = newMode;
-	size = s;
-	const full = 8 * size + 2
+	store.board.size = s;
+	const full = 8 * s + 2
 	CG.width = CN.width = full;
 	CG.height = CN.height = full;
-	ctx.font = gCtx.font = `${size - 4}px arial`;
+	ctx.font = gCtx.font = `${s - 4}px arial`;
 	if(horMode) {
-		TPG.height = TP.height = 3 * size + 2;
+		TPG.height = TP.height = 3 * s + 2;
 		TPG.width = TP.width = full;
 		CN.classList.add("mb-3");
 		TP.classList.remove("ms-4");
 	} else {
-		TPG.width = TP.width = 3 * size + 2;
+		TPG.width = TP.width = 3 * s + 2;
 		TPG.height = TP.height = full;
 		CN.classList.remove("mb-3");
 		TP.classList.add("ms-4");
 	}
 	setSquareSize();
-	load(set);
+	load(store.board.set);
 }
 
-setSize(26);
+setSize(store.board.size, true);
 
 const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
 
 function drawTemplate() {
+	const size = store.board.size;
 	const tCtx = TP.getContext("2d");
 	const gCtx = TPG.getContext("2d");
 	let w = 3 * size + 2, h = 8 * size + 2;
@@ -97,7 +126,7 @@ function drawTemplate() {
 }
 
 async function draw() {
-	const full = 8 * size + 2;
+	const full = 8 * store.board.size + 2;
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, full, full);
 	if(!dragging) gCtx.clearRect(0, 0, full, full);
@@ -125,6 +154,7 @@ function getBlob() {
 }
 
 function drawPiece(i, j, value, light) {
+	const size = store.board.size;
 	const neutral = value.startsWith("-") || value.startsWith("~");
 	if(neutral) value = value.substring(1);
 
@@ -176,6 +206,7 @@ function drawBlank(i, j, light) {
 	} else {
 		ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";
 	}
+	const size = store.board.size;
 	ctx.fillRect(j * size + 1, i * size + 1, size, size);
 }
 
@@ -315,6 +346,7 @@ function createSquares() {
 }
 
 function setSquareSize() {
+	const size = store.board.size;
 	const container = document.getElementById("S");
 	const full = size * 8 + 2;
 	container.style.width = full + "px";
@@ -460,6 +492,7 @@ function mouseup(event) {
 	if(!dragging) return;
 	wrapEvent(event);
 	dragging = false;
+	const size = store.board.size;
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
 	const x = Math.floor((event.clientX - r.left - 1) / size);
@@ -477,6 +510,7 @@ function dragStart(event) {
 	if(event.button != 0 && !event.targetTouches) return;
 	wrapEvent(event);
 
+	const size = store.board.size;
 	const isCN = this == CN;
 	startX = event.offsetX;
 	startY = event.offsetY;
@@ -503,6 +537,7 @@ function dragStart(event) {
 
 function dragMove(event) {
 	wrapEvent(event);
+	const size = store.board.size;
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
 	const x = Math.floor((event.clientX - r.left - 1) / size);
@@ -531,23 +566,7 @@ function wrapEvent(event) {
 // petite-vue
 //===========================================================
 
-const { createApp, reactive } = PetiteVue;
 
-const store = reactive({
-	BBS: {
-		PDB: true,
-		coordinates: true,
-		notes: true,
-		uncoloredNotes: false,
-		redBlue: false,
-	},
-	board: {
-		uncolored: false,
-		inverted: false,
-		grayBG: false,
-	},
-	tab: 0,
-});
 
 let checkboxId = 0;
 function Checkbox(key, label, onchange) {
@@ -571,4 +590,6 @@ createApp({
 	Checkbox,
 	draw,
 	store,
+	tab: 0,
+	saveSettings,
 }).mount();
