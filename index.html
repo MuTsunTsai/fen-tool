@@ -67,7 +67,7 @@
 				</ul>
 
 				<div style="position: relative;">
-					<section :style="'visibility:'+(tab==0?'visible':'hidden')">
+					<section class="pb-5" v-visible="tab==0">
 						<div class="mb-3">
 							<div class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="Empty board"
@@ -128,7 +128,7 @@
 						</div>
 					</section>
 
-					<section class="row gx-3" :style="'visibility:'+(tab==1?'visible':'hidden')">
+					<section class="row gx-3" v-visible="tab==1">
 						<label class="col-12 col-sm-auto col-form-label">Chess Problem Database No:</label>
 						<div class="col">
 							<input type="text" class="form-control" id="PDB">
@@ -138,7 +138,7 @@
 						</div>
 					</section>
 
-					<section class="row gx-3" :style="'visibility:'+(tab==2?'visible':'hidden')">
+					<section class="row gx-3" v-visible="tab==2">
 						<div class="col-12 col-sm-8 mb-3">
 							<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
 							<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>

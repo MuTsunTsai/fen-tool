@@ -656,4 +656,10 @@ createApp({
 	store,
 	tab: 0,
 	saveSettings,
-}).mount();
+})
+	.directive("visible", ctx => {
+		ctx.effect(() => {
+			ctx.el.style.visibility = ctx.get() ? "visible" : "hidden";
+		});
+	})
+	.mount();
