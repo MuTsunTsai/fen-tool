@@ -14,6 +14,7 @@ const settings = {
 		inverted: false,
 		grayBG: false,
 		blackWhite: false,
+		SN: false,
 		size: 26,
 		set: "1echecs",
 	},
@@ -171,6 +172,8 @@ function drawPiece(i, j, value, light) {
 	if(rotate !== undefined) value = value.substring(2);
 	rotate = Number(rotate) % 4;
 
+	if(value == "s") value = "n";
+	if(value == "S") value = "N";
 	const lower = value.toLowerCase();
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");
@@ -261,6 +264,7 @@ function toFEN() {
 
 function toSquares(check) {
 	let cursor = 0, fen = [...FEN.value];
+	let changed = false;
 	function slice(n) {
 		return fen.slice(cursor, cursor + n).join("");
 	}
@@ -303,12 +307,13 @@ function toSquares(check) {
 					squares[i * 8 + j].value = "";
 				} cursor++;
 			} else {
-				squares[index].value = char.match(test) ? char : "";
+				squares[index].value = char;
 				cursor++;
 			}
+			changed = changed || checkInputCore(squares[index]);
 		}
 	}
-	if(check) toFEN();
+	if(changed || check) toFEN();
 	else draw();
 }
 
@@ -362,11 +367,28 @@ function setSquareBG() {
 	}
 }
 
-const test = /^(-?(\*\d)?[kqbnrpcx]|'.|''..)$/iu;
+const test = /^(-?(\*\d)?[kqbsnrpcx]|'.|''..)$/iu;
 
 function checkInput() {
-	if(!this.value.match(test)) this.value = "";
-	if(this.value.startsWith("-")) this.value = this.value.toLowerCase();
+	checkInputCore(this);
+	toFEN();
+}
+
+function checkInputCore(s) {
+	let v = s.value;
+	if(!v.match(test)) v = "";
+	if(v.startsWith("-")) v = v.toLowerCase();
+	if(v.match(/^-?(\*\d)?[sn]$/i)) {
+		if(store.board.SN) v = v.replace("n", "s").replace("N", "S");
+		else v = v.replace("s", "n").replace("S", "N");
+	}
+	const changed = v != s.value;
+	s.value = v;
+	return changed;
+}
+
+function updateSN() {
+	for(const s of squares) checkInputCore(s);
 	toFEN();
 }
 
@@ -653,6 +675,7 @@ createApp({
 	draw,
 	drawTemplate,
 	updateBG,
+	updateSN,
 	store,
 	tab: 0,
 	saveSettings,
