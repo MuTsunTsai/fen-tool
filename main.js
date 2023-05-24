@@ -44,7 +44,6 @@ function load(set) {
 		img.src = t.src = `assets/${set}26.png`;
 		img.onload = resolve;
 	}).then(() => {
-		ctx.fillRect(0, 0, 210, 210);
 		drawTemplate();
 		draw();
 	});
@@ -68,7 +67,8 @@ function drawTemplate() {
 }
 
 function draw() {
-	if(!dragging) gCtx.clearRect(0, 0, 210, 210);
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, 210, 210);
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const light = U.checked || R.checked == Boolean((i + j) % 2);
