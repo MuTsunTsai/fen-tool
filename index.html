@@ -66,89 +66,90 @@
 					</li>
 				</ul>
 
-				<div v-show="tab==0">
-					<div class="mb-3">
-						<div class="d-inline-block">
-							<input type="button" class="btn btn-secondary" value="Rotate CCW" onClick="rotate(-1)">
-							<input type="button" class="btn btn-secondary" value="Rotate CW" onClick="rotate(1)">
-						</div>
-						<div class="d-inline-block">
-							<input type="button" class="btn btn-secondary" value="All Black" onClick="color(-1)">
-							<input type="button" class="btn btn-secondary" value="All Neutral" onClick="color(0)">
-							<input type="button" class="btn btn-secondary" value="All White" onClick="color(1)">
-						</div>
-						<div class="d-inline-block">
-							<input type="button" class="btn btn-secondary" value="Switch side" onClick="invertColor(false)">
-							<input type="button" class="btn btn-secondary" value="Switch case" onClick="invertColor(true)">
-						</div>
-						<br>
-						<div class="d-inline-block">
-							<input type="button" class="btn btn-secondary" value="Empty board"
-								   onClick="FEN.value='8/8/8/8/8/8/8/8'; toSquares();">
-							<input type="button" class="btn btn-secondary" value="Starting position"
-								   onClick="FEN.value='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'; toSquares();">
-						</div>
-						<input type="button" class="btn btn-secondary" id="B64" value="Copy base64 link" onClick="toBase64()">
-					</div>
-					<div class="row gx-3 mb-3">
-						<div class="col-12 col-sm-6 mb-2">
-							<div v-scope="Checkbox('board.uncolored', 'Uncolored Chessboard', draw)"></div>
-							<div v-scope="Checkbox('board.inverted', 'Reverse Square Color', draw)"></div>
-							<div v-scope="Checkbox('board.grayBG', 'Gray background', updateBG)"></div>
-							<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
-						</div>
-						<div class="col-12 col-sm-6">
-							<div class="row gx-3 mb-2">
-								<label class="col-auto col-form-label">Chess set:</label>
-								<div class="col">
-									<select class="form-select" v-model="store.board.set" onchange="load(this.value)">
-										<option value="1echecs">1Echecs</option>
-										<option value="merida">Merida</option>
-										<option value="skak">Skak</option>
-									</select>
-								</div>
+				<div style="position: relative;">
+					<section :style="'visibility:'+(tab==0?'visible':'hidden')">
+						<div class="mb-3">
+							<div class="d-inline-block">
+								<input type="button" class="btn btn-secondary" value="Empty board"
+									   onClick="FEN.value='8/8/8/8/8/8/8/8'; toSquares();">
+								<input type="button" class="btn btn-secondary" value="Starting position"
+									   onClick="FEN.value='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'; toSquares();">
+							</div><br>
+							<div class="d-inline-block">
+								<input type="button" class="btn btn-secondary" value="Rotate CCW" onClick="rotate(-1)">
+								<input type="button" class="btn btn-secondary" value="Rotate CW" onClick="rotate(1)">
 							</div>
-							<div class="row gx-3">
-								<label class="col-auto col-form-label">Square size:</label>
-								<div class="col">
-									<select class="form-select" v-model.number="store.board.size"
-											onchange="setSize(Number(this.value))">
-										<option value="26">26</option>
-										<option value="32">32</option>
-										<option value="38">38</option>
-										<option value="44">44</option>
-									</select>
-								</div>
+							<div class="d-inline-block">
+								<input type="button" class="btn btn-secondary" value="All Black" onClick="color(-1)">
+								<input type="button" class="btn btn-secondary" value="All Neutral" onClick="color(0)">
+								<input type="button" class="btn btn-secondary" value="All White" onClick="color(1)">
+							</div>
+							<div class="d-inline-block">
+								<input type="button" class="btn btn-secondary" value="Switch side" onClick="invertColor(false)">
+								<input type="button" class="btn btn-secondary" value="Switch case" onClick="invertColor(true)">
 							</div>
 						</div>
-					</div>
-					<div class="text-end">
-						<button class="btn btn-primary" onclick="share()">Share image</button>
-						<a class="btn btn-primary" download="board.png" id="Save">Save image</a>
-					</div>
-				</div>
+						<div class="row gx-3 mb-3">
+							<div class="col-12 col-sm-6 mb-2">
+								<div v-scope="Checkbox('board.uncolored', 'Uncolored Chessboard', draw)"></div>
+								<div v-scope="Checkbox('board.inverted', 'Reverse Square Color', draw)"></div>
+								<div v-scope="Checkbox('board.grayBG', 'Gray background', updateBG)"></div>
+								<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
+							</div>
+							<div class="col-12 col-sm-6">
+								<div class="row gx-3 mb-2">
+									<label class="col-auto col-form-label">Chess set:</label>
+									<div class="col">
+										<select class="form-select" v-model="store.board.set" onchange="load(this.value)">
+											<option value="1echecs">1Echecs</option>
+											<option value="merida">Merida</option>
+											<option value="skak">Skak</option>
+										</select>
+									</div>
+								</div>
+								<div class="row gx-3">
+									<label class="col-auto col-form-label">Square size:</label>
+									<div class="col">
+										<select class="form-select" v-model.number="store.board.size"
+												onchange="setSize(Number(this.value))">
+											<option value="26">26</option>
+											<option value="32">32</option>
+											<option value="38">38</option>
+											<option value="44">44</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="text-end">
+							<input type="button" class="btn btn-secondary" id="B64" value="Copy base64 link" onClick="toBase64()">
+							<button class="btn btn-primary" onclick="share()">Share image</button>
+							<a class="btn btn-primary" download="board.png" id="Save">Save image</a>
+						</div>
+					</section>
 
-				<div class="row gx-3" v-show="tab==1">
-					<label class="col-12 col-sm-auto col-form-label">Chess Problem Database No:</label>
-					<div class="col">
-						<input type="text" class="form-control" id="PDB">
-					</div>
-					<div class="col-auto">
-						<input type="button" class="btn btn-secondary" value="Get FEN" onclick="getPDB_FEN()">
-					</div>
-				</div>
+					<section class="row gx-3" :style="'visibility:'+(tab==1?'visible':'hidden')">
+						<label class="col-12 col-sm-auto col-form-label">Chess Problem Database No:</label>
+						<div class="col">
+							<input type="text" class="form-control" id="PDB">
+						</div>
+						<div class="col-auto">
+							<input type="button" class="btn btn-secondary" value="Get FEN" onclick="getPDB_FEN()">
+						</div>
+					</section>
 
-				<div class="row gx-3" v-show="tab==2">
-					<div class="col-12 col-sm-8 mb-3">
-						<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
-						<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>
-						<div v-scope="Checkbox('BBS.notes', 'Include Notes')"></div>
-						<div v-scope="Checkbox('BBS.uncoloredNotes', 'Uncolored Note')"></div>
-						<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
-					</div>
-					<div class="col-12 col-sm-4 text-end">
-						<input type="button" class="btn btn-primary" value="Generate BBS Code" onclick="generateBBS()">
-					</div>
+					<section class="row gx-3" :style="'visibility:'+(tab==2?'visible':'hidden')">
+						<div class="col-12 col-sm-8 mb-3">
+							<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
+							<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>
+							<div v-scope="Checkbox('BBS.notes', 'Include Notes')"></div>
+							<div v-scope="Checkbox('BBS.uncoloredNotes', 'Uncolored Note')"></div>
+							<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
+						</div>
+						<div class="col-12 col-sm-4 text-end">
+							<input type="button" class="btn btn-primary" value="Generate BBS Code" onclick="generateBBS()">
+						</div>
+					</section>
 				</div>
 			</div>
 		</div>
