@@ -317,6 +317,7 @@ const test = /^(-?(\*\d)?[kqbnrpcx]|'.|''..)$/iu;
 
 function checkInput() {
 	if(!this.value.match(test)) this.value = "";
+	if(this.value.startsWith("-")) this.value = this.value.toLowerCase();
 	toFEN();
 }
 
@@ -423,7 +424,7 @@ CN.ontouchstart = dragStart;
 TP.onmousedown = dragStart;
 TP.ontouchstart = dragStart;
 
-const TPv = "k,K,-k,q,Q,-q,b,B,-B,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
+const TPv = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 let startX, startY, sqX, sqY, sq;
 let ghost, draggingValue, offset;
 let dragging = false;
