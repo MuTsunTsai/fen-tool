@@ -434,15 +434,16 @@ function dragStart(event) {
 
 function dragMove(event) {
 	wrapEvent(event);
-	var r = CN.getBoundingClientRect();
-	var y = Math.floor((event.clientY - r.top - 1) / 26);
-	var x = Math.floor((event.clientX - r.left - 1) / 26);
+	const r = CN.getBoundingClientRect();
+	const y = Math.floor((event.clientY - r.top - 1) / 26);
+	const x = Math.floor((event.clientX - r.left - 1) / 26);
+	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
-		ghost.style.left = r.left + (x - sqX) * 26 + offset + document.body.scrollLeft + "px";
-		ghost.style.top = r.top + (y - sqY) * 26 + offset + document.body.scrollTop + "px";
+		ghost.style.left = r.left + (x - sqX) * 26 + offset + scrollLeft + "px";
+		ghost.style.top = r.top + (y - sqY) * 26 + offset + scrollTop + "px";
 	} else {
-		ghost.style.left = event.clientX + document.body.scrollLeft - startX + "px";
-		ghost.style.top = event.clientY + document.body.scrollTop - startY + "px";
+		ghost.style.left = event.clientX + scrollLeft - startX + "px";
+		ghost.style.top = event.clientY + scrollTop - startY + "px";
 	}
 }
 
