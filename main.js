@@ -113,14 +113,20 @@ function drawTemplate() {
 	const gCtx = TPG.getContext("2d");
 	let w = 3 * size + 2, h = 8 * size + 2;
 	if(horMode) [w, h] = [h, w];
+	tCtx.fillStyle = "black";
 	tCtx.fillRect(0, 0, w, h);
 	gCtx.clearRect(0, 0, w, h);
 	const bw = store.board.blackWhite;
+	const gray = store.board.grayBG;
 	for(let i = 0; i < 3; i++) {
 		for(let j = 0; j < 8; j++) {
-			const sx = (i + j) % 2 ? 0 : 3;
+			const sx = gray ? 6 : (i + j) % 2 ? 0 : 3;
 			const f = i == 2 && bw ? 2 : 1;
 			const x = f == 2 ? 0 : i;
+			if(gray) {
+				tCtx.fillStyle = (i + j) % 2 ? "#bbb" : "#fff";
+				tCtx.fillRect((horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size, size);
+			}
 			tCtx.drawImage(img, (x + sx) * size, j * size, size / f, size,
 				(horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size / f, size);
 			gCtx.drawImage(img, (x + 6) * size, j * size, size / f, size,
@@ -215,6 +221,11 @@ function drawBlank(i, j, light) {
 	}
 	const size = store.board.size;
 	ctx.fillRect(j * size + 1, i * size + 1, size, size);
+}
+
+function updateBG() {
+	setSquareBG();
+	drawTemplate();
 }
 
 //===========================================================
@@ -314,6 +325,7 @@ function createSquares() {
 			S.appendChild(squares[index]);
 		}
 	}
+	setSquareBG();
 }
 
 function setSquareSize() {
@@ -331,6 +343,19 @@ function setSquareSize() {
 			s.style.height = size + "px";
 			s.style.lineHeight = (size - 2) + "px";
 			s.style.fontSize = (size - 10) + "px";
+		}
+	}
+}
+
+function setSquareBG() {
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const s = squares[i * 8 + j];
+			if(store.board.grayBG) {
+				s.style.background = (i + j) % 2 ? "#bbb" : "#fff";
+			} else {
+				s.style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
+			}
 		}
 	}
 }
@@ -625,6 +650,7 @@ createApp({
 	Checkbox,
 	draw,
 	drawTemplate,
+	updateBG,
 	store,
 	tab: 0,
 	saveSettings,
