@@ -155,9 +155,11 @@ async function draw() {
 			drawPiece(i, j, value, light);
 		}
 	}
-	const a = document.getElementById("Save");
-	if(a.href) URL.revokeObjectURL(a.href);
-	a.href = URL.createObjectURL(await getBlob());
+	if(location.protocol == "https:") {
+		const a = document.getElementById("Save");
+		if(a.href) URL.revokeObjectURL(a.href);
+		a.href = URL.createObjectURL(await getBlob());
+	}
 }
 
 function drawPiece(i, j, value, light) {
