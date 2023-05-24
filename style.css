@@ -3,6 +3,11 @@ body {
 	font-size: 10pt;
 }
 
+[v-cloak] {
+	display: none;
+}
+
+
 .square {
 	width: 26px;
 	height: 26px;
@@ -48,6 +53,16 @@ td {
 	margin-bottom: 5px;
 }
 
+input[type=checkbox],
+label[for] {
+	cursor: pointer;
+}
+
+.nav-tabs {
+	--bs-nav-link-color: unset;
+	--bs-nav-link-hover-color: unset;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		overflow-y: scroll;
@@ -58,6 +73,17 @@ td {
 		--bs-body-color: #eee;
 		--bs-light-rgb: 70, 70, 70;
 		--bs-border-color: #666;
+	}
+
+	.nav-tabs {
+		--bs-nav-tabs-border-color: #999;
+		--bs-nav-tabs-link-hover-border-color: #999 #999 #999;
+		--bs-nav-tabs-link-active-bg: #444;
+		--bs-nav-tabs-link-active-border-color: #999 #999 #444;
+
+		.nav-link.active {
+			color: white;
+		}
 	}
 
 	.modal {

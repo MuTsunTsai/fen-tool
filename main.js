@@ -27,14 +27,6 @@ const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝
 const FEN = document.getElementById("FEN");
 const PDB = document.getElementById("PDB");
 
-const PI = document.getElementById('PI');
-const C = document.getElementById('C');
-const F = document.getElementById('F');
-const UF = document.getElementById('UF');
-const B = document.getElementById('B');
-const U = document.getElementById("U");
-const R = document.getElementById("R");
-
 const img = new Image();
 
 function load(set) {
@@ -72,7 +64,7 @@ function draw() {
 	if(!dragging) gCtx.clearRect(0, 0, 210, 210);
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
-			const light = U.checked || R.checked == Boolean((i + j) % 2);
+			const light = store.board.uncolored || store.board.inverted == Boolean((i + j) % 2);
 			const value = squares[i * 8 + j].value;
 			drawPiece(i, j, value, light) || drawBlank(i, j, light);
 		}
@@ -293,7 +285,7 @@ function generateBBS() {
 	}
 
 	for(let i = 0; i < 8; i++) {
-		if(C.checked) result += us + "[m" + A1[8 - i] + "　";
+		if(store.BBS.coordinates) result += us + "[m" + A1[8 - i] + "　";
 		for(let j = 0; j < 8; j++) {
 			char = fen[cursor];
 			ignoreRotation();
@@ -336,7 +328,7 @@ function generateBBS() {
 				}
 			} else {
 				result += us + "[";
-				if(B.checked) {
+				if(store.BBS.redBlue) {
 					if(char == char.toUpperCase()) result += "1;31;";
 					else result += "1;34;";
 					result += BackgroundColor(i, j) + fullWidth(char.toLowerCase(), true);
@@ -348,18 +340,18 @@ function generateBBS() {
 			}
 			cursor++;
 		}
-		if(F.checked) result += us + "[m　　" + (UF.checked ? A3[i] : A2[i]);
+		if(store.BBS.notes) result += us + "[m　　" + (store.BBS.uncoloredNotes ? A3[i] : A2[i]);
 		if(i < 7) result += "\r\n";
 	}
 	result += us + "[m\r\n";
-	if(PI.checked) result += us + "[0;30;40m" + PDB.value + us + "[m";
-	if(C.checked) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
+	if(store.BBS.PDB) result += us + "[0;30;40m" + PDB.value + us + "[m";
+	if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
 	result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
 	navigator.clipboard.writeText(result);
 }
 
 function BackgroundColor(i, j) {
-	if(U.checked) return "43;m";
+	if(store.board.uncolored) return "43;m";
 	else return (i + j) % 2 ? "42;m" : "43;m";
 }
 
@@ -457,3 +449,48 @@ function wrapEvent(event) {
 		event.offsetY = event.clientY - bcr.y;
 	}
 }
+
+//===========================================================
+// petite-vue
+//===========================================================
+
+const { createApp, reactive } = PetiteVue;
+
+const store = reactive({
+	BBS: {
+		PDB: true,
+		coordinates: true,
+		notes: true,
+		uncoloredNotes: false,
+		redBlue: false,
+	},
+	board: {
+		uncolored: false,
+		inverted: false,
+	},
+	tab: 0,
+});
+
+let checkboxId = 0;
+function Checkbox(key, label, onchange) {
+	const path = key.split(".");
+	key = path.pop();
+	let target = store;
+	while(path.length) target = target[path.shift()];
+	return {
+		$template: "#checkbox",
+		id: "chk" + checkboxId++,
+		label,
+		checked: () => target[key],
+		change: () => {
+			target[key] = !target[key];
+			onchange?.();
+		},
+	};
+}
+
+createApp({
+	Checkbox,
+	draw,
+	store,
+}).mount();
