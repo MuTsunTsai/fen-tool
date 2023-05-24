@@ -68,8 +68,7 @@ function load(s) {
 	new Promise(resolve => {
 		if(location.protocol == "https:") img.crossOrigin = "anonymous";
 		else document.getElementById("B64").disabled = true;
-		const t = document.getElementById("TemplateGhost");
-		img.src = t.src = `assets/${store.board.set}${store.board.size}.png`;
+		img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
 		img.onload = resolve;
 	}).then(drawTemplate);
 }
@@ -103,6 +102,10 @@ function setSize(s, force) {
 setSize(store.board.size, true);
 
 const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
+
+//===========================================================
+// rendering
+//===========================================================
 
 function drawTemplate() {
 	const size = store.board.size;
@@ -149,16 +152,6 @@ async function draw() {
 	const a = document.getElementById("Save");
 	if(a.href) URL.revokeObjectURL(a.href);
 	a.href = URL.createObjectURL(await getBlob());
-}
-
-async function share() {
-	const blob = await getBlob();
-	const files = [new File([blob], "board.png", { type: "image/png" })];
-	navigator.share({ files });
-}
-
-function getBlob() {
-	return new Promise(resolve => CN.toBlob(resolve));
 }
 
 function drawPiece(i, j, value, light) {
@@ -224,45 +217,9 @@ function drawBlank(i, j, light) {
 	ctx.fillRect(j * size + 1, i * size + 1, size, size);
 }
 
-function rotate(d) {
-	const temp = squares.map(s => s.value);
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const target = d == 1 ? (7 - j) * 8 + i : j * 8 + (7 - i);
-			squares[i * 8 + j].value = temp[target];
-		}
-	}
-	toFEN();
-}
-
-function color(c) {
-	for(let i = 0; i < 64; i++) {
-		let s = squares[i].value;
-		if(s.substr(0, 1) == "'" || s == "") continue;
-		if(s.substr(0, 1) == "-" || s.substr(0, 1) == "~") s = s.substr(1);
-		s = s.toLowerCase();
-		if(c == 0) s = "-" + s;
-		if(c == 1) s = s.toUpperCase();
-		squares[i].value = s;
-	}
-	toFEN();
-}
-
-function invertColor(l) {
-	for(let i = 0; i < 64; i++) {
-		let s = squares[i].value;
-		if(s == "" || s.substr(0, 1) == "-") continue;
-		if(!l && s.substr(0, 1) == "'") continue;
-		t = s.toLowerCase();
-		if(s == t) s = s.toUpperCase(); else s = t;
-		squares[i].value = s;
-	}
-	toFEN();
-}
-
-function toBase64() {
-	navigator.clipboard.writeText(CN.toDataURL());
-}
+//===========================================================
+// input
+//===========================================================
 
 function toFEN() {
 	let i, j, s = 0, t = "";
@@ -386,6 +343,68 @@ function checkInput() {
 	toFEN();
 }
 
+//===========================================================
+// export
+//===========================================================
+
+function toBase64() {
+	navigator.clipboard.writeText(CN.toDataURL());
+}
+
+async function share() {
+	const blob = await getBlob();
+	const files = [new File([blob], "board.png", { type: "image/png" })];
+	navigator.share({ files });
+}
+
+function getBlob() {
+	return new Promise(resolve => CN.toBlob(resolve));
+}
+
+//===========================================================
+// manipulations
+//===========================================================
+
+function rotate(d) {
+	const temp = squares.map(s => s.value);
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const target = d == 1 ? (7 - j) * 8 + i : j * 8 + (7 - i);
+			squares[i * 8 + j].value = temp[target];
+		}
+	}
+	toFEN();
+}
+
+function color(c) {
+	for(let i = 0; i < 64; i++) {
+		let s = squares[i].value;
+		if(s.substr(0, 1) == "'" || s == "") continue;
+		if(s.substr(0, 1) == "-" || s.substr(0, 1) == "~") s = s.substr(1);
+		s = s.toLowerCase();
+		if(c == 0) s = "-" + s;
+		if(c == 1) s = s.toUpperCase();
+		squares[i].value = s;
+	}
+	toFEN();
+}
+
+function invertColor(l) {
+	for(let i = 0; i < 64; i++) {
+		let s = squares[i].value;
+		if(s == "" || s.substr(0, 1) == "-") continue;
+		if(!l && s.substr(0, 1) == "'") continue;
+		t = s.toLowerCase();
+		if(s == t) s = s.toUpperCase(); else s = t;
+		squares[i].value = s;
+	}
+	toFEN();
+}
+
+//===========================================================
+// tools
+//===========================================================
+
 async function getPDB_FEN() {
 	const url = `https://pdb.dieschwalbe.de/search.jsp?expression=PROBID%3D%3D%27${PDB.value}%27`;
 	const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
@@ -483,6 +502,10 @@ function fullWidth(s, t) {
 	if(t && s.toLowerCase() == "x") return "╳";
 	return fullWidthMap.get(s);
 }
+
+//===========================================================
+// dragging
+//===========================================================
 
 CN.onmousedown = dragStart;
 CN.ontouchstart = dragStart;
