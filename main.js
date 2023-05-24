@@ -10,7 +10,6 @@ const CG = document.getElementById("CanvasGhost");
 const TPG = document.getElementById("TemplateGhost");
 const ctx = CN.getContext("2d");
 const gCtx = CG.getContext("2d");
-ctx.font = gCtx.font = `${size * .9}px arial`;
 createSquares();
 
 const fullWidthMap = (function() {
@@ -59,6 +58,7 @@ function setSize(s) {
 	const full = 8 * size + 2
 	CG.width = CN.width = full;
 	CG.height = CN.height = full;
+	ctx.font = gCtx.font = `${size - 4}px arial`;
 	if(horMode) {
 		TPG.height = TP.height = 3 * size + 2;
 		TPG.width = TP.width = full;
@@ -135,8 +135,9 @@ function drawPiece(i, j, value, light) {
 		const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
 		ctx.fillStyle = gCtx.fillStyle = "black";
 		const measure = ctx.measureText(text);
+		const height = measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
 		const dx = Math.max((size - measure.width) / 2, 0);
-		const dy = Math.max((size - measure.height) / 2, 0);
+		const dy = Math.max((size - height) / 2, 0);
 		bCtx.fillText(text, dx, size - dy, size);
 	} else {
 		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size, size, 0, 0, size, size);
