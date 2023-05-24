@@ -105,7 +105,8 @@ async function draw() {
 		for(let j = 0; j < 8; j++) {
 			const light = store.board.uncolored || store.board.inverted == Boolean((i + j) % 2);
 			const value = squares[i * 8 + j].value;
-			drawPiece(i, j, value, light) || drawBlank(i, j, light);
+			drawBlank(i, j, light);
+			drawPiece(i, j, value, light);
 		}
 	}
 	const a = document.getElementById("Save");
@@ -139,7 +140,7 @@ function drawPiece(i, j, value, light) {
 	if(isText) drawBlank(i, j, light);
 	bCtx.save();
 	const sx = neutral ? 2 : value == lower ? 0 : 1;
-	const bx = light ? 3 : 0;
+	const bx = store.board.grayBG ? 6 : light ? 3 : 0;
 	const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
 	bCtx.translate((j + rx) * size + 1, (i + ry) * size + 1);
 	if(rotate !== 0) bCtx.rotate(Math.PI / 2 * rotate);
@@ -170,7 +171,11 @@ const bCtx = new Proxy({}, {
 });
 
 function drawBlank(i, j, light) {
-	ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";
+	if(store.board.grayBG) {
+		ctx.fillStyle = light ? "#fff" : "#bbb";
+	} else {
+		ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";
+	}
 	ctx.fillRect(j * size + 1, i * size + 1, size, size);
 }
 
@@ -539,6 +544,7 @@ const store = reactive({
 	board: {
 		uncolored: false,
 		inverted: false,
+		grayBG: false,
 	},
 	tab: 0,
 });
