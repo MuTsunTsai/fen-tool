@@ -4,7 +4,6 @@ const CN = document.getElementById("CN");
 const ctx = CN.getContext("2d");
 const gCtx = document.getElementById("CanvasGhost").getContext("2d");
 ctx.font = gCtx.font = "22px arial";
-ctx.fillRect(0, 0, 210, 210);
 createSquares();
 
 const fullWidthMap = (function() {
@@ -45,6 +44,7 @@ function load(set) {
 		img.src = t.src = `assets/${set}26.png`;
 		img.onload = resolve;
 	}).then(() => {
+		ctx.fillRect(0, 0, 210, 210);
 		drawTemplate();
 		draw();
 	});
