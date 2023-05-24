@@ -1,6 +1,7 @@
 const squares = new Array(64);
 
 const CN = document.getElementById("CN");
+const TP = document.getElementById('TP');
 const ctx = CN.getContext("2d");
 const gCtx = document.getElementById("CanvasGhost").getContext("2d");
 ctx.font = gCtx.font = "22px arial";
@@ -55,7 +56,6 @@ const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
 const size = 26;
 
 function drawTemplate() {
-	const TP = document.getElementById("TP");
 	const tCtx = TP.getContext("2d");
 	tCtx.fillRect(0, 0, 80, 210);
 	for(let i = 0; i < 3; i++) {
@@ -370,19 +370,26 @@ function fullWidth(s, t) {
 }
 
 CN.onmousedown = dragStart;
-document.getElementById('TP').onmousedown = dragStart;
+CN.ontouchstart = dragStart;
+TP.onmousedown = dragStart;
+TP.ontouchstart = dragStart;
 
 const TPv = "k,K,-k,q,Q,-q,b,B,-B,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 let startX, startY, sqX, sqY, sq;
 let ghost, draggingValue, offset;
 let dragging = false;
 
-document.body.onmousemove = function(event) {
+document.body.onmousemove = mousemove;
+document.body.ontouchmove = mousemove;
+document.body.onmouseup = mouseup;
+document.body.ontouchend = mouseup;
+
+function mousemove(event) {
 	if(dragging) dragMove(event);
 }
-
-document.body.onmouseup = function(event) {
+function mouseup(event) {
 	if(!dragging) return;
+	wrapEvent(event);
 	dragging = false;
 	var r = CN.getBoundingClientRect();
 	var y = Math.floor((event.clientY - r.top - 1) / 26);
@@ -398,7 +405,8 @@ document.body.onmouseup = function(event) {
 
 function dragStart(event) {
 	event.preventDefault();
-	if(event.button != 0) return;
+	if(event.button != 0 && !event.targetTouches) return;
+	wrapEvent(event);
 
 	const isCN = this == CN;
 	startX = event.offsetX;
@@ -425,6 +433,7 @@ function dragStart(event) {
 }
 
 function dragMove(event) {
+	wrapEvent(event);
 	var r = CN.getBoundingClientRect();
 	var y = Math.floor((event.clientY - r.top - 1) / 26);
 	var x = Math.floor((event.clientX - r.left - 1) / 26);
@@ -434,5 +443,16 @@ function dragMove(event) {
 	} else {
 		ghost.style.left = event.clientX + document.body.scrollLeft - startX + "px";
 		ghost.style.top = event.clientY + document.body.scrollTop - startY + "px";
+	}
+}
+
+function wrapEvent(event) {
+	if(event.targetTouches) {
+		const bcr = event.target.getBoundingClientRect();
+		const touch = event.targetTouches[0] || event.changedTouches[0];
+		event.clientX = touch.clientX;
+		event.clientY = touch.clientY;
+		event.offsetX = event.clientX - bcr.x;
+		event.offsetY = event.clientY - bcr.y;
 	}
 }

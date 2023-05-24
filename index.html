@@ -4,6 +4,8 @@
 <head>
 	<title>FEN Visualization</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width, user-scalable=no">
+	<meta name="description" content="Quick online tool for editing FEN.">
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4GYC00FPRR"></script>
@@ -24,7 +26,7 @@
 	<div class="text-center">
 		<div class="d-inline-block text-start">
 			<div class="row gx-3">
-				<label class="col-auto col-form-label">Chess Problem Database No:</label>
+				<label class="col-12 col-md-auto col-form-label">Chess Problem Database No:</label>
 				<div class="col">
 					<input type="text" class="form-control" id="PDB">
 				</div>
@@ -41,17 +43,15 @@
 
 			<br>
 
-			<table>
-				<tr>
-					<td class="pe-5">
-						<div id="S" class="mb-5 me-5"></div>
-					</td>
-					<td class="d-flex align-items-center">
-						<canvas id="CN" width="210" height="210" style="cursor:pointer;"></canvas>
-						<canvas id="TP" class="ms-4" width="80" height="210" style="cursor:pointer;">
-					</td>
-				</tr>
-			</table>
+			<div class="row mb-5" style="flex-direction: row-reverse;">
+				<div class="col-12 col-md-auto mb-3 mb-md-0 d-flex align-items-center">
+					<canvas id="CN" width="210" height="210" style="cursor:pointer;"></canvas>
+					<canvas id="TP" class="ms-4" width="80" height="210" style="cursor:pointer;">
+				</div>
+				<div class="col-12 col-md-auto pe-5">
+					<div id="S" class="me-5"></div>
+				</div>
+			</div>
 
 			<div class="mb-3">
 				<input type="button" class="btn btn-secondary" value="Rotate CCW" onClick="rotate(-1)">
@@ -70,7 +70,7 @@
 				<input type="button" class="btn btn-secondary" id="B64" value="Copy base64 link" onClick="toBase64()">
 			</div>
 			<div class="row gx-3">
-				<div class="col">
+				<div class="col-12 col-md-6 mb-2">
 					<div class="form-check">
 						<input type="checkbox" class="form-check-input" id="U" onChange="draw();">
 						<label class="form-check-label" for="U">Uncolored Chessboard</label>
@@ -80,7 +80,7 @@
 						<label class="form-check-label" for="R">Reverse Square Color</label>
 					</div>
 				</div>
-				<div class="col row gx-3">
+				<div class="col-12 col-md-6 row gx-3">
 					<label class="col-auto col-form-label">Chess set:</label>
 					<div class="col">
 						<select class="form-select" onchange="load(this.value)">
@@ -96,26 +96,32 @@
 			<div class="card mt-5">
 				<div class="card-header">BBS export</div>
 				<div class="card-body">
-					<input type="button" class="btn btn-primary float-end" value="Generate BBS Code" onclick="generateBBS()">
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" id="PI" checked>
-						<label class="form-check-label" for="PI">Include PDB ID</label>
-					</div>
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" id="C" checked>
-						<label class="form-check-label" for="C">Include Coordinates</label>
-					</div>
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" id="F" checked>
-						<label class="form-check-label" for="F">Include Notes</label>
-					</div>
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" id="UF">
-						<label class="form-check-label" for="UF">Uncolored Note</label>
-					</div>
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" id="B">
-						<label class="form-check-label" for="B">Use Red and Blue in BBS Code</label>
+					<div class="row">
+						<div class="col-12 col-md-8 mb-3">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="PI" checked>
+								<label class="form-check-label" for="PI">Include PDB ID</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="C" checked>
+								<label class="form-check-label" for="C">Include Coordinates</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="F" checked>
+								<label class="form-check-label" for="F">Include Notes</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="UF">
+								<label class="form-check-label" for="UF">Uncolored Note</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="B">
+								<label class="form-check-label" for="B">Use Red and Blue in BBS Code</label>
+							</div>
+						</div>
+						<div class="col-12 col-md-4 text-end">
+							<input type="button" class="btn btn-primary" value="Generate BBS Code" onclick="generateBBS()">
+						</div>
 					</div>
 				</div>
 			</div>
