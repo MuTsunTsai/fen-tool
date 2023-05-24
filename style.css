@@ -9,15 +9,11 @@ body {
 
 
 .square {
-	width: 26px;
-	height: 26px;
 	border: none;
 	outline: none;
 	padding: 1px;
 	text-align: center;
-	line-height: 24px;
 	font-family: Arial;
-	font-size: 16px;
 	position: absolute;
 }
 
@@ -33,11 +29,6 @@ body {
 	height: 210px;
 	position: relative;
 	border: 1px solid black;
-}
-
-#TemplateGhost {
-	object-fit: none;
-	object-position: -156px 0;
 }
 
 td {

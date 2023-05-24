@@ -33,7 +33,7 @@
 	</template>
 
 	<div class="text-center">
-		<div class="d-inline-block text-start" style="width: min(100%,47rem);">
+		<div class="d-inline-block text-start">
 			<div class="row gx-3">
 				<label class="col-auto col-form-label">Input FEN:</label>
 				<div class="col">
@@ -43,17 +43,17 @@
 
 			<br>
 
-			<div class="row mb-5" style="flex-direction: row-reverse;">
-				<div class="col-12 col-md mb-3 mb-md-0 text-md-end">
-					<canvas id="CN" width="210" height="210" style="cursor:pointer;"></canvas>
-					<canvas id="TP" class="ms-4" width="80" height="210" style="cursor:pointer;">
+			<div class="d-flex mb-3" style="flex-wrap: wrap-reverse;">
+				<div class="flex-grow-1 me-5 mb-4">
+					<div id="S"></div>
 				</div>
-				<div class="col-12 col-md-auto">
-					<div id="S" class="me-5"></div>
+				<div class="flex-grow-0 mb-4">
+					<canvas id="CN" style="cursor:pointer;"></canvas>
+					<canvas id="TP" class="ms-4" style="cursor:pointer;">
 				</div>
 			</div>
 
-			<div v-scope v-cloak>
+			<div v-scope v-cloak width="100%">
 				<ul class="nav nav-tabs mb-3">
 					<li class="nav-item">
 						<div class="nav-link" :class="{active:store.tab==0}" @click="store.tab=0">General</div>
@@ -96,13 +96,24 @@
 							<div v-scope="Checkbox('board.inverted', 'Reverse Square Color', draw)"></div>
 						</div>
 						<div class="col-12 col-sm-6">
-							<div class="row gx-3">
+							<div class="row gx-3 mb-2">
 								<label class="col-auto col-form-label">Chess set:</label>
 								<div class="col">
 									<select class="form-select" onchange="load(this.value)">
 										<option value="1echecs" selected>1Echecs</option>
 										<option value="merida">Merida</option>
 										<option value="skak">Skak</option>
+									</select>
+								</div>
+							</div>
+							<div class="row gx-3">
+								<label class="col-auto col-form-label">Square size:</label>
+								<div class="col">
+									<select class="form-select" onchange="setSize(Number(this.value))">
+										<option value="26" selected>26</option>
+										<option value="32">32</option>
+										<option value="38">38</option>
+										<option value="44">44</option>
 									</select>
 								</div>
 							</div>
@@ -137,7 +148,7 @@
 	</div>
 
 	<canvas id="CanvasGhost" class="ghost" width="210" height="210"></canvas>
-	<img id="TemplateGhost" class="ghost">
+	<canvas id="TemplateGhost" class="ghost"></canvas>
 </body>
 
 </html>

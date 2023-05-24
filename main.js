@@ -1,10 +1,16 @@
+let size = undefined;
+let set = "1echecs";
+let horMode = false;
+
 const squares = new Array(64);
 
 const CN = document.getElementById("CN");
 const TP = document.getElementById('TP');
+const CG = document.getElementById("CanvasGhost");
+const TPG = document.getElementById("TemplateGhost");
 const ctx = CN.getContext("2d");
-const gCtx = document.getElementById("CanvasGhost").getContext("2d");
-ctx.font = gCtx.font = "22px arial";
+const gCtx = CG.getContext("2d");
+ctx.font = gCtx.font = `${size * .9}px arial`;
 createSquares();
 
 const fullWidthMap = (function() {
@@ -29,12 +35,13 @@ const PDB = document.getElementById("PDB");
 
 const img = new Image();
 
-function load(set) {
+function load(s) {
+	set = s;
 	new Promise(resolve => {
 		if(location.protocol == "https:") img.crossOrigin = "anonymous";
 		else document.getElementById("B64").disabled = true;
 		const t = document.getElementById("TemplateGhost");
-		img.src = t.src = `assets/${set}26.png`;
+		img.src = t.src = `assets/${set}${size}.png`;
 		img.onload = resolve;
 	}).then(() => {
 		drawTemplate();
@@ -42,26 +49,58 @@ function load(set) {
 	});
 }
 
-load("1echecs");
+window.addEventListener("resize", () => setSize(size));
+
+function setSize(s) {
+	const newMode = document.body.clientWidth < 12 * s;
+	if(newMode === horMode && s === size) return;
+	horMode = newMode;
+	size = s;
+	const full = 8 * size + 2
+	CG.width = CN.width = full;
+	CG.height = CN.height = full;
+	if(horMode) {
+		TPG.height = TP.height = 3 * size + 2;
+		TPG.width = TP.width = full;
+		CN.classList.add("mb-3");
+		TP.classList.remove("ms-4");
+	} else {
+		TPG.width = TP.width = 3 * size + 2;
+		TPG.height = TP.height = full;
+		CN.classList.remove("mb-3");
+		TP.classList.add("ms-4");
+	}
+	setSquareSize();
+	load(set);
+}
+
+setSize(26);
 
 const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
-const size = 26;
 
 function drawTemplate() {
 	const tCtx = TP.getContext("2d");
-	tCtx.fillRect(0, 0, 80, 210);
+	const gCtx = TPG.getContext("2d");
+	let w = 3 * size + 2, h = 8 * size + 2;
+	if(horMode) [w, h] = [h, w];
+	tCtx.fillRect(0, 0, w, h);
+	gCtx.clearRect(0, 0, w, h);
 	for(let i = 0; i < 3; i++) {
 		for(let j = 0; j < 8; j++) {
 			const sx = (i + j) % 2 ? 0 : 3;
-			tCtx.drawImage(img, (i + sx) * size, j * size, size, size, i * size + 1, j * size + 1, size, size);
+			tCtx.drawImage(img, (i + sx) * size, j * size, size, size,
+				(horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size, size);
+			gCtx.drawImage(img, (i + 6) * size, j * size, size, size,
+				(horMode ? j : i) * size, (horMode ? i : j) * size, size, size);
 		}
 	}
 }
 
 function draw() {
+	const full = 8 * size + 2;
 	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 210, 210);
-	if(!dragging) gCtx.clearRect(0, 0, 210, 210);
+	ctx.fillRect(0, 0, full, full);
+	if(!dragging) gCtx.clearRect(0, 0, full, full);
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const light = store.board.uncolored || store.board.inverted == Boolean((i + j) % 2);
@@ -95,8 +134,10 @@ function drawPiece(i, j, value, light) {
 		const c = value.substring(1);
 		const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
 		ctx.fillStyle = gCtx.fillStyle = "black";
-		const dx = Math.max((26 - ctx.measureText(text).width) / 2, 0);
-		bCtx.fillText(text, dx, 22, 26);
+		const measure = ctx.measureText(text);
+		const dx = Math.max((size - measure.width) / 2, 0);
+		const dy = Math.max((size - measure.height) / 2, 0);
+		bCtx.fillText(text, dx, size - dy, size);
 	} else {
 		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size, size, 0, 0, size, size);
 		gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size, size, 0, 0, size, size);
@@ -248,10 +289,26 @@ function createSquares() {
 			squares[index].onchange = checkInput;
 			squares[index].onfocus = squareOnFocus;
 			squares[index].style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
-			squares[index].style.top = i * 26 + "px";
-			squares[index].style.left = j * 26 + "px";
 			squares[index].classList.add("square");
 			S.appendChild(squares[index]);
+		}
+	}
+}
+
+function setSquareSize() {
+	const container = document.getElementById("S");
+	const full = size * 8 + 2;
+	container.style.width = full + "px";
+	container.style.height = full + "px";
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const s = squares[i * 8 + j];
+			s.style.top = i * size + "px";
+			s.style.left = j * size + "px";
+			s.style.width = size + "px";
+			s.style.height = size + "px";
+			s.style.lineHeight = (size - 2) + "px";
+			s.style.fontSize = (size - 10) + "px";
 		}
 	}
 }
@@ -383,10 +440,10 @@ function mouseup(event) {
 	if(!dragging) return;
 	wrapEvent(event);
 	dragging = false;
-	var r = CN.getBoundingClientRect();
-	var y = Math.floor((event.clientY - r.top - 1) / 26);
-	var x = Math.floor((event.clientX - r.left - 1) / 26);
-	var nsq = y * 8 + x, up = false;
+	const r = CN.getBoundingClientRect();
+	const y = Math.floor((event.clientY - r.top - 1) / size);
+	const x = Math.floor((event.clientX - r.left - 1) / size);
+	const nsq = y * 8 + x;
 	ghost.style.display = "none";
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
 		const updated = squares[nsq].value !== draggingValue;
@@ -403,13 +460,13 @@ function dragStart(event) {
 	const isCN = this == CN;
 	startX = event.offsetX;
 	startY = event.offsetY;
-	sqX = Math.floor((startX - 1) / 26);
-	sqY = Math.floor((startY - 1) / 26);
+	sqX = Math.floor((startX - 1) / size);
+	sqY = Math.floor((startY - 1) / size);
 	sq = sqY * (isCN ? 8 : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 	if(!isCN || squares[sq].value != "") {
 		dragging = true;
-		ghost.style.clip = `rect(${2 + sqY * 26}px,${(sqX + 1) * 26}px,${(sqY + 1) * 26}px,${2 + sqX * 26}px)`;
+		ghost.style.clip = `rect(${2 + sqY * size}px,${(sqX + 1) * size}px,${(sqY + 1) * size}px,${2 + sqX * size}px)`;
 		ghost.style.display = "block";
 		offset = isCN ? 0 : 1;
 		if(isCN) {
@@ -418,7 +475,7 @@ function dragStart(event) {
 			squares[index].value = "";
 			toFEN();
 		} else {
-			draggingValue = TPv[sq];
+			draggingValue = horMode ? TPv[sqX * 3 + sqY] : TPv[sqY * 3 + sqX];
 		}
 		dragMove(event);
 	}
@@ -427,12 +484,12 @@ function dragStart(event) {
 function dragMove(event) {
 	wrapEvent(event);
 	const r = CN.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - 1) / 26);
-	const x = Math.floor((event.clientX - r.left - 1) / 26);
+	const y = Math.floor((event.clientY - r.top - 1) / size);
+	const x = Math.floor((event.clientX - r.left - 1) / size);
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
-		ghost.style.left = r.left + (x - sqX) * 26 + offset + scrollLeft + "px";
-		ghost.style.top = r.top + (y - sqY) * 26 + offset + scrollTop + "px";
+		ghost.style.left = r.left + (x - sqX) * size + offset + scrollLeft + "px";
+		ghost.style.top = r.top + (y - sqY) * size + offset + scrollTop + "px";
 	} else {
 		ghost.style.left = event.clientX + scrollLeft - startX + "px";
 		ghost.style.top = event.clientY + scrollTop - startY + "px";
