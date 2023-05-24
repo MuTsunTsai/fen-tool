@@ -74,7 +74,7 @@
 						</div>
 						<div class="d-inline-block">
 							<input type="button" class="btn btn-secondary" value="All Black" onClick="color(-1)">
-							<input type="button" class="btn btn-secondary" value="All Gray" onClick="color(0)">
+							<input type="button" class="btn btn-secondary" value="All Neutral" onClick="color(0)">
 							<input type="button" class="btn btn-secondary" value="All White" onClick="color(1)">
 						</div>
 						<div class="d-inline-block">
@@ -95,6 +95,7 @@
 							<div v-scope="Checkbox('board.uncolored', 'Uncolored Chessboard', draw)"></div>
 							<div v-scope="Checkbox('board.inverted', 'Reverse Square Color', draw)"></div>
 							<div v-scope="Checkbox('board.grayBG', 'Gray background', draw)"></div>
+							<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
 						</div>
 						<div class="col-12 col-sm-6">
 							<div class="row gx-3 mb-2">

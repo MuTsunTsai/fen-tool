@@ -13,6 +13,7 @@ const settings = {
 		uncolored: false,
 		inverted: false,
 		grayBG: false,
+		blackWhite: false,
 		size: 26,
 		set: "1echecs",
 	},
@@ -70,10 +71,7 @@ function load(s) {
 		const t = document.getElementById("TemplateGhost");
 		img.src = t.src = `assets/${store.board.set}${store.board.size}.png`;
 		img.onload = resolve;
-	}).then(() => {
-		drawTemplate();
-		draw();
-	});
+	}).then(drawTemplate);
 }
 
 window.addEventListener("resize", () => setSize(store.board.size));
@@ -114,15 +112,25 @@ function drawTemplate() {
 	if(horMode) [w, h] = [h, w];
 	tCtx.fillRect(0, 0, w, h);
 	gCtx.clearRect(0, 0, w, h);
+	const bw = store.board.blackWhite;
 	for(let i = 0; i < 3; i++) {
 		for(let j = 0; j < 8; j++) {
 			const sx = (i + j) % 2 ? 0 : 3;
-			tCtx.drawImage(img, (i + sx) * size, j * size, size, size,
-				(horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size, size);
-			gCtx.drawImage(img, (i + 6) * size, j * size, size, size,
-				(horMode ? j : i) * size, (horMode ? i : j) * size, size, size);
+			const f = i == 2 && bw ? 2 : 1;
+			const x = f == 2 ? 0 : i;
+			tCtx.drawImage(img, (x + sx) * size, j * size, size / f, size,
+				(horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size / f, size);
+			gCtx.drawImage(img, (x + 6) * size, j * size, size / f, size,
+				(horMode ? j : i) * size, (horMode ? i : j) * size, size / f, size);
+			if(f == 2) {
+				tCtx.drawImage(img, (1.5 + sx) * size, j * size, size / f, size,
+					(.5 + (horMode ? j : i)) * size + 1, (horMode ? i : j) * size + 1, size / f, size);
+				gCtx.drawImage(img, 7.5 * size, j * size, size / f, size,
+					(.5 + (horMode ? j : i)) * size, (horMode ? i : j) * size, size / f, size);
+			}
 		}
 	}
+	draw();
 }
 
 async function draw() {
@@ -169,7 +177,9 @@ function drawPiece(i, j, value, light) {
 
 	if(isText) drawBlank(i, j, light);
 	bCtx.save();
-	const sx = neutral ? 2 : value == lower ? 0 : 1;
+	const bw = store.board.blackWhite;
+	const sx = neutral ? (bw ? 0 : 2) : value == lower ? 0 : 1;
+	const f = neutral && bw ? 2 : 1;
 	const bx = store.board.grayBG ? 6 : light ? 3 : 0;
 	const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
 	bCtx.translate((j + rx) * size + 1, (i + ry) * size + 1);
@@ -184,8 +194,12 @@ function drawPiece(i, j, value, light) {
 		const dy = Math.max((size - height) / 2, 0);
 		bCtx.fillText(text, dx, size - dy, size);
 	} else {
-		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size, size, 0, 0, size, size);
-		gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size, size, 0, 0, size, size);
+		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size / f, size, 0, 0, size / f, size);
+		gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size / f, size, 0, 0, size / f, size);
+		if(f == 2) {
+			ctx.drawImage(img, (1.5 + bx) * size, typeIndex * size, size / f, size, size / 2, 0, size / f, size);
+			gCtx.drawImage(img, 7.5 * size, typeIndex * size, size / f, size, size / 2, 0, size / f, size);
+		}
 	}
 	bCtx.restore();
 	return true;
@@ -566,8 +580,6 @@ function wrapEvent(event) {
 // petite-vue
 //===========================================================
 
-
-
 let checkboxId = 0;
 function Checkbox(key, label, onchange) {
 	const path = key.split(".");
@@ -589,6 +601,7 @@ function Checkbox(key, label, onchange) {
 createApp({
 	Checkbox,
 	draw,
+	drawTemplate,
 	store,
 	tab: 0,
 	saveSettings,
