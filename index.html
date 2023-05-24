@@ -23,14 +23,20 @@
 <body class="m-3">
 	<div class="text-center">
 		<div class="d-inline-block text-start">
-			<div>
-				Chess Problem Database No: <input type="text" class="form-control w-unset" size="20" id="PDB">
-				<input type="button" class="btn btn-secondary" value="Get FEN" onclick="getPDB_FEN()">
+			<div class="row gx-3">
+				<label class="col-auto col-form-label">Chess Problem Database No:</label>
+				<div class="col">
+					<input type="text" class="form-control" id="PDB">
+				</div>
+				<div class="col-auto">
+					<input type="button" class="btn btn-secondary" value="Get FEN" onclick="getPDB_FEN()">
+				</div>
 			</div>
-			<div>
-				Input FEN: <input type="text" class="form-control w-unset" size="60" id="FEN" value="8/8/8/8/8/8/8/8"
-					   onchange="toSquares(true)">
-
+			<div class="row gx-3">
+				<label class="col-auto col-form-label">Input FEN:</label>
+				<div class="col">
+					<input type="text" class="form-control" id="FEN" value="8/8/8/8/8/8/8/8" onchange="toSquares(true)">
+				</div>
 			</div>
 
 			<br>
@@ -42,12 +48,12 @@
 					</td>
 					<td class="d-flex align-items-center">
 						<canvas id="CN" width="210" height="210" style="cursor:pointer;"></canvas>
-						<img id="TP" class="ms-4" src="template.png" style="cursor:pointer;">
+						<canvas id="TP" class="ms-4" width="80" height="210" style="cursor:pointer;">
 					</td>
 				</tr>
 			</table>
 
-			<div>
+			<div class="mb-3">
 				<input type="button" class="btn btn-secondary" value="Rotate CCW" onClick="rotate(-1)">
 				<input type="button" class="btn btn-secondary" value="Rotate CW" onClick="rotate(1)">
 				<input type="button" class="btn btn-secondary" value="All Black" onClick="color(-1)">
@@ -62,28 +68,62 @@
 				<input type="button" class="btn btn-secondary" value="Starting position"
 					   onClick="FEN.value='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'; toSquares();">
 				<input type="button" class="btn btn-secondary" id="B64" value="Copy base64 link" onClick="toBase64()">
-				<br><br>
+			</div>
+			<div class="row gx-3">
+				<div class="col">
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="U" onChange="draw();">
+						<label class="form-check-label" for="U">Uncolored Chessboard</label>
+					</div>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="R" onChange="draw();">
+						<label class="form-check-label" for="R">Reverse Square Color</label>
+					</div>
+				</div>
+				<div class="col row gx-3">
+					<label class="col-auto col-form-label">Chess set:</label>
+					<div class="col">
+						<select class="form-select" onchange="load(this.value)">
+							<option value="1echecs" selected>1Echecs</option>
+							<option value="merida">Merida</option>
+							<option value="skak">Skak</option>
+						</select>
+					</div>
 
-				<input type="checkbox" class="form-check-input" id="U" onChange="draw();"> Uncolored Chessboard<br>
-				<input type="checkbox" class="form-check-input" id="R" onChange="draw();"> Reverse Square Color<br>
+				</div>
 			</div>
 
 			<div class="card mt-5">
 				<div class="card-header">BBS export</div>
 				<div class="card-body">
 					<input type="button" class="btn btn-primary float-end" value="Generate BBS Code" onclick="generateBBS()">
-					<input type="checkbox" class="form-check-input" id="PI" checked> Include PDB ID<br>
-					<input type="checkbox" class="form-check-input" id="C" checked> Include Coordinates<br>
-					<input type="checkbox" class="form-check-input" id="F" checked> Include Notes<br>
-					<input type="checkbox" class="form-check-input" id="UF"> Uncolored Note<br>
-					<input type="checkbox" class="form-check-input" id="B"> Use Red and Blue in BBS Code<br>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="PI" checked>
+						<label class="form-check-label" for="PI">Include PDB ID</label>
+					</div>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="C" checked>
+						<label class="form-check-label" for="C">Include Coordinates</label>
+					</div>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="F" checked>
+						<label class="form-check-label" for="F">Include Notes</label>
+					</div>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="UF">
+						<label class="form-check-label" for="UF">Uncolored Note</label>
+					</div>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="B">
+						<label class="form-check-label" for="B">Use Red and Blue in BBS Code</label>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<canvas id="CanvasGhost" class="ghost" width="210" height="210"></canvas>
-	<img id="TemplateGhost" class="ghost" src="sprite.png">
+	<img id="TemplateGhost" class="ghost">
 </body>
 
 </html>

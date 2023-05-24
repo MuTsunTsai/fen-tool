@@ -36,20 +36,38 @@ const U = document.getElementById("U");
 const R = document.getElementById("R");
 
 const img = new Image();
-const imgReady = new Promise(resolve => {
-	if(location.protocol == "https:") img.crossOrigin = "anonymous";
-	else document.getElementById("B64").disabled = true;
-	img.src = "sprite.png";
-	img.onload = resolve;
-});
 
-draw();
+function load(set) {
+	new Promise(resolve => {
+		if(location.protocol == "https:") img.crossOrigin = "anonymous";
+		else document.getElementById("B64").disabled = true;
+		const t = document.getElementById("TemplateGhost");
+		img.src = t.src = `assets/${set}26.png`;
+		img.onload = resolve;
+	}).then(() => {
+		drawTemplate();
+		draw();
+	});
+}
+
+load("1echecs");
 
 const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
 const size = 26;
 
-async function draw() {
-	await imgReady;
+function drawTemplate() {
+	const TP = document.getElementById("TP");
+	const tCtx = TP.getContext("2d");
+	tCtx.fillRect(0, 0, 80, 210);
+	for(let i = 0; i < 3; i++) {
+		for(let j = 0; j < 8; j++) {
+			const sx = (i + j) % 2 ? 0 : 3;
+			tCtx.drawImage(img, (i + sx) * size, j * size, size, size, i * size + 1, j * size + 1, size, size);
+		}
+	}
+}
+
+function draw() {
 	if(!dragging) gCtx.clearRect(0, 0, 210, 210);
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
