@@ -1,6 +1,10 @@
 # FEN-Tool
 
-This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in Chess.
+This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess, specifically designed with the needs of the chess puzzle community in mind.
+
+## How to use
+
+On the board on the right (or top in mobile) you can simply drag-and-drop piece from the template to arrange them. On the input boxes on the left (or bottom in mobile) you can manually input variations that are not available in the template.
 
 ## Notation
 
