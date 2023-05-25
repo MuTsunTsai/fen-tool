@@ -165,7 +165,7 @@ async function draw() {
 
 function drawPiece(i, j, value, light) {
 	const size = store.board.size;
-	const neutral = value.startsWith("-") || value.startsWith("~");
+	const neutral = value.startsWith("-");
 	if(neutral) value = value.substring(1);
 
 	let rotate = value.match(/^\*(\d)/)?.[1];
@@ -238,9 +238,9 @@ function updateBG() {
 //===========================================================
 
 function toFEN() {
-	let i, j, s = 0, t = "";
-	for(i = 0; i < 8; i++) {
-		for(j = 0; j < 8; j++) {
+	let s = 0, t = "";
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
 			const index = i * 8 + j;
 			if(s && squares[index].value != "") {
 				t += s;
@@ -367,7 +367,7 @@ function setSquareBG() {
 	}
 }
 
-const test = /^(-?(\*\d)?[kqbsnrpcx]|'.|''..)$/iu;
+const test = /^([-~]?(\*\d)?[kqbsnrpcx]|'.|''..)$/iu;
 
 function checkInput() {
 	checkInputCore(this);
@@ -377,6 +377,7 @@ function checkInput() {
 function checkInputCore(s) {
 	let v = s.value;
 	if(!v.match(test)) v = "";
+	v = v.replace(/^~/, "-");
 	if(v.startsWith("-")) v = v.toLowerCase();
 	if(v.match(/^-?(\*\d)?[sn]$/i)) {
 		if(store.board.SN) v = v.replace("n", "s").replace("N", "S");
