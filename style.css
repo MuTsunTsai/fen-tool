@@ -98,7 +98,8 @@ label[for] {
 	.form-control,
 	.form-select,
 	.form-control:focus,
-	.form-check-input {
+	.form-check-input,
+	.form-range::-webkit-slider-runnable-track {
 		background-color: var(--bs-gray-800);
 		border-color: var(--bs-gray-600);
 		color: white;

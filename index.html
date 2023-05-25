@@ -113,6 +113,12 @@
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>
 								<div v-scope="Checkbox('board.grayBG', 'Gray background', updateBG)"></div>
 								<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
+								<div class="row align-items-center" v-show="store.board.blackWhite">
+									<label class="col-auto col-form-label">Knight offset</label>
+									<div class="col">
+										<input type="range" class="form-range" min="0" max="1" step="0.05" v-model.number="store.board.knightOffset" @input="drawTemplate()">
+									</div>
+								</div>
 							</div>
 							<div class="col-12 col-sm-6">
 								<div class="row gx-3 mb-2">

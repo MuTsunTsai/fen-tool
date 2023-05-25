@@ -14,6 +14,7 @@ const settings = {
 		inverted: false,
 		grayBG: false,
 		blackWhite: false,
+		knightOffset: .5,
 		SN: false,
 		size: 26,
 		set: "1echecs",
@@ -117,26 +118,26 @@ function drawTemplate() {
 	tCtx.fillStyle = "black";
 	tCtx.fillRect(0, 0, w, h);
 	gCtx.clearRect(0, 0, w, h);
-	const bw = store.board.blackWhite;
 	const gray = store.board.grayBG;
 	for(let i = 0; i < 3; i++) {
 		for(let j = 0; j < 8; j++) {
 			const sx = gray ? 6 : (i + j) % 2 ? 0 : 3;
-			const f = i == 2 && bw ? 2 : 1;
-			const x = f == 2 ? 0 : i;
+			const bw = store.board.blackWhite && i == 2;
+			const f = bw ? (j == 3 ? store.board.knightOffset : .5) : 1;
+			const x = bw ? 0 : i;
 			if(gray) {
 				tCtx.fillStyle = (i + j) % 2 ? "#bbb" : "#fff";
 				tCtx.fillRect((horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size, size);
 			}
-			tCtx.drawImage(img, (x + sx) * size, j * size, size / f, size,
-				(horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size / f, size);
-			gCtx.drawImage(img, (x + 6) * size, j * size, size / f, size,
-				(horMode ? j : i) * size, (horMode ? i : j) * size, size / f, size);
-			if(f == 2) {
-				tCtx.drawImage(img, (1.5 + sx) * size, j * size, size / f, size,
-					(.5 + (horMode ? j : i)) * size + 1, (horMode ? i : j) * size + 1, size / f, size);
-				gCtx.drawImage(img, 7.5 * size, j * size, size / f, size,
-					(.5 + (horMode ? j : i)) * size, (horMode ? i : j) * size, size / f, size);
+			tCtx.drawImage(img, (x + sx) * size, j * size, size * f, size,
+				(horMode ? j : i) * size + 1, (horMode ? i : j) * size + 1, size * f, size);
+			gCtx.drawImage(img, (x + 6) * size, j * size, size * f, size,
+				(horMode ? j : i) * size, (horMode ? i : j) * size, size * f, size);
+			if(bw) {
+				tCtx.drawImage(img, (1 + f + sx) * size, j * size, size * (1 - f), size,
+					(f + (horMode ? j : i)) * size + 1, (horMode ? i : j) * size + 1, size * (1 - f), size);
+				gCtx.drawImage(img, (7 + f) * size, j * size, size * (1 - f), size,
+					(f + (horMode ? j : i)) * size, (horMode ? i : j) * size, size * (1 - f), size);
 			}
 		}
 	}
@@ -183,7 +184,7 @@ function drawPiece(i, j, value, light) {
 	bCtx.save();
 	const bw = store.board.blackWhite;
 	const sx = neutral ? (bw ? 0 : 2) : value == lower ? 0 : 1;
-	const f = neutral && bw ? 2 : 1;
+	const f = neutral && bw ? (lower == "n" ? store.board.knightOffset : .5) : 1;
 	const bx = store.board.grayBG ? 6 : light ? 3 : 0;
 	const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
 	bCtx.translate((j + rx) * size + 1, (i + ry) * size + 1);
@@ -198,11 +199,11 @@ function drawPiece(i, j, value, light) {
 		const dy = Math.max((size - height) / 2, 0);
 		bCtx.fillText(text, dx, size - dy, size);
 	} else {
-		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size / f, size, 0, 0, size / f, size);
-		gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size / f, size, 0, 0, size / f, size);
-		if(f == 2) {
-			ctx.drawImage(img, (1.5 + bx) * size, typeIndex * size, size / f, size, size / 2, 0, size / f, size);
-			gCtx.drawImage(img, 7.5 * size, typeIndex * size, size / f, size, size / 2, 0, size / f, size);
+		ctx.drawImage(img, (sx + bx) * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
+		gCtx.drawImage(img, (sx + 6) * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
+		if(neutral && bw) {
+			ctx.drawImage(img, (1 + f + bx) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
+			gCtx.drawImage(img, (7 + f) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
 		}
 	}
 	bCtx.restore();
