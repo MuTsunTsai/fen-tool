@@ -367,7 +367,7 @@ function setSquareBG() {
 	}
 }
 
-const test = /^([-~]?(\*\d)?[kqbsnrpcx]|'.|''..)$/iu;
+const test = /^[-~]?(\*\d)?([kqbsnrpcx]|'.|''..)$/iu;
 
 function checkInput() {
 	checkInputCore(this);
@@ -377,7 +377,8 @@ function checkInput() {
 function checkInputCore(s) {
 	let v = s.value;
 	if(!v.match(test)) v = "";
-	v = v.replace(/^~/, "-");
+	v = v.replace(/^~/, "-") // both "-" and "~" are acceptable input
+		.replace(/^-(?=.*')/, ""); // neutral has no effect on text
 	if(v.startsWith("-")) v = v.toLowerCase();
 	if(v.match(/^-?(\*\d)?[sn]$/i)) {
 		if(store.board.SN) v = v.replace("n", "s").replace("N", "S");
