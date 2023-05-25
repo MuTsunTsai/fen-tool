@@ -452,16 +452,50 @@ function invertColor(l) {
 }
 
 //===========================================================
-// tools
+// PDB
 //===========================================================
 
 async function getPDB_FEN() {
-	const url = `https://pdb.dieschwalbe.de/search.jsp?expression=PROBID%3D%3D%27${PDB.value}%27`;
+	const bt = document.getElementById("PDB_GET");
+	bt.disabled = true;
+	bt.value = "Fetching...";
+	const url = pdbURL + encodeURIComponent(`PROBID='${PDB.value}'`);
 	const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 	const text = await response.text();
 	FEN.value = text.match(/<b>FEN:<\/b> (.+)/)[1];
 	toSquares(true);
+	bt.disabled = false;
+	bt.value = "Get FEN";
 }
+
+const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression="
+const pdbMap = ["K", "D", "L", "S", "T", "B"]; // German
+
+function getPDB_query() {
+	let pieces = [];
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const v = squares[i * 8 + j].value;
+			if(!v.match(/^[kqbsnrp]$/i)) continue;
+			const type = pdbMap[types.indexOf(v.toLowerCase().replace("s", "n"))];
+			const color = v == v.toLowerCase() ? "s" : "w";
+			pieces.push(color + type + String.fromCharCode(97 + j) + (8 - i));
+		}
+	}
+	return `POSITION='${pieces.join(" ")}'`;
+}
+
+function searchPDB() {
+	window.open(pdbURL + encodeURIComponent(getPDB_query()));
+}
+
+function copyPDB() {
+	navigator.clipboard.writeText(getPDB_query());
+}
+
+//===========================================================
+// BBS
+//===========================================================
 
 function generateBBS() {
 	let fen = [...FEN.value.replace(/\//g, "")];
