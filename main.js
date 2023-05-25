@@ -393,6 +393,15 @@ function updateSN() {
 	toFEN();
 }
 
+function copyFEN() {
+	navigator.clipboard.writeText(FEN.value);
+}
+
+async function pasteFEN() {
+	FEN.value = await navigator.clipboard.readText();
+	toSquares(true);
+}
+
 //===========================================================
 // export
 //===========================================================

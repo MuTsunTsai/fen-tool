@@ -17,6 +17,7 @@
 	</script>
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 	<link href="style.css" rel="stylesheet">
 
 	<script src="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.iife.js" defer></script>
@@ -35,9 +36,17 @@
 	<div class="text-center">
 		<div class="d-inline-block text-start">
 			<div class="row gx-3">
-				<label class="col-auto col-form-label">Input FEN:</label>
+				<label class="col-auto col-form-label">FEN:</label>
 				<div class="col">
 					<input type="text" class="form-control" id="FEN" value="8/8/8/8/8/8/8/8" onchange="toSquares(true)">
+				</div>
+				<div class="col-auto">
+					<button class="btn btn-secondary" title="Copy" onclick="copyFEN()">
+						<i class="fa-solid fa-clipboard"></i>
+					</button>
+					<button class="btn btn-secondary" title="Paste" onclick="pasteFEN()">
+						<i class="fa-solid fa-paste"></i>
+					</button>
 				</div>
 			</div>
 
@@ -70,14 +79,22 @@
 					<section class="pb-5" v-visible="tab==0">
 						<div class="mb-3">
 							<div class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="Empty board"
-									   onClick="FEN.value='8/8/8/8/8/8/8/8'; toSquares();">
-								<input type="button" class="btn btn-secondary" value="Starting position"
-									   onClick="FEN.value='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'; toSquares();">
+								<button type="button" class="btn btn-secondary"
+										onClick="FEN.value='8/8/8/8/8/8/8/8'; toSquares();">
+									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
+								</button>
+								<button type="button" class="btn btn-secondary"
+										onClick="FEN.value='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'; toSquares();">
+									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
+								</button>
 							</div><br>
 							<div class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="Rotate CCW" onClick="rotate(-1)">
-								<input type="button" class="btn btn-secondary" value="Rotate CW" onClick="rotate(1)">
+								<button type="button" class="btn btn-secondary" onClick="rotate(-1)">
+									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
+								</button>
+								<button type="button" class="btn btn-secondary" onClick="rotate(1)">
+									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
+								</button>
 							</div>
 							<div class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="All Black" onClick="color(-1)">
@@ -124,9 +141,15 @@
 							</div>
 						</div>
 						<div class="text-end">
-							<input type="button" class="btn btn-secondary" id="B64" value="Copy base64 link" onClick="toBase64()">
-							<button class="btn btn-primary" onclick="share()">Share image</button>
-							<a class="btn btn-primary" download="board.png" id="Save">Save image</a>
+							<button type="button" class="btn btn-secondary" id="B64" onClick="toBase64()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
+							</button>
+							<button class="btn btn-primary" onclick="share()">
+								<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
+							</button>
+							<a class="btn btn-primary" download="board.png" id="Save">
+								<i class="fa-solid fa-download"></i>&ensp;Save image
+							</a>
 						</div>
 					</section>
 
@@ -141,8 +164,12 @@
 							</div>
 						</div>
 						<div class="text-end">
-							<button class="btn btn-secondary" onclick="copyPDB()">Copy PDB position search query</button>
-							<button class="btn btn-primary" onclick="searchPDB()">Search this position in PDB</button>
+							<button class="btn btn-secondary" onclick="copyPDB()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB position search query
+							</button>
+							<button class="btn btn-primary" onclick="searchPDB()">
+								<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search this position in PDB
+							</button>
 						</div>
 					</section>
 
@@ -155,7 +182,9 @@
 							<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
 						</div>
 						<div class="col-12 col-sm-4 text-end">
-							<input type="button" class="btn btn-primary" value="Copy BBS Code" onclick="generateBBS()">
+							<button type="button" class="btn btn-primary" onclick="generateBBS()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy BBS Code
+							</button>
 						</div>
 					</section>
 				</div>
