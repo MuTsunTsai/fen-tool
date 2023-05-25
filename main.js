@@ -310,7 +310,7 @@ function toSquares(check) {
 				squares[index].value = char;
 				cursor++;
 			}
-			changed = changed || checkInputCore(squares[index]);
+			changed = checkInputCore(squares[index]) || changed; // order matters
 		}
 	}
 	if(changed || check) toFEN();
