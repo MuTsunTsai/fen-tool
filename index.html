@@ -76,7 +76,7 @@
 				</ul>
 
 				<div style="position: relative;">
-					<section class="pb-5" v-visible="tab==0">
+					<section class="pb-4" v-visible="tab==0">
 						<div class="mb-3">
 							<div class="d-inline-block">
 								<button type="button" class="btn btn-secondary"
@@ -116,7 +116,8 @@
 								<div class="row align-items-center" v-show="store.board.blackWhite">
 									<label class="col-auto col-form-label">Knight offset</label>
 									<div class="col">
-										<input type="range" class="form-range" min="0" max="1" step="0.05" v-model.number="store.board.knightOffset" @input="drawTemplate()">
+										<input type="range" class="form-range" min="0" max="1" step="0.05"
+											   v-model.number="store.board.knightOffset" @input="drawTemplate()">
 									</div>
 								</div>
 							</div>
@@ -181,25 +182,36 @@
 						</div>
 					</section>
 
-					<section class="row gx-3" v-visible="tab==2">
-						<div class="col-12 col-sm-8 mb-3">
-							<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
-							<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>
-							<div v-scope="Checkbox('BBS.notes', 'Include Notes')"></div>
-							<div v-scope="Checkbox('BBS.uncoloredNotes', 'Uncolored Note')"></div>
-							<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
-						</div>
-						<div class="col-12 col-sm-4 text-end">
-							<button type="button" class="btn btn-primary" onclick="generateBBS()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy BBS Code
-							</button>
+					<section v-visible="tab==2">
+						<div class="row gx-3">
+							<div class="col-12 col-sm-8 mb-3">
+								<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
+								<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>
+								<div v-scope="Checkbox('BBS.notes', 'Include Notes')"></div>
+								<div v-scope="Checkbox('BBS.uncoloredNotes', 'Uncolored Note')"></div>
+								<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
+							</div>
+							<div class="col-12 col-sm-4 text-end">
+								<button type="button" class="btn btn-primary" onclick="generateBBS()">
+									<i class="fa-solid fa-clipboard"></i>&ensp;Copy BBS Code
+								</button>
+							</div>
 						</div>
 					</section>
 				</div>
 			</div>
+
+			<hr>
+			<div class="mb-5 row small">
+				<div class="col-12 col-md">
+					For more information, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a> of
+					this tool on GitHub.
+				</div>
+				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
+			</div>	
 		</div>
 	</div>
-
+	
 	<canvas id="CanvasGhost" class="ghost" width="210" height="210"></canvas>
 	<canvas id="TemplateGhost" class="ghost"></canvas>
 </body>

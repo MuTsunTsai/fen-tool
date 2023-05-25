@@ -27,7 +27,6 @@ for(let key in settings) {
 const store = reactive(settings);
 
 function saveSettings() {
-	console.log("save");
 	localStorage.setItem("settings", JSON.stringify(store));
 }
 
