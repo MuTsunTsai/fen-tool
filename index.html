@@ -125,7 +125,7 @@
 								<div class="row align-items-center" v-show="store.board.blackWhite">
 									<label class="col-auto col-form-label">Knight offset</label>
 									<div class="col">
-										<input type="range" class="form-range" min="0" max="1" step="0.05"
+										<input type="range" class="form-range" min="0.25" max="0.75" step="0.025"
 											   v-model.number="store.board.knightOffset" @input="drawTemplate()">
 									</div>
 								</div>
