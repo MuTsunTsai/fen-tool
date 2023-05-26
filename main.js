@@ -612,7 +612,7 @@ TP.onmousedown = dragStart;
 TP.ontouchstart = dragStart;
 
 const TPv = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
-let startX, startY, sqX, sqY, sq, startTime;
+let startX, startY, sqX, sqY;
 let ghost, draggingValue, offset;
 let dragging = false;
 
@@ -624,17 +624,6 @@ document.body.ontouchend = mouseup;
 function mousemove(event) {
 	if(dragging) {
 		wrapEvent(event);
-		// const dt = performance.now() - startTime;
-		// if(event.targetTouches && dt < 50) {
-		// 	const dx = event.offsetX - startX, dy = event.offsetY = startY;
-		// 	const d = Math.sqrt(dx * dx + dy * dy);
-		// 	if(d / devicePixelRatio > 100) {
-		// 		// Swipe; cancel dragging
-		// 		dragging = false;
-		// 		ghost.style.display = "none";
-		// 		if(sq) sq.value = draggingValue;
-		// 	}
-		// }
 		dragMove(event);
 	}
 }
@@ -657,7 +646,6 @@ function mouseup(event) {
 
 function dragStart(event) {
 	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches?.length > 1) return;
-	event.preventDefault();
 	wrapEvent(event);
 
 	const size = store.board.size;
@@ -669,18 +657,17 @@ function dragStart(event) {
 	const index = sqY * (isCN ? 8 : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 	if(!isCN || squares[index].value != "") {
+		event.preventDefault();
 		dragging = true;
-		startTime = performance.now();
 		ghost.style.clip = `rect(${2 + sqY * size}px,${(sqX + 1) * size}px,${(sqY + 1) * size}px,${2 + sqX * size}px)`;
 		ghost.style.display = "block";
 		offset = isCN ? 0 : 1;
 		if(isCN) {
-			sq = squares[index];
+			const sq = squares[index];
 			draggingValue = sq.value
 			sq.value = "";
 			toFEN();
 		} else {
-			sq = undefined;
 			draggingValue = horMode ? TPv[sqX * 3 + sqY] : TPv[index];
 		}
 		dragMove(event);
