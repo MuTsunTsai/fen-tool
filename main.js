@@ -25,6 +25,9 @@ for(let key in settings) {
 	Object.assign(settings[key], savedSettings[key]);
 }
 const store = reactive(settings);
+const state = reactive({
+	loading: true,
+});
 
 function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));
@@ -63,15 +66,17 @@ const FEN = document.getElementById("FEN");
 const PDB = document.getElementById("PDB");
 
 const img = new Image();
+img.onload = () => {
+	state.loading = false;
+	drawTemplate();
+}
+if(location.protocol == "https:") img.crossOrigin = "anonymous";
+else document.getElementById("B64").disabled = true;
 
 function load(s) {
 	store.board.set = s;
-	new Promise(resolve => {
-		if(location.protocol == "https:") img.crossOrigin = "anonymous";
-		else document.getElementById("B64").disabled = true;
-		img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
-		img.onload = resolve;
-	}).then(drawTemplate);
+	state.loading = true;
+	img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
 }
 
 window.addEventListener("resize", () => setSize(store.board.size));
@@ -637,8 +642,8 @@ function mouseup(event) {
 }
 
 function dragStart(event) {
+	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches?.length > 2) return;
 	event.preventDefault();
-	if(event.button != 0 && !event.targetTouches) return;
 	wrapEvent(event);
 
 	const size = store.board.size;
@@ -722,6 +727,7 @@ createApp({
 	updateBG,
 	updateSN,
 	store,
+	state,
 	tab: 0,
 	saveSettings,
 })

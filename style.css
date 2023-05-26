@@ -60,6 +60,18 @@ label[for] {
 	--bs-nav-link-hover-color: unset;
 }
 
+.loader {
+	top: 0;
+	left: 0;
+	opacity: 0;
+	transition: opacity 0s 0s;
+}
+
+.loader.show {
+	transition: opacity 0.25s 0.5s;
+	opacity: 1;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		overflow-y: scroll;

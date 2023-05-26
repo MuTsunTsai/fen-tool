@@ -58,7 +58,15 @@
 					<div id="S"></div>
 				</div>
 				<div class="flex-grow-0 mb-4">
-					<canvas id="CN" style="cursor:pointer;"></canvas>
+					<div class="position-relative d-inline-block">
+						<canvas id="CN" style="cursor:pointer;"></canvas>
+						<div class="position-absolute w-100 h-100 loader" :class="{show:state.loading}">
+							<div class="h-100 d-flex align-items-center justify-content-center">
+								<i class="display-1 fa-solid fa-spinner fa-spin"></i>
+							</div>
+						</div>
+					</div>
+					
 					<canvas id="TP" class="ms-4" style="cursor:pointer;">
 				</div>
 			</div>
