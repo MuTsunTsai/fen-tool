@@ -612,7 +612,7 @@ TP.onmousedown = dragStart;
 TP.ontouchstart = dragStart;
 
 const TPv = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
-let startX, startY, sqX, sqY, sq;
+let startX, startY, sqX, sqY, sq, startTime;
 let ghost, draggingValue, offset;
 let dragging = false;
 
@@ -622,7 +622,20 @@ document.body.onmouseup = mouseup;
 document.body.ontouchend = mouseup;
 
 function mousemove(event) {
-	if(dragging) dragMove(event);
+	if(dragging) {
+		wrapEvent(event);
+		const dt = performance.now() - startTime;
+		if(event.targetTouches && dt < 50) {
+			const dx = event.offsetX - startX, dy = event.offsetY = startY;
+			const d = Math.sqrt(dx * dx + dy * dy);
+			if(d > 40) {
+				// Swipe; cancel dragging
+				dragging = false;
+				if(sq) sq.value = draggingValue;
+			}
+		}
+		dragMove(event);
+	}
 }
 function mouseup(event) {
 	if(!dragging) return;
@@ -652,27 +665,28 @@ function dragStart(event) {
 	startY = event.offsetY;
 	sqX = Math.floor((startX - 1) / size);
 	sqY = Math.floor((startY - 1) / size);
-	sq = sqY * (isCN ? 8 : 3) + sqX;
+	const index = sqY * (isCN ? 8 : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
-	if(!isCN || squares[sq].value != "") {
+	if(!isCN || squares[index].value != "") {
 		dragging = true;
+		startTime = performance.now();
 		ghost.style.clip = `rect(${2 + sqY * size}px,${(sqX + 1) * size}px,${(sqY + 1) * size}px,${2 + sqX * size}px)`;
 		ghost.style.display = "block";
 		offset = isCN ? 0 : 1;
 		if(isCN) {
-			const index = sqY * 8 + sqX;
-			draggingValue = squares[index].value
-			squares[index].value = "";
+			sq = squares[index];
+			draggingValue = sq.value
+			sq.value = "";
 			toFEN();
 		} else {
-			draggingValue = horMode ? TPv[sqX * 3 + sqY] : TPv[sqY * 3 + sqX];
+			sq = undefined;
+			draggingValue = horMode ? TPv[index] : TPv[sqY * 3 + sqX];
 		}
 		dragMove(event);
 	}
 }
 
 function dragMove(event) {
-	wrapEvent(event);
 	const size = store.board.size;
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
