@@ -624,17 +624,17 @@ document.body.ontouchend = mouseup;
 function mousemove(event) {
 	if(dragging) {
 		wrapEvent(event);
-		const dt = performance.now() - startTime;
-		if(event.targetTouches && dt < 50) {
-			const dx = event.offsetX - startX, dy = event.offsetY = startY;
-			const d = Math.sqrt(dx * dx + dy * dy);
-			if(d / devicePixelRatio > 100) {
-				// Swipe; cancel dragging
-				dragging = false;
-				ghost.style.display = "none";
-				if(sq) sq.value = draggingValue;
-			}
-		}
+		// const dt = performance.now() - startTime;
+		// if(event.targetTouches && dt < 50) {
+		// 	const dx = event.offsetX - startX, dy = event.offsetY = startY;
+		// 	const d = Math.sqrt(dx * dx + dy * dy);
+		// 	if(d / devicePixelRatio > 100) {
+		// 		// Swipe; cancel dragging
+		// 		dragging = false;
+		// 		ghost.style.display = "none";
+		// 		if(sq) sq.value = draggingValue;
+		// 	}
+		// }
 		dragMove(event);
 	}
 }
@@ -681,7 +681,7 @@ function dragStart(event) {
 			toFEN();
 		} else {
 			sq = undefined;
-			draggingValue = horMode ? TPv[index] : TPv[sqY * 3 + sqX];
+			draggingValue = horMode ? TPv[sqX * 3 + sqY] : TPv[index];
 		}
 		dragMove(event);
 	}
