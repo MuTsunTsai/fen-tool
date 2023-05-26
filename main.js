@@ -628,9 +628,10 @@ function mousemove(event) {
 		if(event.targetTouches && dt < 50) {
 			const dx = event.offsetX - startX, dy = event.offsetY = startY;
 			const d = Math.sqrt(dx * dx + dy * dy);
-			if(d > 40) {
+			if(d / devicePixelRatio > 100) {
 				// Swipe; cancel dragging
 				dragging = false;
+				ghost.style.display = "none";
 				if(sq) sq.value = draggingValue;
 			}
 		}
