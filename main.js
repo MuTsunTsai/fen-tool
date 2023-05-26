@@ -642,7 +642,7 @@ function mouseup(event) {
 }
 
 function dragStart(event) {
-	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches?.length > 2) return;
+	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches?.length > 1) return;
 	event.preventDefault();
 	wrapEvent(event);
 
