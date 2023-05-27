@@ -20,6 +20,7 @@ This tool supports most of the [Fairy FEN](https://www.janko.at/Retros/d.htm) sy
 ## Chess set credits
 
 - `1Echecs` is designed by Christian Poisson.
+- `Alpha` is designed by Eric Bentzen.
 - `Good Companion` is designed by David L. Brown.
 - `Merida` is designed by Armando Hernandez Marroquin.
 - `Skak` is designed by Piet Tutelaers and modified by Torben Hoffmann.
