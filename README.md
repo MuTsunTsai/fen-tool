@@ -4,7 +4,7 @@ This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess,
 
 ## How to use
 
-On the board on the right (or top in mobile) you can simply drag-and-drop piece from the template to arrange them. On the input boxes on the left (or bottom in mobile) you can manually input variations that are not available in the template. Options and tools should be mostly self-explanatory (the BBS tool is for Taiwan BBS forums such as PTT).
+For desktops, on the board on the right you can simply drag-and-drop piece from the template to arrange them, and on the input boxes on the left you can manually input variations that are not available in the template. For mobile devices, the two boards are one and you can enable manual input by double-tapping on the squares. Options and tools should be mostly self-explanatory (the BBS tool is for Taiwan BBS forums such as PTT).
 
 This tool is purely front-end by design, so it cannot generate a URL that represents an image like some other FEN tools. You can, however, easily share generated images by using the share button (works best on mobile devices) or by simply copy-and-paste the image.
 

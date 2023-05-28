@@ -36,7 +36,7 @@
 
 	<div class="text-center">
 		<div class="d-inline-block text-start">
-			<div class="row gx-3">
+			<div class="row gx-3 mb-3">
 				<label class="col-auto col-form-label">FEN:</label>
 				<div class="col">
 					<input type="text" class="form-control" id="FEN" value="8/8/8/8/8/8/8/8" onchange="toSquares(true)">
@@ -51,41 +51,52 @@
 				</div>
 			</div>
 
-			<br>
-
-			<div class="d-flex mb-3" style="flex-wrap: wrap-reverse; gap:0 3rem;">
-				<div class="flex-grow-1 mb-4">
-					<div id="S"></div>
-				</div>
-				<div class="flex-grow-0 mb-4">
-					<div class="position-relative d-inline-block">
-						<canvas id="CN" style="cursor:pointer;"></canvas>
-						<div class="position-absolute w-100 h-100 loader" :class="{show:state.loading}">
-							<div class="h-100 d-flex align-items-center justify-content-center">
-								<i class="display-1 fa-solid fa-spinner fa-spin"></i>
+			<div class="d-inline-block">
+				<div id="Zone" class="d-inline-flex" style="flex-wrap: wrap-reverse; gap:0 3rem;">
+					<div id="EditZone" class="flex-grow-0 pb-4">
+						<div id="S"></div>
+					</div>
+					<div id="DragZone" class="flex-grow-0 pb-4">
+						<div class="position-relative d-inline-block">
+							<canvas id="CN" style="cursor:pointer;"></canvas>
+							<div class="position-absolute w-100 h-100 loader" :class="{show:state.loading}">
+								<div class="h-100 d-flex align-items-center justify-content-center">
+									<i class="display-1 fa-solid fa-spinner fa-spin"></i>
+								</div>
 							</div>
 						</div>
+						<canvas id="TP" class="ms-4" style="cursor:pointer;">
 					</div>
-					
-					<canvas id="TP" class="ms-4" style="cursor:pointer;">
 				</div>
 			</div>
 
-			<div v-scope v-cloak width="100%" v-effect="saveSettings()">
+			<main v-scope v-cloak v-effect="saveSettings()">
+				<div class="card mb-4 d-sm-none" v-if="store.message.touchTip">
+					<div class="card-body">
+						<div class="mb-2">Double-tap on a square to manually edit it.</div>
+						<div class="text-end">
+							<button class="btn btn-info" @click="store.message.touchTip=false">Got it!</button>
+						</div>
+					</div>
+				</div>
+
 				<ul class="nav nav-tabs mb-3">
 					<li class="nav-item">
 						<div class="nav-link" :class="{active:tab==0}" @click="tab=0">General</div>
 					</li>
 					<li class="nav-item">
-						<div class="nav-link" :class="{active:tab==1}" @click="tab=1">PDB tool</div>
+						<div class="nav-link" :class="{active:tab==1}" @click="tab=1">Options</div>
 					</li>
 					<li class="nav-item">
-						<div class="nav-link" :class="{active:tab==2}" @click="tab=2">BBS tool</div>
+						<div class="nav-link" :class="{active:tab==2}" @click="tab=2">PDB</div>
+					</li>
+					<li class="nav-item">
+						<div class="nav-link" :class="{active:tab==3}" @click="tab=3">BBS</div>
 					</li>
 				</ul>
 
-				<div style="position: relative;">
-					<section class="pb-4" v-visible="tab==0">
+				<div class="d-flex mb-4 w-passive-100">
+					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<div class="d-inline-block">
 								<button type="button" class="btn btn-secondary"
@@ -115,10 +126,26 @@
 								<input type="button" class="btn btn-secondary" value="Switch case" onClick="invertColor(true)">
 							</div>
 						</div>
+						<div class="text-end">
+							<button type="button" class="btn btn-secondary" id="B64" onClick="toBase64()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
+							</button>
+							<div class="d-inline-block">
+								<button class="btn btn-primary" onclick="share()">
+									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
+								</button>
+								<a class="btn btn-primary" download="board.png" id="Save">
+									<i class="fa-solid fa-download"></i>&ensp;Save image
+								</a>
+							</div>
+						</div>
+					</section>
+
+					<section :class="{show:tab==1}">
 						<div class="row gx-3 mb-3">
 							<div class="col-12 col-sm-6 mb-2">
-								<div v-scope="Checkbox('board.uncolored', 'Uncolored chessboard', draw)"></div>
-								<div v-scope="Checkbox('board.inverted', 'Reverse square color', draw)"></div>
+								<div v-scope="Checkbox('board.uncolored', 'Uncolored chessboard', updateBG)"></div>
+								<div v-scope="Checkbox('board.inverted', 'Reverse square color', updateBG)"></div>
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>
 								<div v-scope="Checkbox('board.grayBG', 'Gray background', updateBG)"></div>
 								<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
@@ -157,22 +184,9 @@
 								</div>
 							</div>
 						</div>
-						<div class="text-end">
-							<button type="button" class="btn btn-secondary" id="B64" onClick="toBase64()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
-							</button>
-							<div class="d-inline-block">
-								<button class="btn btn-primary" onclick="share()">
-									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
-								</button>
-								<a class="btn btn-primary" download="board.png" id="Save">
-									<i class="fa-solid fa-download"></i>&ensp;Save image
-								</a>
-							</div>
-						</div>
 					</section>
 
-					<section v-visible="tab==1">
+					<section :class="{show:tab==2}">
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">PDB No:</label>
 							<div class="col">
@@ -192,7 +206,7 @@
 						</div>
 					</section>
 
-					<section v-visible="tab==2">
+					<section :class="{show:tab==3}">
 						<div class="row gx-3">
 							<div class="col-12 col-sm-8 mb-3">
 								<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
@@ -209,19 +223,19 @@
 						</div>
 					</section>
 				</div>
-			</div>
+			</main>
 
 			<hr>
-			<div class="mb-5 row small">
+			<div class="mb-4 row small">
 				<div class="col-12 col-md">
 					For more information, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a> of
 					this tool on GitHub.
 				</div>
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
-			</div>	
+			</div>
 		</div>
 	</div>
-	
+
 	<canvas id="CanvasGhost" class="ghost" width="210" height="210"></canvas>
 	<canvas id="TemplateGhost" class="ghost"></canvas>
 </body>

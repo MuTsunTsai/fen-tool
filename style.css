@@ -7,11 +7,19 @@ body {
 	display: none;
 }
 
-section + section {
-	position: absolute;
-	top: 0;
-	left: 0;
+section {
+	visibility: hidden;
 	width: 100%;
+	margin-right: -100%;
+}
+
+section.show {
+	visibility: visible;
+}
+
+.w-passive-100 {
+	width: 0;
+	min-width: 100%;
 }
 
 .square {
@@ -28,6 +36,7 @@ section + section {
 	position: absolute;
 	opacity: 0.75;
 	pointer-events: none;
+	z-index: 1000;
 }
 
 #S {
@@ -35,6 +44,10 @@ section + section {
 	height: 210px;
 	position: relative;
 	border: 1px solid black;
+}
+
+#DragZone {
+	z-index: 1;
 }
 
 td {
@@ -50,6 +63,7 @@ td {
 	margin-bottom: 5px;
 }
 
+.nav-item,
 input[type=checkbox],
 label[for] {
 	cursor: pointer;

@@ -19,6 +19,9 @@ const settings = {
 		size: 26,
 		set: "1echecs",
 	},
+	message: {
+		touchTip: true,
+	}
 };
 
 for(let key in settings) {
@@ -34,6 +37,7 @@ function saveSettings() {
 }
 
 let horMode = false;
+let collapseMode = false;
 
 const squares = new Array(64);
 
@@ -64,6 +68,9 @@ const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝
 
 const FEN = document.getElementById("FEN");
 const PDB = document.getElementById("PDB");
+const Zone = document.getElementById("Zone");
+const DragZone = document.getElementById("DragZone");
+const EditZone = document.getElementById("EditZone");
 
 const img = new Image();
 img.onload = () => {
@@ -83,26 +90,35 @@ window.addEventListener("resize", () => setSize(store.board.size));
 
 function setSize(s, force) {
 	const newMode = document.body.clientWidth < 12 * s;
-	if(newMode === horMode && s === store.board.size && !force) return;
-	horMode = newMode;
-	store.board.size = s;
-	const full = 8 * s + 2
-	CG.width = CN.width = full;
-	CG.height = CN.height = full;
-	ctx.font = gCtx.font = `${s - 4}px arial`;
-	if(horMode) {
-		TPG.height = TP.height = 3 * s + 2;
-		TPG.width = TP.width = full;
-		CN.classList.add("mb-3");
-		TP.classList.remove("ms-4");
-	} else {
-		TPG.width = TP.width = 3 * s + 2;
-		TPG.height = TP.height = full;
-		CN.classList.remove("mb-3");
-		TP.classList.add("ms-4");
+	if(newMode !== horMode || s !== store.board.size || force) {
+		horMode = newMode;
+		store.board.size = s;
+		const full = 8 * s + 2
+		CG.width = CN.width = full;
+		CG.height = CN.height = full;
+		ctx.font = gCtx.font = `${s - 4}px arial`;
+		if(horMode) {
+			TPG.height = TP.height = 3 * s + 2;
+			TPG.width = TP.width = full;
+			CN.classList.add("mb-3");
+			TP.classList.remove("ms-4");
+		} else {
+			TPG.width = TP.width = 3 * s + 2;
+			TPG.height = TP.height = full;
+			CN.classList.remove("mb-3");
+			TP.classList.add("ms-4");
+		}
+		setSquareSize();
+		load(store.board.set);
 	}
-	setSquareSize();
-	load(store.board.set);
+	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+	if(Zone.clientWidth < DragZone.clientWidth + EditZone.clientWidth + 3 * rem) {
+		EditZone.style.marginTop = -DragZone.clientHeight + "px";
+		collapseMode = true;
+	} else {
+		EditZone.style.marginTop = "0";
+		collapseMode = false;
+	}
 }
 
 setSize(store.board.size, true);
@@ -323,6 +339,7 @@ function toSquares(check) {
 }
 
 function squareOnFocus() { this.select(); }
+function squareOnBlur() { this.style.zIndex = "unset"; }
 
 function createSquares() {
 	for(let i = 0; i < 8; i++) {
@@ -332,6 +349,7 @@ function createSquares() {
 			squares[index].type = "text";
 			squares[index].onchange = checkInput;
 			squares[index].onfocus = squareOnFocus;
+			squares[index].onblur = squareOnBlur;
 			squares[index].style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
 			squares[index].classList.add("square");
 			S.appendChild(squares[index]);
@@ -363,10 +381,11 @@ function setSquareBG() {
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const s = squares[i * 8 + j];
+			const dark = !store.board.uncolored && Boolean((i + j) % 2) != store.board.inverted;
 			if(store.board.grayBG) {
-				s.style.background = (i + j) % 2 ? "#bbb" : "#fff";
+				s.style.background = dark ? "#bbb" : "#fff";
 			} else {
-				s.style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
+				s.style.background = dark ? "#D18B47" : "#FFCE9E";
 			}
 		}
 	}
@@ -606,13 +625,13 @@ function fullWidth(s, t) {
 // dragging
 //===========================================================
 
-CN.onmousedown = dragStart;
-CN.ontouchstart = dragStart;
-TP.onmousedown = dragStart;
-TP.ontouchstart = dragStart;
+CN.onmousedown = mouseDown;
+CN.ontouchstart = mouseDown;
+TP.onmousedown = mouseDown;
+TP.ontouchstart = mouseDown;
 
 const TPv = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
-let startX, startY, sqX, sqY;
+let startX, startY, sqX, sqY, sq, lastTap = 0;
 let ghost, draggingValue, offset;
 let dragging = false;
 
@@ -622,12 +641,26 @@ document.body.onmouseup = mouseup;
 document.body.ontouchend = mouseup;
 
 function mousemove(event) {
-	if(dragging) {
-		wrapEvent(event);
-		dragMove(event);
+	wrapEvent(event);
+	if(dragging == "pending" && getDisplacement(event) > 5) {
+		if(draggingValue) dragStart(event, true);
+		else dragging = false;
 	}
+	if(dragging === true) dragMove(event);
 }
+
 function mouseup(event) {
+	if(collapseMode && dragging == "pending") {
+		const now = performance.now();
+		if(now - lastTap < 300) {
+			sq.style.zIndex = "10";
+			sq.focus();
+		}
+		lastTap = now;
+		event.preventDefault(); // Prevent touchend triggering mouseup
+		dragging = false;
+	}
+
 	if(!dragging) return;
 	wrapEvent(event);
 	dragging = false;
@@ -635,19 +668,20 @@ function mouseup(event) {
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
 	const x = Math.floor((event.clientX - r.left - 1) / size);
-	const nsq = y * 8 + x;
+	const index = y * 8 + x;
 	ghost.style.display = "none";
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
-		const updated = squares[nsq].value !== draggingValue;
-		squares[nsq].value = draggingValue;
+		const updated = squares[index].value !== draggingValue;
+		squares[index].value = draggingValue;
 		if(updated) toFEN();
 	}
 }
 
-function dragStart(event) {
+function mouseDown(event) {
 	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches?.length > 1) return;
 	wrapEvent(event);
 
+	document.activeElement?.blur();
 	const size = store.board.size;
 	const isCN = this == CN;
 	startX = event.offsetX;
@@ -656,22 +690,39 @@ function dragStart(event) {
 	sqY = Math.floor((startY - 1) / size);
 	const index = sqY * (isCN ? 8 : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
-	if(!isCN || squares[index].value != "") {
+	if(isCN) {
+		sq = squares[index];
+		dragging = "pending";
+		draggingValue = undefined;
+	}
+	if(!isCN || sq.value != "") {
 		event.preventDefault();
-		dragging = true;
 		ghost.style.clip = `rect(${2 + sqY * size}px,${(sqX + 1) * size}px,${(sqY + 1) * size}px,${2 + sqX * size}px)`;
-		ghost.style.display = "block";
 		offset = isCN ? 0 : 1;
 		if(isCN) {
-			const sq = squares[index];
-			draggingValue = sq.value
-			sq.value = "";
-			toFEN();
+			draggingValue = sq.value;
 		} else {
 			draggingValue = horMode ? TPv[sqX * 3 + sqY] : TPv[index];
+			dragStart(event)
 		}
-		dragMove(event);
 	}
+}
+
+function dragStart(event, isCN) {
+	ghost.style.display = "block";
+	if(isCN) {
+		sq.value = "";
+		toFEN();
+	}
+	dragging = true;
+	dragMove(event);
+}
+
+function getDisplacement(event) {
+	const dx = event.offsetX - startX;
+	const dy = event.offsetY - startY;
+	const result = Math.sqrt(dx * dx + dy * dy);
+	return result;
 }
 
 function dragMove(event) {
@@ -732,10 +783,4 @@ createApp({
 	state,
 	tab: 0,
 	saveSettings,
-})
-	.directive("visible", ctx => {
-		ctx.effect(() => {
-			ctx.el.style.visibility = ctx.get() ? "visible" : "hidden";
-		});
-	})
-	.mount();
+}).mount();
