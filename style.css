@@ -46,6 +46,16 @@ section.show {
 	border: 1px solid black;
 }
 
+#Zone {
+	margin-left: -1.5rem;
+	margin-right: -1.5rem;
+}
+
+#Zone > * {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+}
+
 #DragZone {
 	z-index: 1;
 }
