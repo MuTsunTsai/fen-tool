@@ -90,7 +90,7 @@ window.addEventListener("resize", () => setSize(store.board.size));
 
 function setSize(s, force) {
 	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-	const newMode = document.body.clientWidth < 11 * s + 2* rem;
+	const newMode = document.body.clientWidth < 11 * s + 2 * rem;
 	if(newMode !== horMode || s !== store.board.size || force) {
 		horMode = newMode;
 		store.board.size = s;
@@ -668,8 +668,9 @@ function mouseup(event) {
 	}
 
 	if(!dragging) return;
-	wrapEvent(event);
 	dragging = false;
+	if(!draggingValue) return;
+	wrapEvent(event);
 	const size = store.board.size;
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
