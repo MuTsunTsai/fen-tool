@@ -189,7 +189,8 @@ function drawPiece(i, j, value, light) {
 	const neutral = value.startsWith("-");
 	if(neutral) value = value.substring(1);
 
-	let rotate = value.match(/^\*(\d)/)?.[1];
+	const match = value.match(/^\*(\d)/);
+	let rotate = match && match[1] || undefined;
 	if(rotate !== undefined) value = value.substring(2);
 	rotate = Number(rotate) % 4;
 
@@ -678,10 +679,10 @@ function mouseup(event) {
 }
 
 function mouseDown(event) {
-	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches?.length > 1) return;
+	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
 
-	document.activeElement?.blur();
+	if(document.activeElement) document.activeElement.blur();
 	const size = store.board.size;
 	const isCN = this == CN;
 	startX = event.offsetX;
@@ -768,7 +769,7 @@ function Checkbox(key, label, onchange) {
 		checked: () => target[key],
 		change: () => {
 			target[key] = !target[key];
-			onchange?.();
+			if(onchange) onchange();
 		},
 	};
 }
