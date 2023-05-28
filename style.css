@@ -43,12 +43,14 @@ section.show {
 	width: 210px;
 	height: 210px;
 	position: relative;
+	display: inline-block;
 	border: 1px solid black;
 }
 
 #Zone {
 	margin-left: -1.5rem;
 	margin-right: -1.5rem;
+	max-width: calc(100vw + 1rem);
 }
 
 #Zone > * {

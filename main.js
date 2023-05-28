@@ -89,7 +89,8 @@ function load(s) {
 window.addEventListener("resize", () => setSize(store.board.size));
 
 function setSize(s, force) {
-	const newMode = document.body.clientWidth < 12 * s;
+	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+	const newMode = document.body.clientWidth < 11 * s + 2* rem;
 	if(newMode !== horMode || s !== store.board.size || force) {
 		horMode = newMode;
 		store.board.size = s;
@@ -111,12 +112,16 @@ function setSize(s, force) {
 		setSquareSize();
 		load(store.board.set);
 	}
-	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-	if(Zone.clientWidth < DragZone.clientWidth + EditZone.clientWidth + 3 * rem) {
+
+	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
+		EditZone.style.width = DragZone.clientWidth + "px";
+		EditZone.style.textAlign = horMode ? "center" : "start";
 		collapseMode = true;
 	} else {
 		EditZone.style.marginTop = "0";
+		EditZone.style.width = "unset";
+		EditZone.style.textAlign = "unset";
 		collapseMode = false;
 	}
 }
