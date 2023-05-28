@@ -70,7 +70,7 @@
 				</div>
 			</div>
 
-			<main v-scope v-cloak v-effect="saveSettings()">
+			<main v-scope v-cloak v-effect="saveSettings()" class="w-passive-100">
 				<div class="card mb-4 d-sm-none" v-if="store.message.touchTip">
 					<div class="card-body">
 						<div class="mb-2">Double-tap on a square to manually edit it.</div>
@@ -95,7 +95,7 @@
 					</li>
 				</ul>
 
-				<div class="d-flex mb-4 w-passive-100">
+				<div class="d-flex mb-4">
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<div class="d-inline-block">
