@@ -348,6 +348,7 @@ function squareOnFocus() { this.select(); }
 function squareOnBlur() { this.style.zIndex = "unset"; }
 
 function createSquares() {
+	const container = document.getElementById("Squares");
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const index = i * 8 + j;
@@ -358,7 +359,7 @@ function createSquares() {
 			squares[index].onblur = squareOnBlur;
 			squares[index].style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
 			squares[index].classList.add("square");
-			S.appendChild(squares[index]);
+			container.appendChild(squares[index]);
 		}
 	}
 	setSquareBG();
@@ -366,19 +367,13 @@ function createSquares() {
 
 function setSquareSize() {
 	const size = store.board.size;
-	const container = document.getElementById("S");
+	const container = document.getElementById("Squares");
 	const full = size * 8 + 2;
 	container.style.width = full + "px";
 	container.style.height = full + "px";
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
-			const s = squares[i * 8 + j];
-			s.style.top = i * size + "px";
-			s.style.left = j * size + "px";
-			s.style.width = size + "px";
-			s.style.height = size + "px";
-			s.style.lineHeight = (size - 2) + "px";
-			s.style.fontSize = (size - 10) + "px";
+			squares[i * 8 + j].style.fontSize = (size - 10) + "px";
 		}
 	}
 }
