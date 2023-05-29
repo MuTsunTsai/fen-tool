@@ -14,7 +14,8 @@ This tool supports most of the [Fairy FEN](https://www.janko.at/Retros/d.htm) sy
 
 - Use `-` in front to denote neutral pieces (e.g. `-k`).
 - Use `*` + number to denote rotation (e.g. `*2Q`). May be used together with neutral piece (e.g. `-*3b`).
-- Use `'` + single char or `''`(that's two single-quote, not a double-quote) + double chars to denote text (e.g. `'A`, `''12`). Note that you can even use emoji with this syntax (e.g. `'🦆`; note that some emojis are actually two chars, e.g. `''🎅🏻`).  May be used together with rotation (e.g. `*1'A`).
+- Use `'` + single char or `''`(that's two single-quote, not a double-quote) + double chars to denote text (e.g. `'A`, `''12`). Note that you can even use emoji with this syntax (e.g. `'🦆`; note that some emojis are actually two chars, e.g. `''🎅🏻`).  May be used together with rotation (e.g. `*1'A`).\
+  Tip: you can directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.
 - Two markers can be used: `c` (circle) and `x` (cross). The square and triangle markers in FFEN are not supported here.
 
 ## Chess set credits

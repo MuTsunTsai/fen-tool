@@ -24,6 +24,7 @@ const settings = {
 	},
 	message: {
 		touchTip: true,
+		textShortcut: true,
 	}
 };
 

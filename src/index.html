@@ -78,6 +78,15 @@
 					</div>
 				</div>
 
+				<div class="card mb-4" v-if="store.message.textShortcut">
+					<div class="card-body">
+						<div class="mb-2">You can now directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.</div>
+						<div class="text-end">
+							<button class="btn btn-info" @click="store.message.textShortcut=false">Got it!</button>
+						</div>
+					</div>
+				</div>
+
 				<ul class="nav nav-tabs mb-3">
 					<li class="nav-item">
 						<div class="nav-link" :class="{active:tab==0}" @click="tab=0">General</div>

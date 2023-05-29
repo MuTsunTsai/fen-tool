@@ -61,7 +61,13 @@ function checkInput() {
 
 function checkInputCore(s) {
 	let v = s.value;
-	if(!v.match(test)) v = "";
+	if(!v.match(test)) {
+		// Text input shortcut
+		const l = [...v].length;
+		if(l == 1) v = "'" + v;
+		else if(l == 2) v = "''" + v;
+		else v = "";
+	}
 	v = v.replace(/^~/, "-") // both "-" and "~" are acceptable input
 		.replace(/^-(?=.*')/, ""); // neutral has no effect on text
 	if(v.startsWith("-")) v = v.toLowerCase();
