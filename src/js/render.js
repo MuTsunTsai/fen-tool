@@ -23,7 +23,7 @@ window.load = load;
 const ctx = CN.getContext("2d");
 const gCtx = CG.getContext("2d");
 
-const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
+export const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
 
 export function setFont(font) {
 	ctx.font = gCtx.font = font;

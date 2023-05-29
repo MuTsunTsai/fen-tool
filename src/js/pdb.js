@@ -1,4 +1,6 @@
 import { store } from "./store";
+import { squares } from "./squares";
+import { types } from "./render";
 
 export const PDB = document.getElementById("PDB");
 
