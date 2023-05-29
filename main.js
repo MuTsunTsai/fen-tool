@@ -16,7 +16,7 @@ const settings = {
 		blackWhite: false,
 		knightOffset: .5,
 		SN: false,
-		size: 26,
+		size: 44,
 		set: "1echecs",
 	},
 	message: {
@@ -94,7 +94,8 @@ function setSize(s, force) {
 	if(newMode !== horMode || s !== store.board.size || force) {
 		horMode = newMode;
 		store.board.size = s;
-		const full = 8 * s + 2
+		const full = 8 * s + 2;
+		CN.style.width = full + "px";
 		CG.width = CN.width = full;
 		CG.height = CN.height = full;
 		ctx.font = gCtx.font = `${s - 4}px arial`;
@@ -109,10 +110,19 @@ function setSize(s, force) {
 			CN.classList.remove("mb-3");
 			TP.classList.add("ms-4");
 		}
-		setSquareSize();
 		load(store.board.set);
 	}
+	resize();
+}
 
+function resize() {
+	CG.style.width = CG.style.height = CN.style.height = CN.clientWidth + "px";
+	TPG.style.width = TP.clientWidth + "px";
+	TPG.style.height = TP.clientHeight + "px";
+
+	setSquareSize();
+
+	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
@@ -127,6 +137,7 @@ function setSize(s, force) {
 }
 
 setSize(store.board.size, true);
+setTimeout(resize, 1000); // This is needed on old Safari
 
 const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
 
@@ -366,14 +377,13 @@ function createSquares() {
 }
 
 function setSquareSize() {
-	const size = store.board.size;
 	const container = document.getElementById("Squares");
-	const full = size * 8 + 2;
-	container.style.width = full + "px";
-	container.style.height = full + "px";
+	const size = realSize();
+	container.style.height = container.style.width = CN.clientWidth + "px";
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			squares[i * 8 + j].style.fontSize = (size - 10) + "px";
+			squares[i * 8 + j].style.lineHeight = (size - 10) + "px";
 		}
 	}
 }
@@ -666,7 +676,7 @@ function mouseup(event) {
 	dragging = false;
 	if(!draggingValue) return;
 	wrapEvent(event);
-	const size = store.board.size;
+	const size = realSize();
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
 	const x = Math.floor((event.clientX - r.left - 1) / size);
@@ -679,12 +689,16 @@ function mouseup(event) {
 	}
 }
 
+function realSize() {
+	return (CN.clientWidth - 2) / 8;
+}
+
 function mouseDown(event) {
 	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
-	const size = store.board.size;
+	const size = realSize();
 	const isCN = this == CN;
 	startX = event.offsetX;
 	startY = event.offsetY;
@@ -728,7 +742,7 @@ function getDisplacement(event) {
 }
 
 function dragMove(event) {
-	const size = store.board.size;
+	const size = realSize();
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - 1) / size);
 	const x = Math.floor((event.clientX - r.left - 1) / size);

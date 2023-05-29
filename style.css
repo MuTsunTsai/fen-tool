@@ -32,6 +32,10 @@ section.show {
 	height: 100%;
 }
 
+#CN, #TP {
+	max-width: 100%;
+}
+
 .ghost {
 	display: none;
 	position: absolute;
