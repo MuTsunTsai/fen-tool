@@ -74,6 +74,13 @@ function checkInputCore(s) {
 	return changed;
 }
 
+export function setSquare(sq, value) {
+	const updated = sq.value !== value;
+	sq.value = value;
+	checkInputCore(sq); // Needed for "S for knight"
+	if(updated) toFEN();
+}
+
 window.setFEN = function(v, check) {
 	FEN.value = v;
 	toSquares(check);

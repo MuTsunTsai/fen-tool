@@ -1,6 +1,6 @@
 import { mode } from "./layout";
 import { state } from "./store";
-import { squares, toFEN } from "./squares";
+import { squares, toFEN, setSquare } from "./squares";
 import { CN, TP, realSize } from "./el";
 
 const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
@@ -52,9 +52,7 @@ function mouseup(event) {
 	const index = y * 8 + x;
 	ghost.style.display = "none";
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
-		const updated = squares[index].value !== draggingValue;
-		squares[index].value = draggingValue;
-		if(updated) toFEN();
+		setSquare(squares[index], draggingValue);
 	}
 }
 
