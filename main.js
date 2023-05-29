@@ -9,6 +9,9 @@ const settings = {
 		uncoloredNotes: false,
 		redBlue: false,
 	},
+	PDB: {
+		exact: false,
+	},
 	board: {
 		uncolored: false,
 		inverted: false,
@@ -521,13 +524,15 @@ function getPDB_query() {
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const v = squares[i * 8 + j].value;
-			if(!v.match(/^[kqbsnrp]$/i)) continue;
+			if(!v.match(/^[kqbsnrp]$/i)) continue; // only orthodox pieces are supported
 			const type = pdbMap[types.indexOf(v.toLowerCase().replace("s", "n"))];
 			const color = v == v.toLowerCase() ? "s" : "w";
 			pieces.push(color + type + String.fromCharCode(97 + j) + (8 - i));
 		}
 	}
-	return `POSITION='${pieces.join(" ")}'`;
+	let result = `POSITION='${pieces.join(" ")}'`;
+	if(store.PDB.exact) result+=` AND APIECES=${pieces.length}`;
+	return result;
 }
 
 function searchPDB() {

@@ -3,6 +3,10 @@ body {
 	font-size: 10pt;
 }
 
+body {
+	overflow-x: hidden;
+}
+
 [v-cloak] {
 	display: none;
 }
