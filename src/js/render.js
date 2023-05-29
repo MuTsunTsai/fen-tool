@@ -84,6 +84,10 @@ export async function draw() {
 	}
 }
 
+export function getBlob() {
+	return new Promise(resolve => CN.toBlob(resolve));
+}
+
 addEventListener("fen", draw);
 
 function drawPiece(i, j, value, light) {

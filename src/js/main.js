@@ -2,7 +2,7 @@ import { createApp } from "petite-vue";
 import { store, state, saveSettings } from "./store";
 import { CN } from "./el";
 import { squares,  setSquareBG, updateSN, toFEN } from "./squares";
-import { drawTemplate, draw } from "./render";
+import { drawTemplate, draw, getBlob } from "./render";
 import { setupLayout } from "./layout";
 import { setupDrag } from "./drag";
 
@@ -23,10 +23,6 @@ window.share = async function() {
 	const blob = await getBlob();
 	const files = [new File([blob], "board.png", { type: "image/png" })];
 	navigator.share({ files });
-}
-
-function getBlob() {
-	return new Promise(resolve => CN.toBlob(resolve));
 }
 
 //===========================================================
