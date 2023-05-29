@@ -33,7 +33,7 @@ gulp.task("css", () =>
 );
 
 gulp.task("js", () =>
-	gulp.src("src/main.js")
+	gulp.src("src/js/main.js")
 		.pipe($.newer({
 			dest: "docs/main.js",
 			extra: [__filename, "src/**/*.js"]
