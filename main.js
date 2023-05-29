@@ -433,10 +433,12 @@ function updateSN() {
 }
 
 function copyFEN() {
+	gtag("event", "fen_copy");
 	navigator.clipboard.writeText(FEN.value);
 }
 
 async function pasteFEN() {
+	gtag("event", "fen_paste");
 	FEN.value = await navigator.clipboard.readText();
 	toSquares(true);
 }
@@ -446,10 +448,12 @@ async function pasteFEN() {
 //===========================================================
 
 function toBase64() {
+	gtag("event", "link_copy");
 	navigator.clipboard.writeText(CN.toDataURL());
 }
 
 async function share() {
+	gtag("event", "img_share");
 	const blob = await getBlob();
 	const files = [new File([blob], "board.png", { type: "image/png" })];
 	navigator.share({ files });
@@ -504,6 +508,7 @@ function invertColor(l) {
 //===========================================================
 
 async function getPDB_FEN() {
+	gtag("event", "pdb_get");
 	const bt = document.getElementById("PDB_GET");
 	bt.disabled = true;
 	bt.value = "Fetching...";
@@ -536,10 +541,12 @@ function getPDB_query() {
 }
 
 function searchPDB() {
+	gtag("event", "pdb_search");
 	window.open(pdbURL + encodeURIComponent(getPDB_query()));
 }
 
 function copyPDB() {
+	gtag("event", "pdb_copy");
 	navigator.clipboard.writeText(getPDB_query());
 }
 
@@ -623,6 +630,7 @@ function generateBBS() {
 	if(store.BBS.PDB) result += us + "[0;30;40m" + PDB.value + us + "[m";
 	if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
 	result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
+	gtag("event", "bbs_copy");
 	navigator.clipboard.writeText(result);
 }
 
