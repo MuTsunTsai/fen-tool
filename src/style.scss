@@ -1,0 +1,158 @@
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+html,
+body {
+	font-size: 10pt;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+[v-cloak] {
+	display: none;
+}
+
+section {
+	visibility: hidden;
+	width: 100%;
+	margin-right: -100%;
+
+	&.show {
+		visibility: visible;
+	}
+}
+
+.w-passive-100 {
+	width: 0;
+	min-width: 100%;
+}
+
+.square {
+	border: none;
+	outline: none;
+	padding: 1px;
+	text-align: center;
+	font-family: Arial;
+	width: 100%;
+	height: 100%;
+}
+
+#CN, #TP {
+	max-width: 100%;
+}
+
+.ghost {
+	display: none;
+	position: absolute;
+	opacity: 0.75;
+	pointer-events: none;
+	z-index: 1000;
+}
+
+#Squares {
+	display: inline-grid;
+	grid-template-columns: repeat(8, 1fr);
+	grid-template-rows: repeat(8, 1fr);
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	border: 1px solid black;
+}
+
+#Zone {
+	margin-left: -1.5rem;
+	margin-right: -1.5rem;
+	max-width: calc(100vw + 1rem);
+
+	> * {
+		margin-left: 1.5rem;
+		margin-right: 1.5rem;
+	}
+}
+
+#DragZone {
+	z-index: 1;
+}
+
+td {
+	vertical-align: top;
+}
+
+.btn {
+	margin-bottom: 5px;
+}
+
+.nav-item,
+input[type=checkbox],
+label[for] {
+	cursor: pointer;
+}
+
+.nav-tabs {
+	--bs-nav-link-color: unset;
+	--bs-nav-link-hover-color: unset;
+}
+
+.loader {
+	top: 0;
+	left: 0;
+	opacity: 0;
+	transition: opacity 0s 0s;
+	pointer-events: none;
+}
+
+.loader.show {
+	transition: opacity 0.25s 0.5s;
+	opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		overflow-y: scroll;
+	}
+
+	:root {
+		--bs-body-bg: #444;
+		--bs-body-color: #eee;
+		--bs-light-rgb: 70, 70, 70;
+		--bs-border-color: #666;
+	}
+
+	.nav-tabs {
+		--bs-nav-tabs-border-color: #999;
+		--bs-nav-tabs-link-active-color: white;
+		--bs-nav-tabs-link-hover-border-color: #999 #999 #999;
+		--bs-nav-tabs-link-active-bg: #444;
+		--bs-nav-tabs-link-active-border-color: #999 #999 #444;
+	}
+
+	.modal {
+		--bs-modal-bg: #444;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #aaa6 !important;
+	}
+
+	a.btn {
+		color: inherit !important;
+	}
+
+	.form-control,
+	.form-select,
+	.form-control:focus,
+	.form-check-input,
+	.form-range::-webkit-slider-runnable-track {
+		background-color: var(--bs-gray-800);
+		border-color: var(--bs-gray-600);
+		color: white;
+	}
+
+	.form-select {
+		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+	}
+
+	.card {
+		--bs-card-bg: #555;
+	}
+}
