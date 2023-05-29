@@ -36,7 +36,11 @@ gulp.task("js", () =>
 	gulp.src("src/main.js")
 		.pipe($.newer({
 			dest: "docs/main.js",
-			extra: [__filename]
+			extra: [__filename, "src/**/*.js"]
+		}))
+		.pipe($.esbuild({
+			outfile: "main.js",
+			bundle: true,
 		}))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))

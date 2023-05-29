@@ -20,7 +20,6 @@
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 	<link href="style.css" rel="stylesheet">
 
-	<script src="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.iife.js" defer></script>
 	<script src="main.js" defer></script>
 </head>
 
@@ -99,34 +98,34 @@
 						<div class="mb-3">
 							<div class="d-inline-block">
 								<button type="button" class="btn btn-secondary"
-										onClick="FEN.value='8/8/8/8/8/8/8/8'; toSquares();">
+										onclick="setFEN('8/8/8/8/8/8/8/8')">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
 								<button type="button" class="btn btn-secondary"
-										onClick="FEN.value='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'; toSquares();">
+										onclick="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
 							</div><br>
 							<div class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onClick="rotate(-1)">
+								<button type="button" class="btn btn-secondary" onclick="rotate(-1)">
 									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
 								</button>
-								<button type="button" class="btn btn-secondary" onClick="rotate(1)">
+								<button type="button" class="btn btn-secondary" onclick="rotate(1)">
 									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
 								</button>
 							</div>&nbsp;
 							<div class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="All Black" onClick="color(-1)">
-								<input type="button" class="btn btn-secondary" value="All Neutral" onClick="color(0)">
-								<input type="button" class="btn btn-secondary" value="All White" onClick="color(1)">
+								<input type="button" class="btn btn-secondary" value="All Black" onclick="color(-1)">
+								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="color(0)">
+								<input type="button" class="btn btn-secondary" value="All White" onclick="color(1)">
 							</div>&nbsp;
 							<div class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="Switch side" onClick="invertColor(false)">
-								<input type="button" class="btn btn-secondary" value="Switch case" onClick="invertColor(true)">
+								<input type="button" class="btn btn-secondary" value="Switch side" onclick="invertColor(false)">
+								<input type="button" class="btn btn-secondary" value="Switch case" onclick="invertColor(true)">
 							</div>
 						</div>
 						<div class="text-end">
-							<button type="button" class="btn btn-secondary" id="B64" onClick="toBase64()">
+							<button type="button" class="btn btn-secondary" id="B64" onclick="toBase64()">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
 							</button>&nbsp;
 							<div class="d-inline-block">

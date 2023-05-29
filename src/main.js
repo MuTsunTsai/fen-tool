@@ -1,4 +1,4 @@
-const { createApp, reactive } = PetiteVue;
+import { createApp, reactive } from "petite-vue";
 
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
@@ -83,7 +83,7 @@ img.onload = () => {
 if(location.protocol == "https:") img.crossOrigin = "anonymous";
 else document.getElementById("B64").disabled = true;
 
-function load(s) {
+window.load = function(s) {
 	store.board.set = s;
 	state.loading = true;
 	img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
@@ -91,7 +91,7 @@ function load(s) {
 
 window.addEventListener("resize", () => setSize(store.board.size));
 
-function setSize(s, force) {
+window.setSize = function(s, force) {
 	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	const newMode = document.body.clientWidth < 11 * s + 2 * rem;
 	if(newMode !== horMode || s !== store.board.size || force) {
@@ -278,6 +278,11 @@ function updateBG() {
 // input
 //===========================================================
 
+window.setFEN = function(v) {
+	FEN.value = v;
+	toSquares();
+}
+
 function toFEN() {
 	let s = 0, t = "";
 	for(let i = 0; i < 8; i++) {
@@ -303,7 +308,7 @@ function toFEN() {
 	draw();
 }
 
-function toSquares(check) {
+window.toSquares = function(check) {
 	let cursor = 0, fen = [...FEN.value];
 	let changed = false;
 	function slice(n) {
@@ -432,12 +437,12 @@ function updateSN() {
 	toFEN();
 }
 
-function copyFEN() {
+window.copyFEN = function() {
 	gtag("event", "fen_copy");
 	navigator.clipboard.writeText(FEN.value);
 }
 
-async function pasteFEN() {
+window.pasteFEN = async function() {
 	gtag("event", "fen_paste");
 	FEN.value = await navigator.clipboard.readText();
 	toSquares(true);
@@ -447,12 +452,12 @@ async function pasteFEN() {
 // export
 //===========================================================
 
-function toBase64() {
+window.toBase64 = function() {
 	gtag("event", "link_copy");
 	navigator.clipboard.writeText(CN.toDataURL());
 }
 
-async function share() {
+window.share = async function() {
 	gtag("event", "img_share");
 	const blob = await getBlob();
 	const files = [new File([blob], "board.png", { type: "image/png" })];
@@ -467,7 +472,7 @@ function getBlob() {
 // manipulations
 //===========================================================
 
-function rotate(d) {
+window.rotate = function(d) {
 	const temp = squares.map(s => s.value);
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
@@ -478,7 +483,7 @@ function rotate(d) {
 	toFEN();
 }
 
-function color(c) {
+window.color = function(c) {
 	for(let i = 0; i < 64; i++) {
 		let s = squares[i].value;
 		if(s.substr(0, 1) == "'" || s == "") continue;
@@ -491,7 +496,7 @@ function color(c) {
 	toFEN();
 }
 
-function invertColor(l) {
+window.invertColor = function(l) {
 	for(let i = 0; i < 64; i++) {
 		let s = squares[i].value;
 		if(s == "" || s.substr(0, 1) == "-") continue;
@@ -507,7 +512,7 @@ function invertColor(l) {
 // PDB
 //===========================================================
 
-async function getPDB_FEN() {
+window.getPDB_FEN = async function() {
 	gtag("event", "pdb_get");
 	const bt = document.getElementById("PDB_GET");
 	bt.disabled = true;
@@ -536,16 +541,16 @@ function getPDB_query() {
 		}
 	}
 	let result = `POSITION='${pieces.join(" ")}'`;
-	if(store.PDB.exact) result+=` AND APIECES=${pieces.length}`;
+	if(store.PDB.exact) result += ` AND APIECES=${pieces.length}`;
 	return result;
 }
 
-function searchPDB() {
+window.searchPDB = function() {
 	gtag("event", "pdb_search");
 	window.open(pdbURL + encodeURIComponent(getPDB_query()));
 }
 
-function copyPDB() {
+window.copyPDB = function() {
 	gtag("event", "pdb_copy");
 	navigator.clipboard.writeText(getPDB_query());
 }
@@ -554,7 +559,7 @@ function copyPDB() {
 // BBS
 //===========================================================
 
-function generateBBS() {
+window.generateBBS = function() {
 	let fen = [...FEN.value.replace(/\//g, "")];
 	let result = "";
 	let char;
