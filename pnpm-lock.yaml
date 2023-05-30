@@ -22,6 +22,9 @@ devDependencies:
   gulp-esbuild:
     specifier: ^0.11.1
     version: 0.11.1
+  gulp-fontawesome:
+    specifier: ^1.0.1
+    version: 1.0.1(@fortawesome/fontawesome-free@6.4.0)
   gulp-html-minifier-terser:
     specifier: ^7.1.0
     version: 7.1.0
@@ -254,7 +257,6 @@ packages:
     resolution: {integrity: sha512-0NyytTlPJwB/BF5LtRV8rrABDbe3TdTXqNB3PdZ+UUUZAEIrdOJdmABqKjt4AXwIoJNaRVVZEXxpNrqvE1GAYQ==}
     engines: {node: '>=6'}
     requiresBuild: true
-    dev: false
 
   /@jridgewell/gen-mapping@0.3.3:
     resolution: {integrity: sha512-HLhSWOLRi875zjjMG/r+Nv0oCW8umGb0BgEhyX3dDX3egwZtB8PqLnjz3yedt8R5StBrzcg4aBpnh8UA9D1BoQ==}
@@ -391,6 +393,10 @@ packages:
 
   /archy@1.0.0:
     resolution: {integrity: sha512-Xg+9RwCg/0p32teKdGMPTPnVXKD0w3DfHnFTficozsAgsvq2XenPJq/MYpzzQ/v8zrOyJn6Ds39VA4JIDwFfqw==}
+    dev: true
+
+  /argparse@2.0.1:
+    resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
     dev: true
 
   /arr-diff@1.1.0:
@@ -1190,6 +1196,31 @@ packages:
       readable-stream: 2.3.8
     dev: true
 
+  /fontawesome-subset@4.4.0(@fortawesome/fontawesome-free@6.4.0):
+    resolution: {integrity: sha512-kcK1ELa/Gq4R2+gKxzeFbLl0uzSJBeWsjtZPLLf5mCJEfTY9gt/lAOgW7opGaG1ZaFMa88Qu1ghuRsLUkmobYg==}
+    peerDependencies:
+      '@fortawesome/fontawesome-free': '>=5.12.0'
+      '@fortawesome/fontawesome-pro': '>=5.12.0'
+    peerDependenciesMeta:
+      '@fortawesome/fontawesome-free':
+        optional: true
+      '@fortawesome/fontawesome-pro':
+        optional: true
+    dependencies:
+      '@fortawesome/fontawesome-free': 6.4.0
+      lodash: 4.17.21
+      mkdirp: 2.1.6
+      subset-font: 2.1.0
+      yaml: 2.3.1
+    dev: true
+
+  /fontverter@2.0.0:
+    resolution: {integrity: sha512-DFVX5hvXuhi1Jven1tbpebYTCT9XYnvx6/Z+HFUPb7ZRMCW+pj2clU9VMhoTPgWKPhAs7JJDSk3CW1jNUvKCZQ==}
+    dependencies:
+      wawoff2: 2.0.1
+      woff2sfnt-sfnt2woff: 1.0.0
+    dev: true
+
   /for-in@1.0.2:
     resolution: {integrity: sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==}
     engines: {node: '>=0.10.0'}
@@ -1404,6 +1435,17 @@ packages:
       vinyl: 3.0.0
     dev: true
 
+  /gulp-fontawesome@1.0.1(@fortawesome/fontawesome-free@6.4.0):
+    resolution: {integrity: sha512-uW764wGYGMPsyBaybu2Amtyr4kOPL2xVGxxSVL+U6aNQcxjQIL2W1AqG9rGEYxWQ/PWVTzls66TIKI/2xU4mJQ==}
+    dependencies:
+      fontawesome-subset: 4.4.0(@fortawesome/fontawesome-free@6.4.0)
+      gulp-through2: 1.0.1
+      purgecss: 5.0.0
+    transitivePeerDependencies:
+      - '@fortawesome/fontawesome-free'
+      - '@fortawesome/fontawesome-pro'
+    dev: true
+
   /gulp-html-minifier-terser@7.1.0:
     resolution: {integrity: sha512-5aZUMmF2NhQ+eBxfK3YNhYXcqgdbAQfrIe9Nq4BbI5p4AO9zbk3Kz7teZTyyvNizWRI8eA22Q25H4yE+a+3B+g==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -1451,7 +1493,7 @@ packages:
       '@types/vinyl': 2.0.7
       istextorbinary: 3.3.0
       replacestream: 4.0.3
-      yargs-parser: 5.0.1
+      yargs-parser: 21.1.1
     dev: true
 
   /gulp-sass@5.1.0:
@@ -1474,6 +1516,14 @@ packages:
       terser: 5.17.6
       through2: 4.0.2
       vinyl-sourcemaps-apply: 0.2.1
+    dev: true
+
+  /gulp-through2@1.0.1:
+    resolution: {integrity: sha512-nxG2VKWnXlhBJq08sv2Tt/wzhCr9IlURhWiqIeSoWOTWqvjdkLgptKFNBrZcNBPrdlQitbzkXC3Rtla/QolFDA==}
+    dependencies:
+      '@types/vinyl': 2.0.7
+      plugin-error: 2.0.1
+      vinyl: 2.2.1
     dev: true
 
   /gulp@4.0.2:
@@ -1501,6 +1551,10 @@ packages:
     engines: {node: '>= 10.13.0'}
     dependencies:
       glogg: 2.0.0
+    dev: true
+
+  /harfbuzzjs@0.3.3:
+    resolution: {integrity: sha512-48C/LOUweD//LTqaQAS9VMOBNPh7DhyJEmdzh5/1GgjNA8kGZMVZKTzkvarBDtiKKaKG5whx7qXU8OeSNLmWcA==}
     dev: true
 
   /has-gulplog@1.0.0:
@@ -1929,6 +1983,10 @@ packages:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
     dev: true
 
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: true
+
   /lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
@@ -2014,6 +2072,12 @@ packages:
     dependencies:
       for-in: 1.0.2
       is-extendable: 1.0.1
+    dev: true
+
+  /mkdirp@2.1.6:
+    resolution: {integrity: sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==}
+    engines: {node: '>=10'}
+    hasBin: true
     dev: true
 
   /ms@2.0.0:
@@ -2186,6 +2250,17 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       lcid: 1.0.0
+    dev: true
+
+  /p-limit@3.1.0:
+    resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      yocto-queue: 0.1.0
+    dev: true
+
+  /pako@1.0.11:
+    resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
     dev: true
 
   /param-case@3.0.4:
@@ -2426,7 +2501,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       inherits: 2.0.4
-      string_decoder: 1.1.1
+      string_decoder: 1.3.0
       util-deprecate: 1.0.2
     dev: true
 
@@ -2770,6 +2845,12 @@ packages:
       safe-buffer: 5.1.2
     dev: true
 
+  /string_decoder@1.3.0:
+    resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: true
+
   /strip-ansi@3.0.1:
     resolution: {integrity: sha512-VhumSSbBqDTP8p2ZLKj40UjBCV4+v8bUSEpUb4KjRgWk9pbqGF4REFj6KEagidb2f/M6AzC0EmFyDNGaw9OCzg==}
     engines: {node: '>=0.10.0'}
@@ -2789,6 +2870,15 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       is-utf8: 0.2.1
+    dev: true
+
+  /subset-font@2.1.0:
+    resolution: {integrity: sha512-4xV42NsGGBftUj2bR6cYrUkwtTWZRRg5ISUquTBztWfntyZhod24KI0IH4YBFD3U8luLXFv87uo+1U18kAlVzg==}
+    dependencies:
+      fontverter: 2.0.0
+      harfbuzzjs: 0.3.3
+      lodash: 4.17.21
+      p-limit: 3.1.0
     dev: true
 
   /supports-preserve-symlinks-flag@1.0.0:
@@ -3067,6 +3157,13 @@ packages:
       teex: 1.0.1
     dev: true
 
+  /wawoff2@2.0.1:
+    resolution: {integrity: sha512-r0CEmvpH63r4T15ebFqeOjGqU4+EgTx4I510NtK35EMciSdcTxCw3Byy3JnBonz7iyIFZ0AbVo0bbFpEVuhCYA==}
+    hasBin: true
+    dependencies:
+      argparse: 2.0.1
+    dev: true
+
   /which-module@1.0.0:
     resolution: {integrity: sha512-F6+WgncZi/mJDrammbTuHe1q0R5hOXv/mBaiNA2TCNT/LTHusX0V+CJnj9XT8ki5ln2UZyyddDgHfCzyrOH7MQ==}
     dev: true
@@ -3076,6 +3173,12 @@ packages:
     hasBin: true
     dependencies:
       isexe: 2.0.0
+    dev: true
+
+  /woff2sfnt-sfnt2woff@1.0.0:
+    resolution: {integrity: sha512-edK4COc1c1EpRfMqCZO1xJOvdUtM5dbVb9iz97rScvnTevqEB3GllnLWCmMVp1MfQBdF1DFg/11I0rSyAdS4qQ==}
+    dependencies:
+      pako: 1.0.11
     dev: true
 
   /wrap-ansi@2.1.0:
@@ -3097,6 +3200,16 @@ packages:
 
   /y18n@3.2.2:
     resolution: {integrity: sha512-uGZHXkHnhF0XeeAPgnKfPv1bgKAYyVvmNL1xlKsPYZPaIHxGti2hHqvOCQv71XMsLxu1QjergkqogUnms5D3YQ==}
+    dev: true
+
+  /yaml@2.3.1:
+    resolution: {integrity: sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==}
+    engines: {node: '>= 14'}
+    dev: true
+
+  /yargs-parser@21.1.1:
+    resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
+    engines: {node: '>=12'}
     dev: true
 
   /yargs-parser@5.0.1:
@@ -3122,4 +3235,9 @@ packages:
       which-module: 1.0.0
       y18n: 3.2.2
       yargs-parser: 5.0.1
+    dev: true
+
+  /yocto-queue@0.1.0:
+    resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
+    engines: {node: '>=10'}
     dev: true

@@ -12,6 +12,7 @@
 	"devDependencies": {
 		"gulp": "^4.0.2",
 		"gulp-esbuild": "^0.11.1",
+		"gulp-fontawesome": "^1.0.1",
 		"gulp-html-minifier-terser": "^7.1.0",
 		"gulp-load-plugins": "^2.0.8",
 		"gulp-newer": "^1.4.0",

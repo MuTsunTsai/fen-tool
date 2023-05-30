@@ -64,4 +64,10 @@ gulp.task("html", () =>
 		.pipe(gulp.dest("docs"))
 );
 
+gulp.task("fa", () =>
+	gulp.src("src/index.html")
+		.pipe($.fontawesome())
+		.pipe(gulp.dest("docs/lib"))
+);
+
 gulp.task("default", gulp.parallel("css", "js", "html"));
