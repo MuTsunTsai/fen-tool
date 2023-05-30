@@ -2,8 +2,10 @@ const $ = require("gulp-load-plugins")();
 const gulp = require("gulp");
 const sass = require("sass");
 
+const htmlSource = "src/public/index.html";
+
 const purgeOption = {
-	content: ["src/index.html"],
+	content: [htmlSource],
 	safelist: {
 		variables: [
 			"--bs-primary",
@@ -11,19 +13,15 @@ const purgeOption = {
 			/^--bs-nav-tabs/,
 		],
 	},
-	// for Font Awesome
-	keyframes: true,
-	fontFace: true,
-
 	// for Bootstrap
 	variables: true,
 };
 
 gulp.task("css", () =>
-	gulp.src("src/style.scss")
+	gulp.src("src/public/style.scss")
 		.pipe($.newer({
 			dest: "docs/style.css",
-			extra: [__filename, "src/index.html"]
+			extra: [__filename, htmlSource]
 		}))
 		.pipe($.sass(sass)({
 			outputStyle: "compressed",
@@ -47,7 +45,7 @@ gulp.task("js", () =>
 );
 
 gulp.task("html", () =>
-	gulp.src("src/index.html")
+	gulp.src(htmlSource)
 		.pipe($.newer({
 			dest: "docs/index.html",
 			extra: [__filename]
@@ -64,10 +62,31 @@ gulp.task("html", () =>
 		.pipe(gulp.dest("docs"))
 );
 
+gulp.task("sw", () =>
+	gulp.src("src/service/sw.js")
+		.pipe($.esbuild({
+			outfile: "sw.js",
+			bundle: true,
+		}))
+		.pipe($.workbox({
+			globDirectory: "docs",
+			globPatterns: [
+				"**/*.html",
+				"**/*.js",
+				"**/*.css",
+				"**/*.woff2",
+				"**/*.png",
+			],
+			globIgnores: ["sw.js"]
+		}))
+		.pipe($.terser())
+		.pipe(gulp.dest("docs"))
+);
+
 gulp.task("fa", () =>
-	gulp.src("src/index.html")
+	gulp.src(htmlSource)
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.parallel("css", "js", "html"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html"), "sw"));

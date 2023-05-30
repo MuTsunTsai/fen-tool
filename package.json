@@ -10,9 +10,10 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@types/gulp-load-plugins": "^0.0.34",
 		"gulp": "^4.0.2",
 		"gulp-esbuild": "^0.11.1",
-		"gulp-fontawesome": "^1.0.1",
+		"gulp-fontawesome": "^1.0.2",
 		"gulp-html-minifier-terser": "^7.1.0",
 		"gulp-load-plugins": "^2.0.8",
 		"gulp-newer": "^1.4.0",
@@ -20,12 +21,18 @@
 		"gulp-replace": "^1.1.4",
 		"gulp-sass": "^5.1.0",
 		"gulp-terser": "^2.1.0",
+		"gulp-workbox": "^1.0.5",
 		"sass": "^1.62.1",
-		"vinyl-sourcemaps-apply": "^0.2.1"
+		"vinyl-sourcemaps-apply": "^0.2.1",
+		"workbox-build": "^6.6.0"
 	},
 	"dependencies": {
 		"@fortawesome/fontawesome-free": "^6.4.0",
 		"bootstrap": "^5.2.3",
-		"petite-vue": "^0.4.1"
+		"petite-vue": "^0.4.1",
+		"workbox-google-analytics": "^6.6.0",
+		"workbox-precaching": "^6.6.0",
+		"workbox-routing": "^6.6.0",
+		"workbox-strategies": "^6.6.0"
 	}
 }

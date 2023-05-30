@@ -15,6 +15,10 @@
 		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
 		gtag('config', 'G-4GYC00FPRR');
+
+		if(location.protocol == 'https:' && 'serviceWorker' in navigator) {
+			navigator.serviceWorker.register('sw.js', { scope: "./" });
+		}
 	</script>
 
 	<link href="lib/css/all.min.css" rel="stylesheet" />
@@ -80,7 +84,8 @@
 
 				<div class="card mb-4" v-if="store.message.textShortcut">
 					<div class="card-body">
-						<div class="mb-2">You can now directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.</div>
+						<div class="mb-2">You can now directly input text of 1 or 2 chars into a square, and it will be
+							automatically converted to FFEN syntax if it doesn't match existing syntax.</div>
 						<div class="text-end">
 							<button class="btn btn-info" @click="store.message.textShortcut=false">Got it!</button>
 						</div>
@@ -106,8 +111,7 @@
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<div class="d-inline-block">
-								<button type="button" class="btn btn-secondary"
-										onclick="setFEN('8/8/8/8/8/8/8/8')">
+								<button type="button" class="btn btn-secondary" onclick="setFEN('8/8/8/8/8/8/8/8')">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
 								<button type="button" class="btn btn-secondary"
