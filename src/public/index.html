@@ -203,6 +203,11 @@
 					</section>
 
 					<section :class="{show:tab==2}">
+						<div class="mb-3">
+							<button class="btn btn-primary nowrap" onclick="PDB.copyEdit()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB board edit syntax
+							</button>
+						</div>
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">PDB No:</label>
 							<div class="col">
@@ -225,11 +230,13 @@
 								</button>
 							</div>
 						</div>
-
 					</section>
 
 					<section :class="{show:tab==3}">
 						<div class="mb-3">
+							<button class="btn btn-primary nowrap" onclick="YACPDB.copyEdit()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB board edit syntax
+							</button>
 							<button class="btn btn-secondary" onclick="YACPDB.copyFEN()">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB style FEN
 							</button>

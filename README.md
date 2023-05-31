@@ -1,12 +1,19 @@
 # FEN-Tool
 
-This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess, specifically designed with the needs of the chess puzzle community in mind.
+This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess,
+specifically designed with the needs of the chess puzzle community in mind.
 
 ## How to use
 
-For desktops, on the board on the right you can simply drag-and-drop piece from the template to arrange them, and on the input boxes on the left you can manually input variations that are not available in the template. For mobile devices, the two boards are one and you can enable manual input by double-tapping on the squares. Options and tools should be mostly self-explanatory (the BBS tool is for Taiwan BBS forums such as PTT).
+For desktops, on the board on the right you can simply drag-and-drop piece from the template to arrange them,
+and on the input boxes on the left you can manually input variations that are not available in the template.
+For mobile devices, the two boards are one and you can enable manual input by double-tapping on the squares.
+Options and tools should be mostly self-explanatory.
 
-This tool is purely front-end by design, so it cannot generate a URL that represents an image like some other FEN tools. You can, however, easily share generated images by using the share button (works best on mobile devices) or by simply copy-and-paste the image.
+This tool is purely front-end by design,
+so it cannot generate a URL that represents an image like some other FEN tools.
+You can, however, easily share generated images by using the share button
+(works best on mobile devices) or by simply copy-and-paste the image.
 
 ## Notation
 
@@ -17,6 +24,27 @@ This tool supports most of the [Fairy FEN](https://www.janko.at/Retros/d.htm) sy
 - Use `'` + single char or `''`(that's two single-quote, not a double-quote) + double chars to denote text (e.g. `'A`, `''12`). Note that you can even use emoji with this syntax (e.g. `'🦆`; note that some emojis are actually two chars, e.g. `''🎅🏻`).  May be used together with rotation (e.g. `*1'A`).\
   Tip: you can directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.
 - Two markers can be used: `c` (circle) and `x` (cross). The square and triangle markers in FFEN are not supported here.
+
+You can also put in the fairy notation used by [YACPDB](https://www.yacpdb.org/), for example `(!b2)` means the same as `-*2b`.
+
+## Additional tools
+
+### PDB
+
+You can fetch a PDB problem by using its ID number,
+or search for a problem using the position (fairy pieces are not supported in search).
+It can also generate PDB board edit syntax (with fairy piece support)
+that can be used when adding or editing a problem in PDB.
+
+### YACPDB
+
+This is similar to the PDB tool, with the addition of copying YACPDB style FEN.
+Note that rotation is not supported in board edit syntax.
+
+### BBS
+
+This tool is for Taiwan BBS forums such as PTT.
+It generates colored BBS text that can be paste directly into posts.
 
 ## Chess set credits
 

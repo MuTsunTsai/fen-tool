@@ -91,7 +91,11 @@ export function toYACPDB(value) {
 	return "(" + (match[1] ? "!" : "") + match[3] + (match[2] || "") + ")";
 }
 
-function convertSN(value, useSN) {
+export function convertSN(value, useSN) {
 	if(useSN) return value.replace("n", "s").replace("N", "S");
 	else return value.replace("s", "n").replace("S", "N");
+}
+
+export function toCoordinate(i, j) {
+	return String.fromCharCode(97 + j) + (8 - i);
 }

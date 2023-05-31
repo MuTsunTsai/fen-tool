@@ -1,6 +1,6 @@
 import { squares, setFEN } from "./squares";
 import { store } from "./store";
-import { makeFEN, toYACPDB } from "./fen.mjs";
+import { makeFEN, toYACPDB, toCoordinate, convertSN } from "./fen.mjs";
 
 const YACPDB = document.getElementById("YACPDB");
 
@@ -43,6 +43,10 @@ window.YACPDB = {
 	copyQuery() {
 		gtag("event", "yacpdb_copy");
 		navigator.clipboard.writeText(createQuery());
+	},
+	copyEdit() {
+		gtag("event", "yacpdb_copyEdit");
+		navigator.clipboard.writeText(createEdit());
 	}
 }
 
@@ -55,10 +59,29 @@ function createQuery() {
 			if(v.match(/\d/)) continue; // rotation not supported;
 			if(v.startsWith("!")) v = "n" + v.toUpperCase();
 			else v = (v == v.toLowerCase() ? "b" : "w") + v.toUpperCase();
-			pieces.push(v + String.fromCharCode(97 + j) + (8 - i));
+			pieces.push(v + toCoordinate(i, j));
 		}
 	}
 	let result = `MatrixExtended("${pieces.join(" ")}", false, false, "None")`;
 	if(store.YACPDB.exact) result += " AND PCount(*) = " + pieces.length;
 	return result;
+}
+
+function createEdit() {
+	const groups = { w: [], b: [], n: [] };
+	for(let i = 0; i < 8; i++) {
+		for(let j = 0; j < 8; j++) {
+			const v = squares[i * 8 + j].value;
+			const match = v.match(/^(-?)([kqbsnrp])$/i);
+			if(!match) continue;
+			const type = convertSN(match[2]).toUpperCase();
+			const color = match[1] ? "n" : v == v.toLowerCase() ? "b" : "w";
+			groups[color].push(type + toCoordinate(i, j));
+		}
+	}
+	let result = [];
+	if(groups.w.length) result.push(`    white: [${groups.w.join(", ")}]`);
+	if(groups.b.length) result.push(`    black: [${groups.b.join(", ")}]`);
+	if(groups.n.length) result.push(`    neutral: [${groups.n.join(", ")}]`);
+	return result.join("\n");
 }
