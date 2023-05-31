@@ -4,24 +4,37 @@ import { types } from "./render";
 
 export const PDB = document.getElementById("PDB");
 
-const bt = document.getElementById("PDB_GET");
-
-window.getPDB_FEN = async function() {
-	gtag("event", "pdb_get");
-	bt.disabled = true;
-	bt.value = "Fetching...";
-	const url = pdbURL + encodeURIComponent(`PROBID='${PDB.value}'`);
-	const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
-	const text = await response.text();
-	setFEN(text.match(/<b>FEN:<\/b> (.+)/)[1], true);
-	bt.disabled = false;
-	bt.value = "Get FEN";
+window.PDB = {
+	async fetch(bt) {
+		try{
+			gtag("event", "pdb_get");
+			bt.disabled = true;
+			bt.value = "Fetching...";
+			const url = pdbURL + encodeURIComponent(`PROBID='${PDB.value}'`);
+			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
+			const text = await response.text();
+			setFEN(text.match(/<b>FEN:<\/b> (.+)/)[1], true);
+		} catch {
+			alert("An error has occurred. Please try again later.");
+		} finally {
+			bt.disabled = false;
+			bt.value = "Get FEN";
+		}
+	},
+	search() {
+		gtag("event", "pdb_search");
+		window.open(pdbURL + encodeURIComponent(createQuery()));
+	},
+	copyQuery() {
+		gtag("event", "pdb_copy");
+		navigator.clipboard.writeText(createQuery());
+	}
 }
 
 const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression="
 const pdbMap = ["K", "D", "L", "S", "T", "B"]; // German
 
-function getPDB_query() {
+function createQuery() {
 	let pieces = [];
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
@@ -35,14 +48,4 @@ function getPDB_query() {
 	let result = `POSITION='${pieces.join(" ")}'`;
 	if(store.PDB.exact) result += ` AND APIECES=${pieces.length}`;
 	return result;
-}
-
-window.searchPDB = function() {
-	gtag("event", "pdb_search");
-	window.open(pdbURL + encodeURIComponent(getPDB_query()));
-}
-
-window.copyPDB = function() {
-	gtag("event", "pdb_copy");
-	navigator.clipboard.writeText(getPDB_query());
 }

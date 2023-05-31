@@ -204,17 +204,17 @@
 								<input type="text" class="form-control" id="PDB">
 							</div>
 							<div class="col-auto">
-								<input type="button" id="PDB_GET" class="btn btn-primary" value="Get FEN" onclick="getPDB_FEN()">
+								<input type="button" class="btn btn-primary" value="Get FEN" onclick="PDB.fetch(this)">
 							</div>
 						</div>
 						<div class="mb-2">
 							<div v-scope="Checkbox('PDB.exact', 'Search exactly these pieces and nothing more')"></div>
 						</div>
 						<div class="text-end">
-							<button class="btn btn-secondary" onclick="copyPDB()">
+							<button class="btn btn-secondary" onclick="PDB.copyQuery()">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB position search query
 							</button>
-							<button class="btn btn-primary" onclick="searchPDB()">
+							<button class="btn btn-primary" onclick="PDB.search()">
 								<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search this position in PDB
 							</button>
 						</div>
