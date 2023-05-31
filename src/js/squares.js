@@ -1,4 +1,4 @@
-import { realSize } from "./el";
+import { FEN, realSize } from "./el";
 import { store } from "./store";
 
 export const squares = new Array(64);
@@ -52,7 +52,7 @@ export function setSquareBG() {
 function squareOnFocus() { this.select(); }
 function squareOnBlur() { this.style.zIndex = "unset"; }
 
-const test = /^[-~]?(\*\d)?([kqbsnrpcx]|'.|''..)$/iu;
+const test = /^[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)$/iu;
 
 function checkInput() {
 	checkInputCore(this);
@@ -64,7 +64,7 @@ function checkInputCore(s) {
 	if(!v.match(test)) {
 		// Text input shortcut
 		const l = [...v].length;
-		if(l == 1) v = "'" + v;
+		if(l == 1 && v != "'") v = "'" + v;
 		else if(l == 2) v = "''" + v;
 		else v = "";
 	}
