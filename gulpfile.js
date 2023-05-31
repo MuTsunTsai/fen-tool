@@ -34,7 +34,7 @@ gulp.task("js", () =>
 	gulp.src("src/js/main.js")
 		.pipe($.newer({
 			dest: "docs/main.js",
-			extra: [__filename, "src/**/*.js"]
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
 		.pipe($.esbuild({
 			outfile: "main.js",

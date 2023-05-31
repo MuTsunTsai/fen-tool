@@ -10,7 +10,10 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@types/chai": "^4.3.5",
 		"@types/gulp-load-plugins": "^0.0.34",
+		"@types/mocha": "^10.0.1",
+		"chai": "^4.3.7",
 		"gulp": "^4.0.2",
 		"gulp-esbuild": "^0.11.1",
 		"gulp-fontawesome": "^1.0.2",
@@ -22,6 +25,7 @@
 		"gulp-sass": "^5.1.0",
 		"gulp-terser": "^2.1.0",
 		"gulp-workbox": "^1.0.5",
+		"mocha": "^10.2.0",
 		"sass": "^1.62.1",
 		"vinyl-sourcemaps-apply": "^0.2.1",
 		"workbox-build": "^6.6.0"

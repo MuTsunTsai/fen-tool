@@ -1,4 +1,5 @@
 import { FEN, realSize } from "./el";
+import { makeFEN, normalize, parseFEN } from "./fen.mjs";
 import { store } from "./store";
 
 export const squares = new Array(64);
@@ -52,29 +53,13 @@ export function setSquareBG() {
 function squareOnFocus() { this.select(); }
 function squareOnBlur() { this.style.zIndex = "unset"; }
 
-const test = /^[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)$/iu;
-
 function checkInput() {
 	checkInputCore(this);
 	toFEN();
 }
 
 function checkInputCore(s) {
-	let v = s.value;
-	if(!v.match(test)) {
-		// Text input shortcut
-		const l = [...v].length;
-		if(l == 1 && v != "'") v = "'" + v;
-		else if(l == 2) v = "''" + v;
-		else v = "";
-	}
-	v = v.replace(/^~/, "-") // both "-" and "~" are acceptable input
-		.replace(/^-(?=.*')/, ""); // neutral has no effect on text
-	if(v.startsWith("-")) v = v.toLowerCase();
-	if(v.match(/^-?(\*\d)?[sn]$/i)) {
-		if(store.board.SN) v = v.replace("n", "s").replace("N", "S");
-		else v = v.replace("s", "n").replace("S", "N");
-	}
+	let v = normalize(s.value, store.board.SN);
 	const changed = v != s.value;
 	s.value = v;
 	return changed;
@@ -93,80 +78,16 @@ window.setFEN = function(v, check) {
 }
 
 export function toFEN() {
-	let s = 0, t = "";
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const index = i * 8 + j;
-			if(s && squares[index].value != "") {
-				t += s;
-				s = 0;
-			}
-			if(squares[index].value == "") {
-				s++;
-				if(j == 7) {
-					t += s;
-					s = 0;
-				}
-			} else {
-				t += squares[index].value;
-			}
-		}
-		if(i < 7) t += "/";
-	}
-	FEN.value = t;
+	FEN.value = makeFEN(squares.map(s => s.value));
 	dispatchEvent(new Event("fen"));
 }
 
 function toSquares(check) {
-	let cursor = 0, fen = [...FEN.value];
+	const fen = parseFEN(FEN.value);
 	let changed = false;
-	function slice(n) {
-		return fen.slice(cursor, cursor + n).join("");
-	}
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const index = i * 8 + j;
-			let char = fen[cursor] || "";
-			if(char == "/") {
-				cursor++;
-				j--;
-			} else if(char == "*") {
-				squares[index].value = slice(3);
-				cursor += 3;
-			} else if(char == "-" || char == "~") {
-				if(fen[cursor + 1] == "*") {
-					squares[index].value = slice(4);
-					cursor += 4;
-				} else {
-					squares[index].value = slice(2);
-					cursor += 2;
-				}
-			} else if(char == "'") {
-				if(fen[cursor + 1] == "'") {
-					squares[index].value = slice(4);
-					cursor += 4;
-				} else {
-					squares[index].value = slice(2);
-					cursor += 2;
-				}
-			} else if(char.match(/\d/)) {
-				let n = Number(char);
-				for(let k = 0; k < n; k++) {
-					if(k) {
-						j++;
-						if(j == 8) {
-							i++;
-							j = 0;
-						}
-					}
-					squares[i * 8 + j].value = "";
-				} cursor++;
-			} else {
-				squares[index].value = char;
-				cursor++;
-			}
-			changed = checkInputCore(squares[index]) || changed; // order matters
-		}
+	for(let i = 0; i < 64; i++) {
+		squares[i].value = fen[i];
+		changed = checkInputCore(squares[i]) || changed; // order matters
 	}
 	if(changed || check) toFEN();
 	else dispatchEvent(new Event("fen"));

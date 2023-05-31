@@ -207,17 +207,20 @@
 								<input type="button" class="btn btn-primary" value="Get FEN" onclick="PDB.fetch(this)">
 							</div>
 						</div>
-						<div class="mb-2">
-							<div v-scope="Checkbox('PDB.exact', 'Search exactly these pieces and nothing more')"></div>
+						<div class="row align-items-center">
+							<div class="col-12 col-md-auto mb-2">
+								<div v-scope="Checkbox('PDB.exact', 'Search exactly these pieces and nothing more')"></div>
+							</div>
+							<div class="col-12 col-md text-end">
+								<button class="btn btn-secondary" onclick="PDB.copyQuery()">
+									<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB position search query
+								</button>
+								<button class="btn btn-primary" onclick="PDB.search()">
+									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search this position in PDB
+								</button>
+							</div>
 						</div>
-						<div class="text-end">
-							<button class="btn btn-secondary" onclick="PDB.copyQuery()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB position search query
-							</button>
-							<button class="btn btn-primary" onclick="PDB.search()">
-								<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search this position in PDB
-							</button>
-						</div>
+						
 					</section>
 
 					<section :class="{show:tab==3}">
