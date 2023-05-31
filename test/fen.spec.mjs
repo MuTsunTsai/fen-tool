@@ -59,6 +59,20 @@ describe("FEN Parsing", function() {
 		]);
 	});
 
+	it("Works with YACPDB FEN", function() {
+		const result = parseFEN("rnbq(k1)bnr/pppp(!p)ppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+		expect(result).to.eql([
+			"r", "n", "b", "q", "(k1)", "b", "n", "r",
+			"p", "p", "p", "p", "(!p)", "p", "p", "p",
+			"", "", "", "", "", "", "", "",
+			"", "", "", "", "", "", "", "",
+			"", "", "", "", "", "", "", "",
+			"", "", "", "", "", "", "", "",
+			"P", "P", "P", "P", "P", "P", "P", "P",
+			"R", "N", "B", "Q", "K", "B", "N", "R"
+		]);
+	});
+
 });
 
 describe("Make FEN", function() {

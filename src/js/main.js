@@ -5,6 +5,7 @@ import { squares,  setSquareBG, updateSN, toFEN } from "./squares";
 import { drawTemplate, draw, getBlob } from "./render";
 import { setupLayout } from "./layout";
 import { setupDrag } from "./drag";
+import "./yacpdb";
 
 setupLayout();
 setupDrag();

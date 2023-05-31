@@ -72,10 +72,11 @@ export function setSquare(sq, value) {
 	if(updated) toFEN();
 }
 
-window.setFEN = function(v, check) {
+export function setFEN(v, check) {
 	FEN.value = v;
 	toSquares(check);
 }
+window.setFEN = setFEN;
 
 export function toFEN() {
 	FEN.value = makeFEN(squares.map(s => s.value));

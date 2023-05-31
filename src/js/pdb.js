@@ -1,12 +1,12 @@
 import { store } from "./store";
-import { squares } from "./squares";
+import { squares, setFEN } from "./squares";
 import { types } from "./render";
 
 export const PDB = document.getElementById("PDB");
 
 window.PDB = {
 	async fetch(bt) {
-		try{
+		try {
 			gtag("event", "pdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";

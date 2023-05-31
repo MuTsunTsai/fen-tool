@@ -1,6 +1,6 @@
 
-const VALUE = /^[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)$/iu;
-const FEN_UNIT = /\/|\d|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)|./iug;
+const VALUE = /^\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)$/iu;
+const FEN_UNIT = /\/|\d|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)|./iug;
 
 /**
  * Parse FEN syntax.
@@ -62,17 +62,36 @@ export function normalize(v, useSN) {
 		else v = "";
 	}
 
+	// YACPDB
+	v = v.replace(/^\((!?)([kqbnrp])(\d?)\)$/i, (_, $1, $2, $3) => {
+		let result = $2;
+		if($3) result = "*" + $3 + result;
+		if($1) result = "-" + result;
+		return result;
+	});
+
 	v = v.replace(/^~/, "-") // both "-" and "~" are acceptable syntax
 		.replace(/^-(?=.*')/, ""); // neutral has no effect on text
 
 	// Neutral
 	if(v.startsWith("-")) v = v.toLowerCase();
-	
+
 	// SN conversion
 	if(v.match(/^-?(\*\d)?[sn]$/i)) {
-		if(useSN) v = v.replace("n", "s").replace("N", "S");
-		else v = v.replace("s", "n").replace("S", "N");
+		if(useSN) v = convertSN(v, useSN);
 	}
 
 	return v;
+}
+
+export function toYACPDB(value) {
+	const match = value.match(/^(-?)(?:\*(\d))?([kqbsnrp])$/i);
+	if(!match) return "";
+	if(!match[1] && !match[2]) return match[3];
+	return "(" + (match[1] ? "!" : "") + match[3] + (match[2] || "") + ")";
+}
+
+function convertSN(value, useSN) {
+	if(useSN) return value.replace("n", "s").replace("N", "S");
+	else return value.replace("s", "n").replace("S", "N");
 }

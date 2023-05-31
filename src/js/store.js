@@ -12,6 +12,9 @@ const settings = {
 	PDB: {
 		exact: false,
 	},
+	YACPDB: {
+		exact: false,
+	},
 	board: {
 		uncolored: false,
 		inverted: false,
