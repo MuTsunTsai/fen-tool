@@ -87,10 +87,11 @@ function loadState() {
 addEventListener("popstate", loadState);
 
 export function pushState() {
+	const current = location.search;
 	const search = "?fen=" + FEN.value;
-	if(search != location.search) {
-		if(!location.search) history.replaceState(null, "", "?fen=" + FEN.value);
-		else history.pushState(null, "", "?fen=" + FEN.value);
+	if(search != decodeURIComponent(current)) {
+		if(!current) history.replaceState(null, "", search);
+		else history.pushState(null, "", search);
 	}
 }
 
