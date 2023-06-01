@@ -111,10 +111,46 @@ gulp.task("sw", () =>
 		.pipe(gulp.dest("docs"))
 );
 
+gulp.task("sdk", () =>
+	gulp.src("src/js/sdk.js")
+		.pipe($.newer({
+			dest: "docs/sdk.js",
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+		}))
+		.pipe($.terser())
+		.pipe(gulp.dest("docs"))
+);
+
+gulp.task("api", () =>
+	gulp.src("src/js/api.js")
+		.pipe($.newer({
+			dest: "docs/api/api.js",
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+		}))
+		.pipe($.esbuild({
+			outfile: "api.js",
+			bundle: true,
+		}))
+		.pipe($.terser())
+		.pipe(gulp.dest("docs/api"))
+);
+
+gulp.task("apiHtml", () =>
+	gulp.src("src/public/api/index.html")
+		.pipe($.newer({
+			dest: "docs/api/index.html",
+			extra: [__filename]
+		}))
+		.pipe($.htmlMinifierTerser(htmlOption))
+		// Avoid VS Code Linter warnings
+		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
+		.pipe(gulp.dest("docs/api"))
+);
+
 gulp.task("fa", () =>
 	gulp.src(htmlSource)
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "imgHtml", "imgJs"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "imgHtml", "imgJs", "sdk", "api", "apiHtml"), "sw"));

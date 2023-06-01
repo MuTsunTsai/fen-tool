@@ -19,9 +19,6 @@ const options = {
 const sizes = [26, 32, 38, 44];
 const sets = ["1echecs", "alpha", "goodCompanion", "merida", "skak"];
 
-const url = new URL(location.href);
-const squares = parseFEN(url.searchParams.get("fen") || "8/8/8/8/8/8/8/8");
-
 const size = Number(url.searchParams.get("size"));
 if(sizes.includes(size)) options.size = size;
 
@@ -44,10 +41,22 @@ const ctx = CN.getContext("2d");
 CN.width = CN.height = options.size * 8 + 2;
 
 const img = new Image();
-img.onload = draw;
-img.src = `../assets/${options.set}${options.size}.png`;
+const imageReady = new Promise(resolve => {
+	img.onload = resolve;
+	img.src = `../assets/${options.set}${options.size}.png`;
+});
 
-function draw() {
+parent.postMessage(null);
+
+onmessage = async event => {
+	if(!event.ports[0]) return;
+	await imageReady;
+	const squares = parseFEN(event.data || "8/8/8/8/8/8/8/8");
+	draw(squares);
+	event.ports[0].postMessage(CN.toDataURL());
+}
+
+function draw(squares) {
 	const full = 8 * options.size + 2;
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, full, full);

@@ -1,0 +1,1 @@
+const frame=document.createElement("iframe"),frameReady=new Promise((e=>{frame.onmessage=e,frame.src="https://mutsuntsai.github.io/fen-tool/api/"}));async function init(){await frameReady,document.querySelectorAll("img[fen]").forEach((e=>{const t=new MessageChannel;t.port1.onmessage=t=>{e.src=t.data},frame.postMessage(e.getAttribute("fen"),[t.port2])}))}init();
