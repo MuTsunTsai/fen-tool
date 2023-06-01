@@ -78,7 +78,7 @@ export function normalize(v, useSN) {
 
 	// SN conversion
 	if(v.match(/^-?(\*\d)?[sn]$/i)) {
-		if(useSN) v = convertSN(v, useSN);
+		v = convertSN(v, useSN);
 	}
 
 	return v;
