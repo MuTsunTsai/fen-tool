@@ -77,7 +77,7 @@ gulp.task("imgHtml", () =>
 );
 
 gulp.task("imgJs", () =>
-	gulp.src("src/js/img.js")
+	gulp.src("src/js/api/img.js")
 		.pipe($.newer({
 			dest: "docs/img/img.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
@@ -112,7 +112,7 @@ gulp.task("sw", () =>
 );
 
 gulp.task("sdk", () =>
-	gulp.src("src/js/sdk.js")
+	gulp.src("src/js/api/sdk.js")
 		.pipe($.newer({
 			dest: "docs/sdk.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
@@ -122,7 +122,7 @@ gulp.task("sdk", () =>
 );
 
 gulp.task("api", () =>
-	gulp.src("src/js/api.js")
+	gulp.src("src/js/api/api.js")
 		.pipe($.newer({
 			dest: "docs/api/api.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]

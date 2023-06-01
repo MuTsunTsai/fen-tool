@@ -1,4 +1,5 @@
 import { reactive } from "petite-vue";
+import { defaultOption } from "./option";
 
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
@@ -15,16 +16,7 @@ const settings = {
 	YACPDB: {
 		exact: false,
 	},
-	board: {
-		uncolored: false,
-		inverted: false,
-		grayBG: false,
-		blackWhite: false,
-		knightOffset: .5,
-		SN: false,
-		size: 44,
-		set: "1echecs",
-	},
+	board: defaultOption,
 	message: {
 		touchTip: true,
 		textShortcut: true,
