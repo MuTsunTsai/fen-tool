@@ -27,8 +27,7 @@ if(sets.includes(set)) options.set = set;
 const offset = Number(url.searchParams.get("knightOffset"));
 if(0 < offset && offset < 1) options.knightOffset = offset;
 
-for(const key of ["uncolored", "inverted", "grayBG", "blackWhite", "SN"]) {
-	console.log(key, url.searchParams.has(key));
+for(const key of ["uncolored", "inverted", "grayBG", "blackWhite"]) {
 	if(url.searchParams.has(key)) options[key] = true;
 }
 

@@ -34,6 +34,7 @@ export function createSquares() {
 		}
 	}
 	setSquareBG();
+	loadState();
 }
 
 export function setSquareBG() {
@@ -77,6 +78,28 @@ export function setFEN(v, check) {
 	toSquares(check);
 }
 window.setFEN = setFEN;
+
+function loadState() {
+	const url = new URL(location.href);
+	const fen = url.searchParams.get("fen");
+	if(fen) setFEN(fen, true);
+}
+addEventListener("popstate", loadState);
+
+window.copyEmbed = function() {
+	gtag("event", "copy_embed");
+	const options = store.board;
+	let url = "https://mutsuntsai.github.io/fen-tool/img/?fen=" + FEN.value;
+	if(options.size != 44) url += "&size=" + options.size;
+	if(options.set != "1echecs") url += "&set=" + options.set;
+	for(const key of ["uncolored", "inverted", "grayBG", "blackWhite"]) {
+		if(options[key]) url += "&" + key;
+	}
+	if(options.blackWhite) url += "&knightOffset=" + options.knightOffset;
+	const size = options.size * 8 + 2;
+	const html = `<iframe src="${url}" style="border:none;width:${size}px;height:${size}px"></iframe>`;
+	navigator.clipboard.writeText(html);
+}
 
 export function toFEN() {
 	FEN.value = makeFEN(squares.map(s => s.value));

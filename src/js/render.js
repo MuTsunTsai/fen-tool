@@ -62,6 +62,11 @@ export async function draw() {
 			drawPiece(gCtx, img, i, j, value, 2, options);
 		}
 	}
+	const search = "?fen=" + FEN.value;
+	if(search != location.search) {
+		if(!location.search) history.replaceState(null, "", "?fen=" + FEN.value);
+		else history.pushState(null, "", "?fen=" + FEN.value);
+	}
 	if(location.protocol == "https:") {
 		const a = document.getElementById("Save");
 		if(a.href) URL.revokeObjectURL(a.href);

@@ -143,9 +143,14 @@
 							</div>
 						</div>
 						<div class="text-end">
-							<button type="button" class="btn btn-secondary" id="B64" onclick="toBase64()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
-							</button>&nbsp;
+							<div class="d-inline-block">
+								<button type="button" class="btn btn-secondary" id="B64" onclick="toBase64()">
+									<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
+								</button>
+								<button type="button" class="btn btn-secondary" onclick="copyEmbed()">
+									<i class="fa-solid fa-clipboard"></i>&ensp;Copy embed HTML code
+								</button>
+							</div>&nbsp;
 							<div class="d-inline-block">
 								<button class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
@@ -287,7 +292,7 @@
 			<hr>
 			<div class="mb-4 row small">
 				<div class="col-12 col-md">
-					For more information, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a> of
+					For more information and API, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a> of
 					this tool on GitHub.
 				</div>
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
