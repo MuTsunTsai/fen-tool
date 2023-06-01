@@ -86,6 +86,14 @@ function loadState() {
 }
 addEventListener("popstate", loadState);
 
+export function pushState() {
+	const search = "?fen=" + FEN.value;
+	if(search != location.search) {
+		if(!location.search) history.replaceState(null, "", "?fen=" + FEN.value);
+		else history.pushState(null, "", "?fen=" + FEN.value);
+	}
+}
+
 window.copyEmbed = function() {
 	gtag("event", "copy_embed");
 	const options = store.board;

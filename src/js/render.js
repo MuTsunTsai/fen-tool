@@ -1,7 +1,7 @@
 import { CN, CG, TP, TPG } from "./el";
 import { mode } from "./layout";
 import { store, state } from "./store";
-import { squares } from "./squares";
+import { pushState, squares } from "./squares";
 import { drawPiece } from "./draw";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
@@ -62,13 +62,7 @@ export async function draw() {
 			drawPiece(gCtx, img, i, j, value, 2, options);
 		}
 	}
-	if(!mode.dragging) {
-		const search = "?fen=" + FEN.value;
-		if(search != location.search) {
-			if(!location.search) history.replaceState(null, "", "?fen=" + FEN.value);
-			else history.pushState(null, "", "?fen=" + FEN.value);
-		}
-	}
+	if(!mode.dragging) pushState();
 	if(location.protocol == "https:") {
 		const a = document.getElementById("Save");
 		if(a.href) URL.revokeObjectURL(a.href);

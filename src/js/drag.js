@@ -1,6 +1,6 @@
 import { mode } from "./layout";
 import { state } from "./store";
-import { squares, toFEN, setSquare } from "./squares";
+import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, TP, realSize } from "./el";
 import { templateValues } from "./render";
 
@@ -53,6 +53,8 @@ function mouseup(event) {
 	ghost.style.display = "none";
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
 		setSquare(squares[index], draggingValue);
+	} else {
+		pushState();
 	}
 }
 
