@@ -1,6 +1,7 @@
 const script = document.currentScript;
 const apiURL = new URL("api/", script.src);
 const globalOptions = script.dataset;
+const selector = "img[fen]";
 
 const frame = document.createElement("iframe");
 frame.style.display = "none";
@@ -17,11 +18,12 @@ function setup(img) {
 }
 
 function check(node) {
-	node.querySelectorAll("img[fen]").forEach(img => setup(img));
+	if(node.matches(selector)) setup(node);
+	else node.querySelectorAll(selector).forEach(img => setup(img));
 }
 
 async function init() {
-	document.body.appendChild(frame);
+	document.head.appendChild(frame); // sounds funny but works
 	await new Promise(resolve => {
 		const handler = event => {
 			if(event.source != frame.contentWindow) return;
@@ -32,6 +34,7 @@ async function init() {
 		frame.src = apiURL.toString();
 	});
 
+	const doc = document.documentElement;
 	new MutationObserver(list => {
 		for(const record of list) {
 			if(record.type == "attributes") {
@@ -43,13 +46,13 @@ async function init() {
 				for(const node of record.addedNodes) check(node);
 			}
 		}
-	}).observe(document.documentElement, {
+	}).observe(doc, {
 		childList: true,
 		attributes: true,
 		subtree: true
 	});
 
-	check(document);
+	check(doc);
 }
 
-addEventListener("DOMContentLoaded", init);
+init();
