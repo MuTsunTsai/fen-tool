@@ -1,6 +1,6 @@
 import { store } from "./store";
 import { squares, setFEN } from "./squares";
-import { types } from "./render";
+import { types } from "./draw";
 import { toCoordinate } from "./fen.mjs";
 
 export const PDB = document.getElementById("PDB");

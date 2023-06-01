@@ -2,10 +2,10 @@ import { mode } from "./layout";
 import { state } from "./store";
 import { squares, toFEN, setSquare } from "./squares";
 import { CN, TP, realSize } from "./el";
+import { templateValues } from "./render";
 
-const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 let startX, startY, sqX, sqY, sq, lastTap = 0;
-let ghost, draggingValue, offset;
+let ghost, draggingValue;
 
 export function setupDrag() {
 	CN.onmousedown = mouseDown;
@@ -77,7 +77,7 @@ function mouseDown(event) {
 	if(!isCN || sq.value != "") {
 		event.preventDefault();
 		ghost.style.clip = `rect(${2 + sqY * size}px,${(sqX + 1) * size}px,${(sqY + 1) * size}px,${2 + sqX * size}px)`;
-		offset = isCN ? 0 : 1;
+		// offset = isCN ? 0 : 1;
 		if(isCN) {
 			draggingValue = sq.value;
 		} else {
@@ -111,10 +111,10 @@ function dragMove(event) {
 	const x = Math.floor((event.clientX - r.left - 1) / size);
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
-		ghost.style.left = r.left + (x - sqX) * size + offset + scrollLeft + "px";
-		ghost.style.top = r.top + (y - sqY) * size + offset + scrollTop + "px";
+		ghost.style.left = r.left + (x - sqX) * size + scrollLeft + "px";
+		ghost.style.top = r.top + (y - sqY) * size + scrollTop + "px";
 	} else {
-		ghost.style.left = event.clientX + scrollLeft - startX + "px";
+		ghost.style.left = event.clientX + scrollLeft + 1 - startX + "px";
 		ghost.style.top = event.clientY + scrollTop - startY + "px";
 	}
 }

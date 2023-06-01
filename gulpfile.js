@@ -17,6 +17,14 @@ const purgeOption = {
 	variables: true,
 };
 
+const htmlOption = {
+	"collapseWhitespace": true,
+	"removeComments": true,
+	"minifyJS": {
+		"ie8": true
+	}
+};
+
 gulp.task("css", () =>
 	gulp.src("src/public/style.scss")
 		.pipe($.newer({
@@ -50,16 +58,36 @@ gulp.task("html", () =>
 			dest: "docs/index.html",
 			extra: [__filename]
 		}))
-		.pipe($.htmlMinifierTerser({
-			"collapseWhitespace": true,
-			"removeComments": true,
-			"minifyJS": {
-				"ie8": true
-			}
-		}))
+		.pipe($.htmlMinifierTerser(htmlOption))
 		// Avoid VS Code Linter warnings
 		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
 		.pipe(gulp.dest("docs"))
+);
+
+gulp.task("imgHtml", () =>
+	gulp.src("src/public/img/index.html")
+		.pipe($.newer({
+			dest: "docs/img/index.html",
+			extra: [__filename]
+		}))
+		.pipe($.htmlMinifierTerser(htmlOption))
+		// Avoid VS Code Linter warnings
+		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
+		.pipe(gulp.dest("docs/img"))
+);
+
+gulp.task("imgJs", () =>
+	gulp.src("src/js/img.js")
+		.pipe($.newer({
+			dest: "docs/img/img.js",
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+		}))
+		.pipe($.esbuild({
+			outfile: "img.js",
+			bundle: true,
+		}))
+		.pipe($.terser())
+		.pipe(gulp.dest("docs/img"))
 );
 
 gulp.task("sw", () =>
@@ -89,4 +117,4 @@ gulp.task("fa", () =>
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "imgHtml", "imgJs"), "sw"));

@@ -1,6 +1,6 @@
 import { CN, CG, TP, TPG } from "./el";
 import { store } from "./store";
-import { setFont, load } from "./render";
+import { load } from "./render";
 import { setSquareSize, createSquares } from "./squares";
 
 export const mode = {
@@ -23,7 +23,6 @@ function setSize(s, force) {
 		CN.style.width = full + "px";
 		CG.width = CN.width = full;
 		CG.height = CN.height = full;
-		setFont(`${s - 4}px arial`);
 		if(mode.hor) {
 			TPG.height = TP.height = 3 * s + 2;
 			TPG.width = TP.width = full;

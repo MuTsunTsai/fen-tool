@@ -60,7 +60,7 @@ function checkInput() {
 
 function checkInputCore(s) {
 	let v = normalize(s.value, store.board.SN);
-	const changed = v != s.value;
+	const changed = v !== s.value;
 	s.value = v;
 	return changed;
 }

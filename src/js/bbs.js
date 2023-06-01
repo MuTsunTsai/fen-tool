@@ -2,24 +2,11 @@ import { store } from "./store";
 import { FEN } from "./el";
 import { PDB } from "./pdb";
 import { squares } from "./squares";
+import { DIGITS, fullWidth } from "./fullWidth";
 
 const us = unescape("%1B");
-const A1 = "０１２３４５６７８９".split("");
-const A2 = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");
-const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝ 皇后,ｋ ＝ 國王,".split(",");
-
-const fullWidthMap = (function() {
-	const map = new Map();
-	const FW1 = ("abcdefghijklmnopqrstuvwxyz"
-		+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		+ ",./<>?;':\"[]\\{}|!@#$%^&*()_+-=`~").split("");
-	const FW2 = ("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
-		+ "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ"
-		+ "，．／＜＞？；’：”〔〕＼｛｝｜！＠＃＄％︿＆＊（）ˍ＋－＝‘～").split("");
-	for(let i = 0; i < FW1.length; i++) map.set(FW1[i], FW2[i]);
-	for(let i = 0; i < 10; i++) map.set(i.toString(), A1[i]);
-	return map;
-})();
+export const A2 = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");
+export const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝ 皇后,ｋ ＝ 國王,".split(",");
 
 window.BBS = {
 	copy() {
@@ -29,7 +16,7 @@ window.BBS = {
 			if(value.startsWith("*")) value = value.substring(2);
 		}
 		for(let i = 0; i < 8; i++) {
-			if(store.BBS.coordinates) result += us + "[m" + A1[8 - i] + "　";
+			if(store.BBS.coordinates) result += us + "[m" + DIGITS[8 - i] + "　";
 			for(let j = 0; j < 8; j++) {
 				value = squares[i * 8 + j].value;
 				ignoreRotation();
@@ -71,10 +58,4 @@ window.BBS = {
 function BackgroundColor(i, j) {
 	if(store.board.uncolored) return "43;m";
 	else return (i + j) % 2 ? "42;m" : "43;m";
-}
-
-export function fullWidth(s, t) {
-	if(t && s.toLowerCase() == "c") return "‧";
-	if(t && s.toLowerCase() == "x") return "╳";
-	return fullWidthMap.get(s);
 }
