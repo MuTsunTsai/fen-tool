@@ -54,7 +54,6 @@ export function makeFEN(values) {
 }
 
 export function normalize(v, useSN) {
-	console.log("normalize", v);
 	// Text input shortcut
 	if(!v.match(VALUE)) {
 		const l = [...v].length;

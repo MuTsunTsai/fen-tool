@@ -1,18 +1,18 @@
 import { background } from "./draw";
-import { FEN, realSize } from "./el";
+import { FEN } from "./el";
 import { makeFEN, normalize, parseFEN } from "./fen.mjs";
-import { store } from "./store";
+import { store, getRenderSize } from "./store";
 
 export const squares = new Array(64);
+export const container = document.getElementById("Squares");
 
 export function setSquareSize() {
-	const container = document.getElementById("Squares");
-	const size = realSize();
+	const { s } = getRenderSize();
 	container.style.height = container.style.width = CN.clientWidth + "px";
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
-			squares[i * 8 + j].style.fontSize = (size - 10) + "px";
-			squares[i * 8 + j].style.lineHeight = (size - 10) + "px";
+			squares[i * 8 + j].style.fontSize = (s - 10) + "px";
+			squares[i * 8 + j].style.lineHeight = (s - 10) + "px";
 		}
 	}
 }
@@ -20,7 +20,6 @@ export function setSquareSize() {
 window.setSquareSize = setSquareSize;
 
 export function createSquares() {
-	const container = document.getElementById("Squares");
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const index = i * 8 + j;

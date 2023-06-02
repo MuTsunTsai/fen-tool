@@ -7,6 +7,7 @@ import { setupLayout } from "./layout";
 import { setupDrag } from "./drag";
 import "./yacpdb";
 import "./bbs";
+import { parseBorder } from "./option";
 
 setupLayout();
 setupDrag();
@@ -14,6 +15,10 @@ setupDrag();
 //===========================================================
 // export
 //===========================================================
+
+function getURL(url) {
+	return new URL(url, location.href).toString();
+}
 
 window.API = {
 	toBase64() {
@@ -23,14 +28,18 @@ window.API = {
 	copyEmbed() {
 		gtag("event", "fen_copy_embed");
 		const options = store.board;
-		let url = "https://mutsuntsai.github.io/fen-tool/gen/?fen=" + FEN.value;
+
+		let url = getURL("gen/?fen=" + FEN.value);
 		if(options.size != 44) url += "&size=" + options.size;
 		if(options.set != "1echecs") url += "&set=" + options.set;
 		if(options.pattern) url += "&pattern=" + options.pattern;
 		if(options.bg) url += "&bg=" + options.bg;
+		if(options.border != "1") url += "&border=" + options.border;
 		if(options.blackWhite) url += "&blackWhite&knightOffset=" + options.knightOffset;
-		const size = options.size * 8 + 2;
-		const html = `<iframe src="${url}" style="border:none;width:${size}px;height:${size}px"></iframe>`;
+		const borderSize = parseBorder(options.border).size;
+		const w = options.size * 8 + 2 * borderSize;
+		const h = options.size * 8 + 2 * borderSize;
+		const html = `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
 		navigator.clipboard.writeText(html);
 	},
 	copyImg() {
@@ -44,8 +53,9 @@ window.API = {
 		if(options.size != 44) data += ` data-size="${options.size}"`;
 		if(options.set != "1echecs") data += ` data-set="${options.set}"`;
 		if(options.bg) data += ` data-bg="${options.bg}"`;
+		if(options.border != "1") data += ` data-border="${options.border}"`;
 		if(options.blackWhite) data += ` data-black-white="true" data-knight-offset="${options.knightOffset}"`;
-		const html = `<script src="https://mutsuntsai.github.io/fen-tool/sdk.js"${data}></script>`;
+		const html = `<script src="${getURL("sdk.js")}"${data}></script>`;
 		navigator.clipboard.writeText(html);
 	},
 };

@@ -1,7 +1,7 @@
 import { mode } from "./layout";
-import { state } from "./store";
+import { getRenderSize, state } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
-import { CN, TP, realSize } from "./el";
+import { CN, TP } from "./el";
 import { templateValues } from "./render";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
@@ -45,10 +45,10 @@ function mouseup(event) {
 	mode.dragging = false;
 	if(!draggingValue) return;
 	wrapEvent(event);
-	const size = realSize();
+	const { b, s } = getRenderSize();
 	const r = CN.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - 1) / size);
-	const x = Math.floor((event.clientX - r.left - 1) / size);
+	const y = Math.floor((event.clientY - r.top - b) / s);
+	const x = Math.floor((event.clientX - r.left - b) / s);
 	const index = y * 8 + x;
 	ghost.style.display = "none";
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
@@ -63,12 +63,13 @@ function mouseDown(event) {
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
-	const size = realSize();
+	const { b, s } = getRenderSize();
 	const isCN = this == CN;
 	startX = event.offsetX;
 	startY = event.offsetY;
-	sqX = Math.floor((startX - 1) / size);
-	sqY = Math.floor((startY - 1) / size);
+	sqX = Math.floor((startX - b) / s);
+	sqY = Math.floor((startY - b) / s);
+	console.log(sqX, sqY);
 	const index = sqY * (isCN ? 8 : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 	if(isCN) {
@@ -78,7 +79,7 @@ function mouseDown(event) {
 	}
 	if(!isCN || sq.value != "") {
 		event.preventDefault();
-		ghost.style.clip = `rect(${2 + sqY * size}px,${(sqX + 1) * size}px,${(sqY + 1) * size}px,${2 + sqX * size}px)`;
+		ghost.style.clip = `rect(${sqY * s + b + 1}px,${(sqX + 1) * s + b - 1}px,${(sqY + 1) * s + b - 1}px,${sqX * s + b + 1}px)`;
 		// offset = isCN ? 0 : 1;
 		if(isCN) {
 			draggingValue = sq.value;
@@ -107,14 +108,14 @@ function getDisplacement(event) {
 }
 
 function dragMove(event) {
-	const size = realSize();
+	const { b, s } = getRenderSize();
 	const r = CN.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - 1) / size);
-	const x = Math.floor((event.clientX - r.left - 1) / size);
+	const y = Math.floor((event.clientY - r.top - b) / s);
+	const x = Math.floor((event.clientX - r.left - b) / s);
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < 8 && x > -1 && x < 8) {
-		ghost.style.left = r.left + (x - sqX) * size + scrollLeft + "px";
-		ghost.style.top = r.top + (y - sqY) * size + scrollTop + "px";
+		ghost.style.left = r.left + (x - sqX) * s + scrollLeft + "px";
+		ghost.style.top = r.top + (y - sqY) * s + scrollTop + "px";
 	} else {
 		ghost.style.left = event.clientX + scrollLeft + 1 - startX + "px";
 		ghost.style.top = event.clientY + scrollTop - startY + "px";

@@ -42,8 +42,16 @@ section {
 	height: 100%;
 }
 
-#CN, #TP {
+#CN,
+#SN,
+#TP {
 	max-width: 100%;
+}
+
+#SN {
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .ghost {
@@ -60,7 +68,8 @@ section {
 	grid-template-rows: repeat(8, 1fr);
 	grid-column-gap: 0px;
 	grid-row-gap: 0px;
-	border: 1px solid black;
+	border: 1px solid transparent;
+	position: relative;
 }
 
 #Zone {
@@ -87,7 +96,7 @@ td {
 }
 
 .nav-item,
-input[type=checkbox],
+input[type="checkbox"],
 label[for] {
 	cursor: pointer;
 }

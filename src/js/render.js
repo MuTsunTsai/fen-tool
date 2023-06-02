@@ -2,7 +2,8 @@ import { CN, CG, TP, TPG } from "./el";
 import { mode } from "./layout";
 import { store, state } from "./store";
 import { pushState, squares } from "./squares";
-import { background, drawPiece } from "./draw";
+import { background, drawPiece, drawBorder } from "./draw";
+import { parseBorder } from "./option";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 
@@ -30,11 +31,17 @@ const tgCtx = TPG.getContext("2d");
 export function drawTemplate() {
 	const options = store.board;
 	const size = options.size;
-	let w = 3 * size + 2, h = 8 * size + 2;
+	const border = parseBorder(store.board.border);
+	let w = 3 * size + border.size * 2, h = 8 * size + border.size * 2;
 	if(mode.hor) [w, h] = [h, w];
 	tCtx.fillStyle = "black";
 	tCtx.fillRect(0, 0, w, h);
 	tgCtx.clearRect(0, 0, w, h);
+	tCtx.save();
+	tgCtx.save();
+	drawBorder(tCtx, border, w, h);
+	tCtx.translate(border.size, border.size);
+	tgCtx.translate(border.size, border.size);
 	for(let i = 0; i < 3; i++) {
 		for(let j = 0; j < 8; j++) {
 			const bg = Boolean((i + j) % 2) ? 1 : 0;
@@ -44,16 +51,25 @@ export function drawTemplate() {
 			drawPiece(tgCtx, img, x, y, value, 2, options);
 		}
 	}
+	tCtx.restore();
+	tgCtx.restore();
 	draw();
 }
 
 export async function draw() {
 	const options = store.board;
-	const full = 8 * options.size + 2;
+	const border = parseBorder(store.board.border);
+	const w = 8 * options.size + 2 * border.size;
+	const h = 8 * options.size + 2 * border.size;
 	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, full, full);
-	if(!mode.dragging) gCtx.clearRect(0, 0, full, full);
+	ctx.fillRect(0, 0, w, h);
+	if(!mode.dragging) gCtx.clearRect(0, 0, w, h);
 	ctx.font = gCtx.font = `${options.size - 4}px arial`;
+	ctx.save();
+	gCtx.save();
+	drawBorder(ctx, border, w, h);
+	ctx.translate(border.size, border.size);
+	gCtx.translate(border.size, border.size);
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const bg = background(options.pattern, i, j);
@@ -62,6 +78,9 @@ export async function draw() {
 			drawPiece(gCtx, img, i, j, value, 2, options);
 		}
 	}
+	ctx.restore();
+	gCtx.restore();
+
 	if(!mode.dragging) pushState();
 	if(location.protocol == "https:") {
 		const a = document.getElementById("Save");

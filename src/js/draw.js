@@ -32,7 +32,7 @@ export function drawPiece(ctx, img, i, j, value, bg, options) {
 	const sx = neutral ? (bw ? 0 : 2) : value == lower ? 0 : 1;
 	const f = neutral && bw ? (lower == "n" ? options.knightOffset : .5) : 1;
 	const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
-	ctx.translate((j + rx) * size + 1, (i + ry) * size + 1);
+	ctx.translate((j + rx) * size, (i + ry) * size);
 	if(rotate !== 0) ctx.rotate(Math.PI / 2 * rotate);
 	if(isText) {
 		const c = value.substring(1);
@@ -54,6 +54,21 @@ export function background(pattern, i, j) {
 	return bg;
 }
 
+export function drawBorder(ctx, border, w, h) {
+	ctx.save();
+	let cursor = 0;
+	for(let i = 0; i < border.array.length; i++) {
+		const width = border.array[i];
+		ctx.strokeStyle = i % 2 ? "white" : "black";
+		if(width == 0) continue;
+		ctx.lineWidth = width;
+		const offset = border.size - cursor - width / 2;
+		ctx.strokeRect(offset, offset, w - 2 * offset, h - 2 * offset);
+		cursor += width;
+	}
+	ctx.restore();
+}
+
 function drawBlank(ctx, i, j, light, options) {
 	const size = options.size;
 	ctx.save();
@@ -62,7 +77,7 @@ function drawBlank(ctx, i, j, light, options) {
 	} else {
 		ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";
 	}
-	ctx.fillRect(j * size + 1, i * size + 1, size, size);
+	ctx.fillRect(j * size, i * size, size, size);
 	ctx.restore();
 }
 

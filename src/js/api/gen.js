@@ -12,8 +12,9 @@ const options = makeOption({
 	knightOffset: url.searchParams.get("knightOffset"),
 	pattern: url.searchParams.get("pattern"),
 	bg: url.searchParams.get("bg"),
+	border: url.searchParams.get("border"),
 	blackWhite: url.searchParams.has("blackWhite"),
-})
+});
 
 const img = new Image();
 img.onload = () => {

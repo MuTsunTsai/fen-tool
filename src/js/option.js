@@ -2,12 +2,15 @@
 export const defaultOption = {
 	pattern: undefined,
 	bg: undefined,
+	border: "1",
 	blackWhite: false,
 	knightOffset: .6,
 	SN: false,
 	size: 44,
 	set: "1echecs",
 };
+
+export const BORDER = /^\d+(,\d+)*$/;
 
 const sizes = [26, 32, 38, 44];
 const sets = ["1echecs", "alpha", "goodCompanion", "merida", "skak"];
@@ -18,6 +21,7 @@ export function makeOption(option) {
 		const size = Number(option.size);
 		if(sizes.includes(size)) result.size = size;
 		if(sets.includes(option.set)) result.set = option.set;
+		if(option.border && option.border.match(BORDER)) result.border = option.border;
 		if(0 < option.knightOffset && option.knightOffset < 1) result.knightOffset = option.offset;
 		result.blackWhite = Boolean(option.blackWhite);
 		result.pattern = option.pattern;
@@ -25,4 +29,13 @@ export function makeOption(option) {
 		result.SN = option.SN;
 	}
 	return result;
+}
+
+export function parseBorder(border) {
+	const array = border.split(",").map(n => {
+		const result = Number(n);
+		return isNaN(result) ? 0 : Math.abs(Math.floor(result));
+	});
+	const size = array.reduce((v, x) => v + x, 0);
+	return { array, size };
 }
