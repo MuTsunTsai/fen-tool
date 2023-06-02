@@ -50,7 +50,7 @@ window.BBS = {
 		if(store.BBS.PDB) result += us + "[0;30;40m" + PDB.value + us + "[m";
 		if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
 		result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
-		gtag("event", "bbs_copy");
+		gtag("event", "fen_bbs_copy");
 		navigator.clipboard.writeText(result);
 	},
 };

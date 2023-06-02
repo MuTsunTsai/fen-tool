@@ -17,11 +17,11 @@ setupDrag();
 
 window.API = {
 	toBase64() {
-		gtag("event", "link_copy");
+		gtag("event", "fen_link_copy");
 		navigator.clipboard.writeText(CN.toDataURL());
 	},
 	copyEmbed() {
-		gtag("event", "copy_embed");
+		gtag("event", "fen_copy_embed");
 		const options = store.board;
 		let url = "https://mutsuntsai.github.io/fen-tool/gen/?fen=" + FEN.value;
 		if(options.size != 44) url += "&size=" + options.size;
@@ -38,7 +38,7 @@ window.API = {
 		navigator.clipboard.writeText(html);
 	},
 	copySDK() {
-		gtag("event", "copy_sdk");
+		gtag("event", "fen_copy_sdk");
 		const options = store.board;
 		let data = ""
 		if(options.size != 44) data += ` data-size="${options.size}"`;
@@ -51,7 +51,7 @@ window.API = {
 };
 
 window.share = async function() {
-	gtag("event", "img_share");
+	gtag("event", "fen_img_share");
 	const blob = await getBlob();
 	const files = [new File([blob], "board.png", { type: "image/png" })];
 	navigator.share({ files });

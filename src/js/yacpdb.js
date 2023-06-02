@@ -6,13 +6,13 @@ const YACPDB = document.getElementById("YACPDB");
 
 window.YACPDB = {
 	copyFEN() {
-		gtag("event", "yacpdb_copyFEN");
+		gtag("event", "fen_yacpdb_copyFEN");
 		const values = squares.map(s => toYACPDB(s.value));
 		navigator.clipboard.writeText(makeFEN(values));
 	},
 	async fetch(bt) {
 		try {
-			gtag("event", "yacpdb_get");
+			gtag("event", "fen_yacpdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
 			const url = "https://yacpdb.org/gateway/ql?q=" + encodeURIComponent(`Id('${YACPDB.value}')`);
@@ -37,15 +37,15 @@ window.YACPDB = {
 		}
 	},
 	search() {
-		gtag("event", "yacpdb_search");
+		gtag("event", "fen_yacpdb_search");
 		window.open("https://yacpdb.org/#q/" + encodeURIComponent(createQuery()) + "/1");
 	},
 	copyQuery() {
-		gtag("event", "yacpdb_copy");
+		gtag("event", "fen_yacpdb_copy");
 		navigator.clipboard.writeText(createQuery());
 	},
 	copyEdit() {
-		gtag("event", "yacpdb_copyEdit");
+		gtag("event", "fen_yacpdb_copyEdit");
 		navigator.clipboard.writeText(createEdit());
 	}
 }

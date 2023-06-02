@@ -8,7 +8,7 @@ export const PDB = document.getElementById("PDB");
 window.PDB = {
 	async fetch(bt) {
 		try {
-			gtag("event", "pdb_get");
+			gtag("event", "fen_pdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
 			const url = pdbURL + encodeURIComponent(`PROBID='${PDB.value}'`);
@@ -23,15 +23,15 @@ window.PDB = {
 		}
 	},
 	search() {
-		gtag("event", "pdb_search");
+		gtag("event", "fen_pdb_search");
 		window.open(pdbURL + encodeURIComponent(createQuery()));
 	},
 	copyQuery() {
-		gtag("event", "pdb_copy");
+		gtag("event", "fen_pdb_copy");
 		navigator.clipboard.writeText(createQuery());
 	},
 	copyEdit() {
-		gtag("event", "pdb_copyEdit");
+		gtag("event", "fen_pdb_copyEdit");
 		navigator.clipboard.writeText(createEdit());
 	}
 }

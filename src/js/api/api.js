@@ -22,6 +22,7 @@ parent.postMessage(null, "*"); // Signal ready
 
 onmessage = async event => {
 	if(event.source != parent || !event.ports[0]) return;
+	gtag("event", "fen_sdk_gen")
 	const squares = parseFEN(event.data.fen || "8/8/8/8/8/8/8/8");
 	const options = makeOption(event.data.options);
 	const img = await load(options);
