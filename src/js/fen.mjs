@@ -1,5 +1,5 @@
 
-const VALUE = /^\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)$/iu;
+const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..))$/iu;
 const FEN_UNIT = /\/|\d|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)|./iug;
 
 /**
@@ -54,6 +54,7 @@ export function makeFEN(values) {
 }
 
 export function normalize(v, useSN) {
+	console.log("normalize", v);
 	// Text input shortcut
 	if(!v.match(VALUE)) {
 		const l = [...v].length;
