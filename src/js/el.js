@@ -4,3 +4,4 @@ export const TP = document.getElementById('TP');
 export const CG = document.getElementById("CanvasGhost");
 export const TPG = document.getElementById("TemplateGhost");
 export const FEN = document.getElementById("FEN");
+export const DB = document.getElementById("DB");

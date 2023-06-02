@@ -42,7 +42,8 @@ Note that rotation is not supported in board edit syntax.
 
 ### BBS
 
-This tool is for Taiwan BBS forums such as PTT.
+This tool is for Taiwan BBS forums such as PTT,
+so it is shown only in Taiwan, and only for desktops.
 It generates colored BBS text that can be paste directly into posts.
 
 <br>

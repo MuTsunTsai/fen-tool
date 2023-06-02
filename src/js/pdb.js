@@ -2,8 +2,7 @@ import { store } from "./store";
 import { squares, setFEN } from "./squares";
 import { types } from "./draw";
 import { toCoordinate } from "./fen.mjs";
-
-export const PDB = document.getElementById("PDB");
+import { DB } from "./el";
 
 window.PDB = {
 	async fetch(bt) {
@@ -11,7 +10,7 @@ window.PDB = {
 			gtag("event", "fen_pdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
-			const url = pdbURL + encodeURIComponent(`PROBID='${PDB.value}'`);
+			const url = pdbURL + encodeURIComponent(`PROBID='${DB.value}'`);
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const text = await response.text();
 			setFEN(text.match(/<b>FEN:<\/b> (.+)/)[1], true);
@@ -52,7 +51,7 @@ function createQuery() {
 		}
 	}
 	let result = `POSITION='${pieces.join(" ")}'`;
-	if(store.PDB.exact) result += ` AND APIECES=${pieces.length}`;
+	if(store.DB.exact) result += ` AND APIECES=${pieces.length}`;
 	return result;
 }
 

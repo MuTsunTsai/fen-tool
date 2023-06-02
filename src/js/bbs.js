@@ -47,7 +47,7 @@ window.BBS = {
 			if(i < 7) result += "\r\n";
 		}
 		result += us + "[m\r\n";
-		if(store.BBS.PDB) result += us + "[0;30;40m" + PDB.value + us + "[m";
+		if(store.BBS.Id) result += us + "[0;30;40m" + PDB.value + us + "[m";
 		if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
 		result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
 		gtag("event", "fen_bbs_copy");

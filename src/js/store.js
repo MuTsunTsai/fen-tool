@@ -5,16 +5,14 @@ import { CN } from "./el";
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
 	BBS: {
-		PDB: true,
+		Id: true,
 		coordinates: true,
 		notes: true,
 		uncoloredNotes: false,
 		redBlue: false,
 	},
-	PDB: {
-		exact: false,
-	},
-	YACPDB: {
+	DB: {
+		use: "PDB",
 		exact: false,
 	},
 	board: defaultOption,

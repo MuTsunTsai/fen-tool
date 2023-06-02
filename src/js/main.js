@@ -12,6 +12,10 @@ import { parseBorder } from "./option";
 setupLayout();
 setupDrag();
 
+window.DB = function() {
+	return window[store.DB.use];
+}
+
 //===========================================================
 // export
 //===========================================================
@@ -141,6 +145,8 @@ function updateBG() {
 	drawTemplate();
 }
 
+const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
+
 createApp({
 	CheckboxBase,
 	Checkbox,
@@ -152,4 +158,5 @@ createApp({
 	state,
 	tab: 0,
 	saveSettings,
+	isTaiwanDesktop: navigator.languages.includes("zh-TW") && !isTouch,
 }).mount();
