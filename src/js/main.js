@@ -28,7 +28,7 @@ window.API = {
 		if(options.set != "1echecs") url += "&set=" + options.set;
 		if(options.pattern) url += "&pattern=" + options.pattern;
 		if(options.bg) url += "&bg=" + options.bg;
-		if(options.blackWhite) url += "blackWhite&knightOffset=" + options.knightOffset;
+		if(options.blackWhite) url += "&blackWhite&knightOffset=" + options.knightOffset;
 		const size = options.size * 8 + 2;
 		const html = `<iframe src="${url}" style="border:none;width:${size}px;height:${size}px"></iframe>`;
 		navigator.clipboard.writeText(html);
