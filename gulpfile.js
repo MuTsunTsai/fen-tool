@@ -53,9 +53,9 @@ gulp.task("js", () =>
 );
 
 gulp.task("html", () =>
-	gulp.src(htmlSource)
+	gulp.src("src/public/**/*.html")
 		.pipe($.newer({
-			dest: "docs/index.html",
+			dest: "docs",
 			extra: [__filename]
 		}))
 		.pipe($.htmlMinifierTerser(htmlOption))
@@ -64,30 +64,18 @@ gulp.task("html", () =>
 		.pipe(gulp.dest("docs"))
 );
 
-gulp.task("imgHtml", () =>
-	gulp.src("src/public/img/index.html")
+gulp.task("gen", () =>
+	gulp.src("src/js/api/gen.js")
 		.pipe($.newer({
-			dest: "docs/img/index.html",
-			extra: [__filename]
-		}))
-		.pipe($.htmlMinifierTerser(htmlOption))
-		// Avoid VS Code Linter warnings
-		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
-		.pipe(gulp.dest("docs/img"))
-);
-
-gulp.task("imgJs", () =>
-	gulp.src("src/js/api/img.js")
-		.pipe($.newer({
-			dest: "docs/img/img.js",
+			dest: "docs/gen/gen.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
 		.pipe($.esbuild({
-			outfile: "img.js",
+			outfile: "gen.js",
 			bundle: true,
 		}))
 		.pipe($.terser())
-		.pipe(gulp.dest("docs/img"))
+		.pipe(gulp.dest("docs/gen"))
 );
 
 gulp.task("sw", () =>
@@ -135,22 +123,10 @@ gulp.task("api", () =>
 		.pipe(gulp.dest("docs/api"))
 );
 
-gulp.task("apiHtml", () =>
-	gulp.src("src/public/api/index.html")
-		.pipe($.newer({
-			dest: "docs/api/index.html",
-			extra: [__filename]
-		}))
-		.pipe($.htmlMinifierTerser(htmlOption))
-		// Avoid VS Code Linter warnings
-		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
-		.pipe(gulp.dest("docs/api"))
-);
-
 gulp.task("fa", () =>
 	gulp.src(htmlSource)
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "imgHtml", "imgJs", "sdk", "api", "apiHtml"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api"), "sw"));

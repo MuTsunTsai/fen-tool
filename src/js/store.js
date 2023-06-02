@@ -23,8 +23,12 @@ const settings = {
 	}
 };
 
-for(let key in settings) {
-	Object.assign(settings[key], savedSettings[key]);
+for(const group in settings) {
+	for(const key in settings[group]) {
+		if(savedSettings[group]?.[key] !== undefined) {
+			settings[group][key] = savedSettings[group][key];
+		}
+	}
 }
 
 export const store = reactive(settings);

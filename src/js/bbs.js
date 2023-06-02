@@ -56,6 +56,6 @@ window.BBS = {
 };
 
 function BackgroundColor(i, j) {
-	if(store.board.uncolored) return "43;m";
-	else return (i + j) % 2 ? "42;m" : "43;m";
+	if(store.board.pattern == "mono") return "43;m";
+	else return Boolean((i + j) % 2) == (store.board.pattern != "inverted") ? "42;m" : "43;m";
 }

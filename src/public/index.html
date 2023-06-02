@@ -101,6 +101,9 @@
 							<div class="nav-link" :class="{active:tab==1}" @click="tab=1">Options</div>
 						</li>
 						<li class="nav-item">
+							<div class="nav-link" :class="{active:tab==5}" @click="tab=5">API</div>
+						</li>
+						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">PDB</div>
 						</li>
 						<li class="nav-item">
@@ -144,14 +147,6 @@
 						</div>
 						<div class="text-end">
 							<div class="d-inline-block">
-								<button type="button" class="btn btn-secondary" id="B64" onclick="toBase64()">
-									<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
-								</button>
-								<button type="button" class="btn btn-secondary" onclick="copyEmbed()">
-									<i class="fa-solid fa-clipboard"></i>&ensp;Copy embed HTML code
-								</button>
-							</div>&nbsp;
-							<div class="d-inline-block">
 								<button class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>
@@ -163,12 +158,12 @@
 					</section>
 
 					<section :class="{show:tab==1}">
-						<div class="row gx-3 mb-3">
+						<div class="row gx-3 mb-2" style="flex-wrap: wrap-reverse;">
 							<div class="col-12 col-sm-6 mb-2">
-								<div v-scope="Checkbox('board.uncolored', 'Uncolored chessboard', updateBG)"></div>
-								<div v-scope="Checkbox('board.inverted', 'Reverse square color', updateBG)"></div>
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>
-								<div v-scope="Checkbox('board.grayBG', 'Gray background', updateBG)"></div>
+								<div
+									 v-scope="CheckboxBase(()=>store.board.bg=='gray', 'Gray background', v=>{store.board.bg=v?'gray':undefined;updateBG()})">
+								</div>
 								<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
 								<div class="row align-items-center" v-show="store.board.blackWhite">
 									<label class="col-auto col-form-label">Knight offset</label>
@@ -178,7 +173,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-12 col-sm-6">
+							<div class="col-12 col-sm-6 mb-2">
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Chess set:</label>
 									<div class="col">
@@ -191,7 +186,7 @@
 										</select>
 									</div>
 								</div>
-								<div class="row gx-3">
+								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Square size:</label>
 									<div class="col">
 										<select class="form-select" v-model.number="store.board.size"
@@ -203,7 +198,40 @@
 										</select>
 									</div>
 								</div>
+								<div class="row gx-3 mb-2">
+									<label class="col-auto col-form-label">Board pattern:</label>
+									<div class="col">
+										<select class="form-select" v-model="store.board.pattern" @change="updateBG">
+											<option :value="undefined">Normal</option>
+											<option value="inverted">Inverted</option>
+											<option value="mono">Uncolored</option>
+										</select>
+									</div>
+								</div>
 							</div>
+						</div>
+					</section>
+
+					<section :class="{show:tab==5}">
+						<div class="mb-3">
+							<button type="button" class="btn btn-secondary" id="B64" onclick="toBase64()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
+							</button>
+						</div>
+						<h6>Embed mode</h6>
+						<div class="mb-3">
+							<button type="button" class="btn btn-secondary" onclick="API.copyEmbed()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy embed HTML code
+							</button>
+						</div>
+						<h6>SDK mode</h6>
+						<div>
+							<button type="button" class="btn btn-secondary" onclick="API.copySDK()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy SDK script tag
+							</button>
+							<button type="button" class="btn btn-secondary" onclick="API.copyImg()">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy SDK &lt;img&gt; code
+							</button>
 						</div>
 					</section>
 
@@ -292,7 +320,8 @@
 			<hr>
 			<div class="mb-4 row small">
 				<div class="col-12 col-md">
-					For more information and API, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a> of
+					For more information and API, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a>
+					of
 					this tool on GitHub.
 				</div>
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>

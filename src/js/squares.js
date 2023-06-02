@@ -1,3 +1,4 @@
+import { background } from "./draw";
 import { FEN, realSize } from "./el";
 import { makeFEN, normalize, parseFEN } from "./fen.mjs";
 import { store } from "./store";
@@ -28,7 +29,6 @@ export function createSquares() {
 			squares[index].onchange = checkInput;
 			squares[index].onfocus = squareOnFocus;
 			squares[index].onblur = squareOnBlur;
-			squares[index].style.background = (i + j) % 2 ? "#D18B47" : "#FFCE9E";
 			squares[index].classList.add("square");
 			container.appendChild(squares[index]);
 		}
@@ -38,14 +38,15 @@ export function createSquares() {
 }
 
 export function setSquareBG() {
+	const { pattern, bg } = store.board;
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			const s = squares[i * 8 + j];
-			const dark = !store.board.uncolored && Boolean((i + j) % 2) != store.board.inverted;
-			if(store.board.grayBG) {
-				s.style.background = dark ? "#bbb" : "#fff";
+			const bgc = background(pattern, i, j);
+			if(bg == "gray") {
+				s.style.background = bgc ? "#fff" : "#bbb";
 			} else {
-				s.style.background = dark ? "#D18B47" : "#FFCE9E";
+				s.style.background = bgc ? "#FFCE9E" : "#D18B47";
 			}
 		}
 	}
@@ -93,21 +94,6 @@ export function pushState() {
 		if(!current) history.replaceState(null, "", search);
 		else history.pushState(null, "", search);
 	}
-}
-
-window.copyEmbed = function() {
-	gtag("event", "copy_embed");
-	const options = store.board;
-	let url = "https://mutsuntsai.github.io/fen-tool/img/?fen=" + FEN.value;
-	if(options.size != 44) url += "&size=" + options.size;
-	if(options.set != "1echecs") url += "&set=" + options.set;
-	for(const key of ["uncolored", "inverted", "grayBG", "blackWhite"]) {
-		if(options[key]) url += "&" + key;
-	}
-	if(options.blackWhite) url += "&knightOffset=" + options.knightOffset;
-	const size = options.size * 8 + 2;
-	const html = `<iframe src="${url}" style="border:none;width:${size}px;height:${size}px"></iframe>`;
-	navigator.clipboard.writeText(html);
 }
 
 export function toFEN() {

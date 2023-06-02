@@ -22,11 +22,12 @@ export function drawPiece(ctx, img, i, j, value, bg, options) {
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");
 
-	if((typeIndex < 0 || options.grayBG) && bg != 2) drawBlank(ctx, i, j, bg, options);
+	const gray = options.bg == "gray";
+	if((typeIndex < 0 || gray) && bg != 2) drawBlank(ctx, i, j, bg, options);
 	if(typeIndex < 0 && !isText) return;
 
 	ctx.save();
-	if(options.grayBG) bg = 2;
+	if(gray) bg = 2;
 	const bw = options.blackWhite;
 	const sx = neutral ? (bw ? 0 : 2) : value == lower ? 0 : 1;
 	const f = neutral && bw ? (lower == "n" ? options.knightOffset : .5) : 1;
@@ -46,10 +47,17 @@ export function drawPiece(ctx, img, i, j, value, bg, options) {
 	ctx.restore();
 }
 
+export function background(pattern, i, j) {
+	if(pattern == "mono") return 1;
+	let bg = (i + j) % 2;
+	if(pattern != "inverted") bg = 1 - bg;
+	return bg;
+}
+
 function drawBlank(ctx, i, j, light, options) {
 	const size = options.size;
 	ctx.save();
-	if(options.grayBG) {
+	if(options.bg == "gray") {
 		ctx.fillStyle = light ? "#fff" : "#bbb";
 	} else {
 		ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";

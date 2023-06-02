@@ -14,6 +14,7 @@ function setup(img) {
 	};
 	const fen = img.getAttribute("fen");
 	const options = Object.assign({}, globalOptions, img.dataset);
+	img.width = img.height = options.size * 8 + 2;
 	frame.contentWindow.postMessage({ fen, options }, "*", [channel.port2]);
 }
 

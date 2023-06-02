@@ -2,7 +2,7 @@ import { CN, CG, TP, TPG } from "./el";
 import { mode } from "./layout";
 import { store, state } from "./store";
 import { pushState, squares } from "./squares";
-import { drawPiece } from "./draw";
+import { background, drawPiece } from "./draw";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 
@@ -56,7 +56,7 @@ export async function draw() {
 	ctx.font = gCtx.font = `${options.size - 4}px arial`;
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
-			const bg = options.uncolored || options.inverted == Boolean((i + j) % 2) ? 1 : 0;
+			const bg = background(options.pattern, i, j);
 			const value = squares[i * 8 + j].value;
 			drawPiece(ctx, img, i, j, value, bg, options);
 			drawPiece(gCtx, img, i, j, value, 2, options);

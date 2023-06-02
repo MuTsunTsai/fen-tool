@@ -1,8 +1,7 @@
 
 export const defaultOption = {
-	uncolored: false,
-	inverted: false,
-	grayBG: false,
+	pattern: undefined,
+	bg: undefined,
 	blackWhite: false,
 	knightOffset: .6,
 	SN: false,
@@ -15,12 +14,15 @@ const sets = ["1echecs", "alpha", "goodCompanion", "merida", "skak"];
 
 export function makeOption(option) {
 	const result = Object.assign({}, defaultOption);
-	const size = Number(option.size);
-	if(sizes.includes(size)) result.size = size;
-	if(sets.includes(option.set)) result.set = option.set;
-	if(0 < option.knightOffset && option.knightOffset < 1) result.knightOffset = option.offset;
-	for(const key of ["uncolored", "inverted", "grayBG", "blackWhite"]) {
-		if(option[key]) result[key] = true;
+	if(option) {
+		const size = Number(option.size);
+		if(sizes.includes(size)) result.size = size;
+		if(sets.includes(option.set)) result.set = option.set;
+		if(0 < option.knightOffset && option.knightOffset < 1) result.knightOffset = option.offset;
+		result.blackWhite = Boolean(option.blackWhite);
+		result.pattern = option.pattern;
+		result.bg = option.bg;
+		result.SN = option.SN;
 	}
 	return result;
 }
