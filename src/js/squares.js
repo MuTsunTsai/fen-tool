@@ -8,7 +8,8 @@ export const container = document.getElementById("Squares");
 
 export function setSquareSize() {
 	const { s } = getRenderSize();
-	container.style.height = container.style.width = CN.clientWidth + "px";
+	container.style.width = CN.clientWidth + "px";
+	container.style.height = CN.clientHeight + "px";
 	for(let i = 0; i < 8; i++) {
 		for(let j = 0; j < 8; j++) {
 			squares[i * 8 + j].style.fontSize = (s - 10) + "px";

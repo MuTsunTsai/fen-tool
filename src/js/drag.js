@@ -69,7 +69,6 @@ function mouseDown(event) {
 	startY = event.offsetY;
 	sqX = Math.floor((startX - b) / s);
 	sqY = Math.floor((startY - b) / s);
-	console.log(sqX, sqY);
 	const index = sqY * (isCN ? 8 : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 	if(isCN) {

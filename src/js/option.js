@@ -7,6 +7,8 @@ export const defaultOption = {
 	knightOffset: .6,
 	SN: false,
 	size: 44,
+	w: 8,
+	h: 8,
 	set: "1echecs",
 };
 

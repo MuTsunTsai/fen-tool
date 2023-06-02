@@ -15,19 +15,22 @@ const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
 
-function setSize(s, b, force) {
+function setSize(s, b, w, h, force) {
 	const rem = getREM();
 	const newMode = document.body.clientWidth < 11 * s + 2 * rem;
-	if(newMode !== mode.hor || s !== store.board.size || b !== store.board.border || force) {
+	const options = store.board;
+	if(newMode !== mode.hor || s !== options.size || b !== options.border || w !== options.w || h !== options.h || force) {
 		mode.hor = newMode;
-		store.board.size = s;
-		store.board.border = b;
+		options.size = s;
+		options.border = b;
+		options.w = w;
+		options.h = h;
 		const border = parseBorder(b);
-		const w = 8 * s + 2 * border.size;
-		const h = 8 * s + 2 * border.size;
-		CN.style.width = w + "px";
-		SN.width = CG.width = CN.width = w;
-		SN.height = CG.height = CN.height = h;
+		const wpx = w * s + 2 * border.size;
+		const hpx = h * s + 2 * border.size;
+		CN.style.width = wpx + "px";
+		SN.width = CG.width = CN.width = wpx;
+		SN.height = CG.height = CN.height = hpx;
 		if(mode.hor) {
 			TPG.height = TP.height = 3 * s + 2 * border.size;
 			TPG.width = TP.width = 8 * s + 2 * border.size;
@@ -43,9 +46,9 @@ function setSize(s, b, force) {
 		// EditZone border
 		const r = getRenderSize();
 		container.style.borderWidth = r.b + "px";
-		drawBorder(SN.getContext("2d"), border, w, h);
+		drawBorder(SN.getContext("2d"), border, wpx, hpx);
 
-		load(store.board.set);
+		load(options.set);
 	}
 	resize();
 }
@@ -55,14 +58,35 @@ window.setSize = setSize;
 window.setBorder = function(el) {
 	if(!el.value.match(BORDER)) {
 		el.value = store.board.border;
-		return;
 	} else {
-		setSize(store.board.size, el.value);
+		const { size, w, h } = store.board;
+		setSize(size, el.value, w, h);
+	}
+}
+
+window.setHeight = function(el) {
+	const h = Math.floor(Number(el.value));
+	if(isNaN(h) || h <= 0) {
+		el.value = store.board.h;
+	} else {
+		const { size, border, w } = store.board;
+		setSize(size, border, w, h);
+	}
+}
+
+window.setWidth = function(el) {
+	const w = Math.floor(Number(el.value));
+	if(isNaN(w) || w <= 0) {
+		el.value = store.board.w;
+	} else {
+		const { size, border, h } = store.board;
+		setSize(size, border, w, h);
 	}
 }
 
 function resize() {
-	CG.style.width = CG.style.height = CN.style.height = CN.clientWidth + "px";
+	CG.style.width = CN.clientWidth + "px";
+	CG.style.height = CN.clientHeight + "px";
 	TPG.style.width = TP.clientWidth + "px";
 	TPG.style.height = TP.clientHeight + "px";
 
@@ -87,8 +111,12 @@ function getREM() {
 }
 
 export function setupLayout() {
-	window.addEventListener("resize", () => setSize(store.board.size, store.board.border));
+	function handler(force) {
+		const b = store.board;
+		setSize(b.size, b.border, b.w, b.h, force);
+	}
+	window.addEventListener("resize", handler);
 	createSquares();
-	setSize(store.board.size, store.board.border, true);
+	handler(true);
 	setTimeout(resize, 1000); // This is needed on old Safari
 }

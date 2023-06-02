@@ -197,13 +197,23 @@
 										</select>
 									</div>
 								</div>
+								<div class="row gx-3 mb-2">
+									<label class="col-auto col-form-label">Files</label>
+									<div class="col">
+										<input type="number" class="form-control" min="1" :value="store.board.w" onchange="setWidth(this)">
+									</div>
+									<label class="col-auto col-form-label">Ranks</label>
+									<div class="col">
+										<input type="number" class="form-control" min="1" :value="store.board.h" onchange="setHeight(this)">
+									</div>
+								</div>
 							</div>
 							<div class="col-12 col-sm-6 mb-2">
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Border pattern:</label>
 									<div class="col">
-										<input type="text" placeholder="Use comma-separated numbers" class="form-control" :value="store.board.border"
-											   onchange="setBorder(this)">
+										<input type="text" placeholder="Use comma-separated numbers" class="form-control"
+											   :value="store.board.border" onchange="setBorder(this)">
 									</div>
 								</div>
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>
