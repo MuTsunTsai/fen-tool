@@ -3,14 +3,16 @@
 This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess,
 specifically designed with the needs of the chess puzzle community in mind.
 
-## How to use
+## 💡 How to use
 
 For desktops, on the board on the right you can simply drag-and-drop piece from the template to arrange them,
 and on the input boxes on the left you can manually input variations that are not available in the template.
 For mobile devices, the two boards are one and you can enable manual input by double-tapping on the squares.
 Options and tools should be mostly self-explanatory.
 
-## Notation
+<br>
+
+## ♟️ Notation
 
 This tool supports most of the [Fairy FEN](https://www.janko.at/Retros/d.htm) syntax (by Joost de Heer). A brief summary:
 
@@ -22,7 +24,9 @@ This tool supports most of the [Fairy FEN](https://www.janko.at/Retros/d.htm) sy
 
 You can also put in the fairy notation used by [YACPDB](https://www.yacpdb.org/), for example `(!b2)` means the same as `-*2b`.
 
-## Additional tools
+<br>
+
+## 🛠️ Additional tools
 
 ### PDB
 
@@ -41,7 +45,9 @@ Note that rotation is not supported in board edit syntax.
 This tool is for Taiwan BBS forums such as PTT.
 It generates colored BBS text that can be paste directly into posts.
 
-## API
+<br>
+
+## 🖥️ API
 
 This tool is purely front-end by design,
 so it cannot generate a URL that directly represents a PNG image like some other FEN tools.
@@ -103,8 +109,9 @@ img.dataset.size = 38; // Change option
 
 And the image will update automatically. You can also dynamically add or remove `<img>` elements, and it just works.
 
+<br>
 
-## Chess set credits
+## ⚜️ Chess set credits
 
 - `1Echecs` is designed by Christian Poisson.
 - `Alpha` is designed by Eric Bentzen.
