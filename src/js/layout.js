@@ -17,12 +17,12 @@ const EditZone = document.getElementById("EditZone");
 
 function setSize(s, b, force) {
 	const rem = getREM();
-	const newMode = document.body.clientWidth < 11 * s + 2 * rem;
+	const border = parseBorder(b);
+	const newMode = document.body.clientWidth < 11 * s + 4 * b + 2 * rem;
 	if(newMode !== mode.hor || s !== store.board.size || b !== store.board.border || force) {
 		mode.hor = newMode;
 		store.board.size = s;
 		store.board.border = b;
-		const border = parseBorder(b);
 		const w = 8 * s + 2 * border.size;
 		const h = 8 * s + 2 * border.size;
 		CN.style.width = w + "px";
