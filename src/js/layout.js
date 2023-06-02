@@ -18,7 +18,7 @@ const EditZone = document.getElementById("EditZone");
 function setSize(s, b, force) {
 	const rem = getREM();
 	const border = parseBorder(b);
-	const newMode = document.body.clientWidth < 11 * s + 4 * b + 2 * rem;
+	const newMode = document.body.clientWidth < 11 * s + 4 * border.size + 2 * rem;
 	if(newMode !== mode.hor || s !== store.board.size || b !== store.board.border || force) {
 		mode.hor = newMode;
 		store.board.size = s;
