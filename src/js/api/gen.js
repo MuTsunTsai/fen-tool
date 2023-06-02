@@ -10,7 +10,7 @@ const options = makeOption({
 	size: url.searchParams.get("size"),
 	set: url.searchParams.get("set"),
 	knightOffset: url.searchParams.get("knightOffset"),
-	pattern: url.searchParams.has("pattern"),
+	pattern: url.searchParams.get("pattern"),
 	bg: url.searchParams.get("bg"),
 	blackWhite: url.searchParams.has("blackWhite"),
 })
