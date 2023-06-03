@@ -166,7 +166,8 @@
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Chess set:</label>
 									<div class="col">
-										<select class="form-select" v-model="store.board.set" onchange="load(this.value)">
+										<select class="form-select" v-model="store.board.set"
+												onchange="setOption({set:this.value})">
 											<option value="1echecs">1Echecs</option>
 											<option value="alpha">Alpha</option>
 											<option value="goodCompanion">Good Companion</option>
@@ -179,7 +180,7 @@
 									<label class="col-auto col-form-label">Square size:</label>
 									<div class="col">
 										<select class="form-select" v-model.number="store.board.size"
-												onchange="setSize({size:Number(this.value)})">
+												onchange="setOption({size:Number(this.value)})">
 											<option value="26">26px</option>
 											<option value="32">32px</option>
 											<option value="38">38px</option>

@@ -67,6 +67,7 @@ window.invertColor = function(l) {
 
 function updateBG() {
 	setSquareBG();
+	draw();
 	drawTemplate();
 }
 

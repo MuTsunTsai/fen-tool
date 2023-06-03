@@ -8,20 +8,21 @@ import { parseBorder } from "./option";
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 
 const img = new Image();
-img.onload = () => {
-	state.loading = false;
-	drawTemplate();
-};
 
 if(location.protocol == "https:") img.crossOrigin = "anonymous";
 else document.getElementById("B64").disabled = true;
 
 export function load(s) {
-	store.board.set = s;
-	state.loading = true;
-	img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
+	return new Promise(resolve => {
+		store.board.set = s;
+		state.loading = true;
+		img.onload = () => {
+			state.loading = false;
+			resolve();
+		};
+		img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
+	});
 }
-window.load = load;
 
 const ctx = CN.getContext("2d");
 const gCtx = CG.getContext("2d");
@@ -53,7 +54,6 @@ export function drawTemplate() {
 	}
 	tCtx.restore();
 	tgCtx.restore();
-	draw();
 }
 
 export async function draw() {
@@ -92,5 +92,3 @@ export async function draw() {
 export function getBlob() {
 	return new Promise(resolve => CN.toBlob(resolve));
 }
-
-addEventListener("fen", draw);

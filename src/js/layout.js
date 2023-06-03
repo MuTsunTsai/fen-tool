@@ -1,6 +1,6 @@
 import { CN, SN, CG, TP, TPG } from "./el";
 import { getRenderSize, store } from "./store";
-import { load } from "./render";
+import { drawTemplate, draw, load } from "./render";
 import { setSquareSize, createSquares, container } from "./squares";
 import { BORDER, parseBorder } from "./option";
 import { drawBorder } from "./draw";
@@ -15,62 +15,77 @@ const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
 
-function setSize(p, force) {
+async function setOption(o, force) {
 	const options = store.board;
-	for(const key of ["size", "border", "w", "h"]) {
-		if(p[key] === undefined) p[key] = options[key];
+	const changed = {};
+	for(const key in options) {
+		changed[key] = o[key] !== undefined && o[key] !== options[key];
+		if(changed[key]) options[key] = o[key];
+		else o[key] = options[key];
 	}
-	const rem = getREM();
-	const newMode = document.body.clientWidth < (p.w + 3) * p.size + 2.5 * rem;
-	const dimChange = p.w !== options.w || p.h !== options.h;
-	const shouldRedraw = newMode !== mode.hor || p.size !== options.size || p.border !== options.border;
-	if(dimChange || force) {
-		options.w = p.w;
-		options.h = p.h;
-		createSquares();
-	}
-	if(shouldRedraw || dimChange || force) {
-		mode.hor = newMode;
-		options.size = p.size;
-		options.border = p.border;
-		const border = parseBorder(p.border);
-		const wpx = p.w * p.size + 2 * border.size;
-		const hpx = p.h * p.size + 2 * border.size;
-		CN.style.width = wpx + "px";
+	const border = parseBorder(o.border);
 
-		if(CN.width !== wpx) SN.width = CG.width = CN.width = wpx;
-		if(CN.height !== hpx) SN.height = CG.height = CN.height = hpx;
-		const u3 = 3 * p.size + 2 * border.size;
-		const u8 = 8 * p.size + 2 * border.size;
-		if(mode.hor) {
-			if(TP.height !== u3) TPG.height = TP.height = u3;
-			if(TP.width !== u8) TPG.width = TP.width = u8;
-			CN.classList.add("mb-3");
-			TP.classList.remove("ms-4");
-		} else {
-			if(TP.height !== u8) TPG.height = TP.height = u8;
-			if(TP.width !== u3) TPG.width = TP.width = u3;
-			CN.classList.remove("mb-3");
-			TP.classList.add("ms-4");
+	// Decide mode
+	const rem = getREM();
+	const newMode = document.body.clientWidth < (o.w + 3) * o.size + 2.5 * rem;
+	changed.mode = newMode !== mode.hor;
+	mode.hor = newMode;
+
+	const dimChange = changed.w || changed.h;
+	if(dimChange || force) createSquares();
+
+	const shouldUpdateAsset = force || changed.set || changed.size;
+	const shouldRedraw = shouldUpdateAsset || changed.border;
+	const shouldDrawBoard = shouldRedraw || dimChange;
+	const shouldDrawTemplate = shouldRedraw || changed.mode;
+
+	if(shouldDrawBoard) {
+		const bw = o.w * o.size + 2 * border.size;
+		const bh = o.h * o.size + 2 * border.size;
+		CN.style.width = bw + "px";
+		if(CN.width !== bw || CN.height !== bh) {
+			SN.width = CG.width = CN.width = bw;
+			SN.height = CG.height = CN.height = bh;
 		}
 
 		// EditZone border
 		const r = getRenderSize();
 		container.style.borderWidth = r.b + "px";
-		drawBorder(SN.getContext("2d"), border, wpx, hpx);
-
-		load(options.set);
+		drawBorder(SN.getContext("2d"), border, bw, bh);
 	}
+
+	if(shouldDrawTemplate) {
+		let tw = 3 * o.size + 2 * border.size;
+		let th = 8 * o.size + 2 * border.size;
+		if(mode.hor) {
+			[tw, th] = [th, tw];
+			CN.classList.add("mb-3");
+			TP.classList.remove("ms-4");
+		} else {
+			CN.classList.remove("mb-3");
+			TP.classList.add("ms-4");
+		}
+		if(TP.width !== tw || TP.height !== th) {
+			TPG.width = TP.width = tw;
+			TPG.height = TP.height = th;
+		}
+	}
+
 	resize();
+
+	// Async parts
+	if(shouldUpdateAsset) await load(options.set);
+	if(shouldDrawBoard) draw();
+	if(shouldDrawTemplate) drawTemplate();
 }
 
-window.setSize = setSize;
+window.setOption = setOption;
 
 window.setBorder = function(el) {
 	if(!el.value.match(BORDER)) {
 		el.value = store.board.border;
 	} else {
-		setSize({ border: el.value });
+		setOption({ border: el.value });
 	}
 }
 
@@ -79,7 +94,7 @@ window.setHeight = function(el) {
 	if(isNaN(h) || h <= 0) {
 		el.value = store.board.h;
 	} else {
-		setSize({ h });
+		setOption({ h });
 	}
 }
 
@@ -88,7 +103,7 @@ window.setWidth = function(el) {
 	if(isNaN(w) || w <= 0) {
 		el.value = store.board.w;
 	} else {
-		setSize({ w });
+		setOption({ w });
 	}
 }
 
@@ -119,8 +134,8 @@ function getREM() {
 }
 
 export function setupLayout() {
-	const handler = force => setSize({}, force);
-	window.addEventListener("resize", handler);
-	handler(true);
+	window.addEventListener("resize", () => setOption({}));
+	setOption({}, true);
+	addEventListener("fen", draw);
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
