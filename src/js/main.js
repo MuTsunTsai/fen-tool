@@ -81,6 +81,7 @@ createApp({
 	canShare: Boolean(navigator.share),
 	canCopy,
 	canCopyImg,
+	isTouch,
 	copyImage,
 	CheckboxBase,
 	Checkbox,
