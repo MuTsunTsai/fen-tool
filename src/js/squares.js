@@ -123,10 +123,10 @@ export function paste(shot, ow, oh) {
 	toFEN();
 }
 
-export function toFEN(skip) {
+export function toFEN() {
 	const { w, h } = store.board;
 	FEN.value = makeFEN(snapshot(), w, h);
-	if(!skip) dispatchEvent(new Event("fen"));
+	dispatchEvent(new Event("fen"));
 }
 
 function toSquares(check) {

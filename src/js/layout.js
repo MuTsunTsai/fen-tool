@@ -160,7 +160,7 @@ export async function initLayout() {
 		setFEN(fen, true);
 		pushState();
 	} else {
-		toFEN(true);
+		toFEN();
 	}
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
