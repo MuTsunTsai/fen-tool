@@ -15,34 +15,41 @@ const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
 
-function setSize(s, b, w, h, force) {
-	const rem = getREM();
-	const newMode = document.body.clientWidth < (w + 3) * s + 2.5 * rem;
+function setSize(p, force) {
 	const options = store.board;
-	const dimChange = w !== options.w || h !== options.h || force;
-	if(dimChange) {
-		options.w = w;
-		options.h = h;
+	for(const key of ["size", "border", "w", "h"]) {
+		if(p[key] === undefined) p[key] = options[key];
+	}
+	const rem = getREM();
+	const newMode = document.body.clientWidth < (p.w + 3) * p.size + 2.5 * rem;
+	const dimChange = p.w !== options.w || p.h !== options.h;
+	const shouldRedraw = newMode !== mode.hor || p.size !== options.size || p.border !== options.border;
+	if(dimChange || force) {
+		options.w = p.w;
+		options.h = p.h;
 		createSquares();
 	}
-	if(newMode !== mode.hor || s !== options.size || b !== options.border || dimChange) {
+	if(shouldRedraw || dimChange || force) {
 		mode.hor = newMode;
-		options.size = s;
-		options.border = b;
-		const border = parseBorder(b);
-		const wpx = w * s + 2 * border.size;
-		const hpx = h * s + 2 * border.size;
+		options.size = p.size;
+		options.border = p.border;
+		const border = parseBorder(p.border);
+		const wpx = p.w * p.size + 2 * border.size;
+		const hpx = p.h * p.size + 2 * border.size;
 		CN.style.width = wpx + "px";
-		SN.width = CG.width = CN.width = wpx;
-		SN.height = CG.height = CN.height = hpx;
+
+		if(CN.width !== wpx) SN.width = CG.width = CN.width = wpx;
+		if(CN.height !== hpx) SN.height = CG.height = CN.height = hpx;
+		const u3 = 3 * p.size + 2 * border.size;
+		const u8 = 8 * p.size + 2 * border.size;
 		if(mode.hor) {
-			TPG.height = TP.height = 3 * s + 2 * border.size;
-			TPG.width = TP.width = 8 * s + 2 * border.size;
+			if(TP.height !== u3) TPG.height = TP.height = u3;
+			if(TP.width !== u8) TPG.width = TP.width = u8;
 			CN.classList.add("mb-3");
 			TP.classList.remove("ms-4");
 		} else {
-			TPG.width = TP.width = 3 * s + 2 * border.size;
-			TPG.height = TP.height = 8 * s + 2 * border.size;
+			if(TP.height !== u8) TPG.height = TP.height = u8;
+			if(TP.width !== u3) TPG.width = TP.width = u3;
 			CN.classList.remove("mb-3");
 			TP.classList.add("ms-4");
 		}
@@ -63,8 +70,7 @@ window.setBorder = function(el) {
 	if(!el.value.match(BORDER)) {
 		el.value = store.board.border;
 	} else {
-		const { size, w, h } = store.board;
-		setSize(size, el.value, w, h);
+		setSize({ border: el.value });
 	}
 }
 
@@ -73,8 +79,7 @@ window.setHeight = function(el) {
 	if(isNaN(h) || h <= 0) {
 		el.value = store.board.h;
 	} else {
-		const { size, border, w } = store.board;
-		setSize(size, border, w, h);
+		setSize({ h });
 	}
 }
 
@@ -83,8 +88,7 @@ window.setWidth = function(el) {
 	if(isNaN(w) || w <= 0) {
 		el.value = store.board.w;
 	} else {
-		const { size, border, h } = store.board;
-		setSize(size, border, w, h);
+		setSize({ w });
 	}
 }
 
@@ -115,10 +119,7 @@ function getREM() {
 }
 
 export function setupLayout() {
-	function handler(force) {
-		const b = store.board;
-		setSize(b.size, b.border, b.w, b.h, force);
-	}
+	const handler = force => setSize({}, force);
 	window.addEventListener("resize", handler);
 	handler(true);
 	setTimeout(resize, 1000); // This is needed on old Safari

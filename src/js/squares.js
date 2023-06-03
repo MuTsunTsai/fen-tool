@@ -8,13 +8,12 @@ export const container = document.getElementById("Squares");
 
 export function setSquareSize() {
 	const { s } = getRenderSize();
+	const { w, h } = store.board;
 	container.style.width = CN.clientWidth + "px";
 	container.style.height = CN.clientHeight + "px";
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			squares[i * 8 + j].style.fontSize = (s - 10) + "px";
-			squares[i * 8 + j].style.lineHeight = (s - 10) + "px";
-		}
+	for(let i = 0; i < w * h; i++) {
+		squares[i].style.fontSize = (s - 10) + "px";
+		squares[i].style.lineHeight = (s - 10) + "px";
 	}
 }
 
@@ -108,8 +107,9 @@ export function toFEN() {
 
 function toSquares(check) {
 	const fen = parseFEN(FEN.value);
+	const { w, h } = store.board;
 	let changed = false;
-	for(let i = 0; i < 64; i++) {
+	for(let i = 0; i < w * h; i++) {
 		squares[i].value = fen[i];
 		changed = checkInputCore(squares[i]) || changed; // order matters
 	}
