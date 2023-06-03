@@ -77,6 +77,7 @@ const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
 const isTaiwanDesktop = navigator.languages.includes("zh-TW") && !isTouch;
 
 createApp({
+	canShare: Boolean(navigator.share),
 	CheckboxBase,
 	Checkbox,
 	draw,

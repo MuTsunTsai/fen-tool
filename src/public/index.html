@@ -149,7 +149,7 @@
 						</div>
 						<div class="text-end">
 							<div class="d-inline-block">
-								<button class="btn btn-primary" onclick="share()">
+								<button v-if="canShare" class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>
 								<a class="btn btn-primary" download="board.png" id="Save" onclick="gtag('event', 'img_save')">
