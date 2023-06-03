@@ -86,7 +86,7 @@ This can be put anywhere, but preferably in the `<head>` part.
 The `data-` attributes in this example gives you an idea of how to assign global board options.
 You don't need to worry about the details,
 as our `Copy SDK script tag` button will help you generate it based on your settings
-(except for board pattern, which is not included for practical reason).
+(except for board pattern and custom dimensions, which are not included for practical reasons).
 
 Then all you have to do is something like this:
 

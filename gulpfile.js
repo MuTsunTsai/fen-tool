@@ -105,6 +105,10 @@ gulp.task("sdk", () =>
 			dest: "docs/sdk.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
+		.pipe($.esbuild({
+			outfile: "sdk.js",
+			bundle: true,
+		}))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );

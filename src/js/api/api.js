@@ -1,4 +1,4 @@
-import { parseFEN } from "../fen.mjs";
+import { inferDimension, parseFEN } from "../fen.mjs";
 import { makeOption } from "../option";
 import { draw } from "./draw.js";
 
@@ -23,8 +23,13 @@ parent.postMessage(null, "*"); // Signal ready
 onmessage = async event => {
 	if(event.source != parent || !event.ports[0]) return;
 	gtag("event", "fen_sdk_gen")
-	const squares = parseFEN(event.data.fen || "8/8/8/8/8/8/8/8");
+
 	const options = makeOption(event.data.options);
+	const fen = event.data.fen || "8/8/8/8/8/8/8/8";
+	const { w, h } = inferDimension(fen) || options;
+	const squares = parseFEN(fen, w, h);
+	options.w = w;
+	options.h = h;
 	const img = await load(options);
 	const CN = draw(img, squares, options);
 	event.ports[0].postMessage(CN.toDataURL());
