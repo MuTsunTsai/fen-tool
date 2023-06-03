@@ -12,9 +12,8 @@ const img = new Image();
 if(location.protocol == "https:") img.crossOrigin = "anonymous";
 else document.getElementById("B64").disabled = true;
 
-export function load(s) {
+export function load() {
 	return new Promise(resolve => {
-		store.board.set = s;
 		state.loading = true;
 		img.onload = () => {
 			state.loading = false;

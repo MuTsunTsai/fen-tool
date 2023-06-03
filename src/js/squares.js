@@ -1,6 +1,7 @@
 import { background } from "./draw";
 import { FEN } from "./el";
-import { makeFEN, normalize, parseFEN } from "./fen.mjs";
+import { DEFAULT, inferDimension, makeFEN, normalize, parseFEN } from "./fen.mjs";
+import { setOption } from "./layout";
 import { store, getRenderSize } from "./store";
 
 export const squares = new Array(64);
@@ -38,7 +39,6 @@ export function createSquares() {
 		squares[i].style.display = i < total ? "block" : "none";
 	}
 	setSquareBG();
-	loadState();
 }
 
 export function setSquareBG() {
@@ -78,50 +78,77 @@ export function setSquare(sq, value) {
 	if(updated) toFEN();
 }
 
+window.empty = function() {
+	for(const sq of squares) sq.value = "";
+	toFEN();
+}
+window.reset = function() {
+	setOption({ w: 8, h: 8 });
+	setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+}
+
 export function setFEN(v, check) {
 	FEN.value = v;
 	toSquares(check);
 }
-window.setFEN = setFEN;
 
-function loadState() {
+export function loadState(init) {
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
-	if(fen) setFEN(fen, true);
+	if(!init || fen) setFEN(fen || DEFAULT, true);
 }
 addEventListener("popstate", loadState);
 
 export function pushState() {
 	const current = location.search;
-	const search = "?fen=" + FEN.value;
-	if(search != decodeURIComponent(current)) {
-		if(!current) history.replaceState(null, "", search);
-		else history.pushState(null, "", search);
+	const url = FEN.value == DEFAULT ? "" : "?fen=" + FEN.value;
+	if(url !== decodeURIComponent(current)) {
+		history.pushState(null, "", url || ".");
 	}
 }
 
+export function snapshot() {
+	return squares.map(s => s.value);
+}
+
+export function paste(shot, ow, oh) {
+	const { w, h } = store.board;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const sq = squares[i * w + j];
+			if(i < oh && j < ow) sq.value = shot[i * ow + j];
+			else sq.value = "";
+		}
+	}
+	toFEN();
+}
+
 export function toFEN() {
-	FEN.value = makeFEN(squares.map(s => s.value));
+	const { w, h } = store.board;
+	FEN.value = makeFEN(snapshot(), w, h);
 	dispatchEvent(new Event("fen"));
 }
 
 function toSquares(check) {
-	const fen = parseFEN(FEN.value);
-	const { w, h } = store.board;
+	const infer = inferDimension(FEN.value);
+	const { w, h } = infer || store.board;
+	const values = parseFEN(FEN.value, w, h);
+	setOption({ w, h });
 	let changed = false;
 	for(let i = 0; i < w * h; i++) {
-		squares[i].value = fen[i];
+		squares[i].value = values[i];
 		changed = checkInputCore(squares[i]) || changed; // order matters
 	}
-	if(changed || check) toFEN();
+	if(changed || check || !infer) toFEN();
 	else dispatchEvent(new Event("fen"));
 }
 
 window.toSquares = toSquares;
 
 export function updateSN() {
-	for(const s of squares) checkInputCore(s);
-	toFEN();
+	let changed = false;
+	for(const s of squares) changed = checkInputCore(s) || changed; // order matters
+	if(changed) toFEN();
 }
 
 window.copyFEN = function() {

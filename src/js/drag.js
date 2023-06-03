@@ -7,7 +7,7 @@ import { templateValues } from "./render";
 let startX, startY, sqX, sqY, sq, lastTap = 0;
 let ghost, draggingValue;
 
-export function setupDrag() {
+export function initDrag() {
 	CN.onmousedown = mouseDown;
 	CN.ontouchstart = mouseDown;
 	TP.onmousedown = mouseDown;

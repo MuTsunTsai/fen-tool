@@ -1,7 +1,7 @@
 import { CN, SN, CG, TP, TPG } from "./el";
 import { getRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
-import { setSquareSize, createSquares, container } from "./squares";
+import { setSquareSize, createSquares, container, snapshot, paste, loadState } from "./squares";
 import { BORDER, parseBorder } from "./option";
 import { drawBorder } from "./draw";
 
@@ -15,7 +15,7 @@ const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
 
-async function setOption(o, force) {
+export async function setOption(o, force) {
 	const options = store.board;
 	const changed = {};
 	for(const key in options) {
@@ -74,7 +74,7 @@ async function setOption(o, force) {
 	resize();
 
 	// Async parts
-	if(shouldUpdateAsset) await load(options.set);
+	if(shouldUpdateAsset) await load();
 	if(shouldDrawBoard) draw();
 	if(shouldDrawTemplate) drawTemplate();
 }
@@ -90,20 +90,26 @@ window.setBorder = function(el) {
 }
 
 window.setHeight = function(el) {
-	const h = Math.floor(Number(el.value));
-	if(isNaN(h) || h <= 0) {
-		el.value = store.board.h;
+	const v = Math.floor(Number(el.value));
+	const { w, h } = store.board;
+	if(isNaN(v) || v <= 0) {
+		el.value = h;
 	} else {
-		setOption({ h });
+		const shot = snapshot();
+		setOption({ h: v });
+		paste(shot, w, h);
 	}
 }
 
 window.setWidth = function(el) {
-	const w = Math.floor(Number(el.value));
-	if(isNaN(w) || w <= 0) {
-		el.value = store.board.w;
+	const v = Math.floor(Number(el.value));
+	const { w, h } = store.board;
+	if(isNaN(v) || v <= 0) {
+		el.value = w;
 	} else {
-		setOption({ w });
+		const shot = snapshot();
+		setOption({ w: v });
+		paste(shot, w, h);
 	}
 }
 
@@ -133,9 +139,10 @@ function getREM() {
 	return parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
-export function setupLayout() {
+export async function initLayout() {
 	window.addEventListener("resize", () => setOption({}));
-	setOption({}, true);
+	await setOption({}, true);
+	loadState(true);
 	addEventListener("fen", draw);
 	setTimeout(resize, 1000); // This is needed on old Safari
 }

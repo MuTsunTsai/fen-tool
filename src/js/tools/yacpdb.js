@@ -6,8 +6,9 @@ import { DB } from "../el";
 export const YACPDB = {
 	copyFEN() {
 		gtag("event", "fen_yacpdb_copyFEN");
+		const { w, h } = store.board;
 		const values = squares.map(s => toYACPDB(s.value));
-		navigator.clipboard.writeText(makeFEN(values));
+		navigator.clipboard.writeText(makeFEN(values, w, h));
 	},
 	async fetch(bt) {
 		try {
@@ -18,15 +19,16 @@ export const YACPDB = {
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const json = await response.json();
 			if(json.success) {
+				const { w, h } = store.board;
 				const list = json.result.entries[0].algebraic;
-				const values = Array.from({ length: 64 }, () => "");
+				const values = Array.from({ length: h * w }, () => "");
 				function add(v) {
 					const x = v.charCodeAt(1) - 97, y = Number(v[2]);
-					values[(8 - y) * 8 + x] = v[0];
+					values[(h - y) * w + x] = v[0];
 				}
 				for(const b of list.black) add(b.toLowerCase());
 				for(const w of list.white) add(w);
-				setFEN(makeFEN(values));
+				setFEN(makeFEN(values), w, h);
 			}
 		} catch {
 			alert("An error has occurred. Please try again later.");
@@ -51,9 +53,10 @@ export const YACPDB = {
 
 function createQuery() {
 	let pieces = [];
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			let v = toYACPDB(squares[i * 8 + j].value).replace("(", "").replace(")", "");
+	const { w, h } = store.board;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			let v = toYACPDB(squares[i * w + j].value).replace("(", "").replace(")", "");
 			if(!v) continue;
 			if(v.match(/\d/)) continue; // rotation not supported;
 			if(v.startsWith("!")) v = "n" + v.toUpperCase();
@@ -68,9 +71,10 @@ function createQuery() {
 
 function createEdit() {
 	const groups = { w: [], b: [], n: [] };
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const v = squares[i * 8 + j].value;
+	const { w, h } = store.board;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const v = squares[i * w + j].value;
 			const match = v.match(/^(-?)([kqbsnrp])$/i);
 			if(!match) continue;
 			const type = convertSN(match[2]).toUpperCase();

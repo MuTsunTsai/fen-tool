@@ -122,11 +122,10 @@
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<div class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="setFEN('8/8/8/8/8/8/8/8')">
+								<button type="button" class="btn btn-secondary" onclick="empty()">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
-								<button type="button" class="btn btn-secondary"
-										onclick="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')">
+								<button type="button" class="btn btn-secondary" onclick="reset()">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
 							</div><br>
