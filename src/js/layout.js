@@ -1,7 +1,7 @@
 import { CN, SN, CG, TP, TPG } from "./el";
 import { getRenderSize, getTemplateRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
-import { setSquareSize, createSquares, container, snapshot, paste, loadState, setFEN, pushState } from "./squares";
+import { setSquareSize, createSquares, container, snapshot, paste, loadState, setFEN, pushState, toFEN } from "./squares";
 import { BORDER, parseBorder } from "./option";
 import { drawBorder } from "./draw";
 
@@ -159,6 +159,8 @@ export async function initLayout() {
 	if(fen) {
 		setFEN(fen, true);
 		pushState();
+	} else {
+		toFEN(true);
 	}
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
