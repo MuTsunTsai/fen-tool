@@ -92,10 +92,10 @@ export function setFEN(v, check) {
 	toSquares(check);
 }
 
-export function loadState(init) {
+export function loadState() {
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
-	if(!init || fen) setFEN(fen || DEFAULT, true);
+	if(fen) setFEN(fen, true);
 }
 addEventListener("popstate", loadState);
 

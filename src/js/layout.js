@@ -1,7 +1,7 @@
 import { CN, SN, CG, TP, TPG } from "./el";
 import { getRenderSize, getTemplateRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
-import { setSquareSize, createSquares, container, snapshot, paste, loadState } from "./squares";
+import { setSquareSize, createSquares, container, snapshot, paste, loadState, setFEN, pushState } from "./squares";
 import { BORDER, parseBorder } from "./option";
 import { drawBorder } from "./draw";
 
@@ -90,27 +90,29 @@ window.setBorder = function(el) {
 
 window.setHeight = function(el) {
 	const v = Math.floor(Number(el.value));
-	const { w, h } = store.board;
 	if(isNaN(v) || v <= 0) {
-		el.value = h;
+		el.value = store.board.h;
 	} else {
-		const shot = snapshot();
-		setOption({ h: v });
-		paste(shot, w, h);
+		setDimension({ h: v });
 	}
 }
 
 window.setWidth = function(el) {
 	const v = Math.floor(Number(el.value));
-	const { w, h } = store.board;
 	if(isNaN(v) || v <= 0) {
-		el.value = w;
+		el.value = store.board.w;
 	} else {
-		const shot = snapshot();
-		setOption({ w: v });
-		paste(shot, w, h);
+		setDimension({ w: v });
 	}
 }
+
+function setDimension(dim) {
+	const { w, h } = store.board;
+	const shot = snapshot();
+	setOption(dim);
+	paste(shot, w, h);
+}
+window.setDimension = setDimension;
 
 function resize() {
 	CN.style.width = TP.style.width = "unset";
@@ -150,8 +152,13 @@ function getREM() {
 
 export async function initLayout() {
 	window.addEventListener("resize", () => setOption({}));
+	const url = new URL(location.href);
+	const fen = url.searchParams.get("fen");
 	await setOption({}, true);
-	loadState(true);
+	if(fen) {
+		setFEN(fen, true);
+		pushState();
+	}
 	addEventListener("fen", draw);
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
