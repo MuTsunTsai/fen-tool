@@ -1,6 +1,6 @@
 import { reactive } from "petite-vue";
 import { defaultOption, parseBorder } from "./option";
-import { CN } from "./el";
+import { CN, TP } from "./el";
 
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
@@ -45,6 +45,14 @@ export function getRenderSize() {
 	const { size, w, border } = store.board;
 	const b = parseBorder(border).size;
 	const factor = CN.clientWidth / (size * w + b * 2);
+	const s = size * factor;
+	return { b: b * factor, s };
+}
+
+export function getTemplateRenderSize() {
+	const { size, border } = store.board;
+	const b = parseBorder(border).size;
+	const factor = TP.clientWidth / (size * 8 + b * 2);
 	const s = size * factor;
 	return { b: b * factor, s };
 }

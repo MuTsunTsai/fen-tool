@@ -1,5 +1,5 @@
 import { CN, SN, CG, TP, TPG } from "./el";
-import { getRenderSize, store } from "./store";
+import { getRenderSize, getTemplateRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, loadState } from "./squares";
 import { BORDER, parseBorder } from "./option";
@@ -42,7 +42,6 @@ export async function setOption(o, force) {
 	if(shouldDrawBoard) {
 		const bw = o.w * o.size + 2 * border.size;
 		const bh = o.h * o.size + 2 * border.size;
-		CN.style.width = bw + "px";
 		if(CN.width !== bw || CN.height !== bh) {
 			SN.width = CG.width = CN.width = bw;
 			SN.height = CG.height = CN.height = bh;
@@ -114,6 +113,16 @@ window.setWidth = function(el) {
 }
 
 function resize() {
+	CN.style.width = TP.style.width = "unset";
+	const { w } = store.board;
+	if(w > 8 && mode.hor) {
+		const { b, s } = getRenderSize();
+		TP.style.width = 8 * s + 2 * b + "px";
+	} else if(w < 8 && mode.hor) {
+		const { b, s } = getTemplateRenderSize();
+		CN.style.width = w * s + 2 * b + "px";
+	}
+
 	CG.style.width = CN.clientWidth + "px";
 	CG.style.height = CN.clientHeight + "px";
 	TPG.style.width = TP.clientWidth + "px";
