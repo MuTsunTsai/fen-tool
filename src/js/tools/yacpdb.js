@@ -1,7 +1,7 @@
-import { squares, setFEN } from "./squares";
-import { store } from "./store";
-import { makeFEN, toYACPDB, toCoordinate, convertSN } from "./fen.mjs";
-import { DB } from "./el";
+import { squares, setFEN } from "../squares";
+import { store } from "../store";
+import { makeFEN, toYACPDB, toCoordinate, convertSN } from "../fen.mjs";
+import { DB } from "../el";
 
 export const YACPDB = {
 	copyFEN() {
