@@ -1,5 +1,5 @@
 import { mode } from "./layout";
-import { getRenderSize, state } from "./store";
+import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, TP } from "./el";
 import { templateValues } from "./render";
@@ -45,13 +45,14 @@ function mouseup(event) {
 	mode.dragging = false;
 	if(!draggingValue) return;
 	wrapEvent(event);
+	const { w, h } = store.board;
 	const { b, s } = getRenderSize();
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - b) / s);
 	const x = Math.floor((event.clientX - r.left - b) / s);
-	const index = y * 8 + x;
+	const index = y * w + x;
 	ghost.style.display = "none";
-	if(y > -1 && y < 8 && x > -1 && x < 8) {
+	if(y > -1 && y < h && x > -1 && x < w) {
 		setSquare(squares[index], draggingValue);
 	} else {
 		pushState();
@@ -64,12 +65,13 @@ function mouseDown(event) {
 
 	if(document.activeElement) document.activeElement.blur();
 	const { b, s } = getRenderSize();
+	const { w } = store.board;
 	const isCN = this == CN;
 	startX = event.offsetX;
 	startY = event.offsetY;
 	sqX = Math.floor((startX - b) / s);
 	sqY = Math.floor((startY - b) / s);
-	const index = sqY * (isCN ? 8 : 3) + sqX;
+	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 	if(isCN) {
 		sq = squares[index];
@@ -79,7 +81,6 @@ function mouseDown(event) {
 	if(!isCN || sq.value != "") {
 		event.preventDefault();
 		ghost.style.clip = `rect(${sqY * s + b + 1}px,${(sqX + 1) * s + b - 1}px,${(sqY + 1) * s + b - 1}px,${sqX * s + b + 1}px)`;
-		// offset = isCN ? 0 : 1;
 		if(isCN) {
 			draggingValue = sq.value;
 		} else {
@@ -108,11 +109,12 @@ function getDisplacement(event) {
 
 function dragMove(event) {
 	const { b, s } = getRenderSize();
+	const { w, h } = store.board;
 	const r = CN.getBoundingClientRect();
 	const y = Math.floor((event.clientY - r.top - b) / s);
 	const x = Math.floor((event.clientX - r.left - b) / s);
 	const { scrollLeft, scrollTop } = document.documentElement;
-	if(y > -1 && y < 8 && x > -1 && x < 8) {
+	if(y > -1 && y < h && x > -1 && x < w) {
 		ghost.style.left = r.left + (x - sqX) * s + scrollLeft + "px";
 		ghost.style.top = r.top + (y - sqY) * s + scrollTop + "px";
 	} else {

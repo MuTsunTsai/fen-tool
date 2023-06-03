@@ -21,27 +21,32 @@ export function setSquareSize() {
 window.setSquareSize = setSquareSize;
 
 export function createSquares() {
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const index = i * 8 + j;
-			squares[index] = document.createElement("input");
-			squares[index].type = "text";
-			squares[index].onchange = checkInput;
-			squares[index].onfocus = squareOnFocus;
-			squares[index].onblur = squareOnBlur;
-			squares[index].classList.add("square");
-			container.appendChild(squares[index]);
+	const { w, h } = store.board;
+	const total = w * h;
+	container.style.gridTemplateColumns = `repeat(${w}, 1fr)`;
+	container.style.gridTemplateRows = `repeat(${h}, 1fr)`;
+	for(let i = 0; i < total || i < squares.length; i++) {
+		if(!squares[i]) {
+			const sq = document.createElement("input");
+			squares[i] = sq;
+			sq.type = "text";
+			sq.onchange = checkInput;
+			sq.onfocus = squareOnFocus;
+			sq.onblur = squareOnBlur;
+			sq.classList.add("square");
+			container.appendChild(sq);
 		}
+		squares[i].style.display = i < total ? "block" : "none";
 	}
 	setSquareBG();
 	loadState();
 }
 
 export function setSquareBG() {
-	const { pattern, bg } = store.board;
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const s = squares[i * 8 + j];
+	const { pattern, bg, w, h } = store.board;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const s = squares[i * w + j];
 			const bgc = background(pattern, i, j);
 			if(bg == "gray") {
 				s.style.background = bgc ? "#fff" : "#bbb";

@@ -42,8 +42,9 @@ export function saveSettings() {
 }
 
 export function getRenderSize() {
-	const b = parseBorder(store.board.border).size;
-	const factor = CN.clientWidth / (store.board.size * 8 + b * 2);
-	const s = store.board.size * factor;
+	const { size, w, border } = store.board;
+	const b = parseBorder(border).size;
+	const factor = CN.clientWidth / (size * w + b * 2);
+	const s = size * factor;
 	return { b: b * factor, s };
 }

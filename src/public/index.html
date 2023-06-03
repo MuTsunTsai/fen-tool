@@ -54,24 +54,26 @@
 				</div>
 			</div>
 
-			<div class="d-inline-block" style="overflow: hidden;">
-				<div id="Zone" class="d-inline-flex justify-content-center text-center" style="flex-wrap: wrap-reverse;">
-					<div id="EditZone" class="flex-grow-0 pb-4">
-						<div class="d-inline-block position-relative">
-							<canvas id="SN"></canvas><!-- for drawing border -->
-							<div id="Squares"></div>
-						</div>
-					</div>
-					<div id="DragZone" class="flex-grow-0 pb-4">
-						<div class="position-relative d-inline-block">
-							<canvas id="CN" style="cursor:pointer;"></canvas>
-							<div class="position-absolute w-100 h-100 loader" :class="{show:state.loading}">
-								<div class="h-100 d-flex align-items-center justify-content-center">
-									<i class="display-1 fa-solid fa-spinner fa-spin"></i>
-								</div>
+			<div class="text-center">
+				<div class="d-inline-block" style="overflow: hidden;">
+					<div id="Zone" class="d-inline-flex justify-content-center text-center" style="flex-wrap: wrap-reverse;">
+						<div id="EditZone" class="flex-grow-0 pb-4">
+							<div class="d-inline-block position-relative">
+								<canvas id="SN"></canvas><!-- for drawing border -->
+								<div id="Squares"></div>
 							</div>
 						</div>
-						<canvas id="TP" class="ms-4" style="cursor:pointer;">
+						<div id="DragZone" class="flex-grow-0 pb-4">
+							<div class="position-relative d-inline-block">
+								<canvas id="CN" style="cursor:pointer;"></canvas>
+								<div class="position-absolute w-100 h-100 loader" :class="{show:state.loading}">
+									<div class="h-100 d-flex align-items-center justify-content-center">
+										<i class="display-1 fa-solid fa-spinner fa-spin"></i>
+									</div>
+								</div>
+							</div>
+							<canvas id="TP" class="ms-4" style="cursor:pointer;">
+						</div>
 					</div>
 				</div>
 			</div>
@@ -198,11 +200,13 @@
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Files</label>
 									<div class="col">
-										<input type="number" class="form-control" min="1" :value="store.board.w" onchange="setWidth(this)">
+										<input type="number" class="form-control" min="1" :value="store.board.w"
+											   onchange="setWidth(this)">
 									</div>
 									<label class="col-auto col-form-label">Ranks</label>
 									<div class="col">
-										<input type="number" class="form-control" min="1" :value="store.board.h" onchange="setHeight(this)">
+										<input type="number" class="form-control" min="1" :value="store.board.h"
+											   onchange="setHeight(this)">
 									</div>
 								</div>
 							</div>

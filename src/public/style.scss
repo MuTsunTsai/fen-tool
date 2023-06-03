@@ -85,6 +85,10 @@ section {
 
 #DragZone {
 	z-index: 1;
+	display: flex;
+	align-items: start;
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
 td {

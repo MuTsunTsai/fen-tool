@@ -58,9 +58,9 @@ export function drawTemplate() {
 
 export async function draw() {
 	const options = store.board;
-	const border = parseBorder(store.board.border);
-	const w = 8 * options.size + 2 * border.size;
-	const h = 8 * options.size + 2 * border.size;
+	const border = parseBorder(options.border);
+	const w = options.w * options.size + 2 * border.size;
+	const h = options.h * options.size + 2 * border.size;
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
 	if(!mode.dragging) gCtx.clearRect(0, 0, w, h);
@@ -70,10 +70,10 @@ export async function draw() {
 	drawBorder(ctx, border, w, h);
 	ctx.translate(border.size, border.size);
 	gCtx.translate(border.size, border.size);
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
+	for(let i = 0; i < options.h; i++) {
+		for(let j = 0; j < options.w; j++) {
 			const bg = background(options.pattern, i, j);
-			const value = squares[i * 8 + j].value;
+			const value = squares[i * options.w + j].value;
 			drawPiece(ctx, img, i, j, value, bg, options);
 			drawPiece(gCtx, img, i, j, value, 2, options);
 		}

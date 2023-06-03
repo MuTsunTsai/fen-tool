@@ -17,14 +17,18 @@ const EditZone = document.getElementById("EditZone");
 
 function setSize(s, b, w, h, force) {
 	const rem = getREM();
-	const newMode = document.body.clientWidth < 11 * s + 2 * rem;
+	const newMode = document.body.clientWidth < (w + 3) * s + 2.5 * rem;
 	const options = store.board;
-	if(newMode !== mode.hor || s !== options.size || b !== options.border || w !== options.w || h !== options.h || force) {
+	const dimChange = w !== options.w || h !== options.h || force;
+	if(dimChange) {
+		options.w = w;
+		options.h = h;
+		createSquares();
+	}
+	if(newMode !== mode.hor || s !== options.size || b !== options.border || dimChange) {
 		mode.hor = newMode;
 		options.size = s;
 		options.border = b;
-		options.w = w;
-		options.h = h;
 		const border = parseBorder(b);
 		const wpx = w * s + 2 * border.size;
 		const hpx = h * s + 2 * border.size;
@@ -116,7 +120,6 @@ export function setupLayout() {
 		setSize(b.size, b.border, b.w, b.h, force);
 	}
 	window.addEventListener("resize", handler);
-	createSquares();
 	handler(true);
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
