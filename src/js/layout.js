@@ -27,7 +27,7 @@ export async function setOption(o, force) {
 
 	// Decide mode
 	const rem = getREM();
-	const newMode = document.body.clientWidth < (o.w + 3) * o.size + 2.5 * rem;
+	const newMode = document.body.clientWidth < (o.w + 3) * o.size + 3 * rem;
 	changed.mode = newMode !== mode.hor;
 	mode.hor = newMode;
 
