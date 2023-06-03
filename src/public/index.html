@@ -14,10 +14,11 @@
 		window.dataLayer = window.dataLayer || [];
 		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
-		gtag('config', 'G-4GYC00FPRR');
-
-		if(location.protocol == 'https:' && 'serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js', { scope: "./" });
+		if(location.protocol == "https:") {
+			gtag('config', 'G-4GYC00FPRR');
+			if('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('sw.js', { scope: "./" });
+			}
 		}
 	</script>
 
@@ -107,12 +108,9 @@
 							<div class="nav-link" :class="{active:tab==5}" @click="tab=5">API</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">PDB</div>
+							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">Database</div>
 						</li>
-						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==3}" @click="tab=3">YACPDB</div>
-						</li>
-						<li class="nav-item">
+						<li class="nav-item" v-if="isTaiwanDesktop">
 							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
 						</li>
 					</ul>
@@ -234,101 +232,90 @@
 
 					<section :class="{show:tab==5}">
 						<div class="mb-3">
-							<button type="button" class="btn btn-secondary" id="B64" onclick="toBase64()">
+							<button type="button" class="btn btn-secondary" id="B64" @click="API.toBase64">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
 							</button>
 						</div>
 						<h6>Embed mode</h6>
 						<div class="mb-3">
-							<button type="button" class="btn btn-secondary" onclick="API.copyEmbed()">
+							<button type="button" class="btn btn-secondary" @click="API.copyEmbed">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy embed HTML code
 							</button>
 						</div>
 						<h6>SDK mode</h6>
 						<div>
-							<button type="button" class="btn btn-secondary" onclick="API.copySDK()">
+							<button type="button" class="btn btn-secondary" @click="API.copySDK">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy SDK script tag
 							</button>
-							<button type="button" class="btn btn-secondary" onclick="API.copyImg()">
+							<button type="button" class="btn btn-secondary" @click="API.copyImg">
 								<i class="fa-solid fa-clipboard"></i>&ensp;Copy SDK &lt;img&gt; code
 							</button>
 						</div>
 					</section>
 
 					<section :class="{show:tab==2}">
+						<div class="row gx-3 mb-2 align-items-center">
+							<label class="col-auto col-form-label">Use database: </label>
+							<div class="col">
+								<div class="form-check d-inline-block me-3">
+									<input class="form-check-input" type="radio" :checked="store.DB.use=='PDB'"
+										   @change="store.DB.use='PDB'" name="DB" id="rPDB">
+									<label class="form-check-label" for="rPDB">
+										PDB
+									</label>
+								</div>
+								<div class="form-check d-inline-block">
+									<input class="form-check-input" type="radio" :checked="store.DB.use=='YACPDB'"
+										   @change="store.DB.use='YACPDB'" name="DB" id="rYACPDB">
+									<label class="form-check-label" for="rYACPDB">
+										YACPDB
+									</label>
+								</div>
+							</div>
+						</div>
 						<div class="mb-3">
-							<button class="btn btn-primary nowrap" onclick="PDB.copyEdit()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB board edit syntax
+							<button class="btn btn-primary nowrap" @click="DB.copyEdit">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy board edit syntax
+							</button>
+							<button class="btn btn-secondary" @click="YACPDB.copyFEN" v-if="store.DB.use=='YACPDB'">
+								<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB FEN
 							</button>
 						</div>
 						<div class="row gx-3 mb-3">
-							<label class="col-auto col-form-label">PDB No:</label>
+							<label class="col-auto col-form-label">Problem Id:</label>
 							<div class="col">
-								<input type="text" class="form-control" id="PDB">
+								<input type="text" class="form-control" id="DB">
 							</div>
 							<div class="col-auto">
-								<input type="button" class="btn btn-primary" value="Get FEN" onclick="PDB.fetch(this)">
+								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch(this)">
 							</div>
 						</div>
 						<div class="row align-items-center flex-wrap">
 							<div class="col-auto mb-2">
-								<div v-scope="Checkbox('PDB.exact', 'Search exactly these pieces and nothing more')"></div>
+								<div v-scope="Checkbox('DB.exact', 'Search exactly these pieces')"></div>
 							</div>
-							<div class="col text-end">
-								<button class="btn btn-secondary nowrap" onclick="PDB.copyQuery()">
-									<i class="fa-solid fa-clipboard"></i>&ensp;Copy PDB position search query
+							<div class="col text-end" style="flex-basis: 24rem;">
+								<button class="btn btn-secondary nowrap" @click="DB.copyQuery">
+									<i class="fa-solid fa-clipboard"></i>&ensp;Copy search query
 								</button>
-								<button class="btn btn-primary nowrap" onclick="PDB.search()">
-									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search this position in PDB
+								<button class="btn btn-primary nowrap" @click="DB.search">
+									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search position
 								</button>
 							</div>
 						</div>
 					</section>
 
-					<section :class="{show:tab==3}">
-						<div class="mb-3">
-							<button class="btn btn-primary nowrap" onclick="YACPDB.copyEdit()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB board edit syntax
-							</button>
-							<button class="btn btn-secondary" onclick="YACPDB.copyFEN()">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB style FEN
-							</button>
-						</div>
-						<div class="row gx-3 mb-3">
-							<label class="col-auto col-form-label">YACPDB No:</label>
-							<div class="col">
-								<input type="text" class="form-control" id="YACPDB">
-							</div>
-							<div class="col-auto">
-								<input type="button" class="btn btn-primary" value="Get FEN" onclick="YACPDB.fetch(this)">
-							</div>
-						</div>
-						<div class="row align-items-center flex-wrap">
-							<div class="col-auto mb-2">
-								<div v-scope="Checkbox('YACPDB.exact', 'Search exactly these pieces and nothing more')"></div>
-							</div>
-							<div class="col text-end">
-								<button class="btn btn-secondary nowrap" onclick="YACPDB.copyQuery()">
-									<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB position search query
-								</button>
-								<button class="btn btn-primary nowrap" onclick="YACPDB.search()">
-									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search this position in YACPDB
-								</button>
-							</div>
-						</div>
-					</section>
-
-					<section :class="{show:tab==4}">
+					<section :class="{show:tab==4}" v-if="isTaiwanDesktop">
 						<div class="row gx-3">
 							<div class="col-12 col-sm-8 mb-3">
-								<div v-scope="Checkbox('BBS.PDB', 'Include PDB ID')"></div>
+								<div v-scope="Checkbox('BBS.Id', 'Include database Id')"></div>
 								<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>
 								<div v-scope="Checkbox('BBS.notes', 'Include Notes')"></div>
 								<div v-scope="Checkbox('BBS.uncoloredNotes', 'Uncolored Note')"></div>
 								<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
 							</div>
 							<div class="col-12 col-sm-4 text-end">
-								<button type="button" class="btn btn-primary" onclick="BBS.copy()">
+								<button type="button" class="btn btn-primary" @click="BBS.copy">
 									<i class="fa-solid fa-clipboard"></i>&ensp;Copy BBS Code
 								</button>
 							</div>

@@ -1,14 +1,14 @@
-import { store } from "./store";
-import { FEN } from "./el";
+import { store } from "../store";
+import { FEN } from "../el";
 import { PDB } from "./pdb";
-import { squares } from "./squares";
-import { DIGITS, fullWidth } from "./fullWidth";
+import { squares } from "../squares";
+import { DIGITS, fullWidth } from "../fullWidth";
 
 const us = unescape("%1B");
 export const A2 = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");
 export const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝ 皇后,ｋ ＝ 國王,".split(",");
 
-window.BBS = {
+export const BBS = {
 	copy() {
 		let result = "";
 		let value;
@@ -47,7 +47,7 @@ window.BBS = {
 			if(i < 7) result += "\r\n";
 		}
 		result += us + "[m\r\n";
-		if(store.BBS.PDB) result += us + "[0;30;40m" + PDB.value + us + "[m";
+		if(store.BBS.Id) result += us + "[0;30;40m" + PDB.value + us + "[m";
 		if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
 		result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
 		gtag("event", "fen_bbs_copy");

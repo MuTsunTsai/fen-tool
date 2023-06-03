@@ -1,17 +1,16 @@
-import { store } from "./store";
-import { squares, setFEN } from "./squares";
-import { types } from "./draw";
-import { toCoordinate } from "./fen.mjs";
+import { store } from "../store";
+import { squares, setFEN } from "../squares";
+import { types } from "../draw";
+import { toCoordinate } from "../fen.mjs";
+import { DB } from "../el";
 
-export const PDB = document.getElementById("PDB");
-
-window.PDB = {
+export const PDB = {
 	async fetch(bt) {
 		try {
 			gtag("event", "fen_pdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
-			const url = pdbURL + encodeURIComponent(`PROBID='${PDB.value}'`);
+			const url = pdbURL + encodeURIComponent(`PROBID='${DB.value}'`);
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const text = await response.text();
 			setFEN(text.match(/<b>FEN:<\/b> (.+)/)[1], true);
@@ -34,7 +33,7 @@ window.PDB = {
 		gtag("event", "fen_pdb_copyEdit");
 		navigator.clipboard.writeText(createEdit());
 	}
-}
+};
 
 const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression="
 const pdbMap = ["K", "D", "L", "S", "T", "B", "I"]; // German
@@ -52,7 +51,7 @@ function createQuery() {
 		}
 	}
 	let result = `POSITION='${pieces.join(" ")}'`;
-	if(store.PDB.exact) result += ` AND APIECES=${pieces.length}`;
+	if(store.DB.exact) result += ` AND APIECES=${pieces.length}`;
 	return result;
 }
 

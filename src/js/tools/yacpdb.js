@@ -1,10 +1,9 @@
-import { squares, setFEN } from "./squares";
-import { store } from "./store";
-import { makeFEN, toYACPDB, toCoordinate, convertSN } from "./fen.mjs";
+import { squares, setFEN } from "../squares";
+import { store } from "../store";
+import { makeFEN, toYACPDB, toCoordinate, convertSN } from "../fen.mjs";
+import { DB } from "../el";
 
-const YACPDB = document.getElementById("YACPDB");
-
-window.YACPDB = {
+export const YACPDB = {
 	copyFEN() {
 		gtag("event", "fen_yacpdb_copyFEN");
 		const values = squares.map(s => toYACPDB(s.value));
@@ -15,7 +14,7 @@ window.YACPDB = {
 			gtag("event", "fen_yacpdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
-			const url = "https://yacpdb.org/gateway/ql?q=" + encodeURIComponent(`Id('${YACPDB.value}')`);
+			const url = "https://yacpdb.org/gateway/ql?q=" + encodeURIComponent(`Id('${DB.value}')`);
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const json = await response.json();
 			if(json.success) {
@@ -48,7 +47,7 @@ window.YACPDB = {
 		gtag("event", "fen_yacpdb_copyEdit");
 		navigator.clipboard.writeText(createEdit());
 	}
-}
+};
 
 function createQuery() {
 	let pieces = [];
@@ -63,7 +62,7 @@ function createQuery() {
 		}
 	}
 	let result = `MatrixExtended("${pieces.join(" ")}", false, false, "None")`;
-	if(store.YACPDB.exact) result += " AND PCount(*) = " + pieces.length;
+	if(store.DB.exact) result += " AND PCount(*) = " + pieces.length;
 	return result;
 }
 
