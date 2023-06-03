@@ -155,6 +155,7 @@
 						</div>
 						<div class="text-end">
 							<div class="d-inline-block">
+								<span v-if="canCopy" v-scope="CopyButton('Copy Image', copyImage, 'btn-primary')"></span>
 								<button v-if="canShare" class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>
