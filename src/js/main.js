@@ -5,16 +5,13 @@ import { squares, setSquareBG, updateSN, toFEN } from "./squares";
 import { drawTemplate, draw, getBlob } from "./render";
 import { setupLayout } from "./layout";
 import { setupDrag } from "./drag";
-import "./yacpdb";
-import "./bbs";
+import { YACPDB } from "./yacpdb";
+import { PDB } from "./pdb";
+import { BBS } from "./bbs";
 import { parseBorder } from "./option";
 
 setupLayout();
 setupDrag();
-
-window.DB = function() {
-	return window[store.DB.use];
-}
 
 //===========================================================
 // export
@@ -24,7 +21,7 @@ function getURL(url) {
 	return new URL(url, location.href).toString();
 }
 
-window.API = {
+const API = {
 	toBase64() {
 		gtag("event", "fen_link_copy");
 		navigator.clipboard.writeText(CN.toDataURL());
@@ -146,6 +143,7 @@ function updateBG() {
 }
 
 const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
+const isTaiwanDesktop = navigator.languages.includes("zh-TW") && !isTouch;
 
 createApp({
 	CheckboxBase,
@@ -154,9 +152,15 @@ createApp({
 	drawTemplate,
 	updateBG,
 	updateSN,
+	get DB() {
+		return store.DB.use == "PDB" ? PDB : YACPDB;
+	},
+	YACPDB,
+	BBS,
+	API,
 	store,
 	state,
 	tab: 0,
 	saveSettings,
-	isTaiwanDesktop: navigator.languages.includes("zh-TW") && !isTouch,
+	isTaiwanDesktop,
 }).mount();

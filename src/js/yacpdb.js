@@ -3,7 +3,7 @@ import { store } from "./store";
 import { makeFEN, toYACPDB, toCoordinate, convertSN } from "./fen.mjs";
 import { DB } from "./el";
 
-window.YACPDB = {
+export const YACPDB = {
 	copyFEN() {
 		gtag("event", "fen_yacpdb_copyFEN");
 		const values = squares.map(s => toYACPDB(s.value));
@@ -47,7 +47,7 @@ window.YACPDB = {
 		gtag("event", "fen_yacpdb_copyEdit");
 		navigator.clipboard.writeText(createEdit());
 	}
-}
+};
 
 function createQuery() {
 	let pieces = [];

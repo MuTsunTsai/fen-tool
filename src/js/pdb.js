@@ -4,7 +4,7 @@ import { types } from "./draw";
 import { toCoordinate } from "./fen.mjs";
 import { DB } from "./el";
 
-window.PDB = {
+export const PDB = {
 	async fetch(bt) {
 		try {
 			gtag("event", "fen_pdb_get");
@@ -33,7 +33,7 @@ window.PDB = {
 		gtag("event", "fen_pdb_copyEdit");
 		navigator.clipboard.writeText(createEdit());
 	}
-}
+};
 
 const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression="
 const pdbMap = ["K", "D", "L", "S", "T", "B", "I"]; // German
