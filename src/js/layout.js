@@ -155,10 +155,10 @@ export async function initLayout() {
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
 	await setOption({}, true);
+	addEventListener("fen", draw);
 	if(fen) {
 		setFEN(fen, true);
 		pushState();
 	}
-	addEventListener("fen", draw);
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
