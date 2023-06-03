@@ -1,6 +1,7 @@
 import { getBlob } from "./render";
 
-export const canCopy = "clipboard" in navigator && "write" in navigator.clipboard;
+export const canCopy = "clipboard" in navigator && "writeText" in navigator.clipboard;
+export const canCopyImg = "clipboard" in navigator && "write" in navigator.clipboard;
 
 function copyText(text) {
 	if(canCopy) navigator.clipboard.writeText(text);
