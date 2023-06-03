@@ -41,9 +41,10 @@ const rotationMap = ["", "R", "U", "L"];
 
 function createQuery() {
 	let pieces = [];
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const v = squares[i * 8 + j].value;
+	const { w, h } = store.board;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const v = squares[i * w + j].value;
 			if(!v.match(/^[kqbsnrp]$/i)) continue; // only orthodox pieces are supported
 			const type = pdbMap[types.indexOf(v.toLowerCase().replace("s", "n"))];
 			const color = v == v.toLowerCase() ? "s" : "w";
@@ -57,9 +58,10 @@ function createQuery() {
 
 function createEdit() {
 	const groups = {};
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const v = squares[i * 8 + j].value;
+	const { w, h } = store.board;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const v = squares[i * w + j].value;
 			const match = v.match(/^(-?)(?:\*(\d))?([kqbsnrpxc])$/i);
 			if(!match) continue;
 			let key;

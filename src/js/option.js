@@ -7,6 +7,8 @@ export const defaultOption = {
 	knightOffset: .6,
 	SN: false,
 	size: 44,
+	w: 8,
+	h: 8,
 	set: "1echecs",
 };
 
@@ -19,6 +21,8 @@ export function makeOption(option) {
 	const result = Object.assign({}, defaultOption);
 	if(option) {
 		const size = Number(option.size);
+		const w = Math.floor(Number(option.w));
+		const h = Math.floor(Number(option.h));
 		if(sizes.includes(size)) result.size = size;
 		if(sets.includes(option.set)) result.set = option.set;
 		if(option.border && option.border.match(BORDER)) result.border = option.border;
@@ -27,6 +31,8 @@ export function makeOption(option) {
 		result.pattern = option.pattern;
 		result.bg = option.bg;
 		result.SN = option.SN;
+		if(w > 0) result.w = w;
+		if(h > 0) result.h = h;
 	}
 	return result;
 }

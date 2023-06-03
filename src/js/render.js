@@ -8,20 +8,20 @@ import { parseBorder } from "./option";
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 
 const img = new Image();
-img.onload = () => {
-	state.loading = false;
-	drawTemplate();
-};
 
 if(location.protocol == "https:") img.crossOrigin = "anonymous";
 else document.getElementById("B64").disabled = true;
 
-export function load(s) {
-	store.board.set = s;
-	state.loading = true;
-	img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
+export function load() {
+	return new Promise(resolve => {
+		state.loading = true;
+		img.onload = () => {
+			state.loading = false;
+			resolve();
+		};
+		img.src = TPG.src = `assets/${store.board.set}${store.board.size}.png`;
+	});
 }
-window.load = load;
 
 const ctx = CN.getContext("2d");
 const gCtx = CG.getContext("2d");
@@ -53,14 +53,13 @@ export function drawTemplate() {
 	}
 	tCtx.restore();
 	tgCtx.restore();
-	draw();
 }
 
 export async function draw() {
 	const options = store.board;
-	const border = parseBorder(store.board.border);
-	const w = 8 * options.size + 2 * border.size;
-	const h = 8 * options.size + 2 * border.size;
+	const border = parseBorder(options.border);
+	const w = options.w * options.size + 2 * border.size;
+	const h = options.h * options.size + 2 * border.size;
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
 	if(!mode.dragging) gCtx.clearRect(0, 0, w, h);
@@ -70,10 +69,10 @@ export async function draw() {
 	drawBorder(ctx, border, w, h);
 	ctx.translate(border.size, border.size);
 	gCtx.translate(border.size, border.size);
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
+	for(let i = 0; i < options.h; i++) {
+		for(let j = 0; j < options.w; j++) {
 			const bg = background(options.pattern, i, j);
-			const value = squares[i * 8 + j].value;
+			const value = squares[i * options.w + j].value;
 			drawPiece(ctx, img, i, j, value, bg, options);
 			drawPiece(gCtx, img, i, j, value, 2, options);
 		}
@@ -92,5 +91,3 @@ export async function draw() {
 export function getBlob() {
 	return new Promise(resolve => CN.toBlob(resolve));
 }
-
-addEventListener("fen", draw);

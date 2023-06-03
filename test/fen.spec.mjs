@@ -18,7 +18,7 @@ describe("FEN Parsing", function() {
 	});
 
 	it("Accepts FEN without slashes", function() {
-		const result = parseFEN("rnbqkbnrpppppppp8888PPPPPPPPRNBQKBNR")
+		const result = parseFEN("rnbqkbnrpppppppp32PPPPPPPPRNBQKBNR")
 		expect(result).to.eql([
 			"r", "n", "b", "q", "k", "b", "n", "r",
 			"p", "p", "p", "p", "p", "p", "p", "p",
@@ -87,7 +87,7 @@ describe("Make FEN", function() {
 			"", "", "", "", "", "", "", "",
 			"P", "P", "P", "P", "P", "P", "P", "",
 			"", "", "B", "Q", "K", "B", "N", "R"
-		]);
+		], 8, 8);
 		expect(fen).to.equal("rnbqkbnr/p2ppppp/2'A5/5''122/3-*1p4/8/PPPPPPP1/2BQKBNR");
 	});
 

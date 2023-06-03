@@ -1,45 +1,64 @@
 
+export const DEFAULT = "8/8/8/8/8/8/8/8";
+
 const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..))$/iu;
-const FEN_UNIT = /\/|\d|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)|./iug;
+const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)|./iug;
+
+export function inferDimension(fen) {
+	const values = fen.match(FEN_UNIT) || [];
+	const rows = [0];
+	let cursor = 0;
+	for(const value of values) {
+		if(value == "/") rows[++cursor] = 0;
+		else if(value.match(/^\d+$/)) rows[cursor] += Number(value);
+		else rows[cursor]++;
+	}
+	const h = rows.length;
+	if(h == 1) return undefined; // There's no "/", we cannot be certain
+	const w = rows[0];
+	for(const v of rows) if(v != w) return undefined;
+	return { w, h };
+}
 
 /**
  * Parse FEN syntax.
- * @returns An array of values for each of 64 squares.
+ * @returns An array of values for each squares.
  */
-export function parseFEN(fen) {
+export function parseFEN(fen, w = 8, h = 8) {
 	const values = fen.match(FEN_UNIT) || [];
 	const result = [];
 	let ignoreNextSlash = false;
 	for(const value of values) {
 		if(value == "/") {
 			if(!ignoreNextSlash) {
-				const target = result.length + 8 - result.length % 8;
+				const target = result.length + w - result.length % w;
 				while(result.length < target) result.push("");
 			}
-		} else if(value.match(/^\d$/)) {
+		} else if(value.match(/^\d+$/)) {
 			const n = Number(value);
 			for(let i = 0; i < n; i++) result.push("");
 		} else {
 			result.push(value);
 		}
-		ignoreNextSlash = value != "/" && result.length % 8 == 0;
+		ignoreNextSlash = value != "/" && result.length % w == 0;
+		if(result.length == w * h) break;
 	}
-	while(result.length < 64) result.push("");
+	while(result.length < w * h) result.push("");
 	return result;
 }
 
 /**
  * Make FFEN from an array of values.
  */
-export function makeFEN(values) {
+export function makeFEN(values, w, h) {
 	let aggregateSpaces = 0, result = "";
 	function flush() {
 		if(aggregateSpaces) result += aggregateSpaces;
 		aggregateSpaces = 0;
 	}
-	for(let i = 0; i < 8; i++) {
-		for(let j = 0; j < 8; j++) {
-			const index = i * 8 + j;
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const index = i * w + j;
 			if(values[index] == "") {
 				aggregateSpaces++;
 			} else {
@@ -48,7 +67,7 @@ export function makeFEN(values) {
 			}
 		}
 		flush();
-		if(i < 7) result += "/";
+		if(i < h - 1) result += "/";
 	}
 	return result;
 }

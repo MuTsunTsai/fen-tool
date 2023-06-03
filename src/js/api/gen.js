@@ -1,20 +1,26 @@
 import { makeOption } from "../option";
-import { parseFEN } from "../fen.mjs";
+import { inferDimension, parseFEN } from "../fen.mjs";
 import { draw } from "./draw";
 
-const url = new URL(location.href);
-const fen = url.searchParams.get("fen") || "8/8/8/8/8/8/8/8";
-const squares = parseFEN(fen);
+const param = new URL(location.href).searchParams;
+const fen = param.get("fen") || "8/8/8/8/8/8/8/8";
 
 const options = makeOption({
-	size: url.searchParams.get("size"),
-	set: url.searchParams.get("set"),
-	knightOffset: url.searchParams.get("knightOffset"),
-	pattern: url.searchParams.get("pattern"),
-	bg: url.searchParams.get("bg"),
-	border: url.searchParams.get("border"),
-	blackWhite: url.searchParams.has("blackWhite"),
+	size: param.get("size"),
+	set: param.get("set"),
+	knightOffset: param.get("knightOffset"),
+	pattern: param.get("pattern"),
+	bg: param.get("bg"),
+	border: param.get("border"),
+	blackWhite: param.has("blackWhite"),
+	w: param.get("w"),
+	h: param.get("h"),
 });
+
+const { w, h } = inferDimension(fen) || options;
+const squares = parseFEN(fen, w, h);
+options.w = w;
+options.h = h;
 
 const img = new Image();
 img.onload = () => {
