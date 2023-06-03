@@ -8,7 +8,7 @@ export const YACPDB = {
 		gtag("event", "fen_yacpdb_copyFEN");
 		const { w, h } = store.board;
 		const values = squares.map(s => toYACPDB(s.value));
-		navigator.clipboard.writeText(makeFEN(values, w, h));
+		return makeFEN(values, w, h);
 	},
 	async fetch(bt) {
 		try {
@@ -43,11 +43,11 @@ export const YACPDB = {
 	},
 	copyQuery() {
 		gtag("event", "fen_yacpdb_copy");
-		navigator.clipboard.writeText(createQuery());
+		return createQuery();
 	},
 	copyEdit() {
 		gtag("event", "fen_yacpdb_copyEdit");
-		navigator.clipboard.writeText(createEdit());
+		return createEdit();
 	}
 };
 

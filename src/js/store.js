@@ -24,7 +24,7 @@ const settings = {
 
 for(const group in settings) {
 	for(const key in settings[group]) {
-		if(savedSettings[group]?.[key] !== undefined) {
+		if(savedSettings[group] && savedSettings[group][key] !== undefined) {
 			settings[group][key] = savedSettings[group][key];
 		}
 	}

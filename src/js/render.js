@@ -10,7 +10,6 @@ export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,
 const img = new Image();
 
 if(location.protocol == "https:") img.crossOrigin = "anonymous";
-else document.getElementById("B64").disabled = true;
 
 export function load() {
 	return new Promise(resolve => {

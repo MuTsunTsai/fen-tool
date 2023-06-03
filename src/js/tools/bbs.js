@@ -51,7 +51,7 @@ export const BBS = {
 		if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
 		result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
 		gtag("event", "fen_bbs_copy");
-		navigator.clipboard.writeText(result);
+		return result;
 	},
 };
 

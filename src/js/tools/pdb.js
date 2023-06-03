@@ -27,11 +27,11 @@ export const PDB = {
 	},
 	copyQuery() {
 		gtag("event", "fen_pdb_copy");
-		navigator.clipboard.writeText(createQuery());
+		return createQuery();
 	},
 	copyEdit() {
 		gtag("event", "fen_pdb_copyEdit");
-		navigator.clipboard.writeText(createEdit());
+		return createEdit();
 	}
 };
 

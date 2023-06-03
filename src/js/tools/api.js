@@ -8,9 +8,13 @@ function getURL(url) {
 }
 
 export const API = {
-	toBase64() {
-		gtag("event", "fen_link_copy");
-		navigator.clipboard.writeText(CN.toDataURL());
+	copyBase64() {
+		gtag("event", "fen_link_copy64");
+		return CN.toDataURL();
+	},
+	copyBase64Img() {
+		gtag("event", "fen_link_copy64img");
+		return `<img fen="${CN.toDataURL()}">`;
 	},
 	copyEmbed() {
 		gtag("event", "fen_copy_embed");
@@ -26,12 +30,10 @@ export const API = {
 		const borderSize = parseBorder(options.border).size;
 		const w = options.size * options.w + 2 * borderSize;
 		const h = options.size * options.h + 2 * borderSize;
-		const html = `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
-		navigator.clipboard.writeText(html);
+		return `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
 	},
 	copyImg() {
-		const html = `<img fen="${FEN.value}">`;
-		navigator.clipboard.writeText(html);
+		return `<img fen="${FEN.value}">`;
 	},
 	copySDK() {
 		gtag("event", "fen_copy_sdk");
@@ -42,7 +44,6 @@ export const API = {
 		if(options.bg) data += ` data-bg="${options.bg}"`;
 		if(options.border != "1") data += ` data-border="${options.border}"`;
 		if(options.blackWhite) data += ` data-black-white="true" data-knight-offset="${options.knightOffset}"`;
-		const html = `<script src="${getURL("sdk.js")}"${data}></script>`;
-		navigator.clipboard.writeText(html);
+		return `<script src="${getURL("sdk.js")}"${data}></script>`;
 	},
 };

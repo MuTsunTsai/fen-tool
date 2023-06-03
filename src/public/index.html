@@ -30,6 +30,12 @@
 
 <body class="m-3" v-scope>
 
+	<template id="copyBtn">
+		<button type="button" class="btn nowrap" :class="cls" @click="copy" :disabled="dis">
+			<i class="fa-solid fa-check" v-if="done"></i><i class="fa-solid fa-clipboard" v-else></i>&ensp;{{ label }}
+		</button>
+	</template>
+
 	<template id="checkbox">
 		<div class="form-check">
 			<input type="checkbox" class="form-check-input" :id="id" :checked="checked()" @change="change">
@@ -44,7 +50,7 @@
 				<div class="col">
 					<input type="text" class="form-control" id="FEN" onchange="toSquares(true)">
 				</div>
-				<div class="col-auto">
+				<div v-scope v-cloak class="col-auto" v-if="canCopy">
 					<button class="btn btn-secondary" title="Copy" onclick="copyFEN()">
 						<i class="fa-solid fa-clipboard"></i>
 					</button>
@@ -209,7 +215,8 @@
 											   onchange="setHeight(this)">
 									</div>
 									<div class="col-auto">
-										<button type="button" class="btn btn-secondary" onclick="setDimension({w:8,h:8})">Reset</button>
+										<button type="button" class="btn btn-secondary"
+												onclick="setDimension({w:8,h:8})">Reset</button>
 									</div>
 								</div>
 							</div>
@@ -239,24 +246,19 @@
 
 					<section :class="{show:tab==5}">
 						<div class="mb-3">
-							<button type="button" class="btn btn-secondary" id="B64" @click="API.toBase64">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy base64 link
-							</button>
+							<span
+								  v-scope="CopyButton('Copy base64 link', API.copyBase64, 'btn-secondary', !location.protocol.startsWith('http'))"></span>
+							<span
+								  v-scope="CopyButton('Copy base64 &lt;img&gt; code', API.copyBase64Img, 'btn-secondary', !location.protocol.startsWith('http'))"></span>
 						</div>
 						<h6>Embed mode</h6>
 						<div class="mb-3">
-							<button type="button" class="btn btn-secondary" @click="API.copyEmbed">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy embed HTML code
-							</button>
+							<span v-scope="CopyButton('Copy embed HTML code', API.copyEmbed, 'btn-secondary')"></span>
 						</div>
 						<h6>SDK mode</h6>
 						<div>
-							<button type="button" class="btn btn-secondary" @click="API.copySDK">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy SDK script tag
-							</button>
-							<button type="button" class="btn btn-secondary" @click="API.copyImg">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy SDK &lt;img&gt; code
-							</button>
+							<span v-scope="CopyButton('Copy SDK script tag', API.copySDK, 'btn-secondary')"></span>
+							<span v-scope="CopyButton('Copy SDK &lt;img&gt; code', API.copyImg, 'btn-secondary')"></span>
 						</div>
 					</section>
 
@@ -281,12 +283,9 @@
 							</div>
 						</div>
 						<div class="mb-3">
-							<button class="btn btn-primary nowrap" @click="DB.copyEdit">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy board edit syntax
-							</button>
-							<button class="btn btn-secondary" @click="YACPDB.copyFEN" v-if="store.DB.use=='YACPDB'">
-								<i class="fa-solid fa-clipboard"></i>&ensp;Copy YACPDB FEN
-							</button>
+							<span v-scope="CopyButton('Copy board edit syntax', DB.copyEdit, 'btn-primary')"></span>
+							<span v-scope="CopyButton('Copy YACPDB FEN', YACPDB.copyFEN, 'btn-secondary')"
+								  v-if="store.DB.use=='YACPDB'"></span>
 						</div>
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">Problem Id:</label>
@@ -302,9 +301,7 @@
 								<div v-scope="Checkbox('DB.exact', 'Search exactly these pieces')"></div>
 							</div>
 							<div class="col text-end" style="flex-basis: 24rem;">
-								<button class="btn btn-secondary nowrap" @click="DB.copyQuery">
-									<i class="fa-solid fa-clipboard"></i>&ensp;Copy search query
-								</button>
+								<span v-scope="CopyButton('Copy search query', DB.copyQuery, 'btn-secondary')"></span>&nbsp;
 								<button class="btn btn-primary nowrap" @click="DB.search">
 									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search position
 								</button>
@@ -322,9 +319,7 @@
 								<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
 							</div>
 							<div class="col-12 col-sm-4 text-end">
-								<button type="button" class="btn btn-primary" @click="BBS.copy">
-									<i class="fa-solid fa-clipboard"></i>&ensp;Copy BBS Code
-								</button>
+								<span v-scope="CopyButton('Copy BBS Code', BBS.copy, 'btn-primary')"></span>
 							</div>
 						</div>
 					</section>
