@@ -82,6 +82,7 @@ first add our SDK script to your webpage like this:
 	data-size="26" data-set="alpha" data-bg="gray"></script>
 ```
 
+This can be put anywhere, but preferably in the `<head>` part. 
 The `data-` attributes in this example gives you an idea of how to assign global board options.
 You don't need to worry about the details,
 as our `Copy SDK script tag` button will help you generate it based on your settings
@@ -109,6 +110,12 @@ img.dataset.size = 38; // Change option
 ```
 
 And the image will update automatically. You can also dynamically add or remove `<img>` elements, and it just works.
+
+The internal mechanism used in our SDK is compatible with most front-end frameworks as well. For example, with [Vue.js](https://vuejs.org/) you can do this:
+
+```html
+<img v-if="shouldShowBoard" :fen="myFEN" :data-size="mySize">
+```
 
 <br>
 
