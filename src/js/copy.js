@@ -1,10 +1,14 @@
 import { getBlob } from "./render";
 
-export const canCopy = "clipboard" in navigator && "writeText" in navigator.clipboard;
-export const canCopyImg = "clipboard" in navigator && "write" in navigator.clipboard;
+export const env = {
+	canCopy: "clipboard" in navigator && "writeText" in navigator.clipboard,
+	canPaste: "clipboard" in navigator && "readText" in navigator.clipboard,
+	canCopyImg: "clipboard" in navigator && "write" in navigator.clipboard,
+	isTouch: matchMedia("(hover: none), (pointer: coarse)").matches,
+};
 
 function copyText(text) {
-	if(canCopy) navigator.clipboard.writeText(text);
+	if(env.canCopy) navigator.clipboard.writeText(text);
 	else {
 		// polyfill
 		const input = document.createElement("input");

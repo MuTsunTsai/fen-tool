@@ -6,7 +6,7 @@ import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { YACPDB, PDB, BBS, API } from "./tools";
 import { Checkbox, CheckboxBase } from "./checkbox";
-import { CopyButton, canCopy, canCopyImg, copyImage } from "./copy";
+import { CopyButton, env, copyImage } from "./copy";
 
 initLayout();
 initDrag();
@@ -74,14 +74,11 @@ function updateBG() {
 	drawTemplate();
 }
 
-const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
-const isTaiwanDesktop = navigator.languages.includes("zh-TW") && !isTouch;
+const isTaiwanDesktop = navigator.languages.includes("zh-TW") && !env.isTouch;
 
 createApp({
 	canShare: Boolean(navigator.share),
-	canCopy,
-	canCopyImg,
-	isTouch,
+	env,
 	copyImage,
 	CheckboxBase,
 	Checkbox,
