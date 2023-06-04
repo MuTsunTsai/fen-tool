@@ -1,4 +1,4 @@
-import { CN, CG, TP, TPG } from "./el";
+import { CN, CG, TP, TPG, PV } from "./el";
 import { mode } from "./layout";
 import { store, state } from "./store";
 import { pushState, squares } from "./squares";
@@ -80,10 +80,10 @@ export async function draw() {
 	gCtx.restore();
 
 	if(!mode.dragging) pushState();
-	if(location.protocol == "https:") {
+	if(location.protocol.startsWith("http")) {
 		const a = document.getElementById("Save");
 		if(a.href) URL.revokeObjectURL(a.href);
-		a.href = URL.createObjectURL(await getBlob());
+		PV.src = a.href = URL.createObjectURL(await getBlob());
 	}
 }
 

@@ -1,15 +1,15 @@
 import { mode } from "./layout";
 import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
-import { CN, TP } from "./el";
+import { CN, PV, TP } from "./el";
 import { templateValues } from "./render";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
 let ghost, draggingValue;
 
 export function initDrag() {
-	CN.onmousedown = mouseDown;
-	CN.ontouchstart = mouseDown;
+	PV.onmousedown = mouseDown;
+	PV.ontouchstart = mouseDown;
 	TP.onmousedown = mouseDown;
 	TP.ontouchstart = mouseDown;
 
@@ -66,7 +66,7 @@ function mouseDown(event) {
 	if(document.activeElement) document.activeElement.blur();
 	const { b, s } = getRenderSize();
 	const { w } = store.board;
-	const isCN = this == CN;
+	const isCN = this != TP;
 	startX = event.offsetX;
 	startY = event.offsetY;
 	sqX = Math.floor((startX - b) / s);
