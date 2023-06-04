@@ -58,10 +58,10 @@ export async function setOption(o, force) {
 		let th = 8 * o.size + 2 * border.size;
 		if(mode.hor) {
 			[tw, th] = [th, tw];
-			CN.classList.add("mb-3");
+			CN.parentNode.classList.add("mb-3");
 			TP.classList.remove("ms-4");
 		} else {
-			CN.classList.remove("mb-3");
+			CN.parentNode.classList.remove("mb-3");
 			TP.classList.add("ms-4");
 		}
 		if(TP.width !== tw || TP.height !== th) {

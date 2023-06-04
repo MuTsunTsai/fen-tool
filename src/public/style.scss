@@ -72,7 +72,8 @@ section {
 	position: relative;
 }
 
-#PV {
+#PV,
+.loader {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -124,11 +125,7 @@ label[for] {
 }
 
 .loader {
-	top: 0;
-	left: 0;
-	opacity: 0;
 	transition: opacity 0s 0s;
-	pointer-events: none;
 }
 
 .loader.show {
