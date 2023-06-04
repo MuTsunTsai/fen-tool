@@ -55,7 +55,7 @@ This tool is purely front-end by design,
 so it cannot generate a URL that directly represents a PNG image like some other FEN tools.
 You can, however, easily share generated images by using the `Share image` button
 (works best on mobile devices; not available in Firefox)
-or by simply copy-and-paste the image.
+or simply copy the image using the `Copy image` button (for desktops).
 
 You can also add generated image to your webpages using our APIs.
 This tool uses service worker to cache all assets, so once the user has loaded an instance,
