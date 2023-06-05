@@ -85,20 +85,28 @@ window.setBorder = function(el) {
 }
 
 window.setHeight = function(el) {
-	const v = Math.floor(Number(el.value));
-	if(isNaN(v) || v <= 0) {
-		el.value = store.board.h;
+	if(typeof el == "number") {
+		setDimension({ h: store.board.h + el });
 	} else {
-		setDimension({ h: v });
+		const v = Math.floor(Number(el.value));
+		if(isNaN(v) || v <= 0) {
+			el.value = store.board.h;
+		} else {
+			setDimension({ h: v });
+		}
 	}
 }
 
 window.setWidth = function(el) {
-	const v = Math.floor(Number(el.value));
-	if(isNaN(v) || v <= 0) {
-		el.value = store.board.w;
+	if(typeof el == "number") {
+		setDimension({ w: store.board.w + el });
 	} else {
-		setDimension({ w: v });
+		const v = Math.floor(Number(el.value));
+		if(isNaN(v) || v <= 0) {
+			el.value = store.board.w;
+		} else {
+			setDimension({ w: v });
+		}
 	}
 }
 

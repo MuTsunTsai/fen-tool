@@ -72,7 +72,7 @@
 							</div>
 						</div>
 						<div id="DragZone" class="flex-grow-0 pb-4">
-							<div class="position-relative d-inline-block">
+							<div class="position-relative d-inline-block" style="line-height: 0;">
 								<canvas id="CN"></canvas>
 								<div class="loader" :class="{show:state.loading}">
 									<div class="h-100 d-flex align-items-center justify-content-center">
@@ -208,15 +208,32 @@
 									</div>
 								</div>
 								<div class="row gx-3 mb-2">
-									<label class="col-auto col-form-label">Files</label>
 									<div class="col">
-										<input type="number" class="form-control" min="1" :value="store.board.w"
-											   onchange="setWidth(this)">
+										<div class="input-group">
+											<button class="btn btn-secondary px-2" :disabled="store.board.w==1" type="button"
+													onclick="setWidth(-1)">
+												<i class="fa-solid fa-minus"></i>
+											</button>
+											<input type="number" class="form-control text-center px-0" min="1"
+												   :value="store.board.w" onchange="setWidth(this)" onfocus="this.select()">
+											<button class="btn btn-secondary px-2" type="button" onclick="setWidth(1)">
+												<i class="fa-solid fa-plus"></i>
+											</button>
+										</div>
 									</div>
-									<label class="col-auto col-form-label">Ranks</label>
+									<label class="col-auto col-form-label">x</label>
 									<div class="col">
-										<input type="number" class="form-control" min="1" :value="store.board.h"
-											   onchange="setHeight(this)">
+										<div class="input-group">
+											<button class="btn btn-secondary px-2" :disabled="store.board.h==1" type="button"
+													onclick="setHeight(-1)">
+												<i class="fa-solid fa-minus"></i>
+											</button>
+											<input type="number" class="form-control text-center px-0" min="1"
+												   :value="store.board.h" onchange="setHeight(this)" onfocus="this.select()">
+											<button class="btn btn-secondary px-2" type="button" onclick="setHeight(1)">
+												<i class="fa-solid fa-plus"></i>
+											</button>
+										</div>
 									</div>
 									<div class="col-auto">
 										<button type="button" class="btn btn-secondary"
@@ -249,14 +266,14 @@
 					</section>
 
 					<section :class="{show:tab==5}">
-						<div class="mb-3">
+						<div class="mb-2">
 							<span
 								  v-scope="CopyButton('Copy base64 link', API.copyBase64, 'btn-secondary', !location.protocol.startsWith('http'))"></span>
 							<span
 								  v-scope="CopyButton('Copy base64 &lt;img&gt; code', API.copyBase64Img, 'btn-secondary', !location.protocol.startsWith('http'))"></span>
 						</div>
 						<h6>Embed mode</h6>
-						<div class="mb-3">
+						<div class="mb-2">
 							<span v-scope="CopyButton('Copy embed HTML code', API.copyEmbed, 'btn-secondary')"></span>
 						</div>
 						<h6>SDK mode</h6>

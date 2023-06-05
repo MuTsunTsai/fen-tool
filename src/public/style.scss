@@ -13,6 +13,18 @@ body {
 	display: none;
 }
 
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+	/* hide spinner in Chrome, Safari, Edge, Opera */
+	appearance: none;
+	display: none;
+}
+
+input[type=number] {
+	/* hide spinner in Firefox */
+	appearance: textfield;
+}
+
 section {
 	visibility: hidden;
 	width: 100%;
@@ -20,6 +32,14 @@ section {
 
 	&.show {
 		visibility: visible;
+	}
+}
+
+.btn {
+	margin-bottom: 0.3rem;
+
+	div > &:only-child, .input-group > & {
+		margin-bottom: 0;
 	}
 }
 
@@ -91,12 +111,6 @@ section {
 		margin-left: 1.5rem;
 		margin-right: 1.5rem;
 	}
-
-	// @media (max-width: 768px) {
-	// 	& {
-	// 		max-width: calc(100% + 3rem);
-	// 	}
-	// }
 }
 
 #DragZone {
@@ -105,14 +119,6 @@ section {
 	align-items: start;
 	flex-wrap: wrap;
 	justify-content: center;
-}
-
-td {
-	vertical-align: top;
-}
-
-.btn {
-	margin-bottom: 5px;
 }
 
 #TP,
