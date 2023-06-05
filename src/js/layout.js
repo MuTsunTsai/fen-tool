@@ -1,7 +1,7 @@
 import { CN, SN, CG, TP, TPG } from "./el";
 import { getRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
-import { setSquareSize, createSquares, container, snapshot, paste, loadState, setFEN, pushState, toFEN } from "./squares";
+import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN } from "./squares";
 import { BORDER, parseBorder } from "./option";
 import { drawBorder } from "./draw";
 
@@ -27,7 +27,7 @@ export async function setOption(o, force) {
 
 	// Decide mode
 	const rem = getREM();
-	const newMode = document.body.clientWidth < (o.w + 3) * o.size + 3 * rem;
+	const newMode = document.body.clientWidth < (o.w + 3) * o.size + 3.5 * rem;
 	changed.mode = newMode !== mode.hor;
 	mode.hor = newMode;
 
@@ -46,10 +46,6 @@ export async function setOption(o, force) {
 			SN.width = CG.width = CN.width = bw;
 			SN.height = CG.height = CN.height = bh;
 		}
-
-		// EditZone border
-		const r = getRenderSize();
-		container.style.borderWidth = r.b + "px";
 		drawBorder(SN.getContext("2d"), border, bw, bh);
 	}
 
@@ -115,15 +111,18 @@ function setDimension(dim) {
 window.setDimension = setDimension;
 
 function resize() {
+	Zone.style.maxWidth = `calc(${document.body.clientWidth}px + 3rem)`;
 	CN.style.width = TP.style.width = "unset";
 	const { w } = store.board;
+	const r = getRenderSize();
 	if(w > 8 && mode.hor) {
-		const { b, s } = getRenderSize();
+		const { b, s } = r;
 		TP.style.width = 8 * s + 2 * b + "px";
 	} else if(w < 8 && mode.hor) {
 		const { b, s } = getRenderSize(TP);
 		CN.style.width = w * s + 2 * b + "px";
 	}
+	container.style.borderWidth = r.b + "px";
 
 	CG.style.width = CN.clientWidth + "px";
 	CG.style.height = CN.clientHeight + "px";

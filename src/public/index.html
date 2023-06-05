@@ -45,23 +45,25 @@
 
 	<div class="h-100 w-100 d-flex justify-content-center">
 		<div class="flex-grow-0 text-start">
-			<div class="row gx-3 mb-3">
-				<label class="col-auto col-form-label">FEN:</label>
-				<div class="col">
-					<input type="text" class="form-control" id="FEN" onchange="toSquares(true)">
-				</div>
-				<div v-scope v-cloak class="col-auto" v-if="env.canCopy">
-					<button class="btn btn-secondary" title="Copy" onclick="copyFEN()">
-						<i class="fa-solid fa-clipboard"></i>
-					</button>
-					<button class="btn btn-secondary" title="Paste" onclick="pasteFEN()">
-						<i class="fa-solid fa-paste"></i>
-					</button>
+			<div class="w-passive-100">
+				<div class="row gx-3 mb-3">
+					<label class="col-auto col-form-label">FEN:</label>
+					<div class="col">
+						<input type="text" class="form-control" id="FEN" onchange="toSquares(true)">
+					</div>
+					<div v-scope v-cloak class="col-auto" v-if="env.canCopy">
+						<button class="btn btn-secondary" title="Copy" onclick="copyFEN()">
+							<i class="fa-solid fa-clipboard"></i>
+						</button>
+						<button class="btn btn-secondary" title="Paste" onclick="pasteFEN()">
+							<i class="fa-solid fa-paste"></i>
+						</button>
+					</div>
 				</div>
 			</div>
 
 			<div class="text-center">
-				<div class="d-inline-block" style="overflow: hidden;">
+				<div class="d-inline-blocck" style="overflow: hidden;">
 					<div id="Zone" class="d-inline-flex justify-content-center text-center" style="flex-wrap: wrap-reverse;">
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">

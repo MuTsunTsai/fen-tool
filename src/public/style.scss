@@ -38,8 +38,7 @@ section {
 	padding: 1px;
 	text-align: center;
 	font-family: Arial;
-	width: 100%;
-	height: 100%;
+	overflow: hidden;
 }
 
 #CN,
@@ -87,12 +86,17 @@ section {
 #Zone {
 	margin-left: -1.5rem;
 	margin-right: -1.5rem;
-	max-width: calc(100vw + 1rem);
-
+	
 	> * {
 		margin-left: 1.5rem;
 		margin-right: 1.5rem;
 	}
+
+	// @media (max-width: 768px) {
+	// 	& {
+	// 		max-width: calc(100% + 3rem);
+	// 	}
+	// }
 }
 
 #DragZone {
