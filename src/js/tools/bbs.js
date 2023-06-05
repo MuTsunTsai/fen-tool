@@ -1,8 +1,8 @@
 import { store } from "../store";
-import { FEN } from "../el";
+import { FEN } from "../meta/el";
 import { PDB } from "./pdb";
 import { squares } from "../squares";
-import { DIGITS, fullWidth } from "../fullWidth";
+import { DIGITS, fullWidth } from "../meta/fullWidth";
 
 const us = unescape("%1B");
 export const A2 = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");

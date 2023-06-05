@@ -1,8 +1,8 @@
 import { store } from "../store";
 import { squares, setFEN } from "../squares";
 import { types } from "../draw";
-import { toCoordinate } from "../fen.mjs";
-import { DB } from "../el";
+import { toCoordinate } from "../meta/fen.mjs";
+import { DB } from "../meta/el";
 
 export const PDB = {
 	async fetch(bt) {

@@ -47,13 +47,13 @@
 				<div class="row gx-3 mb-3">
 					<label class="col-auto col-form-label">FEN:</label>
 					<div class="col">
-						<input type="text" class="form-control" id="FEN" onchange="toSquares(true)">
+						<input type="text" class="form-control" id="FEN" onchange="FEN.update()">
 					</div>
 					<div v-scope v-cloak class="col-auto" v-if="env.canCopy">
-						<button class="btn btn-secondary" title="Copy" onclick="copyFEN()">
+						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
-						<button class="btn btn-secondary" title="Paste" onclick="pasteFEN()">
+						<button class="btn btn-secondary" title="Paste" onclick="FEN.reset()">
 							<i class="fa-solid fa-paste"></i>
 						</button>
 					</div>
@@ -129,29 +129,31 @@
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<div class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="empty()">
+								<button type="button" class="btn btn-secondary" onclick="FEN.empty()">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="reset()">
+								<button type="button" class="btn btn-secondary" onclick="FEN.reset()">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
 							</div><br>
 							<div class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="rotate(-1)">
+								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)">
 									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="rotate(1)">
+								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)">
 									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
 								</button>
 							</div>&nbsp;
 							<div class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="All Black" onclick="color(-1)">
-								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="color(0)">
-								<input type="button" class="btn btn-secondary" value="All White" onclick="color(1)">
+								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)">
+								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="FEN.color(0)">
+								<input type="button" class="btn btn-secondary" value="All White" onclick="FEN.color(1)">
 							</div>&nbsp;
 							<div class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="Switch side" onclick="invertColor(false)">
-								<input type="button" class="btn btn-secondary" value="Switch case" onclick="invertColor(true)">
+								<input type="button" class="btn btn-secondary" value="Switch side" title="Texts are not converted"
+									   onclick="FEN.invert(false)">
+								<input type="button" class="btn btn-secondary" value="Switch case" title="Texts are converted"
+									   onclick="FEN.invert(true)">
 							</div>
 						</div>
 						<div class="text-end">
@@ -174,7 +176,7 @@
 									<label class="col-auto col-form-label">Chess set:</label>
 									<div class="col">
 										<select class="form-select" v-model="store.board.set"
-												onchange="setOption({set:this.value})">
+												onchange="Layout.setOption({set:this.value})">
 											<option value="1echecs">1Echecs</option>
 											<option value="alpha">Alpha</option>
 											<option value="goodCompanion">Good Companion</option>
@@ -187,7 +189,7 @@
 									<label class="col-auto col-form-label">Square size:</label>
 									<div class="col">
 										<select class="form-select" v-model.number="store.board.size"
-												onchange="setOption({size:Number(this.value)})">
+												onchange="Layout.setOption({size:Number(this.value)})">
 											<option value="26">26px</option>
 											<option value="32">32px</option>
 											<option value="38">38px</option>
@@ -209,12 +211,13 @@
 									<div class="col">
 										<div class="input-group">
 											<button class="btn btn-secondary px-2" :disabled="store.board.w==1" type="button"
-													onclick="setWidth(-1)">
+													onclick="Layout.setWidth(-1)">
 												<i class="fa-solid fa-minus"></i>
 											</button>
-											<input type="number" class="form-control text-center px-0" min="1"
-												   :value="store.board.w" onchange="setWidth(this)" onfocus="this.select()">
-											<button class="btn btn-secondary px-2" type="button" onclick="setWidth(1)">
+											<input type="number" class="form-control text-center px-0" min="1" title="Files"
+												   :value="store.board.w" onchange="Layout.setWidth(this)"
+												   onfocus="this.select()">
+											<button class="btn btn-secondary px-2" type="button" onclick="Layout.setWidth(1)">
 												<i class="fa-solid fa-plus"></i>
 											</button>
 										</div>
@@ -223,19 +226,20 @@
 									<div class="col">
 										<div class="input-group">
 											<button class="btn btn-secondary px-2" :disabled="store.board.h==1" type="button"
-													onclick="setHeight(-1)">
+													onclick="Layout.setHeight(-1)">
 												<i class="fa-solid fa-minus"></i>
 											</button>
-											<input type="number" class="form-control text-center px-0" min="1"
-												   :value="store.board.h" onchange="setHeight(this)" onfocus="this.select()">
-											<button class="btn btn-secondary px-2" type="button" onclick="setHeight(1)">
+											<input type="number" class="form-control text-center px-0" min="1" title="Rows"
+												   :value="store.board.h" onchange="Layout.setHeight(this)"
+												   onfocus="this.select()">
+											<button class="btn btn-secondary px-2" type="button" onclick="Layout.setHeight(1)">
 												<i class="fa-solid fa-plus"></i>
 											</button>
 										</div>
 									</div>
 									<div class="col-auto">
 										<button type="button" class="btn btn-secondary"
-												onclick="setDimension({w:8,h:8})">Reset</button>
+												onclick="Layout.setDimension({w:8,h:8})">Reset</button>
 									</div>
 								</div>
 							</div>
@@ -243,8 +247,9 @@
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Border pattern:</label>
 									<div class="col">
-										<input type="text" placeholder="Use comma-separated numbers" class="form-control"
-											   :value="store.board.border" onchange="setBorder(this)">
+										<input type="text" placeholder="Use comma-separated numbers"
+											   title="Use comma-separated numbers" class="form-control"
+											   :value="store.board.border" onchange="Layout.setBorder(this)">
 									</div>
 								</div>
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>

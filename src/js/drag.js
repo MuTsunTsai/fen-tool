@@ -1,7 +1,7 @@
 import { mode } from "./layout";
 import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
-import { CN, PV, TP } from "./el";
+import { CN, PV, TP } from "./meta/el";
 import { templateValues } from "./render";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;

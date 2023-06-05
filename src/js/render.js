@@ -1,9 +1,9 @@
-import { CN, CG, TP, TPG, PV } from "./el";
+import { CN, CG, TP, TPG, PV } from "./meta/el";
 import { mode } from "./layout";
 import { store, state } from "./store";
 import { pushState, squares } from "./squares";
 import { background, drawPiece, drawBorder } from "./draw";
-import { parseBorder } from "./option";
+import { parseBorder } from "./meta/option";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 

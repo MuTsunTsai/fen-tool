@@ -1,24 +1,20 @@
 import { background } from "./draw";
-import { FEN } from "./el";
-import { DEFAULT, inferDimension, makeFEN, normalize, parseFEN } from "./fen.mjs";
+import { FEN } from "./meta/el";
+import { DEFAULT, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { setOption } from "./layout";
-import { store, getRenderSize } from "./store";
+import { store } from "./store";
 
 export const squares = new Array(64);
 export const container = document.getElementById("Squares");
 
-export function setSquareSize() {
-	const { s } = getRenderSize();
-	const { w, h } = store.board;
+export function setSquareSize(size) {
 	container.style.width = CN.clientWidth + "px";
 	container.style.height = CN.clientHeight + "px";
-	for(let i = 0; i < w * h; i++) {
-		squares[i].style.fontSize = (s - 10) + "px";
-		squares[i].style.lineHeight = (s - 10) + "px";
+	for(const sq of squares) {
+		sq.style.fontSize = (size - 10) + "px";
+		sq.style.lineHeight = (size - 10) + "px";
 	}
 }
-
-window.setSquareSize = setSquareSize;
 
 export function createSquares() {
 	const { w, h } = store.board;
@@ -78,15 +74,6 @@ export function setSquare(sq, value) {
 	if(updated) toFEN();
 }
 
-window.empty = function() {
-	for(const sq of squares) sq.value = "";
-	toFEN();
-}
-window.reset = function() {
-	setOption({ w: 8, h: 8 });
-	setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-}
-
 export function setFEN(v, check) {
 	FEN.value = v;
 	toSquares(check);
@@ -143,21 +130,65 @@ function toSquares(check) {
 	else dispatchEvent(new Event("fen"));
 }
 
-window.toSquares = toSquares;
-
 export function updateSN() {
 	let changed = false;
 	for(const s of squares) changed = checkInputCore(s) || changed; // order matters
 	if(changed) toFEN();
 }
 
-window.copyFEN = function() {
-	gtag("event", "fen_copy");
-	navigator.clipboard.writeText(FEN.value);
-}
-
-window.pasteFEN = async function() {
-	gtag("event", "fen_paste");
-	FEN.value = await navigator.clipboard.readText();
-	toSquares(true);
+window.FEN = {
+	update: () => toSquares(true),
+	empty() {
+		for(const sq of squares) sq.value = "";
+		toFEN();
+	},
+	reset() {
+		setOption({ w: 8, h: 8 });
+		setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+	},
+	copy() {
+		gtag("event", "fen_copy");
+		navigator.clipboard.writeText(FEN.value);
+	},
+	async paste() {
+		gtag("event", "fen_paste");
+		FEN.value = await navigator.clipboard.readText();
+		toSquares(true);
+	},
+	rotate(d) {
+		const temp = snapshot();
+		const { w, h } = store.board;
+		if(w !== h) setOption({ w: h, h: w });
+		for(let i = 0; i < w; i++) {
+			for(let j = 0; j < h; j++) {
+				const target = d == 1 ? (h - 1 - j) * w + i : j * w + (w - 1 - i);
+				squares[i * h + j].value = temp[target];
+			}
+		}
+		toFEN();
+	},
+	color(c) {
+		for(const sq of squares) {
+			let s = sq.value;
+			if(s.startsWith("'") || s == "") continue;
+			if(s.startsWith("-")) s = s.substr(1);
+			s = s.toLowerCase();
+			if(c == 0) s = "-" + s;
+			if(c == 1) s = s.toUpperCase();
+			sq.value = s;
+		}
+		toFEN();
+	},
+	invert(l) {
+		for(const sq of squares) {
+			let s = sq.value;
+			if(s == "" || s.startsWith("-")) continue;
+			if(!l && s.startsWith("'")) continue;
+			const t = s.toLowerCase();
+			if(s == t) s = s.toUpperCase();
+			else s = t;
+			sq.value = s;
+		}
+		toFEN();
+	},
 }

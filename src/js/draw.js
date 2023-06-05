@@ -1,4 +1,4 @@
-import { fullWidth } from "./fullWidth";
+import { fullWidth } from "./meta/fullWidth";
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
 

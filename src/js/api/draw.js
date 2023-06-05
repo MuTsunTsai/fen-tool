@@ -1,5 +1,5 @@
 import { background, drawPiece, drawBorder } from "../draw";
-import { parseBorder } from "../option";
+import { parseBorder } from "../meta/option";
 
 const CN = document.getElementById("CN");
 const ctx = CN.getContext("2d");

@@ -1,7 +1,7 @@
 import { store } from "../store";
-import { CN, FEN } from "../el";
-import { parseBorder } from "../option";
-import { inferDimension } from "../fen.mjs";
+import { CN, FEN } from "../meta/el";
+import { parseBorder } from "../meta/option";
+import { inferDimension } from "../meta/fen.mjs";
 
 function getURL(url) {
 	return new URL(url, location.href).toString();

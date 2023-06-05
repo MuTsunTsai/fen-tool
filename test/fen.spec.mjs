@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { makeFEN, parseFEN } from "../src/js/fen.mjs";
+import { makeFEN, parseFEN } from "../src/js/meta/fen.mjs";
 
 describe("FEN Parsing", function() {
 

@@ -1,5 +1,5 @@
-import { inferDimension, parseFEN } from "../fen.mjs";
-import { makeOption } from "../option";
+import { inferDimension, parseFEN } from "../meta/fen.mjs";
+import { makeOption } from "../meta/option";
 import { draw } from "./draw.js";
 
 const imgs = new Map();

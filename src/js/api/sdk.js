@@ -1,5 +1,5 @@
-import { inferDimension } from "../fen.mjs";
-import { makeOption, parseBorder } from "../option";
+import { inferDimension } from "../meta/fen.mjs";
+import { makeOption, parseBorder } from "../meta/option";
 
 const script = document.currentScript;
 const apiURL = new URL("api/", script.src);

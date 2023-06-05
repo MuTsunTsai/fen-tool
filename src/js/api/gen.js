@@ -1,5 +1,5 @@
-import { makeOption } from "../option";
-import { inferDimension, parseFEN } from "../fen.mjs";
+import { makeOption } from "../meta/option";
+import { inferDimension, parseFEN } from "../meta/fen.mjs";
 import { draw } from "./draw";
 
 const param = new URL(location.href).searchParams;

@@ -1,6 +1,6 @@
 import { reactive } from "petite-vue";
-import { defaultOption, parseBorder } from "./option";
-import { CN, TP } from "./el";
+import { defaultOption, parseBorder } from "./meta/option";
+import { CN } from "./meta/el";
 
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
@@ -31,7 +31,6 @@ for(const group in settings) {
 }
 
 export const store = reactive(settings);
-window.store = store;
 
 export const state = reactive({
 	loading: true,

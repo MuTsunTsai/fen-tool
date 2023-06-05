@@ -1,8 +1,8 @@
-import { CN, SN, CG, TP, TPG } from "./el";
+import { CN, SN, CG, TP, TPG } from "./meta/el";
 import { getRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN } from "./squares";
-import { BORDER, parseBorder } from "./option";
+import { BORDER, parseBorder } from "./meta/option";
 import { drawBorder } from "./draw";
 
 export const mode = {
@@ -74,49 +74,12 @@ export async function setOption(o, force) {
 	if(shouldDrawTemplate) drawTemplate();
 }
 
-window.setOption = setOption;
-
-window.setBorder = function(el) {
-	if(!el.value.match(BORDER)) {
-		el.value = store.board.border;
-	} else {
-		setOption({ border: el.value });
-	}
-}
-
-window.setHeight = function(el) {
-	if(typeof el == "number") {
-		setDimension({ h: store.board.h + el });
-	} else {
-		const v = Math.floor(Number(el.value));
-		if(isNaN(v) || v <= 0) {
-			el.value = store.board.h;
-		} else {
-			setDimension({ h: v });
-		}
-	}
-}
-
-window.setWidth = function(el) {
-	if(typeof el == "number") {
-		setDimension({ w: store.board.w + el });
-	} else {
-		const v = Math.floor(Number(el.value));
-		if(isNaN(v) || v <= 0) {
-			el.value = store.board.w;
-		} else {
-			setDimension({ w: v });
-		}
-	}
-}
-
 function setDimension(dim) {
 	const { w, h } = store.board;
 	const shot = snapshot();
 	setOption(dim);
 	paste(shot, w, h);
 }
-window.setDimension = setDimension;
 
 function resize() {
 	Zone.style.maxWidth = `calc(${document.body.clientWidth}px + 3rem)`;
@@ -137,7 +100,7 @@ function resize() {
 	TPG.style.width = TP.clientWidth + "px";
 	TPG.style.height = TP.clientHeight + "px";
 
-	setSquareSize();
+	setSquareSize(r.s);
 
 	const rem = getREM();
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
@@ -171,3 +134,39 @@ export async function initLayout() {
 	}
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
+
+window.Layout = {
+	setOption,
+	setDimension,
+	setBorder(el) {
+		if(!el.value.match(BORDER)) {
+			el.value = store.board.border;
+		} else {
+			setOption({ border: el.value });
+		}
+	},
+	setHeight(el) {
+		if(typeof el == "number") {
+			setDimension({ h: store.board.h + el });
+		} else {
+			const v = Math.floor(Number(el.value));
+			if(isNaN(v) || v <= 0) {
+				el.value = store.board.h;
+			} else {
+				setDimension({ h: v });
+			}
+		}
+	},
+	setWidth(el) {
+		if(typeof el == "number") {
+			setDimension({ w: store.board.w + el });
+		} else {
+			const v = Math.floor(Number(el.value));
+			if(isNaN(v) || v <= 0) {
+				el.value = store.board.w;
+			} else {
+				setDimension({ w: v });
+			}
+		}
+	},
+};
