@@ -14,11 +14,9 @@
 		window.dataLayer = window.dataLayer || [];
 		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
-		if(location.protocol == "https:") {
-			gtag('config', 'G-4GYC00FPRR');
-			if('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('../sw.js', { scope: "../" });
-			}
+		gtag('config', 'G-4GYC00FPRR');
+		if(location.protocol == "https:" && 'serviceWorker' in navigator) {
+			navigator.serviceWorker.register('../sw.js', { scope: "../" });
 		}
 	</script>
 
