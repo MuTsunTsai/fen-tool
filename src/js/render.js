@@ -62,7 +62,6 @@ export async function draw() {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
 	if(!mode.dragging) gCtx.clearRect(0, 0, w, h);
-	ctx.font = gCtx.font = `${options.size - 4}px arial`;
 	ctx.save();
 	gCtx.save();
 	drawBorder(ctx, border, w, h);

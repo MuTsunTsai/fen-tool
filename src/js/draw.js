@@ -82,10 +82,25 @@ function drawBlank(ctx, i, j, light, options) {
 }
 
 function drawText(ctx, text, size) {
-	ctx.fillStyle = "black";
-	const measure = ctx.measureText(text);
+	ctx.save();
+	const isEmoji = /\p{Extended_Pictographic}/u.test(text); // Emoji, but exclude numbers
+	const font = size - 4;
+	ctx.font = `${font}px arial`;
+
+	const max = size - 2;
+	let measure = ctx.measureText(text);
+	if(isEmoji && measure.width > max) { // Fix emoji distortion
+		const f = max / measure.width;
+		ctx.font = `${font * f}px arial`;
+		measure = ctx.measureText(text);
+	}
+
 	const height = measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
-	const dx = Math.max((size - measure.width) / 2, 0);
+	const dx = (size - Math.min(measure.width, max)) / 2;
 	const dy = Math.max((size - height) / 2, 0);
-	ctx.fillText(text, dx, size - dy, size);
+
+	ctx.fillStyle = "black";
+	ctx.fillText(text, dx, size - dy, max);
+
+	ctx.restore();
 }
