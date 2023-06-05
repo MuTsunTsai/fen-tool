@@ -1,5 +1,5 @@
 import { CN, SN, CG, TP, TPG } from "./el";
-import { getRenderSize, getTemplateRenderSize, store } from "./store";
+import { getRenderSize, store } from "./store";
 import { drawTemplate, draw, load } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, loadState, setFEN, pushState, toFEN } from "./squares";
 import { BORDER, parseBorder } from "./option";
@@ -121,7 +121,7 @@ function resize() {
 		const { b, s } = getRenderSize();
 		TP.style.width = 8 * s + 2 * b + "px";
 	} else if(w < 8 && mode.hor) {
-		const { b, s } = getTemplateRenderSize();
+		const { b, s } = getRenderSize(TP);
 		CN.style.width = w * s + 2 * b + "px";
 	}
 

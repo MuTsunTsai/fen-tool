@@ -41,18 +41,10 @@ export function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));
 }
 
-export function getRenderSize() {
+export function getRenderSize(tp) {
 	const { size, w, border } = store.board;
 	const b = parseBorder(border).size;
-	const factor = CN.clientWidth / (size * w + b * 2);
-	const s = size * factor;
-	return { b: b * factor, s };
-}
-
-export function getTemplateRenderSize() {
-	const { size, border } = store.board;
-	const b = parseBorder(border).size;
-	const factor = TP.clientWidth / (size * 8 + b * 2);
+	const factor = (tp || CN).clientWidth / (size * (tp ? 8 : w) + b * 2);
 	const s = size * factor;
 	return { b: b * factor, s };
 }

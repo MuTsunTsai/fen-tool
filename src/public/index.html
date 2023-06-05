@@ -119,7 +119,7 @@
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">Database</div>
 						</li>
-						<li class="nav-item" v-if="isTaiwanDesktop">
+						<li class="nav-item" v-if="env.isTaiwanDesktop">
 							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
 						</li>
 					</ul>
@@ -157,7 +157,7 @@
 						<div class="text-end">
 							<div class="d-inline-block">
 								<span v-if="!env.isTouch" v-scope="CopyButton('Copy image', copyImage, 'btn-primary')"></span>
-								<button v-if="canShare" class="btn btn-primary" onclick="share()">
+								<button v-if="env.canShare" class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>
 								<a class="btn btn-primary" download="board.png" id="Save" onclick="gtag('event', 'img_save')">
@@ -311,7 +311,7 @@
 						</div>
 					</section>
 
-					<section :class="{show:tab==4}" v-if="isTaiwanDesktop">
+					<section :class="{show:tab==4}" v-if="env.isTaiwanDesktop">
 						<div class="row gx-3">
 							<div class="col-12 col-sm-8 mb-3">
 								<div v-scope="Checkbox('BBS.Id', 'Include database Id')"></div>

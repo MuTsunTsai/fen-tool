@@ -6,7 +6,8 @@ import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { YACPDB, PDB, BBS, API } from "./tools";
 import { Checkbox, CheckboxBase } from "./checkbox";
-import { CopyButton, env, copyImage } from "./copy";
+import { CopyButton, copyImage } from "./copy";
+import { env } from "./env";
 
 initLayout();
 initDrag();
@@ -74,10 +75,7 @@ function updateBG() {
 	drawTemplate();
 }
 
-const isTaiwanDesktop = navigator.languages.includes("zh-TW") && !env.isTouch;
-
 createApp({
-	canShare: Boolean(navigator.share),
 	env,
 	copyImage,
 	CheckboxBase,
@@ -97,5 +95,4 @@ createApp({
 	state,
 	tab: 0,
 	saveSettings,
-	isTaiwanDesktop,
 }).mount();
