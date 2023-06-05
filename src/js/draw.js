@@ -1,12 +1,32 @@
 import { fullWidth } from "./meta/fullWidth";
+import { parseBorder } from "./meta/option";
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
+
+export function drawBoard(ctx, img, squares, options, ghost) {
+	const border = parseBorder(options.border);
+	const w = options.w * options.size + 2 * border.size;
+	const h = options.h * options.size + 2 * border.size;
+	ctx.canvas.width = w;
+	ctx.canvas.height = h;
+	if(ghost) ctx.clearRect(0, 0, w, h);
+	else drawBorder(ctx, border, w, h);
+	ctx.save();
+	ctx.translate(border.size, border.size);
+	for(let i = 0; i < options.h; i++) {
+		for(let j = 0; j < options.w; j++) {
+			const bg = ghost ? 2 : background(options.pattern, i, j);
+			drawPiece(ctx, img, i, j, squares[i * options.w + j], bg, options);
+		}
+	}
+	ctx.restore();
+}
 
 /**
  * The core drawing method.
  * @param {*} bg dark=0, light=1, transparent=2
  */
-export function drawPiece(ctx, img, i, j, value, bg, options) {
+function drawPiece(ctx, img, i, j, value, bg, options) {
 	const size = options.size;
 	const neutral = value.startsWith("-");
 	if(neutral) value = value.substring(1);

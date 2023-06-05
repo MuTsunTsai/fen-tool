@@ -1,4 +1,4 @@
-import { background, drawPiece, drawBorder } from "../draw";
+import { drawBoard } from "../draw";
 import { parseBorder } from "../meta/option";
 
 const CN = document.getElementById("CN");
@@ -10,16 +10,6 @@ export function draw(img, squares, options) {
 	const h = options.h * options.size + 2 * border.size;
 	CN.width = w;
 	CN.height = h;
-	drawBorder(ctx, border, w, h);
-	ctx.save();
-	ctx.translate(border.size, border.size);
-	ctx.font = `${options.size - 4}px arial`;
-	for(let i = 0; i < options.h; i++) {
-		for(let j = 0; j < options.w; j++) {
-			const bg = background(options.pattern, i, j);
-			drawPiece(ctx, img, i, j, squares[i * options.w + j], bg, options);
-		}
-	}
-	ctx.restore();
+	drawBoard(ctx, img, squares, options);
 	return CN;
 }
