@@ -28,8 +28,8 @@ export function drawBoard(ctx, img, squares, options, ghost) {
 	ctx.translate(border.size, border.size);
 	for(let i = 0; i < options.h; i++) {
 		for(let j = 0; j < options.w; j++) {
-			const bg = transparent ? 2 : background(options.pattern, i, j);
-			drawPiece(ctx, img, i, j, squares[i * options.w + j], bg, options);
+			if(!transparent) drawBlank(ctx, i, j, options);
+			drawPiece(ctx, img, i, j, squares[i * options.w + j], options);
 		}
 	}
 	ctx.restore();
@@ -39,12 +39,11 @@ export function drawBoard(ctx, img, squares, options, ghost) {
 		ctx.translate(border.size, border.size);
 		for(let i = 0; i < options.h; i++) {
 			for(let j = 0; j < options.w; j++) {
-				const bg = background(options.pattern, i, j);
-				drawBlank(ctx, i, j, bg, options);
+				drawBlank(ctx, i, j, options);
 			}
 		}
 		ctx.restore();
-		ctx.drawImage(mask, 0, 0);
+		ctx.drawImage(mask, 0, 0); // Repeat 3 times to increase masking
 		ctx.drawImage(mask, 0, 0);
 		ctx.drawImage(mask, 0, 0);
 		ctx.drawImage(pieces, 0, 0);
@@ -54,9 +53,8 @@ export function drawBoard(ctx, img, squares, options, ghost) {
 
 /**
  * The core drawing method.
- * @param {*} bg dark=0, light=1, transparent=2
  */
-function drawPiece(ctx, img, i, j, value, bg, options) {
+function drawPiece(ctx, img, i, j, value, options) {
 	const size = options.size;
 	const neutral = value.startsWith("-");
 	if(neutral) value = value.substring(1);
@@ -71,8 +69,6 @@ function drawPiece(ctx, img, i, j, value, bg, options) {
 	const lower = value.toLowerCase();
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");
-
-	drawBlank(ctx, i, j, bg, options);
 	if(typeIndex < 0 && !isText) return;
 
 	ctx.save();
@@ -95,14 +91,14 @@ function drawPiece(ctx, img, i, j, value, bg, options) {
 	ctx.restore();
 }
 
-export function background(pattern, i, j) {
+function background(pattern, i, j) {
 	if(pattern == "mono") return 1;
 	let bg = (i + j) % 2;
 	if(pattern != "inverted") bg = 1 - bg;
 	return bg;
 }
 
-export function drawBorder(ctx, border, w, h) {
+function drawBorder(ctx, border, w, h) {
 	ctx.save();
 	let cursor = 0;
 	for(let i = 0; i < border.array.length; i++) {
@@ -142,8 +138,8 @@ function createGlow(ctx, size) {
 	ctx.restore();
 }
 
-function drawBlank(ctx, i, j, bg, options) {
-	if(bg == 2) return;
+function drawBlank(ctx, i, j, options) {
+	const light = background(options.pattern, i, j);
 	const size = options.size;
 	ctx.save();
 	ctx.translate(j * size, i * size);
@@ -152,7 +148,7 @@ function drawBlank(ctx, i, j, bg, options) {
 		ctx.lineWidth = size / 60;
 		ctx.fillStyle = "#fff";
 		ctx.fillRect(0, 0, size, size);
-		if(!bg) {
+		if(!light) {
 			ctx.beginPath();
 			const step = size / 8;
 			for(let i = 0; i < size; i += step) {
@@ -166,7 +162,7 @@ function drawBlank(ctx, i, j, bg, options) {
 			ctx.stroke();
 		}
 	} else {
-		ctx.fillStyle = getBgColor(bg, options.bg);
+		ctx.fillStyle = getBgColor(light, options.bg);
 		ctx.fillRect(0, 0, size, size);
 	}
 	ctx.restore();
