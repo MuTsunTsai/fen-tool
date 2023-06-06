@@ -4,6 +4,7 @@
 	"description": "Quick online tool for editing FEN.",
 	"main": "index.js",
 	"scripts": {
+		"serve": "serve docs",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
@@ -27,6 +28,7 @@
 		"gulp-workbox": "^1.0.6",
 		"mocha": "^10.2.0",
 		"sass": "^1.62.1",
+		"serve": "^14.2.0",
 		"vinyl-sourcemaps-apply": "^0.2.1",
 		"workbox-build": "^7.0.0"
 	},

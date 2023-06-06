@@ -18,8 +18,9 @@ export const API = {
 	},
 	async copyUrl() {
 		gtag("event", "fen_gen_link");
+		// This feature uses https://freeimage.host public API
 		const data = new URLSearchParams();
-		data.append("key", "6d207e02198a847aa98d0a2a901485a5");
+		data.append("key", "6d207e02198a847aa98d0a2a901485a5"); // This appears to be a public key
 		data.append("action", "upload");
 		data.append("source", CN.toDataURL().replace(/^.+base64,/, ""));
 		data.append("format", "txt");

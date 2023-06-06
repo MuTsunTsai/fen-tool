@@ -65,7 +65,7 @@
 					<div id="Zone" class="d-inline-flex justify-content-center text-center" style="flex-wrap: wrap-reverse;">
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
-								<canvas id="SN"></canvas><!-- for drawing border -->
+								<canvas id="SN"></canvas>
 								<div id="Squares"></div>
 							</div>
 						</div>
@@ -328,7 +328,7 @@
 								<input type="text" class="form-control" id="DB">
 							</div>
 							<div class="col-auto">
-								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch(this)">
+								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)">
 							</div>
 						</div>
 						<div class="row align-items-center flex-wrap">
