@@ -1,4 +1,4 @@
-import { background } from "./draw";
+import { background, getBgColor } from "./draw";
 import { FEN } from "./meta/el";
 import { DEFAULT, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { setOption } from "./layout";
@@ -42,14 +42,8 @@ export function setSquareBG() {
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
 			const s = squares[i * w + j];
-			const bgc = background(pattern, i, j);
-			if(bg == "gray" || bg == "classic") {
-				s.style.background = bgc ? "#fff" : "#bbb";
-			} else if(bg == "green") {
-				s.style.background = bgc ? "#EEEED2" : "#769656"
-			} else {
-				s.style.background = bgc ? "#FFCE9E" : "#D18B47";
-			}
+			const light = background(pattern, i, j);
+			s.style.background = getBgColor(light, bg);
 		}
 	}
 }

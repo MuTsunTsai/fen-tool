@@ -72,12 +72,10 @@ function drawPiece(ctx, img, i, j, value, bg, options) {
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");
 
-	const notDefault = options.bg !== undefined;
-	if((typeIndex < 0 || notDefault) && bg != 2) drawBlank(ctx, i, j, bg, options);
+	drawBlank(ctx, i, j, bg, options);
 	if(typeIndex < 0 && !isText) return;
 
 	ctx.save();
-	if(notDefault) bg = 2;
 	const bw = options.blackWhite;
 	const sx = neutral ? (bw ? 0 : 2) : value == lower ? 0 : 1;
 	const f = neutral && bw ? (lower == "n" ? options.knightOffset : .5) : 1;
@@ -89,9 +87,9 @@ function drawPiece(ctx, img, i, j, value, bg, options) {
 		const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
 		drawText(ctx, text, size);
 	} else {
-		ctx.drawImage(img, (sx + bg * 3) * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
+		ctx.drawImage(img, sx * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
 		if(neutral && bw) {
-			ctx.drawImage(img, (1 + f + bg * 3) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
+			ctx.drawImage(img, (1 + f) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
 		}
 	}
 	ctx.restore();
@@ -144,7 +142,8 @@ function createGlow(ctx, size) {
 	ctx.restore();
 }
 
-function drawBlank(ctx, i, j, light, options) {
+function drawBlank(ctx, i, j, bg, options) {
+	if(bg == 2) return;
 	const size = options.size;
 	ctx.save();
 	ctx.translate(j * size, i * size);
@@ -153,7 +152,7 @@ function drawBlank(ctx, i, j, light, options) {
 		ctx.lineWidth = size / 60;
 		ctx.fillStyle = "#fff";
 		ctx.fillRect(0, 0, size, size);
-		if(!light) {
+		if(!bg) {
 			ctx.beginPath();
 			const step = size / 8;
 			for(let i = 0; i < size; i += step) {
@@ -166,18 +165,21 @@ function drawBlank(ctx, i, j, light, options) {
 			}
 			ctx.stroke();
 		}
-
 	} else {
-		if(options.bg == "gray") {
-			ctx.fillStyle = light ? "#fff" : "#bbb";
-		} else if(options.bg == "green") {
-			ctx.fillStyle = light ? "#EEEED2" : "#769656";
-		} else {
-			ctx.fillStyle = light ? "#FFCE9E" : "#D18B47";
-		}
+		ctx.fillStyle = getBgColor(bg, options.bg);
 		ctx.fillRect(0, 0, size, size);
 	}
 	ctx.restore();
+}
+
+export function getBgColor(light, bg) {
+	if(bg == "gray" || bg == "classic") {
+		return light ? "#fff" : "#bbb";
+	} else if(bg == "green") {
+		return light ? "#EEEED2" : "#769656";
+	} else {
+		return light ? "#FFCE9E" : "#D18B47";
+	}
 }
 
 function drawText(ctx, text, size) {
