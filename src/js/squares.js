@@ -1,8 +1,8 @@
-import { background, getBgColor } from "./draw";
 import { FEN } from "./meta/el";
 import { DEFAULT, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
-import { setOption } from "./layout";
+import { mode, setOption } from "./layout";
 import { store } from "./store";
+import { draw } from "./render";
 
 export const squares = new Array(64);
 export const container = document.getElementById("Squares");
@@ -34,22 +34,17 @@ export function createSquares() {
 		}
 		squares[i].style.display = i < total ? "block" : "none";
 	}
-	setSquareBG();
 }
 
-export function setSquareBG() {
-	const { pattern, bg, w, h } = store.board;
-	for(let i = 0; i < h; i++) {
-		for(let j = 0; j < w; j++) {
-			const s = squares[i * w + j];
-			const light = background(pattern, i, j);
-			s.style.background = getBgColor(light, bg);
-		}
-	}
+function squareOnFocus() {
+	this.style.zIndex = "10";
+	if(mode.collapse) draw(squares.indexOf(this));
+	this.select();
 }
-
-function squareOnFocus() { this.select(); }
-function squareOnBlur() { this.style.zIndex = "unset"; }
+function squareOnBlur() {
+	this.style.zIndex = "unset";
+	if(mode.collapse) draw();
+}
 
 function checkInput() {
 	checkInputCore(this);

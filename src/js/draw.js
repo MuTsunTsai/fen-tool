@@ -172,8 +172,10 @@ function drawBlank(ctx, i, j, bg, options) {
 	ctx.restore();
 }
 
-export function getBgColor(light, bg) {
-	if(bg == "gray" || bg == "classic") {
+function getBgColor(light, bg) {
+	if(bg == "classic") {
+		return "none";
+	} else if(bg == "gray") {
 		return light ? "#fff" : "#bbb";
 	} else if(bg == "green") {
 		return light ? "#EEEED2" : "#769656";

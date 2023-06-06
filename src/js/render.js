@@ -34,9 +34,10 @@ export function drawTemplate() {
 	drawBoard(tgCtx, img, squares, options, true);
 }
 
-export async function draw() {
+export async function draw(skip) {
 	const options = store.board;
 	const squares = snapshot();
+	if(skip) squares[skip] = "";
 	drawBoard(ctx, img, squares, options);
 	if(!mode.dragging) drawBoard(gCtx, img, squares, options, true);
 
@@ -46,6 +47,11 @@ export async function draw() {
 		if(a.href) URL.revokeObjectURL(a.href);
 		PV.src = a.href = URL.createObjectURL(await getBlob());
 	}
+}
+
+export function drawEmpty(ctx) {
+	const { w, h } = store.board;
+	drawBoard(ctx, img, Array.from({ length: w * h }, _ => ""), store.board);
 }
 
 export function getBlob() {

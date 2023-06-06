@@ -32,10 +32,7 @@ function mousemove(event) {
 function mouseup(event) {
 	if(mode.collapse && mode.dragging == "pending") {
 		const now = performance.now();
-		if(now - lastTap < 300) {
-			sq.style.zIndex = "10";
-			sq.focus();
-		}
+		if(now - lastTap < 300) sq.focus();
 		lastTap = now;
 		event.preventDefault(); // Prevent touchend triggering mouseup
 		mode.dragging = false;

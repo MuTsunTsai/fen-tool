@@ -1,9 +1,8 @@
 import { CN, SN, CG, TP, TPG } from "./meta/el";
 import { getRenderSize, store } from "./store";
-import { drawTemplate, draw, load } from "./render";
+import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN } from "./squares";
 import { BORDER, parseBorder } from "./meta/option";
-import { drawBorder } from "./draw";
 
 export const mode = {
 	hor: false,
@@ -46,7 +45,7 @@ export async function setOption(o, force) {
 			SN.width = CG.width = CN.width = bw;
 			SN.height = CG.height = CN.height = bh;
 		}
-		drawBorder(SN.getContext("2d"), border, bw, bh);
+		drawEmpty(SN.getContext("2d"));
 	}
 
 	if(shouldDrawTemplate) {
