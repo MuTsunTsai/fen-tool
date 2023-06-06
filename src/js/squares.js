@@ -48,6 +48,7 @@ function squareOnBlur() {
 
 function checkInput() {
 	checkInputCore(this);
+	if(mode.collapse) this.blur();
 	toFEN();
 }
 
