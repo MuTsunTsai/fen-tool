@@ -30,6 +30,10 @@ window.share = async function() {
 
 function updateBG() {
 	drawEmpty(SN.getContext("2d"));
+	redraw();
+}
+
+function redraw() {
 	draw();
 	drawTemplate();
 }
@@ -40,8 +44,7 @@ createApp({
 	CheckboxBase,
 	Checkbox,
 	CopyButton,
-	draw,
-	drawTemplate,
+	redraw,
 	updateBG,
 	updateSN,
 	get DB() {
