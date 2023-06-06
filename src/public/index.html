@@ -198,6 +198,17 @@
 									</div>
 								</div>
 								<div class="row gx-3 mb-2">
+									<label class="col-auto col-form-label">Background:</label>
+									<div class="col">
+										<select class="form-select" v-model="store.board.bg" @change="updateBG">
+											<option :value="undefined">Default</option>
+											<option value="gray">Gray</option>
+											<option value="green">Green</option>
+											<option value="classic">Classic</option>
+										</select>
+									</div>
+								</div>
+								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Board pattern:</label>
 									<div class="col">
 										<select class="form-select" v-model="store.board.pattern" @change="updateBG">
@@ -207,6 +218,8 @@
 										</select>
 									</div>
 								</div>
+							</div>
+							<div class="col-12 col-sm-6 mb-2">
 								<div class="row gx-3 mb-2">
 									<div class="col">
 										<div class="input-group">
@@ -242,8 +255,6 @@
 												onclick="Layout.setDimension({w:8,h:8})">Reset</button>
 									</div>
 								</div>
-							</div>
-							<div class="col-12 col-sm-6 mb-2">
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Border pattern:</label>
 									<div class="col">
@@ -253,9 +264,6 @@
 									</div>
 								</div>
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>
-								<div
-									 v-scope="CheckboxBase(()=>store.board.bg=='gray', 'Gray background', v=>{store.board.bg=v?'gray':undefined;updateBG()})">
-								</div>
 								<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', drawTemplate)"></div>
 								<div class="row align-items-center" v-show="store.board.blackWhite">
 									<label class="col-auto col-form-label">Knight offset</label>

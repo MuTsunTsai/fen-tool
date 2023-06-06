@@ -43,8 +43,10 @@ export function setSquareBG() {
 		for(let j = 0; j < w; j++) {
 			const s = squares[i * w + j];
 			const bgc = background(pattern, i, j);
-			if(bg == "gray") {
+			if(bg == "gray" || bg == "classic") {
 				s.style.background = bgc ? "#fff" : "#bbb";
+			} else if(bg == "green") {
+				s.style.background = bgc ? "#EEEED2" : "#769656"
 			} else {
 				s.style.background = bgc ? "#FFCE9E" : "#D18B47";
 			}
