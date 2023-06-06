@@ -29,8 +29,8 @@
 <body class="m-3" v-scope>
 
 	<template id="copyBtn">
-		<button type="button" class="btn nowrap" :class="cls" @click="copy" :disabled="dis">
-			<i class="fa-solid fa-check" v-if="done"></i><i class="fa-solid fa-clipboard" v-else></i>&ensp;{{ label }}
+		<button type="button" class="btn nowrap" :class="cls" @click="copy" :disabled="dis||state==1">
+			<i :class="['fa-solid fa-clipboard', 'fa-spin fa-solid fa-spinner', 'fa-solid fa-check'][state]"></i>&ensp;{{ label }}
 		</button>
 	</template>
 
@@ -159,6 +159,9 @@
 						<div class="text-end">
 							<div class="d-inline-block">
 								<span v-if="!env.isTouch" v-scope="CopyButton('Copy image', copyImage, 'btn-primary')"></span>
+								<span v-scope="CopyButton('Create image URL', API.copyUrl, 'btn-primary')"></span>
+							</div>&nbsp;
+							<div class="d-inline-block">
 								<button v-if="env.canShare" class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>

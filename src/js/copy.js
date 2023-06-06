@@ -34,12 +34,17 @@ export function CopyButton(label, factory, cls, dis) {
 		cls,
 		label,
 		dis: dis === undefined ? false : dis,
-		done: false,
+		state: 0,
 		async copy() {
-			const result = await factory();
-			if(typeof result == "string") copyText(result);
-			this.done = true;
-			setTimeout(() => this.done = false, 1000);
+			this.state = 1;
+			try {
+				const result = await factory();
+				if(typeof result == "string") copyText(result);
+				this.state = 2;
+				setTimeout(() => this.state = 0, 1000);
+			} catch(e) {
+				this.state = 0;
+			}
 		},
 	};
 }
