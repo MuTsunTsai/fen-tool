@@ -37,7 +37,7 @@ export function drawTemplate() {
 export async function draw(skip) {
 	const options = store.board;
 	const squares = snapshot();
-	if(skip) squares[skip] = "";
+	if(skip !== undefined) squares[skip] = "";
 	drawBoard(ctx, img, squares, options);
 	if(!mode.dragging) drawBoard(gCtx, img, squares, options, true);
 
