@@ -180,6 +180,10 @@ function getBgColor(light, bg) {
 	}
 }
 
+function getHeight(measure) {
+	return measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
+}
+
 function drawText(ctx, text, size) {
 	ctx.save();
 	const isEmoji = /\p{Extended_Pictographic}/u.test(text); // Emoji, but exclude numbers
@@ -194,7 +198,9 @@ function drawText(ctx, text, size) {
 		measure = ctx.measureText(text);
 	}
 
-	const height = measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
+	// MacOS can't measure the height of emoji correctly,
+	// so we measure the height of "M" instead.
+	const height = getHeight(isEmoji ? ctx.measureText("M") : measure);
 	const dx = (size - Math.min(measure.width, max)) / 2;
 	const dy = Math.max((size - height) / 2, 0);
 
