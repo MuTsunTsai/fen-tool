@@ -11,6 +11,9 @@
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4GYC00FPRR"></script>
 	<script>
+		// Apply additional CSS if this page is not in a frame		
+		if(window.top == window.self) document.documentElement.classList.add("top");
+
 		window.dataLayer = window.dataLayer || [];
 		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
@@ -22,21 +25,24 @@
 
 	<script src="gen.js" defer></script>
 	<style>
-		html,
-		body {
+		html.top,
+		html.top body {
 			height: 100%;
 		}
 
-		body {
-			margin: 0;
-			overflow: hidden;
+		html.top body {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 		}
 
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+
 		@media (prefers-color-scheme: dark) {
-			body {
+			html.top body {
 				background: black;
 			}
 		}
