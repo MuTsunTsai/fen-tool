@@ -8,7 +8,8 @@ import { YACPDB, PDB, BBS, API } from "./tools";
 import { Checkbox, CheckboxBase } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
-import { FEN, SN } from "./meta/el";
+import { SN } from "./meta/el";
+import { getNormalFEN } from "./tools/api";
 
 initLayout();
 initDrag();
@@ -24,13 +25,20 @@ window.share = async function(bt) {
 		const files = [new File([blob], "board.png", { type: "image/png" })];
 		navigator.share({ files });
 	} else {
+		// Firefox Android fallback mode
 		bt.disabled = true;
 		const i = bt.querySelector("i");
 		const old = i.className;
 		i.className = "fa-spin fa-solid fa-spinner";
 		try {
 			const url = await API.copyUrl();
-			navigator.share({ text: FEN.value, url });
+			navigator.share({
+				url,
+				// Actually FF Android hasn't implement `text` parameter yet,
+				// but it won't hurt adding it either.
+				// See https://caniuse.com/mdn-api_navigator_canshare_data_text_parameter
+				text: getNormalFEN(),
+			});
 		} finally {
 			bt.disabled = false;
 			i.className = old;

@@ -1,10 +1,21 @@
 import { store } from "../store";
 import { CN, FEN } from "../meta/el";
 import { parseBorder } from "../meta/option";
-import { inferDimension } from "../meta/fen.mjs";
+import { convertSN, inferDimension, makeFEN } from "../meta/fen.mjs";
+import { snapshot } from "../squares";
 
 function getURL(url) {
 	return new URL(url, location.href).toString();
+}
+
+export function getNormalFEN() {
+	const { SN, w, h } = store.board;
+	if(SN) {
+		const shot = snapshot().map(v => convertSN(v));
+		return makeFEN(shot, w, h);
+	} else {
+		return FEN.value;
+	}
 }
 
 export const API = {
@@ -38,21 +49,22 @@ export const API = {
 	copyEmbed() {
 		gtag("event", "fen_copy_embed");
 		const options = store.board;
-		let url = getURL("gen/?fen=" + FEN.value);
+		const fen = getNormalFEN();
+		let url = getURL("gen/?fen=" + fen);
 		if(options.size != 44) url += "&size=" + options.size;
 		if(options.set != "1echecs") url += "&set=" + options.set;
 		if(options.pattern) url += "&pattern=" + options.pattern;
 		if(options.bg) url += "&bg=" + options.bg;
 		if(options.border != "1") url += "&border=" + options.border;
 		if(options.blackWhite) url += "&blackWhite&knightOffset=" + options.knightOffset;
-		if(!inferDimension(FEN.value)) url += `&w=${options.w}&h=${options.h}`;
+		if(!inferDimension(fen)) url += `&w=${options.w}&h=${options.h}`;
 		const borderSize = parseBorder(options.border).size;
 		const w = options.size * options.w + 2 * borderSize;
 		const h = options.size * options.h + 2 * borderSize;
 		return `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
 	},
 	copyImg() {
-		return `<img fen="${FEN.value}">`;
+		return `<img fen="${getNormalFEN()}">`;
 	},
 	copySDK() {
 		gtag("event", "fen_copy_sdk");

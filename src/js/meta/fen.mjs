@@ -1,8 +1,8 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 
-const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..))$/iu;
-const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbsnrpcx]|'[^']|''..)|./iug;
+const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'[^']|''..))$/iu;
+const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'[^']|''..)|./iug;
 
 export function inferDimension(fen) {
 	const values = fen.match(FEN_UNIT) || [];
@@ -95,10 +95,7 @@ export function normalize(v, useSN) {
 	// Neutral
 	if(v.startsWith("-")) v = v.toLowerCase();
 
-	// SN conversion
-	if(v.match(/^-?(\*\d)?[sn]$/i)) {
-		v = convertSN(v, useSN);
-	}
+	if(useSN !== undefined) v = convertSN(v, useSN);
 
 	return v;
 }
@@ -111,8 +108,9 @@ export function toYACPDB(value) {
 }
 
 export function convertSN(value, useSN) {
-	if(useSN) return value.replace("n", "s").replace("N", "S");
-	else return value.replace("s", "n").replace("S", "N");
+	if(!value.match(/^-?(\*\d)?[sng]$/i)) return value;
+	if(useSN) return value.replace("s", "g").replace("S", "G").replace("n", "s").replace("N", "S");
+	else return value.replace("s", "n").replace("S", "N").replace("g", "s").replace("G", "S");
 }
 
 export function toCoordinate(i, j) {

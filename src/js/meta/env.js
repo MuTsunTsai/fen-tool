@@ -4,7 +4,7 @@ const canShare = "canShare" in navigator;
 
 /**
  * It is not enough to check if `navigator.share` exists.
- * For example, Android Firefox do support sharing URLs, but not images.
+ * For example, Firefox Android do support sharing URLs, but not images.
  * Therefore we need to actually call `navigator.canShare` method to test it.
  */
 function testPngShare() {

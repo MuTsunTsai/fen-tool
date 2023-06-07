@@ -1,7 +1,8 @@
+import { convertSN } from "./meta/fen.mjs";
 import { fullWidth } from "./meta/fullWidth";
 import { parseBorder } from "./meta/option";
 
-export const types = ["k", "q", "b", "n", "r", "p", "c", "x"];
+export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
 const pieces = document.createElement("canvas");
 const pieceCtx = pieces.getContext("2d");
@@ -15,7 +16,7 @@ const maskAlpha = {
 	44: [0, 47, 114, 47, 0, 47, 249, 255, 249, 47, 114, 255, 255, 255, 114, 47, 249, 255, 249, 47, 0, 47, 114, 47, 0]
 }
 
-export function drawBoard(ctx, img, squares, options, ghost) {
+export function drawBoard(ctx, assets, squares, options, ghost) {
 	const border = parseBorder(options.border);
 	const w = options.w * options.size + 2 * border.size;
 	const h = options.h * options.size + 2 * border.size;
@@ -29,7 +30,7 @@ export function drawBoard(ctx, img, squares, options, ghost) {
 	for(let i = 0; i < options.h; i++) {
 		for(let j = 0; j < options.w; j++) {
 			if(!transparent) drawBlank(ctx, i, j, options);
-			drawPiece(ctx, img, i, j, squares[i * options.w + j], options);
+			drawPiece(ctx, assets, i, j, squares[i * options.w + j], options);
 		}
 	}
 	ctx.restore();
@@ -54,7 +55,7 @@ export function drawBoard(ctx, img, squares, options, ghost) {
 /**
  * The core drawing method.
  */
-function drawPiece(ctx, img, i, j, value, options) {
+function drawPiece(ctx, assets, i, j, value, options) {
 	const size = options.size;
 	const neutral = value.startsWith("-");
 	if(neutral) value = value.substring(1);
@@ -64,8 +65,7 @@ function drawPiece(ctx, img, i, j, value, options) {
 	if(rotate !== undefined) value = value.substring(2);
 	rotate = Number(rotate) % 4;
 
-	if(value == "s") value = "n";
-	if(value == "S") value = "N";
+	if(options.SN) value = convertSN(value);
 	const lower = value.toLowerCase();
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");
@@ -83,9 +83,9 @@ function drawPiece(ctx, img, i, j, value, options) {
 		const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
 		drawText(ctx, text, size);
 	} else {
-		ctx.drawImage(img, sx * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
+		ctx.drawImage(assets, sx * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
 		if(neutral && bw) {
-			ctx.drawImage(img, (1 + f) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
+			ctx.drawImage(assets, (1 + f) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
 		}
 	}
 	ctx.restore();

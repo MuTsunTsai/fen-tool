@@ -52,8 +52,8 @@ function checkInput() {
 	toFEN();
 }
 
-function checkInputCore(s) {
-	let v = normalize(s.value, store.board.SN);
+function checkInputCore(s, convert) {
+	let v = normalize(s.value, convert ? store.board.SN : undefined);
 	const changed = v !== s.value;
 	s.value = v;
 	return changed;
@@ -124,7 +124,7 @@ function toSquares(check) {
 
 export function updateSN() {
 	let changed = false;
-	for(const s of squares) changed = checkInputCore(s) || changed; // order matters
+	for(const s of squares) changed = checkInputCore(s, true) || changed; // order matters
 	if(changed) toFEN();
 }
 

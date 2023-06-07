@@ -14,13 +14,15 @@ Options and tools should be mostly self-explanatory.
 
 ## ♟️ Notation
 
-This tool supports most of the [Fairy FEN](https://www.janko.at/Retros/d.htm) syntax (by Joost de Heer). A brief summary:
+This tool supports all the [Fairy FEN](https://www.janko.at/Retros/d.htm) syntax (by Joost de Heer). A brief summary:
 
 - Use `-` in front to denote neutral pieces (e.g. `-k`).
 - Use `*` + number to denote rotation (e.g. `*2Q`). May be used together with neutral piece (e.g. `-*3b`).
 - Use `'` + single char or `''`(that's two single-quote, not a double-quote) + double chars to denote text (e.g. `'A`, `''12`). Note that you can even use emoji with this syntax (e.g. `'🦆`; note that some emojis are actually two chars, e.g. `''🎅🏻`).  May be used together with rotation (e.g. `*1'A`).\
   Tip: you can directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.
-- Two markers can be used: `c` (circle) and `x` (cross). The square and triangle markers in FFEN are not supported here.
+- Four markers defined in FFEN can be used: `c` (circle), `x` (cross), `s` (square) and `t` (triangle).\
+  Note that if "use S for knight" option is on, to avoid ambiguity, we will use `g` (from the German word "geviert") for the square marker instead.\
+  In addition, we support two additional markers: `a` (asterisk) and `d` (dame).
 - Custom board dimension syntax is supported. For example, `4/4/4/4` represents an empty 4 x 4 board.
 
 You can also put in the fairy notation used by [YACPDB](https://www.yacpdb.org/), for example `(!b2)` means the same as `-*2b`.

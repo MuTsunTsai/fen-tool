@@ -1,6 +1,7 @@
 import { inferDimension, parseFEN } from "../meta/fen.mjs";
 import { makeOption } from "../meta/option";
 import { draw } from "./draw.js";
+import { loadAsset } from "../asset";
 
 const imgs = new Map();
 
@@ -8,10 +9,11 @@ function load(options) {
 	const key = options.set + options.size;
 	if(imgs.has(key)) return imgs.get(key);
 	else {
-		const promise = new Promise(resolve => {
+		const promise = new Promise(async resolve => {
 			const img = new Image();
+			const assets = await loadAsset("../assets", options);
 			img.onload = () => resolve(img);
-			img.src = `../assets/${options.set}${options.size}.png`;
+			img.src = assets.toDataURL();
 		});
 		imgs.set(key, promise);
 		return promise;
