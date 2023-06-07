@@ -21,9 +21,29 @@
 	</script>
 
 	<script src="gen.js" defer></script>
+	<style>
+		html,
+		body {
+			height: 100%;
+		}
+
+		body {
+			margin: 0;
+			overflow: hidden;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			body {
+				background: black;
+			}
+		}
+	</style>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
+<body>
 	<canvas id="CN"></canvas>
 </body>
 

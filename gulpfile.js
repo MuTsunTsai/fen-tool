@@ -20,6 +20,7 @@ const purgeOption = {
 const htmlOption = {
 	collapseWhitespace: true,
 	removeComments: true,
+	minifyCSS: true,
 	minifyJS: {
 		ie8: true
 	}
