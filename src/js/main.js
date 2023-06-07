@@ -19,7 +19,7 @@ initDrag();
 
 window.share = async function(bt) {
 	gtag("event", "fen_img_share");
-	if(!env.canSharePng) {
+	if(env.canSharePng) {
 		const blob = await getBlob();
 		const files = [new File([blob], "board.png", { type: "image/png" })];
 		navigator.share({ files });
