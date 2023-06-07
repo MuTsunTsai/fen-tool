@@ -180,7 +180,7 @@ function getBgColor(light, bg) {
 	}
 }
 
-const isMac = navigator.platform?.toLowerCase().startsWith("mac");
+const isMac = navigator.platform && navigator.platform.toLowerCase().startsWith("mac");
 
 function getHeight(measure) {
 	return measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
