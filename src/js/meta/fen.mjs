@@ -72,7 +72,7 @@ export function makeFEN(values, w, h) {
 	return result;
 }
 
-export function normalize(v, useSN) {
+export function normalize(v, useSN, convert) {
 	// Text input shortcut
 	if(!v.match(VALUE)) {
 		const l = [...v].length;
@@ -95,7 +95,7 @@ export function normalize(v, useSN) {
 	// Neutral
 	if(v.startsWith("-")) v = v.toLowerCase();
 
-	if(useSN !== undefined) v = convertSN(v, useSN);
+	v = convertSN(v, useSN, convert);
 
 	return v;
 }
@@ -107,10 +107,16 @@ export function toYACPDB(value) {
 	return "(" + (match[1] ? "!" : "") + match[3] + (match[2] || "") + ")";
 }
 
-export function convertSN(value, useSN) {
+export function convertSN(value, useSN, convert) {
 	if(!value.match(/^-?(\*\d)?[sng]$/i)) return value;
-	if(useSN) return value.replace("s", "g").replace("S", "G").replace("n", "s").replace("N", "S");
-	else return value.replace("s", "n").replace("S", "N").replace("g", "s").replace("G", "S");
+	if(useSN) {
+		if(convert) value = value.replace("s", "g").replace("S", "G");
+		value = value.replace("n", "s").replace("N", "S");
+	} else {
+		if(convert) value = value.replace("s", "n").replace("S", "N")
+		value = value.replace("g", "s").replace("G", "S");
+	}
+	return value;
 }
 
 export function toCoordinate(i, j) {

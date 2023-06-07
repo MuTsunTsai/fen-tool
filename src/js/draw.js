@@ -65,7 +65,7 @@ function drawPiece(ctx, assets, i, j, value, options) {
 	if(rotate !== undefined) value = value.substring(2);
 	rotate = Number(rotate) % 4;
 
-	if(options.SN) value = convertSN(value);
+	if(options.SN) value = convertSN(value, false, true);
 	const lower = value.toLowerCase();
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");

@@ -53,7 +53,7 @@ function checkInput() {
 }
 
 function checkInputCore(s, convert) {
-	let v = normalize(s.value, convert ? store.board.SN : undefined);
+	let v = normalize(s.value, store.board.SN, convert);
 	const changed = v !== s.value;
 	s.value = v;
 	return changed;

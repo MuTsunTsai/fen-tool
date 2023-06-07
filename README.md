@@ -77,6 +77,8 @@ A more recommended approach is by using one of our APIs.
 This tool uses service worker to cache all assets,
 so once the user has loaded an instance, our APIs will run very fast,
 and there won't be any additional traffic for the visitors.
+Also, the generated diagram will be updated together with the tool,
+should the tool made any improvements in the image quality.
 We provide two different modes.
 
 ### Embed mode
