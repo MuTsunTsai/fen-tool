@@ -158,6 +158,7 @@
 						</div>
 						<div class="text-end">
 							<span class="d-inline-block">
+								<span v-if="store.feature.janko" v-scope="CopyButton('Create Janko URL', API.copyJanko, 'btn-primary')"></span>
 								<span v-if="!env.isTouch" v-scope="CopyButton('Copy image', copyImage, 'btn-primary')"></span>
 								<span v-scope="CopyButton('Create image URL', API.copyUrl, 'btn-primary')"></span>
 							</span>

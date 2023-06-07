@@ -1,5 +1,5 @@
 import { CN, SN, CG, TP, TPG } from "./meta/el";
-import { getRenderSize, store } from "./store";
+import { getRenderSize, search, store } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN } from "./squares";
 import { BORDER, parseBorder } from "./meta/option";
@@ -121,8 +121,7 @@ function getREM() {
 
 export async function initLayout() {
 	window.addEventListener("resize", () => setOption({}));
-	const url = new URL(location.href);
-	const fen = url.searchParams.get("fen");
+	const fen = search.get("fen");
 	await setOption({}, true);
 	addEventListener("fen", draw);
 	if(fen) {

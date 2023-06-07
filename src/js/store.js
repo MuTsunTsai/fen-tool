@@ -2,6 +2,7 @@ import { reactive } from "petite-vue";
 import { defaultOption, parseBorder } from "./meta/option";
 import { CN } from "./meta/el";
 
+export const search = new URL(location.href).searchParams;
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
 	BBS: {
@@ -14,6 +15,9 @@ const settings = {
 	DB: {
 		use: "PDB",
 		exact: false,
+	},
+	feature: {
+		janko: false,
 	},
 	board: defaultOption,
 	message: {
@@ -29,6 +33,8 @@ for(const group in settings) {
 		}
 	}
 }
+
+if(search.has("janko")) settings.feature.janko = true;
 
 export const store = reactive(settings);
 

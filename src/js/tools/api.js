@@ -19,6 +19,10 @@ export function getNormalFEN() {
 }
 
 export const API = {
+	copyJanko() {
+		gtag("event", "fen_copy_janko");
+		return "https://www.janko.at/Retros/d.php?ff=" + getNormalFEN();
+	},
 	copyBase64() {
 		gtag("event", "fen_link_copy64");
 		return CN.toDataURL();
@@ -64,6 +68,7 @@ export const API = {
 		return `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
 	},
 	copyImg() {
+		gtag("event", "fen_copy_sdkImg");
 		return `<img fen="${getNormalFEN()}">`;
 	},
 	copySDK() {
