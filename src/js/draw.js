@@ -150,7 +150,7 @@ function drawBlank(ctx, i, j, options) {
 		ctx.fillRect(0, 0, size, size);
 		if(!light) {
 			ctx.beginPath();
-			const step = size / 8;
+			const step = size / 7.5;
 			for(let i = 0; i < size; i += step) {
 				ctx.moveTo(size - i, 0);
 				ctx.lineTo(0, size - i);
