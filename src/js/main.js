@@ -8,7 +8,7 @@ import { YACPDB, PDB, BBS, API } from "./tools";
 import { Checkbox, CheckboxBase } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
-import { SN } from "./meta/el";
+import { FEN, SN } from "./meta/el";
 
 initLayout();
 initDrag();
@@ -17,11 +17,25 @@ initDrag();
 // export
 //===========================================================
 
-window.share = async function() {
+window.share = async function(bt) {
 	gtag("event", "fen_img_share");
-	const blob = await getBlob();
-	const files = [new File([blob], "board.png", { type: "image/png" })];
-	navigator.share({ files });
+	if(!env.canSharePng) {
+		const blob = await getBlob();
+		const files = [new File([blob], "board.png", { type: "image/png" })];
+		navigator.share({ files });
+	} else {
+		bt.disabled = true;
+		const i = bt.querySelector("i");
+		const old = i.className;
+		i.className = "fa-spin fa-solid fa-spinner";
+		try {
+			const url = await API.copyUrl();
+			navigator.share({ text: FEN.value, url });
+		} finally {
+			bt.disabled = false;
+			i.className = old;
+		}
+	}
 }
 
 //===========================================================

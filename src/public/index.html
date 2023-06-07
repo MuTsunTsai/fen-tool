@@ -162,7 +162,7 @@
 								<span v-scope="CopyButton('Create image URL', API.copyUrl, 'btn-primary')"></span>
 							</span>
 							<span class="d-inline-block">
-								<button v-if="env.canShare" class="btn btn-primary" onclick="share()">
+								<button v-if="env.canShare" class="btn btn-primary" onclick="share(this)">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>
 								<a class="btn btn-primary" download="board.png" id="Save" onclick="gtag('event', 'img_save')">

@@ -1,12 +1,14 @@
 const cb = navigator.clipboard;
 
+const canShare = "canShare" in navigator;
+
 /**
  * It is not enough to check if `navigator.share` exists.
  * For example, Android Firefox do support sharing URLs, but not images.
  * Therefore we need to actually call `navigator.canShare` method to test it.
  */
 function testPngShare() {
-	if(!("canShare" in navigator)) return false;
+	if(!canShare) return false;
 	// Generated using png-pixel.com
 	const binary = atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII");
 	const array = new Uint8Array(binary.length)
@@ -19,7 +21,8 @@ function testPngShare() {
 const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
 
 export const env = {
-	canShare: testPngShare(),
+	canShare,
+	canSharePng: testPngShare(),
 	canCopy: cb && "writeText" in cb,
 	canPaste: cb && "readText" in cb,
 	canCopyImg: cb && "write" in cb,
