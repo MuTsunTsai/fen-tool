@@ -18,10 +18,10 @@ const purgeOption = {
 };
 
 const htmlOption = {
-	"collapseWhitespace": true,
-	"removeComments": true,
-	"minifyJS": {
-		"ie8": true
+	collapseWhitespace: true,
+	removeComments: true,
+	minifyJS: {
+		ie8: true
 	}
 };
 
@@ -58,7 +58,9 @@ gulp.task("html", () =>
 			dest: "docs",
 			extra: [__filename]
 		}))
+		.pipe($.replace(/<\/span>\s+<span/gm, "</span>&#32;<span"))
 		.pipe($.htmlMinifierTerser(htmlOption))
+		.pipe($.replace(/&#32;/g, " "))
 		// Avoid VS Code Linter warnings
 		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
 		.pipe(gulp.dest("docs"))

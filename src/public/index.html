@@ -128,47 +128,47 @@
 				<div class="d-flex mb-4">
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
-							<div class="d-inline-block">
+							<span class="d-inline-block">
 								<button type="button" class="btn btn-secondary" onclick="FEN.empty()">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
 								<button type="button" class="btn btn-secondary" onclick="FEN.reset()">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
-							</div><br>
-							<div class="d-inline-block">
+							</span>
+							<span class="d-inline-block">
 								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)">
 									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
 								</button>
 								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)">
 									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
 								</button>
-							</div>&nbsp;
-							<div class="d-inline-block">
+							</span>
+							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)">
 								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="FEN.color(0)">
 								<input type="button" class="btn btn-secondary" value="All White" onclick="FEN.color(1)">
-							</div>&nbsp;
-							<div class="d-inline-block">
+							</span>
+							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="Switch side" title="Texts are not converted"
 									   onclick="FEN.invert(false)">
 								<input type="button" class="btn btn-secondary" value="Switch case" title="Texts are converted"
 									   onclick="FEN.invert(true)">
-							</div>
+							</span>
 						</div>
 						<div class="text-end">
-							<div class="d-inline-block">
+							<span class="d-inline-block">
 								<span v-if="!env.isTouch" v-scope="CopyButton('Copy image', copyImage, 'btn-primary')"></span>
 								<span v-scope="CopyButton('Create image URL', API.copyUrl, 'btn-primary')"></span>
-							</div>&nbsp;
-							<div class="d-inline-block">
+							</span>
+							<span class="d-inline-block">
 								<button v-if="env.canShare" class="btn btn-primary" onclick="share()">
 									<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
 								</button>
 								<a class="btn btn-primary" download="board.png" id="Save" onclick="gtag('event', 'img_save')">
 									<i class="fa-solid fa-download"></i>&ensp;Save image
 								</a>
-							</div>
+							</span>
 						</div>
 					</section>
 
@@ -269,7 +269,7 @@
 								<div v-scope="Checkbox('board.SN', 'Use S for knight', updateSN)"></div>
 								<div v-scope="Checkbox('board.blackWhite', 'Black/White neutral piece', redraw)"></div>
 								<div class="row align-items-center" v-show="store.board.blackWhite">
-									<label class="col-auto col-form-label">Knight offset</label>
+									<label class="col-auto col-form-label">Knight offset:</label>
 									<div class="col">
 										<input type="range" class="form-range" min="0.25" max="0.75" step="0.025"
 											   v-model.number="store.board.knightOffset" @input="redraw()">
