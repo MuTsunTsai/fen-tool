@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import { makeFEN, parseFEN } from "../src/js/meta/fen.mjs";
+import { inferDimension, makeFEN, parseFEN } from "../src/js/meta/fen.mjs";
 
 describe("FEN Parsing", function() {
 
 	it("Works with orthodox FEN", function() {
-		const result = parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+		const result = parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 		expect(result).to.eql([
 			"r", "n", "b", "q", "k", "b", "n", "r",
 			"p", "p", "p", "p", "p", "p", "p", "p",
@@ -18,7 +18,7 @@ describe("FEN Parsing", function() {
 	});
 
 	it("Accepts FEN without slashes", function() {
-		const result = parseFEN("rnbqkbnrpppppppp32PPPPPPPPRNBQKBNR")
+		const result = parseFEN("rnbqkbnrpppppppp32PPPPPPPPRNBQKBNR");
 		expect(result).to.eql([
 			"r", "n", "b", "q", "k", "b", "n", "r",
 			"p", "p", "p", "p", "p", "p", "p", "p",
@@ -32,7 +32,7 @@ describe("FEN Parsing", function() {
 	});
 
 	it("Accepts incomplete rows", function() {
-		const result = parseFEN("rnbqk/pppppppp/////PPPPPPPP")
+		const result = parseFEN("rnbqk/pppppppp/////PPPPPPPP");
 		expect(result).to.eql([
 			"r", "n", "b", "q", "k", "", "", "",
 			"p", "p", "p", "p", "p", "p", "p", "p",
@@ -46,7 +46,7 @@ describe("FEN Parsing", function() {
 	});
 
 	it("Works with FFEN", function() {
-		const result = parseFEN("rnbqkbnr/p2'👩🏽‍⚖️pppp/2'A5/5''122/3-*1p4/8/PPPPPPP1/2BQKBNR")
+		const result = parseFEN("rnbqkbnr/p2'👩🏽‍⚖️pppp/2'A5/5''122/3-*1p4/8/PPPPPPP1/2BQKBNR");
 		expect(result).to.eql([
 			"r", "n", "b", "q", "k", "b", "n", "r",
 			"p", "", "", "'👩🏽‍⚖️", "p", "p", "p", "p",
@@ -59,8 +59,18 @@ describe("FEN Parsing", function() {
 		]);
 	});
 
+	it("Can infer board dimension", function() {
+		const fen = "4/4/4/4/4";
+		const board = inferDimension(fen);
+		expect(board.w).to.equal(4);
+		expect(board.h).to.equal(5);
+
+		const result = parseFEN(fen, board.w, board.h);
+		expect(result.length).to.equal(20);
+	});
+
 	it("Works with YACPDB FEN", function() {
-		const result = parseFEN("rnbq(k1)bnr/pppp(!p)ppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+		const result = parseFEN("rnbq(k1)bnr/pppp(!p)ppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 		expect(result).to.eql([
 			"r", "n", "b", "q", "(k1)", "b", "n", "r",
 			"p", "p", "p", "p", "(!p)", "p", "p", "p",
