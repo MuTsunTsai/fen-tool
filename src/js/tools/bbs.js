@@ -26,7 +26,7 @@ export const BBS = {
 					result += us + "[0;37;" + BackgroundColor(i, j) + fullWidth(value, true);
 				} else if(value.startsWith("'")) {
 					if(value.startsWith("''")) value = value.substring(2);
-					else value = fullWidth(value.substring(1));
+					else value = fullWidth(value.substring(1)) || "　";
 					result += us + "[0;30;" + BackgroundColor(i, j) + value;
 				} else if(value == "") {
 					result += us + "[0;30;" + BackgroundColor(i, j) + "　";

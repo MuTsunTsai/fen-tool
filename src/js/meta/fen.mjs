@@ -1,8 +1,8 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 
-const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'[^']|''..))$/iu;
-const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'[^']|''..)|./iug;
+const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}(\p{ExtPict}|\p{EMod}|\u200D)*|[^'])|''..))$/iu;
+const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}(\p{ExtPict}|\p{EMod}|\u200D)*|[^'])|''..)|./iug;
 
 export function inferDimension(fen) {
 	const values = fen.match(FEN_UNIT) || [];
@@ -75,10 +75,14 @@ export function makeFEN(values, w, h) {
 export function normalize(v, useSN, convert) {
 	// Text input shortcut
 	if(!v.match(VALUE)) {
-		const l = [...v].length;
-		if(l == 1 && v != "'") v = "'" + v;
-		else if(l == 2) v = "''" + v;
-		else v = "";
+		if(v.match(/^\p{ExtPict}(\p{ExtPict}|\p{EMod}|\u200D)*$/u)) {
+			v = "'" + v; // A single emoji
+		} else {
+			const l = [...v].length;
+			if(l == 1 && v != "'") v = "'" + v;
+			else if(l == 2) v = "''" + v;
+			else v = "";
+		}
 	}
 
 	// YACPDB
