@@ -180,8 +180,6 @@ function getBgColor(light, bg) {
 	}
 }
 
-const isMac = navigator.platform && navigator.platform.toLowerCase().startsWith("mac");
-
 function getHeight(measure) {
 	return measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
 }
@@ -200,9 +198,10 @@ function drawText(ctx, text, size) {
 		measure = ctx.measureText(text);
 	}
 
-	// MacOS can't measure the height of emoji correctly,
+	// MacOS and Linux might measure the height of emoji correctly,
 	// so we measure the height of "M" instead.
-	const height = getHeight(isEmoji && isMac ? ctx.measureText("M") : measure);
+	// This code is in fact safe to use in general.
+	const height = getHeight(isEmoji ? ctx.measureText("M") : measure);
 	const dx = (size - Math.min(measure.width, max)) / 2;
 	const dy = Math.max((size - height) / 2, 0);
 

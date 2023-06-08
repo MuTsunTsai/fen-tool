@@ -16,18 +16,13 @@ export const BBS = {
 		}
 		const squares = normalSnapshot();
 		let result = "";
-		let value;
-		function ignoreRotation() { // 忽略旋轉
-			if(value.startsWith("*")) value = value.substring(2);
-		}
 		for(let i = 0; i < 8; i++) {
 			if(store.BBS.coordinates) result += us + "[m" + DIGITS[8 - i] + "　";
 			for(let j = 0; j < 8; j++) {
-				value = squares[i * 8 + j];
-				ignoreRotation();
+				let value = squares[i * 8 + j];
+				value = value.replace(/^(-?)\*\d/, "$1"); // ignore rotation
 				if(value.startsWith("-")) {
 					value = value.substring(1);
-					ignoreRotation();
 					result += us + "[0;37;" + BackgroundColor(i, j) + fullWidth(value, true);
 				} else if(value.startsWith("'")) {
 					if(value.startsWith("''")) value = value.substring(2);

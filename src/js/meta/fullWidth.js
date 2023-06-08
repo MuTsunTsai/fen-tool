@@ -16,5 +16,9 @@ const fullWidthMap = (function() {
 export function fullWidth(s, t) {
 	if(t && s.toLowerCase() == "c") return "‧";
 	if(t && s.toLowerCase() == "x") return "╳";
+	if(t && s.toLowerCase() == "s") return "■";
+	if(t && s.toLowerCase() == "t") return "▲";
+	if(t && s.toLowerCase() == "a") return "★";
+	if(t && s.toLowerCase() == "d") return "◎";
 	return fullWidthMap.get(s);
 }
