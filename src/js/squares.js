@@ -8,7 +8,7 @@ export const container = document.getElementById("Squares");
 export const callback = {};
 
 function draw(data) {
-	if(callback.draw) callback.draw(data);
+	callback.draw?.(data);
 }
 
 export function setSquareSize(size) {

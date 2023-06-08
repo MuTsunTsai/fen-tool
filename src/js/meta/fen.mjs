@@ -7,9 +7,9 @@ const TYPES = `[kqbnrpcxstadg]`;
 const TEXT = `'(${EMOJI}|[^'])|''..`;
 const FFEN = `[-~]?(\\*\\d)?(${TYPES}|${TEXT})`;
 
-export const ONE_EMOJI = /* @__PURE__ */ new RegExp(`^(?:${EMOJI})$`, "u");
-const VALUE = /* @__PURE__ */ new RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
-const FEN_UNIT =/* @__PURE__ */ new RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
+export const ONE_EMOJI = RegExp(`^(?:${EMOJI})$`, "u");
+const VALUE = RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
+const FEN_UNIT = RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
 export function inferDimension(fen) {
 	const values = fen.match(FEN_UNIT) || [];
@@ -93,7 +93,7 @@ export function normalize(v, useSN, convert) {
 	}
 
 	// YACPDB
-	v = v.replace(new RegExp(`^${YACPDB}$`, "i"), (_, $1, $2, $3) => {
+	v = v.replace(RegExp(`^${YACPDB}$`, "i"), (_, $1, $2, $3) => {
 		let result = $2;
 		if($3) result = "*" + $3 + result;
 		if($1) result = "-" + result;

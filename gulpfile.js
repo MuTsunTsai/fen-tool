@@ -26,6 +26,13 @@ const htmlOption = {
 	}
 };
 
+const esbuildOption = {
+	target: ["chrome66", "edge79", "firefox78", "opera53", "safari11.1", "ios11.3"],
+	bundle: true,
+	treeShaking: true,
+	pure: ["RegExp"]
+};
+
 gulp.task("css", () =>
 	gulp.src("src/public/style.scss")
 		.pipe($.newer({
@@ -45,10 +52,7 @@ gulp.task("js", () =>
 			dest: "docs/main.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild({
-			outfile: "main.js",
-			bundle: true,
-		}))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "main.js" })))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );
@@ -73,20 +77,14 @@ gulp.task("gen", () =>
 			dest: "docs/gen/gen.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild({
-			outfile: "gen.js",
-			bundle: true,
-		}))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "gen.js" })))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs/gen"))
 );
 
 gulp.task("sw", () =>
 	gulp.src("src/service/sw.js")
-		.pipe($.esbuild({
-			outfile: "sw.js",
-			bundle: true,
-		}))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "sw.js" })))
 		.pipe($.workbox({
 			globDirectory: "docs",
 			globPatterns: [
@@ -108,10 +106,7 @@ gulp.task("sdk", () =>
 			dest: "docs/sdk.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild({
-			outfile: "sdk.js",
-			bundle: true,
-		}))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "sdk.js" })))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );
@@ -122,10 +117,7 @@ gulp.task("api", () =>
 			dest: "docs/api/api.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild({
-			outfile: "api.js",
-			bundle: true,
-		}))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "api.js" })))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs/api"))
 );
