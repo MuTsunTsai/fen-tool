@@ -1,7 +1,7 @@
 import { CN, SN, CG, TP, TPG } from "./meta/el";
 import { getRenderSize, search, store } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
-import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN } from "./squares";
+import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { BORDER, parseBorder } from "./meta/option";
 
 export const mode = {
@@ -123,7 +123,7 @@ export async function initLayout() {
 	window.addEventListener("resize", () => setOption({}));
 	const fen = search.get("fen");
 	await setOption({}, true);
-	addEventListener("fen", draw);
+	callback.draw = draw;
 	if(fen) {
 		setFEN(fen, true);
 		pushState();

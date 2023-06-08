@@ -2,10 +2,14 @@ import { FEN } from "./meta/el";
 import { DEFAULT, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { mode, setOption } from "./layout";
 import { store } from "./store";
-import { draw } from "./render";
 
 export const squares = new Array(64);
 export const container = document.getElementById("Squares");
+export const callback = {};
+
+function draw(data) {
+	if(callback.draw) callback.draw(data);
+}
 
 export function setSquareSize(size) {
 	container.style.width = CN.clientWidth + "px";
@@ -26,6 +30,7 @@ export function createSquares() {
 			const sq = document.createElement("input");
 			squares[i] = sq;
 			sq.type = "text";
+			sq.oninput = onInput;
 			sq.onchange = checkInput;
 			sq.onfocus = squareOnFocus;
 			sq.onblur = squareOnBlur;
@@ -38,11 +43,17 @@ export function createSquares() {
 
 function squareOnFocus() {
 	this.style.zIndex = "10";
-	if(mode.collapse) draw(squares.indexOf(this));
+	if(mode.collapse) {
+		const data = snapshot();
+		data[squares.indexOf(this)] = "";
+		draw(data);
+	}
 	this.select();
 }
 function squareOnBlur() {
 	this.style.zIndex = "unset";
+	// We check the input again on blur, as some browser extensions could
+	// programmatically modify its value without triggering onchange event.
 	if(checkInputCore(this)) toFEN();
 	else if(mode.collapse) draw();
 }
@@ -51,6 +62,14 @@ function checkInput() {
 	checkInputCore(this);
 	if(mode.collapse) this.blur();
 	toFEN();
+}
+
+function onInput() {
+	if(!mode.collapse) {
+		const data = snapshot();
+		data[squares.indexOf(this)] = normalize(this.value, store.board.SN);
+		draw(data);
+	}
 }
 
 function checkInputCore(s, convert) {
@@ -110,7 +129,7 @@ export function paste(shot, ow, oh) {
 export function toFEN() {
 	const { w, h } = store.board;
 	FEN.value = makeFEN(snapshot(), w, h);
-	dispatchEvent(new Event("fen"));
+	draw();
 }
 
 function toSquares(check) {
@@ -124,7 +143,7 @@ function toSquares(check) {
 		changed = checkInputCore(squares[i]) || changed; // order matters
 	}
 	if(changed || check || !infer) toFEN();
-	else dispatchEvent(new Event("fen"));
+	else draw();
 }
 
 export function updateSN() {

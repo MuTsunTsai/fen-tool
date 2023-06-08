@@ -26,10 +26,9 @@ export function drawTemplate() {
 	drawBoard(tgCtx, assets, squares, options, true);
 }
 
-export async function draw(skip) {
+export async function draw(data) {
 	const options = store.board;
-	const squares = snapshot();
-	if(skip !== undefined) squares[skip] = "";
+	const squares = data || snapshot();
 	drawBoard(ctx, assets, squares, options);
 	if(!mode.dragging) drawBoard(gCtx, assets, squares, options, true);
 

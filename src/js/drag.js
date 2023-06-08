@@ -10,6 +10,7 @@ let ghost, draggingValue;
 export function initDrag() {
 	PV.onmousedown = mouseDown;
 	PV.ontouchstart = mouseDown;
+	PV.ondragstart = e => e.preventDefault();
 	TP.onmousedown = mouseDown;
 	TP.ontouchstart = mouseDown;
 
