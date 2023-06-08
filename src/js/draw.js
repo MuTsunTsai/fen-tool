@@ -1,4 +1,4 @@
-import { convertSN } from "./meta/fen.mjs";
+import { ONE_EMOJI, convertSN } from "./meta/fen.mjs";
 import { fullWidth } from "./meta/fullWidth";
 import { parseBorder } from "./meta/option";
 
@@ -186,7 +186,7 @@ function getHeight(measure) {
 
 function drawText(ctx, text, size) {
 	ctx.save();
-	const isEmoji = /\p{Extended_Pictographic}/u.test(text); // Emoji, but exclude numbers
+	const isEmoji = ONE_EMOJI.test(text);
 	const font = size - 4;
 	ctx.font = `${font}px arial`;
 

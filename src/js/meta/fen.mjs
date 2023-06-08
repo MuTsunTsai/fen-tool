@@ -7,7 +7,7 @@ const TYPES = `[kqbnrpcxstadg]`;
 const TEXT = `'(${EMOJI}|[^'])|''..`;
 const FFEN = `[-~]?(\\*\\d)?(${TYPES}|${TEXT})`;
 
-const ONE_EMOJI = /* @__PURE__ */ new RegExp(`^(?:${EMOJI})$`, "u");
+export const ONE_EMOJI = /* @__PURE__ */ new RegExp(`^(?:${EMOJI})$`, "u");
 const VALUE = /* @__PURE__ */ new RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
 const FEN_UNIT =/* @__PURE__ */ new RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
