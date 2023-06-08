@@ -46,10 +46,10 @@ describe("FEN Parsing", function() {
 	});
 
 	it("Works with FFEN", function() {
-		const result = parseFEN("rnbqkbnr/p2ppppp/2'A5/5''122/3-*1p4/8/PPPPPPP1/2BQKBNR")
+		const result = parseFEN("rnbqkbnr/p2'👩🏽‍⚖️pppp/2'A5/5''122/3-*1p4/8/PPPPPPP1/2BQKBNR")
 		expect(result).to.eql([
 			"r", "n", "b", "q", "k", "b", "n", "r",
-			"p", "", "", "p", "p", "p", "p", "p",
+			"p", "", "", "'👩🏽‍⚖️", "p", "p", "p", "p",
 			"", "", "'A", "", "", "", "", "",
 			"", "", "", "", "", "''12", "", "",
 			"", "", "", "-*1p", "", "", "", "",
@@ -84,11 +84,11 @@ describe("Make FEN", function() {
 			"", "", "'A", "", "", "", "", "",
 			"", "", "", "", "", "''12", "", "",
 			"", "", "", "-*1p", "", "", "", "",
-			"", "", "", "", "", "", "", "",
+			"", "", "", "", "", "'👩🏽‍⚖️", "", "",
 			"P", "P", "P", "P", "P", "P", "P", "",
 			"", "", "B", "Q", "K", "B", "N", "R"
 		], 8, 8);
-		expect(fen).to.equal("rnbqkbnr/p2ppppp/2'A5/5''122/3-*1p4/8/PPPPPPP1/2BQKBNR");
+		expect(fen).to.equal("rnbqkbnr/p2ppppp/2'A5/5''122/3-*1p4/5'👩🏽‍⚖️2/PPPPPPP1/2BQKBNR");
 	});
 
 });

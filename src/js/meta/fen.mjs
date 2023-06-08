@@ -1,8 +1,15 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 
-const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}\p{EMod}?(\u200D\p{ExtPict}\p{EMod}?)*|[^'])|''..))$/iu;
-const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}\p{EMod}?(\u200D\p{ExtPict}\p{EMod}?)*|[^'])|''..)|./iug;
+const EMOJI = `\\p{ExtPict}\\uFE0F?\\p{EMod}?(\\u200D\\p{ExtPict}\\uFE0F?\\p{EMod}?)*`;
+const YACPDB = `\\((!?)([kqbnrp])(\\d?)\\)`; // also captures 3 parts
+const TYPES = `[kqbnrpcxstadg]`;
+const TEXT = `'(${EMOJI}|[^'])|''..`;
+const FFEN = `[-~]?(\\*\\d)?(${TYPES}|${TEXT})`;
+
+const ONE_EMOJI = /* @__PURE__ */ new RegExp(`^${EMOJI}$`, "u");
+const VALUE = /* @__PURE__ */ new RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
+const FEN_UNIT =/* @__PURE__ */ new RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
 export function inferDimension(fen) {
 	const values = fen.match(FEN_UNIT) || [];
@@ -75,7 +82,7 @@ export function makeFEN(values, w, h) {
 export function normalize(v, useSN, convert) {
 	// Text input shortcut
 	if(!v.match(VALUE)) {
-		if(v.match(/^\p{ExtPict}\p{EMod}?(\u200D\p{ExtPict}\p{EMod}?)*$/u)) {
+		if(v.match(ONE_EMOJI)) {
 			v = "'" + v; // A single emoji
 		} else {
 			const l = [...v].length;
@@ -86,7 +93,7 @@ export function normalize(v, useSN, convert) {
 	}
 
 	// YACPDB
-	v = v.replace(/^\((!?)([kqbnrp])(\d?)\)$/i, (_, $1, $2, $3) => {
+	v = v.replace(new RegExp(`^${YACPDB}$`, "i"), (_, $1, $2, $3) => {
 		let result = $2;
 		if($3) result = "*" + $3 + result;
 		if($1) result = "-" + result;
@@ -106,7 +113,7 @@ export function normalize(v, useSN, convert) {
 
 export function toYACPDB(value) {
 	value = convertSN(value, false, true);
-	const match = value.match(/^(-?)(?:\*(\d))?([kqbsnrp])$/i);
+	const match = value.match(/^(-?)(?:\*(\d))?([kqbnrp])$/i);
 	if(!match) return "";
 	if(!match[1] && !match[2]) return match[3];
 	return "(" + (match[1] ? "!" : "") + match[3] + (match[2] || "") + ")";
