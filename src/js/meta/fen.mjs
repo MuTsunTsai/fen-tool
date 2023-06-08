@@ -101,6 +101,7 @@ export function normalize(v, useSN, convert) {
 }
 
 export function toYACPDB(value) {
+	value = convertSN(value, false, true);
 	const match = value.match(/^(-?)(?:\*(\d))?([kqbsnrp])$/i);
 	if(!match) return "";
 	if(!match[1] && !match[2]) return match[3];

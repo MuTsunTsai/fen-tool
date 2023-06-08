@@ -77,7 +77,7 @@ function createEdit() {
 			const v = squares[i * w + j].value;
 			const match = v.match(/^(-?)([kqbsnrp])$/i);
 			if(!match) continue;
-			const type = convertSN(match[2]).toUpperCase();
+			const type = convertSN(match[2], false, true).toUpperCase();
 			const color = match[1] ? "n" : v == v.toLowerCase() ? "b" : "w";
 			groups[color].push(type + toCoordinate(i, j));
 		}
