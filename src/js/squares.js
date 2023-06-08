@@ -80,7 +80,7 @@ addEventListener("popstate", loadState);
 
 export function pushState() {
 	const current = location.search;
-	const url = FEN.value == DEFAULT ? "" : "?fen=" + FEN.value;
+	const url = FEN.value == DEFAULT ? "" : "?fen=" + encodeURI(FEN.value);
 	if(url !== decodeURIComponent(current)) {
 		history.pushState(null, "", url || ".");
 	}
