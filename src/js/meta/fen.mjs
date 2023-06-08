@@ -1,13 +1,13 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 
-const EMOJI = `\\p{ExtPict}\\uFE0F?\\p{EMod}?(\\u200D\\p{ExtPict}\\uFE0F?\\p{EMod}?)*`;
+const EMOJI = `[🇦-🇿]{2}|\\p{ExtPict}\\uFE0F?\\p{EMod}?(\\u200D\\p{ExtPict}\\uFE0F?\\p{EMod}?)*`;
 const YACPDB = `\\((!?)([kqbnrp])(\\d?)\\)`; // also captures 3 parts
 const TYPES = `[kqbnrpcxstadg]`;
 const TEXT = `'(${EMOJI}|[^'])|''..`;
 const FFEN = `[-~]?(\\*\\d)?(${TYPES}|${TEXT})`;
 
-const ONE_EMOJI = /* @__PURE__ */ new RegExp(`^${EMOJI}$`, "u");
+const ONE_EMOJI = /* @__PURE__ */ new RegExp(`^(?:${EMOJI})$`, "u");
 const VALUE = /* @__PURE__ */ new RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
 const FEN_UNIT =/* @__PURE__ */ new RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
