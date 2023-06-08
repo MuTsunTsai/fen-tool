@@ -1,5 +1,5 @@
 import { FEN } from "./meta/el";
-import { DEFAULT, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
+import { DEFAULT, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { mode, setOption } from "./layout";
 import { store } from "./store";
 import { draw } from "./render";
@@ -88,6 +88,10 @@ export function pushState() {
 
 export function snapshot() {
 	return squares.map(s => s.value);
+}
+
+export function normalSnapshot() {
+	return snapshot().map(v => convertSN(v, false, true))
 }
 
 export function paste(shot, ow, oh) {

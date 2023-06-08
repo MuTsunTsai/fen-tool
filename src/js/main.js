@@ -9,7 +9,7 @@ import { Checkbox, CheckboxBase } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
-import { getNormalFEN } from "./tools/api";
+import { normalFEN } from "./tools/api";
 
 initLayout();
 initDrag();
@@ -37,7 +37,7 @@ window.share = async function(bt) {
 				// Actually FF Android hasn't implement `text` parameter yet,
 				// but it won't hurt adding it either.
 				// See https://caniuse.com/mdn-api_navigator_canshare_data_text_parameter
-				text: getNormalFEN(),
+				text: normalFEN(),
 			});
 		} finally {
 			bt.disabled = false;

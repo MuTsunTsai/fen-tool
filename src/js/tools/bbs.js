@@ -1,8 +1,8 @@
 import { store } from "../store";
-import { FEN } from "../meta/el";
 import { PDB } from "./pdb";
-import { squares } from "../squares";
+import { normalSnapshot } from "../squares";
 import { DIGITS, fullWidth } from "../meta/fullWidth";
+import { normalFEN } from "./api";
 
 const us = unescape("%1B");
 export const A2 = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");
@@ -10,6 +10,11 @@ export const A3 = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,
 
 export const BBS = {
 	copy() {
+		if(store.board.w != 8 || store.board.h != 8) {
+			alert("只支援標準棋盤");
+			throw true;
+		}
+		const squares = normalSnapshot();
 		let result = "";
 		let value;
 		function ignoreRotation() { // 忽略旋轉
@@ -18,7 +23,7 @@ export const BBS = {
 		for(let i = 0; i < 8; i++) {
 			if(store.BBS.coordinates) result += us + "[m" + DIGITS[8 - i] + "　";
 			for(let j = 0; j < 8; j++) {
-				value = squares[i * 8 + j].value;
+				value = squares[i * 8 + j];
 				ignoreRotation();
 				if(value.startsWith("-")) {
 					value = value.substring(1);
@@ -47,9 +52,9 @@ export const BBS = {
 			if(i < 7) result += "\r\n";
 		}
 		result += us + "[m\r\n";
-		if(store.BBS.Id) result += us + "[0;30;40m" + PDB.value + us + "[m";
+		if(store.BBS.Id) result += us + "[0;30;40m" + (PDB.value || "") + us + "[m";
 		if(store.BBS.coordinates) result += "\r\n　　ａｂｃｄｅｆｇｈ\r\n"
-		result += us + "[0;30;40m" + FEN.value + us + "[m\r\n";
+		result += us + "[0;30;40m" + normalFEN() + us + "[m\r\n";
 		gtag("event", "fen_bbs_copy");
 		return result;
 	},
