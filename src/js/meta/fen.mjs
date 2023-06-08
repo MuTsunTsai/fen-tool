@@ -1,8 +1,8 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 
-const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}(\p{ExtPict}|\p{EMod}|\u200D)*|[^'])|''..))$/iu;
-const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}(\p{ExtPict}|\p{EMod}|\u200D)*|[^'])|''..)|./iug;
+const VALUE = /^(?:\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}\p{EMod}?(\u200D\p{ExtPict}\p{EMod}?)*|[^'])|''..))$/iu;
+const FEN_UNIT = /\/|\d+|\(!?[kqbnrp]\d?\)|[-~]?(\*\d)?([kqbnrpcxstadg]|'(\p{ExtPict}\p{EMod}?(\u200D\p{ExtPict}\p{EMod}?)*|[^'])|''..)|./iug;
 
 export function inferDimension(fen) {
 	const values = fen.match(FEN_UNIT) || [];
@@ -75,7 +75,7 @@ export function makeFEN(values, w, h) {
 export function normalize(v, useSN, convert) {
 	// Text input shortcut
 	if(!v.match(VALUE)) {
-		if(v.match(/^\p{ExtPict}(\p{ExtPict}|\p{EMod}|\u200D)*$/u)) {
+		if(v.match(/^\p{ExtPict}\p{EMod}?(\u200D\p{ExtPict}\p{EMod}?)*$/u)) {
 			v = "'" + v; // A single emoji
 		} else {
 			const l = [...v].length;
