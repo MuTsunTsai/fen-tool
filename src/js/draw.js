@@ -79,8 +79,7 @@ function drawPiece(ctx, assets, i, j, value, options) {
 	ctx.translate((j + rx) * size, (i + ry) * size);
 	if(rotate !== 0) ctx.rotate(Math.PI / 2 * rotate);
 	if(isText) {
-		const c = value.substring(1);
-		const text = value.startsWith("''") ? value.substring(2) : fullWidth(c, false) || c;
+		const text = value.substring(value.startsWith("''") ? 2 : 1);
 		drawText(ctx, text, size);
 	} else {
 		ctx.drawImage(assets, sx * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
@@ -188,13 +187,13 @@ function drawText(ctx, text, size) {
 	ctx.save();
 	const isEmoji = ONE_EMOJI.test(text);
 	const font = size - 4;
-	ctx.font = `${font}px arial`;
+	ctx.font = `${font}px sans-serif`;
 
 	const max = size - 2;
 	let measure = ctx.measureText(text);
 	if(isEmoji && measure.width > max) { // Fix emoji distortion
 		const f = max / measure.width;
-		ctx.font = `${font * f}px arial`;
+		ctx.font = `${font * f}px sans-serif`;
 		measure = ctx.measureText(text);
 	}
 
