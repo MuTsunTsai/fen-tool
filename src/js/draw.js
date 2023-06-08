@@ -1,5 +1,4 @@
 import { ONE_EMOJI, convertSN } from "./meta/fen.mjs";
-import { fullWidth } from "./meta/fullWidth";
 import { parseBorder } from "./meta/option";
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
