@@ -43,7 +43,8 @@ function squareOnFocus() {
 }
 function squareOnBlur() {
 	this.style.zIndex = "unset";
-	if(mode.collapse) draw();
+	if(checkInputCore(this)) toFEN();
+	else if(mode.collapse) draw();
 }
 
 function checkInput() {
