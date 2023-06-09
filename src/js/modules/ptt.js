@@ -1,4 +1,4 @@
-import { isInBig5 } from "./big5.mjs";
+import { isInUAO } from "./uao.mjs";
 
 // This module is only loaded when needed.
 
@@ -46,7 +46,7 @@ export function generate(squares, fen, id, bbs, options) {
 				if(value.startsWith("''")) value = value.substring(2);
 				else {
 					value = value.substring(1);
-					value = fullWidth(value) || (isInBig5(value) ? value : "　");
+					value = fullWidth(value) || (isInUAO(value) ? value : "　");
 				}
 				result += us + "[0;30;" + bg + value;
 			} else if(value == "") {
