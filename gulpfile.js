@@ -52,7 +52,10 @@ gulp.task("js", () =>
 			dest: "docs/main.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "main.js" })))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, {
+			outfile: "main.js",
+			external: ["./modules/*"],
+		})))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );
@@ -94,7 +97,10 @@ gulp.task("sw", () =>
 				"**/*.woff2",
 				"**/*.png",
 			],
-			globIgnores: ["sw.js"]
+			globIgnores: [
+				"sw.js",
+				"modules/**/*", // Not included on purpose
+			],
 		}))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
@@ -122,10 +128,21 @@ gulp.task("api", () =>
 		.pipe(gulp.dest("docs/api"))
 );
 
+gulp.task("ptt", () =>
+	gulp.src("src/js/modules/ptt.js")
+		.pipe($.newer({
+			dest: "docs/modules/ptt.js",
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+		}))
+		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "ptt.js", format: "esm" })))
+		.pipe($.terser())
+		.pipe(gulp.dest("docs/modules"))
+);
+
 gulp.task("fa", () =>
 	gulp.src(htmlSource)
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt"), "sw"));
