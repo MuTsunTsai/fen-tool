@@ -54,7 +54,7 @@ gulp.task("js", () =>
 		}))
 		.pipe($.esbuild(Object.assign({}, esbuildOption, {
 			outfile: "main.js",
-			external: ["./modules/*"],
+			external: ["./modules/*"], // Everything in here are loaded on demand
 		})))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))

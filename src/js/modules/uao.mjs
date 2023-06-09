@@ -86,5 +86,6 @@ export function isInUAO(char) {
 		k = key;
 	}
 	code -= k;
-	return Boolean(map[k].charCodeAt(code >>> 3) & (1 << (code % 8)))
+	const byte = map[k].charCodeAt(code >>> 3); // NaN if out of range
+	return Boolean(byte & (1 << (code % 8)))
 }

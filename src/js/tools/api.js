@@ -17,6 +17,20 @@ export function normalFEN() {
 	}
 }
 
+function getEmbedUrl() {
+	const options = store.board;
+	const fen = normalFEN();
+	let url = getURL("gen/?fen=" + fen);
+	if(options.size != 44) url += "&size=" + options.size;
+	if(options.set != "1echecs") url += "&set=" + options.set;
+	if(options.pattern) url += "&pattern=" + options.pattern;
+	if(options.bg) url += "&bg=" + options.bg;
+	if(options.border != "1") url += "&border=" + options.border;
+	if(options.blackWhite) url += "&blackWhite&knightOffset=" + options.knightOffset;
+	if(!inferDimension(fen)) url += `&w=${options.w}&h=${options.h}`;
+	return url;
+}
+
 export const API = {
 	copyJanko() {
 		gtag("event", "fen_copy_janko");
@@ -52,19 +66,15 @@ export const API = {
 	copyEmbed() {
 		gtag("event", "fen_copy_embed");
 		const options = store.board;
-		const fen = normalFEN();
-		let url = getURL("gen/?fen=" + fen);
-		if(options.size != 44) url += "&size=" + options.size;
-		if(options.set != "1echecs") url += "&set=" + options.set;
-		if(options.pattern) url += "&pattern=" + options.pattern;
-		if(options.bg) url += "&bg=" + options.bg;
-		if(options.border != "1") url += "&border=" + options.border;
-		if(options.blackWhite) url += "&blackWhite&knightOffset=" + options.knightOffset;
-		if(!inferDimension(fen)) url += `&w=${options.w}&h=${options.h}`;
+		let url = getEmbedUrl();
 		const borderSize = parseBorder(options.border).size;
 		const w = options.size * options.w + 2 * borderSize;
 		const h = options.size * options.h + 2 * borderSize;
 		return `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
+	},
+	copyEmbedUrl() {
+		gtag("event", "fen_copy_embedUrl");
+		return getEmbedUrl();
 	},
 	copyImg() {
 		gtag("event", "fen_copy_sdkImg");
