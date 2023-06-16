@@ -321,7 +321,7 @@
 							</div>
 						</div>
 						<div class="mb-3">
-							<span v-scope="CopyButton('Copy board edit syntax', DB.copyEdit, 'btn-primary')"></span>
+							<span v-scope="CopyButton('Copy board edit syntax', ()=>DB.copyEdit, 'btn-primary')"></span>
 							<span v-scope="CopyButton('Copy YACPDB FEN', YACPDB.copyFEN, 'btn-secondary')"
 								  v-if="store.DB.use=='YACPDB'"></span>
 						</div>
@@ -339,7 +339,7 @@
 								<div v-scope="Checkbox('DB.exact', 'Search exactly these pieces')"></div>
 							</div>
 							<div class="col text-end" style="flex-basis: 24rem;">
-								<span v-scope="CopyButton('Copy search query', DB.copyQuery, 'btn-secondary')"></span>&nbsp;
+								<span v-scope="CopyButton('Copy search query', ()=>DB.copyQuery, 'btn-secondary')"></span>&nbsp;
 								<button class="btn btn-primary nowrap" @click="DB.search">
 									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search position
 								</button>

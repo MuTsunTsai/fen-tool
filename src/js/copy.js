@@ -38,7 +38,10 @@ export function CopyButton(label, factory, cls, dis) {
 		async copy() {
 			this.state = 1;
 			try {
-				const result = await factory();
+				let result = factory;
+				while(typeof result == "function") {
+					result = await result();
+				}
 				if(typeof result == "string") copyText(result);
 				this.state = 2;
 				setTimeout(() => this.state = 0, 1000);
