@@ -11,5 +11,6 @@
 		"precaching",
 		"purgecss",
 		"YACPDB"
-	]
+	],
+	"npm.packageManager": "pnpm"
 }

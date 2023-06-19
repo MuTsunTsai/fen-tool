@@ -27,5 +27,5 @@ export const env = {
 	canPaste: cb && "readText" in cb,
 	canCopyImg: cb && "write" in cb,
 	isTouch,
-	isTaiwanDesktop: navigator.languages.includes("zh-TW") && !isTouch,
+	isTaiwan: navigator.languages.includes("zh-TW"),
 };

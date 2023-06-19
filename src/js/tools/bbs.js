@@ -2,6 +2,7 @@ import { store } from "../store";
 import { normalSnapshot } from "../squares";
 import { normalFEN } from "./api";
 import { DB } from "../meta/el";
+import { env } from "../meta/env";
 
 export const BBS = {
 	async copy() {
@@ -11,6 +12,6 @@ export const BBS = {
 		}
 		gtag("event", "fen_bbs_copy");
 		const ptt = await import("./modules/ptt.js");
-		return ptt.generate(normalSnapshot(), normalFEN(), DB.value, store.BBS, store.board);
+		return ptt.generate(normalSnapshot(), normalFEN(), DB.value, store.BBS, store.board, env.isTouch);
 	}
 }

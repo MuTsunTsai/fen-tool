@@ -119,7 +119,7 @@
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">Database</div>
 						</li>
-						<li class="nav-item" v-if="env.isTaiwanDesktop">
+						<li class="nav-item" v-if="env.isTaiwan">
 							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
 						</li>
 					</ul>
@@ -347,7 +347,7 @@
 						</div>
 					</section>
 
-					<section :class="{show:tab==4}" v-if="env.isTaiwanDesktop">
+					<section :class="{show:tab==4}" v-if="env.isTaiwan">
 						<div class="row gx-3">
 							<div class="col-12 col-sm-8 mb-3">
 								<div v-scope="Checkbox('BBS.Id', 'Include database Id')"></div>
