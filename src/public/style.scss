@@ -20,7 +20,7 @@ body {
 	display: none;
 }
 
-input[type=number] {
+input[type="number"] {
 	/* hide spinner in Firefox */
 	appearance: textfield;
 }
@@ -38,7 +38,8 @@ section {
 .btn {
 	margin-bottom: 0.3rem;
 
-	div > &:only-child, .input-group > & {
+	div > &:only-child,
+	.input-group > & {
 		margin-bottom: 0;
 	}
 }
@@ -107,7 +108,7 @@ section {
 #Zone {
 	margin-left: -1.5rem;
 	margin-right: -1.5rem;
-	
+
 	> * {
 		margin-left: 1.5rem;
 		margin-right: 1.5rem;
@@ -133,6 +134,22 @@ label[for] {
 .nav-tabs {
 	--bs-nav-link-color: unset;
 	--bs-nav-link-hover-color: unset;
+}
+
+.nav {
+	width: 100%;
+	min-width: max-content;
+}
+
+.nav-container {
+	overflow: auto hidden;
+	scrollbar-width: none; /* Firefox */
+}
+
+.nav-container::-webkit-scrollbar {
+	/* WebKit */
+	width: 0;
+	height: 0;
 }
 
 .loader {
