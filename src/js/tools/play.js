@@ -10,7 +10,6 @@ const wMask = [4, 7, 10, 13];
 const bMask = [3, 6, 9, 12];
 
 export function move(from, to, promotion) {
-	console.log(from, to, promotion);
 	try {
 		from = toCoordinate(from >>> 3, from % 8);
 		to = toCoordinate(to >>> 3, to % 8);
@@ -23,12 +22,16 @@ export function move(from, to, promotion) {
 	}
 }
 
+export function sync() {
+	setFEN(chess.fen());
+}
+
 export function confirmPromotion(from, to) {
 	if(move(from, pendingTarget, to)) {
 		if((pendingTarget >>> 3) == 0) to = to.toUpperCase();
 		setSquare(squares[pendingTarget], to);
 	} else {
-		setFEN(chess.fen());
+		sync();
 	}
 	state.play.pendingPromotion = false;
 	drawTemplate();
