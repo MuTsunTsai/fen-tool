@@ -99,15 +99,11 @@ export const PLAY = {
 	reset() {
 		Object.assign(state.play, {
 			turn: "w",
-			castle: {
-				K: true,
-				Q: true,
-				k: true,
-				q: true,
-			},
 			enPassant: "",
 			halfMove: 0,
 			fullMove: 1,
 		});
+		const keys = ["K", "Q", "k", "q"];
+		for(const key of keys) state.play.castle[key] = true;
 	}
 }
