@@ -3,7 +3,7 @@ import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP } from "./meta/el";
 import { templateValues } from "./render";
-import { checkDragPrecondition, checkPromotion, confirmPromotion, move, sync } from "./tools/play";
+import { checkDragPrecondition, checkPromotion, confirmPromotion, move } from "./tools/play";
 import { types } from "./draw";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
@@ -54,8 +54,10 @@ function mouseup(event) {
 	ghost.style.display = "none";
 	const inBoard = y > -1 && y < h && x > -1 && x < w;
 	if(state.play.playing) {
-		if(inBoard && (checkPromotion(draggingValue, index) || move(fromIndex, index))) sync();
-		else setSquare(sq, draggingValue);
+		if(inBoard ) {
+			if(checkPromotion(draggingValue, index)) setSquare(squares[index], draggingValue);
+			else if(move(fromIndex, index)) sync();
+		} else setSquare(sq, draggingValue);
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
 	} else {
