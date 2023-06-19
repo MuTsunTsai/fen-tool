@@ -55,9 +55,12 @@ function mouseup(event) {
 	const inBoard = y > -1 && y < h && x > -1 && x < w;
 	if(state.play.playing) {
 		if(inBoard) {
-			if(checkPromotion(draggingValue, index)) setSquare(squares[index], draggingValue);
-			else if(move(fromIndex, index)) sync();
-		} else setSquare(sq, draggingValue);
+			if(checkPromotion(draggingValue, fromIndex, index)) {
+				setSquare(squares[index], draggingValue);
+				return;
+			} else if(fromIndex != index) move(fromIndex, index);
+		}
+		sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
 	} else {

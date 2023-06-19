@@ -37,10 +37,10 @@ export function confirmPromotion(from, to) {
 	drawTemplate();
 }
 
-export function checkPromotion(v, index) {
-	const y = index >>> 3;
-	if(v == "P" && y == 0 || v == "p" && y == 7) {
-		pendingTarget = index;
+export function checkPromotion(v, from, to) {
+	const fromY = from >>> 3, toY = to >>> 3;
+	if(v == "P" && fromY == 1 && toY == 0 || v == "p" && fromY == 6 && toY == 7) {
+		pendingTarget = to;
 		state.play.pendingPromotion = true;
 		drawTemplate(v == "p" ? bMask : wMask)
 		return true;
