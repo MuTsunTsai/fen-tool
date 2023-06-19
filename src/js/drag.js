@@ -3,9 +3,11 @@ import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP } from "./meta/el";
 import { templateValues } from "./render";
+import { checkDragPrecondition, checkPromotion, confirmPromotion, move } from "./tools/play";
+import { types } from "./draw";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
-let ghost, draggingValue;
+let ghost, draggingValue, fromIndex;
 
 export function initDrag() {
 	PV.onmousedown = mouseDown;
@@ -31,7 +33,7 @@ function mousemove(event) {
 }
 
 function mouseup(event) {
-	if(mode.dragging == "pending") {
+	if(mode.dragging == "pending" && !state.play.playing) {
 		const now = performance.now();
 		if(now - lastTap < 300) sq.focus();
 		lastTap = now;
@@ -50,7 +52,11 @@ function mouseup(event) {
 	const x = Math.floor((event.clientX - r.left - b) / s);
 	const index = y * w + x;
 	ghost.style.display = "none";
-	if(y > -1 && y < h && x > -1 && x < w) {
+	const inBoard = y > -1 && y < h && x > -1 && x < w;
+	if(state.play.playing) {
+		if(inBoard && (checkPromotion(draggingValue, index) || move(fromIndex, index))) setSquare(squares[index], draggingValue);
+		else setSquare(sq, draggingValue);
+	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
 	} else {
 		pushState();
@@ -71,7 +77,18 @@ function mouseDown(event) {
 	sqY = Math.floor((startY - b) / s);
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
+
+	if(state.play.playing) {
+		if(!isCN && state.play.pendingPromotion) {
+			if(mode.hor) [sqX, sqY] = [sqY, sqX];
+			const x = draggingValue == "p" ? 0 : 1;
+			if(sqY > 0 && sqY < 5 && sqX == x) confirmPromotion(fromIndex, types[sqY]);
+		}
+		if(!isCN || !checkDragPrecondition(index)) return;
+	}
+
 	if(isCN) {
+		fromIndex = index;
 		sq = squares[index];
 		mode.dragging = "pending";
 		draggingValue = undefined;

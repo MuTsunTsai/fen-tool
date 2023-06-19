@@ -1,4 +1,4 @@
-import { store } from "./store";
+import { state, store } from "./store";
 
 let checkboxId = 0;
 
@@ -16,8 +16,9 @@ export function CheckboxBase(checked, label, onchange) {
 
 export function Checkbox(key, label, onchange) {
 	const path = key.split(".");
+	let target = key.startsWith("state.") ? state : store;
+	if(target == state) path.shift();
 	key = path.pop();
-	let target = store;
 	while(path.length) target = target[path.shift()];
 	return CheckboxBase(() => target[key], label, v => {
 		target[key] = v;

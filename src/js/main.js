@@ -10,6 +10,7 @@ import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
 import { normalFEN } from "./tools/api";
+import { PLAY } from "./tools/play";
 
 initLayout();
 initDrag();
@@ -75,6 +76,7 @@ createApp({
 	YACPDB,
 	BBS,
 	API,
+	PLAY,
 	store,
 	state,
 	tab: 0,

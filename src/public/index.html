@@ -43,17 +43,17 @@
 
 	<div class="h-100 w-100 d-flex justify-content-center">
 		<div class="flex-grow-0 text-start">
-			<div class="w-passive-100">
+			<div class="w-passive-100" v-scope>
 				<div class="row gx-3 mb-3">
 					<label class="col-auto col-form-label">FEN:</label>
 					<div class="col">
-						<input type="text" class="form-control" id="FEN" onchange="FEN.update()">
+						<input type="text" class="form-control" :readonly="state.play.playing" id="FEN" onchange="FEN.update()">
 					</div>
-					<div v-scope v-cloak class="col-auto" v-if="env.canCopy">
+					<div v-cloak class="col-auto" v-if="env.canCopy">
 						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
-						<button class="btn btn-secondary" title="Paste" onclick="FEN.paste()">
+						<button class="btn btn-secondary" :disabled="state.play.playing" title="Paste" onclick="FEN.paste()">
 							<i class="fa-solid fa-paste"></i>
 						</button>
 					</div>
@@ -119,6 +119,9 @@
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">Database</div>
 						</li>
+						<li class="nav-item">
+							<div class="nav-link" :class="{active:tab==6}" @click="tab=6">Play</div>
+						</li>
 						<li class="nav-item" v-if="env.isTaiwan">
 							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
 						</li>
@@ -129,36 +132,44 @@
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<span class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="FEN.empty()">
+								<button type="button" class="btn btn-secondary" onclick="FEN.empty()"
+										:disabled="state.play.playing">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="FEN.reset()">
+								<button type="button" class="btn btn-secondary" onclick="FEN.reset()"
+										:disabled="state.play.playing">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
 							</span>
 							<span class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)">
+								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)"
+										:disabled="state.play.playing">
 									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)">
+								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)"
+										:disabled="state.play.playing">
 									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
 								</button>
 							</span>
 							<span class="d-inline-block">
-								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)">
-								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="FEN.color(0)">
-								<input type="button" class="btn btn-secondary" value="All White" onclick="FEN.color(1)">
+								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)"
+									   :disabled="state.play.playing">
+								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="FEN.color(0)"
+									   :disabled="state.play.playing">
+								<input type="button" class="btn btn-secondary" value="All White" onclick="FEN.color(1)"
+									   :disabled="state.play.playing">
 							</span>
 							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="Switch side" title="Texts are not converted"
-									   onclick="FEN.invert(false)">
+									   onclick="FEN.invert(false)" :disabled="state.play.playing">
 								<input type="button" class="btn btn-secondary" value="Switch case" title="Texts are converted"
-									   onclick="FEN.invert(true)">
+									   onclick="FEN.invert(true)" :disabled="state.play.playing">
 							</span>
 						</div>
 						<div class="text-end">
 							<span class="d-inline-block">
-								<span v-if="store.feature.janko" v-scope="CopyButton('Create Janko URL', API.copyJanko, 'btn-primary')"></span>
+								<span v-if="store.feature.janko"
+									  v-scope="CopyButton('Create Janko URL', API.copyJanko, 'btn-primary')"></span>
 								<span v-if="!env.isTouch" v-scope="CopyButton('Copy image', copyImage, 'btn-primary')"></span>
 								<span v-scope="CopyButton('Create image URL', API.copyUrl, 'btn-primary')"></span>
 							</span>
@@ -328,10 +339,11 @@
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">Problem Id:</label>
 							<div class="col">
-								<input type="text" class="form-control" id="DB">
+								<input type="text" class="form-control" id="DB" :readonly="state.play.playing">
 							</div>
 							<div class="col-auto">
-								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)">
+								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)"
+									   :disabled="state.play.playing">
 							</div>
 						</div>
 						<div class="row align-items-center flex-wrap">
@@ -345,6 +357,70 @@
 								</button>
 							</div>
 						</div>
+					</section>
+
+					<section :class="{show:tab==6}">
+						<template v-if="state.play.playing">
+							<div>
+								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
+								<button v-if="state.play.playing" class="btn btn-primary" :disabled="state.play.moveNumber==0"
+										@click="PLAY.undo" @dblclick.prevent>Take back</button>&nbsp;
+								<span v-scope="CopyButton('Copy game', ()=>state.play.game, 'btn-primary')"></span>
+							</div>
+							<div class="mt-2">{{state.play.game}}</div>
+						</template>
+						<template v-else>
+							<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;
+							<button class="btn btn-secondary" @click="PLAY.reset">Reset settings</button>
+							<div class="mt-2 row">
+								<div class="col-12 col-md-6">
+									<div class="mb-2">
+										<span class="me-3">Turn:</span>
+										<div class="form-check d-inline-block me-3">
+											<input class="form-check-input" type="radio" :checked="state.play.turn=='w'"
+												   @change="state.play.turn='w'" name="TURN" id="wTurn">
+											<label class="form-check-label" for="wTurn">
+												White
+											</label>
+										</div>
+										<div class="form-check d-inline-block">
+											<input class="form-check-input" type="radio" :checked="state.play.turn=='b'"
+												   @change="state.play.turn='b'" name="TURN" id="bTurn">
+											<label class="form-check-label" for="bTurn">
+												Black
+											</label>
+										</div>
+									</div>
+									<div class="mb-2">
+										Castling:
+										<span v-scope="Checkbox('state.play.castle.K', 'WK')" class="ms-2 d-inline-block"></span>
+										<span v-scope="Checkbox('state.play.castle.Q', 'WQ')" class="ms-2 d-inline-block"></span>
+										<span v-scope="Checkbox('state.play.castle.k', 'BK')" class="ms-2 d-inline-block"></span>
+										<span v-scope="Checkbox('state.play.castle.q', 'BQ')" class="ms-2 d-inline-block"></span>
+									</div>
+								</div>
+								<div class="col-12 col-md-6">
+									<div class="row mb-2">
+										<label class="col-auto col-form-label">En passant: </label>
+										<div class="col">
+											<input type="text" class="form-control" v-model="state.play.enPassant">
+										</div>
+									</div>
+									<div class="row mb-2">
+										<label class="col-auto col-form-label">Half moves: </label>
+										<div class="col">
+											<input type="number" class="form-control" min="0"
+												   v-model.number="state.play.halfMove">
+										</div>
+										<label class="col-auto col-form-label">Full moves: </label>
+										<div class="col">
+											<input type="number" class="form-control" min="1"
+												   v-model.number="state.play.fullMove">
+										</div>
+									</div>
+								</div>
+							</div>
+						</template>
 					</section>
 
 					<section :class="{show:tab==4}" v-if="env.isTaiwan">

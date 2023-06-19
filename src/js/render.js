@@ -4,6 +4,7 @@ import { store, state } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard } from "./draw";
 import { assets, loadAsset } from "./asset";
+import { parseBorder } from "./meta/option";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -19,11 +20,28 @@ const gCtx = CG.getContext("2d");
 const tCtx = TP.getContext("2d");
 const tgCtx = TPG.getContext("2d");
 
-export function drawTemplate() {
+export function drawTemplate(except) {
 	const options = Object.assign({}, store.board, mode.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = mode.hor ? templateHorValues : templateValues;
 	drawBoard(tCtx, assets, squares, options);
-	drawBoard(tgCtx, assets, squares, options, true);
+	if(!state.play.playing) {
+		drawBoard(tgCtx, assets, squares, options, true);
+	} else {
+		tCtx.save();
+		const border = parseBorder(store.board.border);
+		tCtx.translate(border.size, border.size);
+		tCtx.globalAlpha = 0.5;
+		tCtx.fillStyle = "black";
+		const { size } = store.board;
+		for(let i = 0; i < 3; i++) {
+			for(let j = 0; j < 8; j++) {
+				if(except?.includes(j * 3 + i)) continue;
+				const [x, y] = mode.hor ? [j, i] : [i, j];
+				tCtx.fillRect(x * size, y * size, size, size);
+			}
+		}
+		tCtx.restore();
+	}
 }
 
 export async function draw(data) {

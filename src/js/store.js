@@ -40,6 +40,22 @@ export const store = reactive(settings);
 
 export const state = reactive({
 	loading: true,
+	play: {
+		playing: false,
+		pendingPromotion: false,
+		moveNumber: 0,
+		game: "",
+		turn: "w",
+		castle: {
+			K: true,
+			Q: true,
+			k: true,
+			q: true,
+		},
+		enPassant: "",
+		halfMove: 0,
+		fullMove: 1,
+	}
 });
 
 export function saveSettings() {

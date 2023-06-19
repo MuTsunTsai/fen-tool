@@ -51,6 +51,12 @@ This tool is for Taiwan BBS forums such as PTT, so it is shown only in Taiwan.
 It generates colored BBS text (with traditional Chinese annotations)
 that can be paste directly into posts.
 
+### Play mode
+
+This tool allows you to play on the setup board and record moves.
+Only orthodox chess is supported.
+
+
 <br>
 
 ## 🖼️ Sharing image

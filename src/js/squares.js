@@ -1,7 +1,7 @@
 import { FEN } from "./meta/el";
 import { DEFAULT, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { mode, setOption } from "./layout";
-import { store } from "./store";
+import { state, store } from "./store";
 
 export const squares = new Array(64);
 export const container = document.getElementById("Squares");
@@ -92,6 +92,7 @@ export function setFEN(v, check) {
 }
 
 export function loadState() {
+	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
 	if(fen) setFEN(fen, true);
@@ -111,7 +112,7 @@ export function snapshot() {
 }
 
 export function normalSnapshot() {
-	return snapshot().map(v => convertSN(v, false, true))
+	return snapshot().map(v => convertSN(v, false, true));
 }
 
 export function paste(shot, ow, oh) {
@@ -132,6 +133,24 @@ export function toFEN() {
 	draw();
 }
 
+export function orthodoxFEN() {
+	const { w, h } = store.board;
+	if(w != 8 || h != 8) return null;
+	for(const s of squares) {
+		const value = convertSN(s.value, false, true);
+		if(value != "" && !value.match(/^[kqbnrp]$/i)) return null;
+	}
+	const p = state.play;
+	return `${makeFEN(normalSnapshot(), 8, 8)} ${p.turn} ${getCastle()} ${p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
+}
+
+function getCastle() {
+	let result = "";
+	const keys = ["K", "Q", "k", "q"];
+	for(const key of keys) if(state.play.castle[key]) result += key;
+	return result == "" ? "-" : result;
+}
+
 function toSquares(check) {
 	const infer = inferDimension(FEN.value);
 	const { w, h } = infer || store.board;
@@ -150,6 +169,10 @@ export function updateSN() {
 	let changed = false;
 	for(const s of squares) changed = checkInputCore(s, true) || changed; // order matters
 	if(changed) toFEN();
+}
+
+export function toggleReadOnly(readOnly) {
+	for(const s of squares) s.readOnly = readOnly;
 }
 
 window.FEN = {

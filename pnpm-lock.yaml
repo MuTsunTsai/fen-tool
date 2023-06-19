@@ -11,6 +11,9 @@ dependencies:
   bootstrap:
     specifier: ^5.3.0
     version: 5.3.0(@popperjs/core@2.11.8)
+  chess.js:
+    specifier: 1.0.0-beta.6
+    version: 1.0.0-beta.6
   petite-vue:
     specifier: ^0.4.1
     version: 0.4.1
@@ -2246,6 +2249,10 @@ packages:
   /check-error@1.0.2:
     resolution: {integrity: sha512-BrgHpW9NURQgzoNyjfq0Wu6VFO6D7IZEmJNdtgNqpzGG8RuNFHt2jQxWlAs4HMe119chBnv+34syEZtc6IhLtA==}
     dev: true
+
+  /chess.js@1.0.0-beta.6:
+    resolution: {integrity: sha512-sqBfX1VL3csSyqVM5ogbKA+aRlZyWDh276ruWXphwI0lDUMs7iYjZs29BOi49f7mXeunJE7cdfnIZhihsyLnsA==}
+    dev: false
 
   /chokidar@2.1.8:
     resolution: {integrity: sha512-ZmZUazfOzf0Nve7duiCKD23PFSCs4JPoYyccjUFF3aQkQadqBhfzhjkwBH2mNOG9cTBwhamM37EIsIkZw3nRgg==}
