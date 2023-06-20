@@ -361,6 +361,16 @@
 
 					<section :class="{show:tab==6}">
 						<template v-if="state.play.playing">
+							<div class="mb-3">
+								<span class="btn btn-secondary px-1 py-0 me-3" :class="{active:-1==state.play.moveNumber}"
+									  @click="PLAY.goto()">Beginning</span>
+								<span v-for="(h,i) in state.play.history">
+									<span v-if="h.color=='b'&&i==0" class="ms-2">{{PLAY.number(h)}}...</span>
+									<span v-if="h.color=='w'" class="ms-2">{{PLAY.number(h)}}.</span>
+									<span class="btn btn-secondary px-1 py-0" :class="{active:i==state.play.moveNumber}"
+										  @click="PLAY.goto(h)">{{PLAY.format(h)}}</span>
+								</span>
+							</div>
 							<div>
 								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
 								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>
@@ -389,15 +399,8 @@
 									</label>
 								</div>
 							</div>
-							<div class="mt-3">
-								<span class="btn btn-secondary px-1 py-0 me-3" :class="{active:-1==state.play.moveNumber}"
-									  @click="PLAY.goto()">Beginning</span>
-								<span v-for="(h,i) in state.play.history">
-									<span v-if="h.color=='b'&&i==0" class="ms-2">{{PLAY.number(h)}}...</span>
-									<span v-if="h.color=='w'" class="ms-2">{{PLAY.number(h)}}.</span>
-									<span class="btn btn-secondary px-1 py-0" :class="{active:i==state.play.moveNumber}"
-										  @click="PLAY.goto(h)">{{PLAY.format(h)}}</span>
-								</span>
+							<div class="mt-2">
+								<span v-scope="Checkbox('PLAY.ep', 'Add e.p. to en passant moves')"></span>
 							</div>
 						</template>
 						<template v-else>

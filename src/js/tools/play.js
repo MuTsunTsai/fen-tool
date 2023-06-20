@@ -124,7 +124,8 @@ export const PLAY = {
 				san = san.replace(k, s);
 			}
 		}
-		return san + (h.flags.includes("e") ? " e.p." : "");
+		if(store.PLAY.ep && h.flags.includes("e")) san += " e.p.";
+		return san;
 	}
 }
 
