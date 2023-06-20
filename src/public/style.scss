@@ -161,6 +161,14 @@ label[for] {
 	opacity: 1;
 }
 
+span.btn.btn-secondary {
+	user-select: unset;
+}
+
+.btn-secondary.active {
+	color: yellow;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		overflow-y: scroll;

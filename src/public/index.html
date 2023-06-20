@@ -363,11 +363,42 @@
 						<template v-if="state.play.playing">
 							<div>
 								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
-								<button v-if="state.play.playing" class="btn btn-primary" :disabled="state.play.moveNumber==0"
-										@click="PLAY.undo" @dblclick.prevent>Take back</button>&nbsp;
-								<span v-scope="CopyButton('Copy game', ()=>state.play.game, 'btn-primary')"></span>
+								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>
 							</div>
-							<div class="mt-2">{{state.play.game}}</div>
+							<div class="mt-2">
+								<span class="me-3">Symbol:</span>
+								<div class="form-check d-inline-block me-3">
+									<input class="form-check-input" type="radio" :checked="store.PLAY.symbol==null"
+										   @change="store.PLAY.symbol=null" name="SYM" id="sEng">
+									<label class="form-check-label" for="sEng">
+										English
+									</label>
+								</div>
+								<div class="form-check d-inline-block me-3">
+									<input class="form-check-input" type="radio" :checked="store.PLAY.symbol=='german'"
+										   @change="store.PLAY.symbol='german'" name="SYM" id="sGer">
+									<label class="form-check-label" for="sGer">
+										German
+									</label>
+								</div>
+								<div class="form-check d-inline-block">
+									<input class="form-check-input" type="radio" :checked="store.PLAY.symbol=='unicode'"
+										   @change="store.PLAY.symbol='unicode'" name="SYM" id="sUni">
+									<label class="form-check-label" for="sUni">
+										Unicode
+									</label>
+								</div>
+							</div>
+							<div class="mt-3">
+								<span class="btn btn-secondary px-1 py-0 me-3" :class="{active:-1==state.play.moveNumber}"
+									  @click="PLAY.goto()">Beginning</span>
+								<span v-for="(h,i) in state.play.history">
+									<span v-if="h.color=='b'&&i==0" class="ms-2">{{PLAY.number(h)}}...</span>
+									<span v-if="h.color=='w'" class="ms-2">{{PLAY.number(h)}}.</span>
+									<span class="btn btn-secondary px-1 py-0" :class="{active:i==state.play.moveNumber}"
+										  @click="PLAY.goto(h)">{{PLAY.format(h)}}</span>
+								</span>
+							</div>
 						</template>
 						<template v-else>
 							<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;
@@ -401,7 +432,7 @@
 								</div>
 								<div class="col-12 col-md-6">
 									<div class="row mb-2">
-										<label class="col-auto col-form-label">En passant: </label>
+										<label class="col-auto col-form-label">En passant square: </label>
 										<div class="col">
 											<input type="text" class="form-control" v-model="state.play.enPassant">
 										</div>

@@ -16,6 +16,9 @@ const settings = {
 		use: "PDB",
 		exact: false,
 	},
+	PLAY: {
+		symbol: null,
+	},
 	feature: {
 		janko: false,
 	},
@@ -43,8 +46,9 @@ export const state = reactive({
 	play: {
 		playing: false,
 		pendingPromotion: false,
-		moveNumber: 0,
+		moveNumber: -1,
 		game: "",
+		history: [],
 		turn: "w",
 		castle: {
 			K: true,

@@ -1,7 +1,7 @@
 import { toCoordinate } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
 import { orthodoxFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
-import { state } from "../store"
+import { state, store } from "../store"
 
 let chess;
 let pendingTarget;
@@ -11,11 +11,11 @@ const bMask = [3, 6, 9, 12];
 
 export function move(from, to, promotion) {
 	try {
-		from = toCoordinate(from >>> 3, from % 8);
-		to = toCoordinate(to >>> 3, to % 8);
-		chess.move({ from, to, promotion });
-		state.play.moveNumber++;
-		state.play.game = score();
+		from = toCoordinate(from);
+		to = toCoordinate(to);
+		const move = chess.move({ from, to, promotion });
+		state.play.history.length = ++state.play.moveNumber;
+		state.play.history.push(move);
 		return true;
 	} catch {
 		return false;
@@ -37,15 +37,12 @@ export function confirmPromotion(from, to) {
 	drawTemplate();
 }
 
-export function checkPromotion(v, from, to) {
-	const fromY = from >>> 3, toY = to >>> 3;
-	if(v == "P" && fromY == 1 && toY == 0 || v == "p" && fromY == 6 && toY == 7) {
-		pendingTarget = to;
-		state.play.pendingPromotion = true;
-		drawTemplate(v == "p" ? bMask : wMask)
-		return true;
-	}
-	return false;
+export function checkPromotion(from, to) {
+	if(!chess.checkPromotion(toCoordinate(from), toCoordinate(to))) return false;
+	pendingTarget = to;
+	state.play.pendingPromotion = true;
+	drawTemplate(chess.turn() == "b" ? bMask : wMask)
+	return true;
 }
 
 export function checkDragPrecondition(index) {
@@ -56,14 +53,9 @@ export function checkDragPrecondition(index) {
 	return true;
 }
 
-function score() {
-	return chess.pgn().replace(/\[[^\]]+\]\s/g, "").replace(/^\s+/, "");
-}
-
 export const PLAY = {
 	async start() {
 		const fen = orthodoxFEN();
-		console.log(fen);
 		if(!fen) {
 			alert("Only orthodox chess is supported.");
 			return;
@@ -71,8 +63,9 @@ export const PLAY = {
 		try {
 			chess = new (await import("./modules/chess.js")).Chess(fen);
 			state.play.playing = true;
-			state.play.moveNumber = 0;
+			state.play.moveNumber = -1;
 			state.play.pendingPromotion = false;
+			state.play.history = [];
 			toggleReadOnly(true);
 			drawTemplate();
 		} catch {
@@ -92,12 +85,11 @@ export const PLAY = {
 		toggleReadOnly(false);
 		drawTemplate();
 	},
-	undo() {
-		if(chess.undo()) {
-			setFEN(chess.fen());
-			state.play.game = score();
-			state.play.moveNumber--;
-		}
+	goto(h) {
+		const fen = h ? h.after : state.play.history[0].before;
+		chess.load(fen);
+		state.play.moveNumber = state.play.history.indexOf(h);
+		setFEN(fen);
 	},
 	reset() {
 		Object.assign(state.play, {
@@ -108,5 +100,48 @@ export const PLAY = {
 		});
 		const keys = ["K", "Q", "k", "q"];
 		for(const key of keys) state.play.castle[key] = true;
+	},
+	copyGame() {
+		const history = state.play.history;
+		if(history.length == 0) return "";
+		let result = "";
+		if(history[0].color == "b") result += PLAY.number(h) + "...";
+		for(const h of history) {
+			if(h.color == "w") result += PLAY.number(h) + ". ";
+			result += PLAY.format(h) + " ";
+		}
+		return result.trimEnd();
+	},
+	number(h) {
+		return h.before.match(/\d+$/)[0];
+	},
+	format(h) {
+		let san = h.san;
+		const symbol = store.PLAY.symbol == "unicode" ? unicode :
+			store.PLAY.symbol == "german" ? german : null;
+		if(symbol) {
+			for(const [k, s] of Object.entries(symbol)) {
+				san = san.replace(k, s);
+			}
+		}
+		return san + (h.flags.includes("e") ? " e.p." : "");
 	}
 }
+
+const unicode = {
+	"K": "♔",
+	"Q": "♕",
+	"B": "♗",
+	"N": "♘",
+	"R": "♖",
+	"P": "♙",
+};
+
+const german = {
+	"K": "K",
+	"Q": "D",
+	"B": "L",
+	"N": "S",
+	"R": "T",
+	"P": "B",
+};

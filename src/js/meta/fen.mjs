@@ -131,6 +131,13 @@ export function convertSN(value, useSN, convert) {
 	return value;
 }
 
+/**
+ * Convert to board coordinate notation (only orthodox board is supported).
+ */
 export function toCoordinate(i, j) {
+	if(j === undefined) {
+		j = i % 8;
+		i = i >>> 3;
+	}
 	return String.fromCharCode(97 + j) + (8 - i);
 }
