@@ -42,8 +42,12 @@ if(search.has("janko")) settings.feature.janko = true;
 
 export const store = reactive(settings);
 
+const mm = matchMedia("(prefers-color-scheme: dark)");
+mm.onchange = () => state.isDark = mm.matches;
+
 export const state = reactive({
 	loading: true,
+	isDark: mm.matches,
 	play: {
 		playing: false,
 		pendingPromotion: false,

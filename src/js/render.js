@@ -30,7 +30,7 @@ export function drawTemplate(except) {
 		tCtx.save();
 		const border = parseBorder(store.board.border);
 		tCtx.translate(border.size, border.size);
-		tCtx.globalAlpha = 0.5;
+		tCtx.globalAlpha = state.isDark ? 0.5 : 0.4;
 		tCtx.fillStyle = "black";
 		const { size } = store.board;
 		for(let i = 0; i < 3; i++) {
