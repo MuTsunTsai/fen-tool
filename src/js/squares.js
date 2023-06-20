@@ -129,8 +129,9 @@ export function paste(shot, ow, oh) {
 
 export function toFEN() {
 	const { w, h } = store.board;
-	FEN.value = makeFEN(snapshot(), w, h);
-	draw();
+	const data = snapshot();
+	FEN.value = makeFEN(data, w, h);
+	draw(data);
 }
 
 export function orthodoxFEN() {
@@ -163,7 +164,7 @@ function toSquares(check) {
 		changed = checkInputCore(squares[i]) || changed; // order matters
 	}
 	if(changed || check || !infer) toFEN();
-	else draw();
+	else draw(snapshot());
 }
 
 export function parseFullFEN(fen) {
