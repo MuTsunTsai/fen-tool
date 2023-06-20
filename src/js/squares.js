@@ -152,6 +152,7 @@ function getCastle() {
 }
 
 function toSquares(check) {
+	parseFullFEN(FEN.value);
 	const infer = inferDimension(FEN.value);
 	const { w, h } = infer || store.board;
 	const values = parseFEN(FEN.value, w, h);
@@ -163,6 +164,19 @@ function toSquares(check) {
 	}
 	if(changed || check || !infer) toFEN();
 	else draw();
+}
+
+export function parseFullFEN(fen) {
+	const arr = fen.split(" ");
+	if(arr.length == 1) return;
+	if(arr[1] == "w" || arr[1] == "b") state.play.turn = arr[1];
+	if(arr[2]) {
+		const keys = ["K", "Q", "k", "q"];
+		for(const key of keys) state.play.castle[key] = arr[2].includes(key);
+	}
+	state.play.enPassant = !arr[3] || arr[3] == "-" ? "" : arr[3];
+	state.play.halfMove = Number(arr[4] || 0);
+	state.play.fullMove = Number(arr[5] || 1);
 }
 
 export function updateSN() {

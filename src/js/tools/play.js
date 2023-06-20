@@ -1,6 +1,6 @@
 import { toCoordinate } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
-import { orthodoxFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
+import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
 import { state, store } from "../store"
 
 let chess;
@@ -85,13 +85,7 @@ export const PLAY = {
 	exit() {
 		state.play.playing = false;
 		state.play.game = "";
-		state.play.turn = chess.turn();
-		const fen = chess.fen().split(" ");
-		const keys = ["K", "Q", "k", "q"];
-		for(const key of keys) state.play.castle[key] = fen[2].includes(key);
-		state.play.enPassant = fen[3] == "-" ? "" : fen[3];
-		state.play.halfMove = Number(fen[4]);
-		state.play.fullMove = Number(fen[5]);
+		parseFullFEN(chess.fen());
 		toggleReadOnly(false);
 		drawTemplate();
 	},
