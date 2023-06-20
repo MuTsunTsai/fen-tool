@@ -413,7 +413,7 @@
 							<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset">
 								<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 							</button>
-							<div class="mt-2 row">
+							<div class="mt-2 gx-3 row">
 								<div class="col-12 col-sm-6">
 									<div class="mb-2">
 										<span class="me-3">Turn:</span>
@@ -434,29 +434,45 @@
 									</div>
 									<div class="mb-2">
 										Castling:
-										<span v-scope="Checkbox('state.play.castle.K', 'WK')" class="ms-2 d-inline-block"></span>
-										<span v-scope="Checkbox('state.play.castle.Q', 'WQ')" class="ms-2 d-inline-block"></span>
-										<span v-scope="Checkbox('state.play.castle.k', 'BK')" class="ms-2 d-inline-block"></span>
-										<span v-scope="Checkbox('state.play.castle.q', 'BQ')" class="ms-2 d-inline-block"></span>
+										<span class="d-inline-block">
+											<span v-scope="Checkbox('state.play.castle.K', 'WK')"
+												  class="ms-2 d-inline-block"></span>
+											<span v-scope="Checkbox('state.play.castle.Q', 'WQ')"
+												  class="ms-2 d-inline-block"></span>
+										</span>
+										<span class="d-inline-block">
+											<span v-scope="Checkbox('state.play.castle.k', 'BK')"
+												  class="ms-2 d-inline-block"></span>
+											<span v-scope="Checkbox('state.play.castle.q', 'BQ')"
+												  class="ms-2 d-inline-block"></span>
+										</span>
 									</div>
 								</div>
 								<div class="col-12 col-sm-6">
-									<div class="row mb-2">
+									<div class="row gx-3 mb-2">
 										<label class="col-auto col-form-label">En passant square: </label>
 										<div class="col">
 											<input type="text" class="form-control" maxlength="2" v-model="state.play.enPassant">
 										</div>
 									</div>
-									<div class="row mb-2">
-										<label class="col-auto col-form-label">Half moves: </label>
-										<div class="col">
-											<input type="number" class="form-control" min="0"
-												   v-model.number="state.play.halfMove">
+									<div class="row gx-3">
+										<div class="col mb-2" style="flex-basis: 10.5rem;">
+											<div class="row gx-3">
+												<label class="col-auto col-form-label">Half moves: </label>
+												<div class="col">
+													<input type="number" class="form-control" min="0"
+														   v-model.number="state.play.halfMove">
+												</div>
+											</div>
 										</div>
-										<label class="col-auto col-form-label">Full moves: </label>
-										<div class="col">
-											<input type="number" class="form-control" min="1"
-												   v-model.number="state.play.fullMove">
+										<div class="col mb-2" style="flex-basis: 10.5rem;">
+											<div class="row gx-3">
+												<label class="col-auto col-form-label">Full moves: </label>
+												<div class="col">
+													<input type="number" class="form-control" min="1"
+														   v-model.number="state.play.fullMove">
+												</div>
+											</div>
 										</div>
 									</div>
 									<div class="text-end">
