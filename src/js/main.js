@@ -15,6 +15,11 @@ import { PLAY } from "./tools/play";
 initLayout();
 initDrag();
 
+// https://stackoverflow.com/a/43321596/9953396
+document.addEventListener('mousedown', function(event) {
+	if(event.detail > 1) event.preventDefault();
+}, false);
+
 //===========================================================
 // export
 //===========================================================

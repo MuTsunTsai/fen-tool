@@ -1,3 +1,5 @@
+// $secondary: #aaa !default;
+
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 html,
@@ -167,6 +169,34 @@ span.btn {
 
 span.btn-secondary.active {
 	color: yellow;
+}
+
+@media (prefers-color-scheme: light) {
+	.btn-secondary {
+		--bs-btn-color: #000;
+		--bs-btn-bg: #ccc;
+		--bs-btn-border-color: #ccc;
+		--bs-btn-hover-color: #000;
+		--bs-btn-hover-bg: #d4d4d4;
+		--bs-btn-hover-border-color: #d1d1d1;
+		--bs-btn-focus-shadow-rgb: 173, 173, 173;
+		--bs-btn-active-color: #000;
+		--bs-btn-active-bg: #d6d6d6;
+		--bs-btn-active-border-color: #d1d1d1;
+		--bs-btn-disabled-color: #000;
+		--bs-btn-disabled-bg: #ccc;
+		--bs-btn-disabled-border-color: #ccc;
+	}
+
+	.btn-light.active {
+		border-color: #ddd;
+		background: #ddd;
+	}
+
+	.btn-light:hover {
+		border-color: #eee;
+		background: #eee;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
