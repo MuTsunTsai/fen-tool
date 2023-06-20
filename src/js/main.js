@@ -86,7 +86,6 @@ createApp({
 	state,
 	tab: 0,
 	resize() {
-		console.log("resize");
 		state.split;
 		Promise.resolve().then(() => setOption({}));
 	},

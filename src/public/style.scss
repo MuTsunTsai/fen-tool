@@ -191,13 +191,18 @@ label[for] {
 }
 
 .step {
-	margin-bottom: 0;
 	vertical-align: unset;
 	user-select: unset;
 }
 
 .step.btn-secondary.active {
 	color: yellow;
+}
+
+@media (max-width: 1151.9px) {
+	.split .col-sm-6 {
+		width: 100% !important;
+	}
 }
 
 @media (prefers-color-scheme: light) {
@@ -279,7 +284,7 @@ label[for] {
 	}
 
 	.form-switch .form-check-input {
-		--bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='gray'/%3e%3c/svg%3e")
+		--bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='gray'/%3e%3c/svg%3e");
 	}
 
 	.form-select {

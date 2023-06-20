@@ -374,8 +374,10 @@
 					<section :class="{show:tab==6}">
 						<template v-if="state.play.playing">
 							<div class="mb-3">
-								<span class="btn step px-1 py-0 me-3" @click="PLAY.goto()"
-									  :class="[{active:-1==state.play.moveNumber}, state.isDark?'btn-secondary':'btn-light']">Beginning</span>
+								<span>
+									<span class="btn step px-1 py-0 me-3" @click="PLAY.goto()"
+										  :class="[{active:-1==state.play.moveNumber}, state.isDark?'btn-secondary':'btn-light']">Beginning</span>
+								</span>
 								<span v-for="(h,i) in state.play.history">
 									<span v-if="state.play.history[i-1]&&state.play.history[i-1].color==h.color">
 										<span v-if="h.color=='w'"> ... </span>
