@@ -24,12 +24,20 @@ export function move(from, to, promotion) {
 		from = toCoordinate(from);
 		to = toCoordinate(to);
 		const move = chess.move({ from, to, promotion });
+		if(chess.isDraw()) move.san += "=";
+		state.play.over = overState();
 		state.play.history.length = ++state.play.moveNumber;
 		state.play.history.push(move);
 		return true;
 	} catch {
 		return false;
 	}
+}
+
+function overState() {
+	if(chess.isCheckmate()) return 1;
+	if(chess.isDraw()) return 2;
+	return 0;
 }
 
 export function sync() {
@@ -72,10 +80,13 @@ export const PLAY = {
 		}
 		try {
 			chess = new (await import("./modules/chess.js")).Chess(fen);
-			state.play.playing = true;
-			state.play.moveNumber = -1;
-			state.play.pendingPromotion = false;
-			state.play.history = [];
+			Object.assign(state.play, {
+				playing: true,
+				moveNumber: -1,
+				over: overState(),
+				pendingPromotion: false,
+				history: []
+			});
 			toggleReadOnly(true);
 			drawTemplate();
 		} catch {
@@ -92,6 +103,7 @@ export const PLAY = {
 	goto(h) {
 		const fen = h ? h.after : state.play.history[0].before;
 		chess.load(fen);
+		state.play.over = overState();
 		state.play.moveNumber = state.play.history.indexOf(h);
 		setFEN(fen);
 	},

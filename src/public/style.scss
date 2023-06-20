@@ -175,11 +175,13 @@ label[for] {
 	opacity: 1;
 }
 
-span.btn {
+.step {
+	margin-bottom: 0;
+	vertical-align: unset;
 	user-select: unset;
 }
 
-span.btn-secondary.active {
+.step.btn-secondary.active {
 	color: yellow;
 }
 
