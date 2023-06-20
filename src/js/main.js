@@ -2,7 +2,7 @@ import { createApp } from "petite-vue";
 import { store, state, saveSettings } from "./store";
 import { updateSN } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty } from "./render";
-import { initLayout } from "./layout";
+import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { YACPDB, PDB, BBS, API } from "./tools";
 import { Checkbox, CheckboxBase } from "./checkbox";
@@ -85,5 +85,10 @@ createApp({
 	store,
 	state,
 	tab: 0,
+	resize() {
+		console.log("resize");
+		state.split;
+		Promise.resolve().then(() => setOption({}));
+	},
 	saveSettings,
 }).mount();

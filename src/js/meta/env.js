@@ -21,6 +21,7 @@ function testPngShare() {
 const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
 
 export const env = {
+	isTop: top == self,
 	canShare,
 	canSharePng: testPngShare(),
 	canCopy: cb && "writeText" in cb,
@@ -29,3 +30,5 @@ export const env = {
 	isTouch,
 	isTaiwan: navigator.languages.includes("zh-TW"),
 };
+
+if(!env.isTop) document.body.style.overflow = "hidden";

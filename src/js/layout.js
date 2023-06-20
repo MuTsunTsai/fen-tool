@@ -1,5 +1,5 @@
 import { CN, SN, CG, TP, TPG } from "./meta/el";
-import { getRenderSize, search, store } from "./store";
+import { getRenderSize, search, state, store } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { BORDER, parseBorder } from "./meta/option";
@@ -14,6 +14,10 @@ const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
 
+function bodyWidth() {
+	return document.body.clientWidth / (state.split ? 2 : 1);
+}
+
 export async function setOption(o, force) {
 	const options = store.board;
 	const changed = {};
@@ -26,7 +30,7 @@ export async function setOption(o, force) {
 
 	// Decide mode
 	const rem = getREM();
-	const newMode = document.body.clientWidth < (o.w + 3) * o.size + 4 * border.size + 2.1 * rem;
+	const newMode = bodyWidth() < (o.w + 3) * o.size + 4 * border.size + 2.1 * rem;
 	changed.mode = newMode !== mode.hor;
 	mode.hor = newMode;
 
@@ -81,7 +85,7 @@ function setDimension(dim) {
 }
 
 function resize() {
-	Zone.style.maxWidth = `calc(${document.body.clientWidth}px + 3rem)`;
+	Zone.style.maxWidth = `calc(${bodyWidth()}px + 3rem)`;
 	CN.style.width = TP.style.width = "unset";
 	const { w } = store.board;
 	const r = getRenderSize();

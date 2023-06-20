@@ -26,7 +26,7 @@
 	<script src="main.js" defer></script>
 </head>
 
-<body class="m-3">
+<body class="m-0" v-scope :class="{split:state.split}">
 
 	<template id="copyBtn">
 		<button type="button" class="btn nowrap" :class="cls" @click="copy" :disabled="dis||state==1">
@@ -41,9 +41,9 @@
 		</div>
 	</template>
 
-	<div class="h-100 w-100 d-flex justify-content-center">
+	<main class="d-flex justify-content-center p-3">
 		<div class="flex-grow-0 text-start">
-			<div class="w-passive-100" v-scope>
+			<div class="w-passive-100">
 				<div class="row gx-3 mb-3">
 					<label class="col-auto col-form-label">FEN:</label>
 					<div class="col">
@@ -67,7 +67,7 @@
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
-								<div id="Squares" v-scope>
+								<div id="Squares">
 									<div class="play-mask" v-show="state.play.playing"></div>
 								</div>
 							</div>
@@ -88,7 +88,7 @@
 				</div>
 			</div>
 
-			<main v-scope v-cloak v-effect="saveSettings()" class="w-passive-100">
+			<div v-cloak v-effect="saveSettings()" class="w-passive-100">
 				<div class="card mb-4 d-sm-none" v-if="store.message.touchTip">
 					<div class="card-body">
 						<div class="mb-2">Double-tap on a square to manually edit it.</div>
@@ -184,6 +184,15 @@
 									<i class="fa-solid fa-download"></i>&ensp;Save image
 								</a>
 							</span>
+						</div>
+						<div class="mt-3 d-none d-md-block text-end" v-if="env.isTop">
+							<div class="d-inline-block">
+								<div class="form-check form-switch" v-effect="resize()">
+									<input class="form-check-input" type="checkbox" role="switch" id="sSplit"
+										   v-model="state.split">
+									<label class="form-check-label" for="sSplit">Split window</label>
+								</div>
+							</div>
 						</div>
 					</section>
 
@@ -498,7 +507,7 @@
 						</div>
 					</section>
 				</div>
-			</main>
+			</div>
 
 			<hr>
 			<div class="mb-4 row small">
@@ -510,7 +519,8 @@
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
 			</div>
 		</div>
-	</div>
+	</main>
+	<iframe v-if="state.split" src="."></iframe>
 
 	<canvas id="CanvasGhost" class="ghost" width="210" height="210"></canvas>
 	<canvas id="TemplateGhost" class="ghost"></canvas>

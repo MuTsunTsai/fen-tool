@@ -1,6 +1,6 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
-import { mode } from "./layout";
-import { store, state } from "./store";
+import { mode, setOption } from "./layout";
+import { store, state, assign } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard } from "./draw";
 import { assets, loadAsset } from "./asset";
@@ -20,7 +20,22 @@ const gCtx = CG.getContext("2d");
 const tCtx = TP.getContext("2d");
 const tgCtx = TPG.getContext("2d");
 
+const cache = {
+	except: undefined,
+	data: undefined,
+};
+
+addEventListener("storage", e => {
+	if(e.storageArea == localStorage && e.key == "settings") {
+		const settings = JSON.parse(localStorage.getItem("settings"));
+		assign(store, settings);
+		setOption({}, true);
+	}
+});
+
 export function drawTemplate(except) {
+	if(except) cache.except = except;
+	else except = cache.except;
 	const options = Object.assign({}, store.board, mode.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = mode.hor ? templateHorValues : templateValues;
 	drawBoard(tCtx, assets, squares, options);
@@ -45,10 +60,11 @@ export function drawTemplate(except) {
 }
 
 export async function draw(data) {
+	if(data) cache.data = data;
+	else data = cache.data || snapshot();
 	const options = store.board;
-	const squares = data || snapshot();
-	drawBoard(ctx, assets, squares, options);
-	if(!mode.dragging) drawBoard(gCtx, assets, squares, options, true);
+	drawBoard(ctx, assets, data, options);
+	if(!mode.dragging) drawBoard(gCtx, assets, data, options, true);
 
 	if(!mode.dragging) pushState();
 	if(location.protocol.startsWith("http")) {

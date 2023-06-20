@@ -30,13 +30,16 @@ const settings = {
 	}
 };
 
-for(const group in settings) {
-	for(const key in settings[group]) {
-		if(savedSettings[group] && savedSettings[group][key] !== undefined) {
-			settings[group][key] = savedSettings[group][key];
+export function assign(settings, savedSettings) {
+	for(const group in settings) {
+		for(const key in settings[group]) {
+			if(savedSettings[group] && savedSettings[group][key] !== undefined) {
+				settings[group][key] = savedSettings[group][key];
+			}
 		}
 	}
 }
+assign(settings, savedSettings);
 
 if(search.has("janko")) settings.feature.janko = true;
 
@@ -47,6 +50,7 @@ mm.onchange = () => state.isDark = mm.matches;
 
 export const state = reactive({
 	loading: true,
+	split: false,
 	isDark: mm.matches,
 	play: {
 		playing: false,
