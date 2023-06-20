@@ -67,7 +67,9 @@
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
-								<div id="Squares"></div>
+								<div id="Squares" v-scope>
+									<div class="play-mask" v-show="state.play.playing"></div>
+								</div>
 							</div>
 						</div>
 						<div id="DragZone" class="flex-grow-0 pb-4">

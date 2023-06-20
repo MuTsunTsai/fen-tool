@@ -93,6 +93,18 @@ section {
 	grid-row-gap: 0px;
 	border: 1px solid transparent;
 	position: relative;
+	isolation: isolate;
+}
+
+.play-mask {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	background: black;
+	opacity: 0.4;
 }
 
 #PV,
@@ -233,6 +245,10 @@ span.btn-secondary.active {
 
 	a.btn {
 		color: inherit !important;
+	}
+
+	.play-mask {
+		opacity: 0.5;
 	}
 
 	.form-control,
