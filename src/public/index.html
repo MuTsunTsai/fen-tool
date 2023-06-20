@@ -410,7 +410,9 @@
 						</template>
 						<template v-else>
 							<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;
-							<button class="btn btn-secondary" @click="PLAY.reset">Reset settings</button>
+							<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset">
+								<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
+							</button>
 							<div class="mt-2 row">
 								<div class="col-12 col-md-6">
 									<div class="mb-2">
@@ -442,7 +444,7 @@
 									<div class="row mb-2">
 										<label class="col-auto col-form-label">En passant square: </label>
 										<div class="col">
-											<input type="text" class="form-control" v-model="state.play.enPassant">
+											<input type="text" class="form-control" maxlength="2" v-model="state.play.enPassant">
 										</div>
 									</div>
 									<div class="row mb-2">
@@ -456,6 +458,9 @@
 											<input type="number" class="form-control" min="1"
 												   v-model.number="state.play.fullMove">
 										</div>
+									</div>
+									<div class="text-end">
+										<button class="btn btn-secondary" @click="PLAY.reset">Reset settings</button>
 									</div>
 								</div>
 							</div>
