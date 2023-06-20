@@ -61,7 +61,7 @@ export function confirmPromotion(from, to) {
 		sync();
 	}
 	state.play.pendingPromotion = false;
-	drawTemplate();
+	drawTemplate([]);
 }
 
 export function checkPromotion(from, to) {
@@ -101,7 +101,7 @@ export const PLAY = {
 				history: []
 			});
 			toggleReadOnly(true);
-			drawTemplate();
+			drawTemplate([]);
 		} catch {
 			alert("This board is not playable.");
 		}
@@ -111,7 +111,7 @@ export const PLAY = {
 		state.play.game = "";
 		parseFullFEN(chess.fen());
 		toggleReadOnly(false);
-		drawTemplate();
+		drawTemplate([]);
 	},
 	goto(h) {
 		const fen = h ? h.after : state.play.history[0].before;
