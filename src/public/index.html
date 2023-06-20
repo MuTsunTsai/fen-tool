@@ -67,7 +67,7 @@
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
-								<div id="Squares">
+								<div id="Squares" :style="state.play.playing?'isolation: isolate;':''">
 									<div class="play-mask" v-show="state.play.playing"></div>
 								</div>
 							</div>
