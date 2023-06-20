@@ -377,6 +377,10 @@
 								<span class="btn step px-1 py-0 me-3" @click="PLAY.goto()"
 									  :class="[{active:-1==state.play.moveNumber}, state.isDark?'btn-secondary':'btn-light']">Beginning</span>
 								<span v-for="(h,i) in state.play.history">
+									<span v-if="state.play.history[i-1]&&state.play.history[i-1].color==h.color">
+										<span v-if="h.color=='w'"> ... </span>
+										<span v-else>{{PLAY.number(h)}}...</span>
+									</span>
 									<span v-if="h.color=='b'&&i==0" class="ms-2">{{PLAY.number(h)}}...</span>
 									<span v-if="h.color=='w'" class="ms-2">{{PLAY.number(h)}}.</span>
 									<span class="btn step px-1 py-0" @click="PLAY.goto(h)"
@@ -428,18 +432,22 @@
 										<span class="me-3">Turn:</span>
 										<div class="form-check d-inline-block me-3">
 											<input class="form-check-input" type="radio" :checked="state.play.turn=='w'"
-												   @change="state.play.turn='w'" name="TURN" id="wTurn">
+												   :disabled="state.play.pass" @change="state.play.turn='w'" name="TURN"
+												   id="wTurn">
 											<label class="form-check-label" for="wTurn">
 												White
 											</label>
 										</div>
-										<div class="form-check d-inline-block">
+										<div class="form-check d-inline-block me-3">
 											<input class="form-check-input" type="radio" :checked="state.play.turn=='b'"
-												   @change="state.play.turn='b'" name="TURN" id="bTurn">
+												   :disabled="state.play.pass" @change="state.play.turn='b'" name="TURN"
+												   id="bTurn">
 											<label class="form-check-label" for="bTurn">
 												Black
 											</label>
 										</div>
+										<span v-scope="Checkbox('state.play.pass', 'Allow passing move')"
+											  class="d-inline-block"></span>
 									</div>
 									<div class="mb-2">
 										Castling:

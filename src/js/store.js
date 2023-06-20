@@ -68,6 +68,7 @@ export const state = reactive({
 		enPassant: "",
 		halfMove: 0,
 		fullMove: 1,
+		pass: false,
 	}
 });
 

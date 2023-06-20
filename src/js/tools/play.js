@@ -24,10 +24,19 @@ export function move(from, to, promotion) {
 		from = toCoordinate(from);
 		to = toCoordinate(to);
 		const move = chess.move({ from, to, promotion });
+		const p = state.play;
 		if(chess.isDraw()) move.san += "=";
-		state.play.over = overState();
-		state.play.history.length = ++state.play.moveNumber;
-		state.play.history.push(move);
+		p.over = overState();
+		p.history.length = ++p.moveNumber;
+
+		const lastMove = p.history[p.history.length - 1];
+		if(state.play.pass && lastMove && move.color == lastMove.color && move.color == "w") {
+			move.before = move.before.replace(/\d+$/, n => Number(n) + 1);
+			move.after = move.after.replace(/\d+$/, n => Number(n) + 1);
+			chess.load(move.after);
+		}
+
+		p.history.push(move);
 		return true;
 	} catch {
 		return false;
@@ -56,6 +65,7 @@ export function confirmPromotion(from, to) {
 }
 
 export function checkPromotion(from, to) {
+	if(state.play.pass && getSquareColor(from) != chess.turn()) chess.switchSide();
 	if(!chess.checkPromotion(toCoordinate(from), toCoordinate(to))) return false;
 	pendingTarget = to;
 	state.play.pendingPromotion = true;
@@ -63,11 +73,14 @@ export function checkPromotion(from, to) {
 	return true;
 }
 
+function getSquareColor(index) {
+	return chess.get(toCoordinate(index)).color;
+}
+
 export function checkDragPrecondition(index) {
 	if(state.play.pendingPromotion) return false;
 	if(chess.isGameOver()) return false;
-	const v = squares[index].value;
-	if((v.toLowerCase() == v) != (chess.turn() == "b")) return false;
+	if(!state.play.pass && getSquareColor(index) != chess.turn()) return false;
 	return true;
 }
 
@@ -121,8 +134,12 @@ export const PLAY = {
 		const history = state.play.history;
 		if(history.length == 0) return "";
 		let result = "";
-		if(history[0].color == "b") result += PLAY.number(h) + "...";
-		for(const h of history) {
+		if(history[0].color == "b") result += "1...";
+		for(const [i, h] of history.entries()) {
+			if(history[i - 1] && history[i - 1].color == h.color) {
+				if(h.color == "w") result += "... ";
+				else result += PLAY.number(h) + "...";
+			}
 			if(h.color == "w") result += PLAY.number(h) + ". ";
 			result += PLAY.format(h) + " ";
 		}

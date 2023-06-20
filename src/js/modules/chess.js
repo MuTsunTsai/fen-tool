@@ -6,4 +6,11 @@ export class Chess extends ChessBase {
 		const moves = this.moves({ verbose: true });
 		return moves.some(m => m.from == from && m.to == to && m.flags.includes("p"));
 	}
+
+	switchSide() {
+		const fen = this.fen().split(" ");
+		if(fen[1] == "b") fen[1] = "w";
+		else fen[1] = "b";
+		this.load(fen.join(" "));
+	}
 }
