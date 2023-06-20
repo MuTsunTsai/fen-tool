@@ -110,11 +110,13 @@ function resize() {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
 		EditZone.style.textAlign = mode.hor ? "center" : "start";
+		Zone.classList.add("collapse");
 		mode.collapse = true;
 	} else {
 		EditZone.style.marginTop = "0";
 		EditZone.style.width = "unset";
 		EditZone.style.textAlign = "unset";
+		Zone.classList.remove("collapse");
 		mode.collapse = false;
 	}
 }

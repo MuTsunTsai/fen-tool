@@ -63,11 +63,11 @@
 
 			<div class="text-center">
 				<div class="d-inline-blocck" style="overflow: hidden;">
-					<div id="Zone" class="d-inline-flex justify-content-center text-center" style="flex-wrap: wrap-reverse;">
+					<div id="Zone" class="d-inline-flex justify-content-center text-center collapse" style="flex-wrap: wrap-reverse;">
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
-								<div id="Squares" :style="state.play.playing?'isolation: isolate;':''">
+								<div id="Squares">
 									<div class="play-mask" v-show="state.play.playing"></div>
 								</div>
 							</div>
