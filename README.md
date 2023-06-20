@@ -56,6 +56,8 @@ that can be paste directly into posts.
 This tool allows you to play on the setup board and record moves.
 Only orthodox chess is supported.
 
+Tip: You can use left/right keys (or A/D keys) to quickly navigate move history.
+
 
 <br>
 
