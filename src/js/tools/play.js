@@ -9,6 +9,16 @@ let pendingTarget;
 const wMask = [4, 7, 10, 13];
 const bMask = [3, 6, 9, 12];
 
+addEventListener("keydown", e => {
+	const p = state.play;
+	const n = p.moveNumber;
+	if(!p.playing) return;
+	const k = e.key;
+	if((k == "a" || k == "ArrowLeft") && n > -1) n--;
+	if((k == "d" || k == "ArrowRight") && n < p.history.length - 1) n++;
+	PLAY.goto(p.history[n]);
+});
+
 export function move(from, to, promotion) {
 	try {
 		from = toCoordinate(from);
