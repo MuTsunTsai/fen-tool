@@ -47,7 +47,7 @@
 				<div class="row gx-3 mb-3">
 					<label class="col-auto col-form-label">FEN:</label>
 					<div class="col">
-						<input type="text" class="form-control" :readonly="state.play.playing" id="FEN" onchange="FEN.update()">
+						<input type="text" class="form-control" :readonly="state.play.playing||undefined" id="FEN" onchange="FEN.update()">
 					</div>
 					<div v-cloak class="col-auto" v-if="env.canCopy">
 						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
@@ -339,7 +339,7 @@
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">Problem Id:</label>
 							<div class="col">
-								<input type="text" class="form-control" id="DB" :readonly="state.play.playing">
+								<input type="text" class="form-control" id="DB" :readonly="state.play.playing||undefined">
 							</div>
 							<div class="col-auto">
 								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)"

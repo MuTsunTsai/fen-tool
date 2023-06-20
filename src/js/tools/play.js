@@ -11,7 +11,7 @@ const bMask = [3, 6, 9, 12];
 
 addEventListener("keydown", e => {
 	const p = state.play;
-	const n = p.moveNumber;
+	let n = p.moveNumber;
 	if(!p.playing) return;
 	const k = e.key;
 	if((k == "a" || k == "ArrowLeft") && n > -1) n--;
