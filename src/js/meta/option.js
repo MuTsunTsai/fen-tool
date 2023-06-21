@@ -10,6 +10,7 @@ export const defaultOption = {
 	w: 8,
 	h: 8,
 	set: "1echecs",
+	collapse: false,
 };
 
 export const BORDER = /^\d+(,\d+)*$/;

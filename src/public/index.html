@@ -231,37 +231,41 @@
 								</div>
 							</div>
 							<div class="col flex-grow-1 mb-2" style="flex-basis: 22rem;">
-								<div class="row gx-3 mb-2">
-									<div class="col">
-										<div class="input-group">
-											<button class="btn btn-secondary px-2" :disabled="store.board.w==1" type="button"
-													onclick="Layout.setWidth(-1)">
-												<i class="fa-solid fa-minus"></i>
-											</button>
-											<input type="number" class="form-control text-center px-0" min="1" title="Files"
-												   :value="store.board.w" onchange="Layout.setWidth(this)"
-												   onfocus="this.select()">
-											<button class="btn btn-secondary px-2" type="button" onclick="Layout.setWidth(1)">
-												<i class="fa-solid fa-plus"></i>
-											</button>
+								<div class="row gx-3">
+									<div class="col mb-2" style="flex-basis: 14rem; flex-grow: 10000;">
+										<div class="row gx-3">
+											<div class="col">
+												<div class="input-group">
+													<button class="btn btn-secondary px-2" :disabled="store.board.w==1" type="button"
+															onclick="Layout.setWidth(-1)">
+														<i class="fa-solid fa-minus"></i>
+													</button>
+													<input type="number" class="form-control text-center px-0" min="1" title="Files"
+														   :value="store.board.w" onchange="Layout.setWidth(this)"
+														   onfocus="this.select()">
+													<button class="btn btn-secondary px-2" type="button" onclick="Layout.setWidth(1)">
+														<i class="fa-solid fa-plus"></i>
+													</button>
+												</div>
+											</div>
+											<label class="col-auto col-form-label">x</label>
+											<div class="col">
+												<div class="input-group">
+													<button class="btn btn-secondary px-2" :disabled="store.board.h==1" type="button"
+															onclick="Layout.setHeight(-1)">
+														<i class="fa-solid fa-minus"></i>
+													</button>
+													<input type="number" class="form-control text-center px-0" min="1" title="Rows"
+														   :value="store.board.h" onchange="Layout.setHeight(this)"
+														   onfocus="this.select()">
+													<button class="btn btn-secondary px-2" type="button" onclick="Layout.setHeight(1)">
+														<i class="fa-solid fa-plus"></i>
+													</button>
+												</div>
+											</div>
 										</div>
 									</div>
-									<label class="col-auto col-form-label">x</label>
-									<div class="col">
-										<div class="input-group">
-											<button class="btn btn-secondary px-2" :disabled="store.board.h==1" type="button"
-													onclick="Layout.setHeight(-1)">
-												<i class="fa-solid fa-minus"></i>
-											</button>
-											<input type="number" class="form-control text-center px-0" min="1" title="Rows"
-												   :value="store.board.h" onchange="Layout.setHeight(this)"
-												   onfocus="this.select()">
-											<button class="btn btn-secondary px-2" type="button" onclick="Layout.setHeight(1)">
-												<i class="fa-solid fa-plus"></i>
-											</button>
-										</div>
-									</div>
-									<div class="col-auto">
+									<div class="col mb-2 text-end">
 										<button type="button" class="btn btn-secondary"
 												onclick="Layout.setDimension({w:8,h:8})">Reset</button>
 									</div>
@@ -283,6 +287,7 @@
 											   v-model.number="store.board.knightOffset" @input="redraw()">
 									</div>
 								</div>
+								<div class="d-none d-md-block" v-scope="Checkbox('board.collapse', 'Always collapse boards', resize)"></div>
 							</div>
 						</div>
 					</section>

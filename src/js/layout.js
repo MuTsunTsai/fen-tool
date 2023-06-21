@@ -107,6 +107,12 @@ function resize() {
 	setSquareSize(r.s);
 
 	const rem = getREM();
+	if(store.board.collapse) {
+		Zone.style.width = "100%";
+		Zone.style.width = (DragZone.clientWidth + 4 * rem) + "px";
+	} else {
+		Zone.style.width = "unset";
+	}
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
