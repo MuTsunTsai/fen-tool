@@ -3,6 +3,7 @@ import { getRenderSize, search, state, store } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { BORDER, parseBorder } from "./meta/option";
+import { env } from "./meta/env";
 
 export const mode = {
 	hor: false,
@@ -126,7 +127,10 @@ function getREM() {
 }
 
 export async function initLayout() {
-	window.addEventListener("resize", () => setOption({}));
+	window.addEventListener("resize", () => {
+		setOption({});
+		updateSelf();
+	});
 	const fen = search.get("fen");
 	await setOption({}, true);
 	callback.draw = draw;
@@ -137,6 +141,16 @@ export async function initLayout() {
 		toFEN();
 	}
 	setTimeout(resize, 1000); // This is needed on old Safari
+}
+
+window.resizeIframe = function() {
+	const iframe = document.getElementsByTagName("iframe")[0];
+	if(!iframe) return;
+	iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
+}
+
+export function updateSelf() {
+	if(!env.isTop) parent.resizeIframe();
 }
 
 window.Layout = {
