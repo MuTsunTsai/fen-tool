@@ -203,8 +203,21 @@ label[for] {
 }
 
 @media (max-width: 1151.9px) {
-	.split .col-sm-6 {
-		width: 100% !important;
+	.split {
+		.col-sm-4,
+		.col-sm-6,
+		.col-sm-8 {
+			width: 100% !important;
+		}
+	}
+}
+
+@media (max-width: 1535.9px) {
+	.split {
+		.col-md {
+			flex: 0 0 auto;
+			width: 100% !important;
+		}
 	}
 }
 
