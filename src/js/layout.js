@@ -127,10 +127,7 @@ function getREM() {
 }
 
 export async function initLayout() {
-	window.addEventListener("resize", () => {
-		setOption({});
-		updateSelf();
-	});
+	window.addEventListener("resize", () => setOption({}));
 	const fen = search.get("fen");
 	await setOption({}, true);
 	callback.draw = draw;
@@ -143,14 +140,15 @@ export async function initLayout() {
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
 
+if(!env.isTop) {
+	const resizeObserver = new ResizeObserver(e => parent.resizeIframe());
+	resizeObserver.observe(document.body);
+}
+
 window.resizeIframe = function() {
 	const iframe = document.getElementsByTagName("iframe")[0];
 	if(!iframe) return;
 	iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
-}
-
-export function updateSelf() {
-	if(!env.isTop) parent.resizeIframe();
 }
 
 window.Layout = {

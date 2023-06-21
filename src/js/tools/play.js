@@ -1,4 +1,3 @@
-import { updateSelf } from "../layout";
 import { toCoordinate } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
@@ -38,7 +37,6 @@ export function move(from, to, promotion) {
 		}
 
 		p.history.push(move);
-		updateSelf(); // playing could change content size
 		return true;
 	} catch {
 		return false;
@@ -104,7 +102,6 @@ export const PLAY = {
 			});
 			toggleReadOnly(true);
 			drawTemplate([]);
-			updateSelf(); // playing could change content size
 		} catch {
 			alert("This board is not playable.");
 		}
