@@ -20,14 +20,16 @@ addEventListener("keydown", e => {
 });
 
 export function move(from, to, promotion) {
+	const p = state.play;
+	const fen = chess.fen();
+	const cache = p.history.concat();
+
 	try {
 		from = toCoordinate(from);
 		to = toCoordinate(to);
 		const move = chess.move({ from, to, promotion });
-		const p = state.play;
 		if(chess.isDraw()) move.san += "=";
-		p.over = overState();
-		p.history.length = ++p.moveNumber;
+		p.history.length = p.moveNumber + 1;
 
 		const lastMove = p.history[p.history.length - 1];
 		if(state.play.pass && lastMove && move.color == lastMove.color && move.color == "w") {
@@ -36,9 +38,13 @@ export function move(from, to, promotion) {
 			chess.load(move.after);
 		}
 
+		p.over = overState();
 		p.history.push(move);
+		p.moveNumber++;
 		return true;
 	} catch {
+		p.history = cache;
+		chess.load(fen);
 		return false;
 	}
 }
@@ -149,6 +155,7 @@ export const PLAY = {
 		return h.before.match(/\d+$/)[0];
 	},
 	format(h) {
+		if(!h) console.log(state.play.history);
 		let san = h.san;
 		const symbol = store.PLAY.symbol == "unicode" ? unicode :
 			store.PLAY.symbol == "german" ? german : null;
