@@ -142,6 +142,13 @@ export function orthodoxFEN() {
 		if(value != "" && !value.match(/^[kqbnrp]$/i)) return null;
 	}
 	const p = state.play;
+	
+	if(!p.enPassant.match(/^[a-h][35]$/)) p.enPassant = ""; // Ignore invalid squares
+	if(p.pass && p.enPassant && (p.enPassant[1] == "3") != (p.turn == "b")) {
+		// In passing mode, auto-correct the turn if ep is given
+		p.turn = p.turn == "b" ? "w" : "b";
+	}
+
 	const ss = normalSnapshot();
 	return `${makeFEN(ss, 8, 8)} ${p.turn} ${getCastle(ss)} ${p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
 }
@@ -151,6 +158,7 @@ function getCastle(snapshot) {
 	const c = state.play.castle;
 	// Chess.js doesn't really check if the castling parameters make sense;
 	// so we have to double check the parameters here.
+	// TODO: support Chess960 here
 	if(snapshot[60] == "K") {
 		if(c.K && snapshot[63] == "R") result += "K";
 		if(c.Q && snapshot[56] == "R") result += "Q";
