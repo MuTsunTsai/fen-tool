@@ -140,15 +140,23 @@ export async function initLayout() {
 	setTimeout(resize, 1000); // This is needed on old Safari
 }
 
+// Split mode RWD
 if(!env.isTop) {
-	const resizeObserver = new ResizeObserver(e => parent.resizeIframe());
-	resizeObserver.observe(document.body);
-}
-
-window.resizeIframe = function() {
-	const iframe = document.getElementsByTagName("iframe")[0];
-	if(!iframe) return;
-	iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
+	if(typeof ResizeObserver !== "undefined") {
+		const observer = new ResizeObserver(e => parent.resizeIframe());
+		observer.observe(document.body);
+	} else {
+		// fallback to MutationObserver
+		const observer = new MutationObserver(e => parent.resizeIframe());
+		observer.observe(document.body, { childList: true });
+	}
+	parent.resizeIframe(); // init
+} else {
+	window.resizeIframe = function() {
+		const iframe = document.getElementsByTagName("iframe")[0];
+		if(!iframe) return;
+		iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
+	}
 }
 
 window.Layout = {
