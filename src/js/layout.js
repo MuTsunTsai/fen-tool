@@ -43,16 +43,6 @@ export async function setOption(o, force) {
 	const shouldDrawBoard = shouldRedraw || dimChange;
 	const shouldDrawTemplate = shouldRedraw || changed.mode;
 
-	if(shouldDrawBoard) {
-		const bw = o.w * o.size + 2 * border.size;
-		const bh = o.h * o.size + 2 * border.size;
-		if(CN.width !== bw || CN.height !== bh) {
-			SN.width = CG.width = CN.width = bw;
-			SN.height = CG.height = CN.height = bh;
-		}
-		drawEmpty(SN.getContext("2d"));
-	}
-
 	if(shouldDrawTemplate) {
 		let tw = 3 * o.size + 2 * border.size;
 		let th = 8 * o.size + 2 * border.size;
@@ -68,6 +58,16 @@ export async function setOption(o, force) {
 			TPG.width = TP.width = tw;
 			TPG.height = TP.height = th;
 		}
+	}
+
+	if(shouldDrawBoard) {
+		const bw = o.w * o.size + 2 * border.size;
+		const bh = o.h * o.size + 2 * border.size;
+		if(CN.width !== bw || CN.height !== bh) {
+			SN.width = CG.width = CN.width = bw;
+			SN.height = CG.height = CN.height = bh;
+		}
+		drawEmpty(SN.getContext("2d"));
 	}
 
 	resize();
@@ -99,13 +99,6 @@ function resize() {
 	}
 	container.style.borderWidth = r.b + "px";
 
-	CG.style.width = CN.clientWidth + "px";
-	CG.style.height = CN.clientHeight + "px";
-	TPG.style.width = TP.clientWidth + "px";
-	TPG.style.height = TP.clientHeight + "px";
-
-	setSquareSize(r.s);
-
 	const rem = getREM();
 	if(store.board.collapse) {
 		Zone.style.width = "120%"; // First we enlarge the whole thing, to correctly measure DragZone.
@@ -113,6 +106,14 @@ function resize() {
 	} else {
 		Zone.style.width = "unset";
 	}
+
+	CG.style.width = CN.clientWidth + "px";
+	CG.style.height = CN.clientHeight + "px";
+	TPG.style.width = TP.clientWidth + "px";
+	TPG.style.height = TP.clientHeight + "px";
+
+	setSquareSize(r.s);
+
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
