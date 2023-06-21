@@ -63,7 +63,8 @@
 
 			<div class="text-center">
 				<div class="d-inline-blocck" style="overflow: hidden;">
-					<div id="Zone" class="d-inline-flex justify-content-center text-center collapse" style="flex-wrap: wrap-reverse;">
+					<div id="Zone" class="d-inline-flex justify-content-center text-center collapse"
+						 style="flex-wrap: wrap-reverse;">
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
@@ -89,24 +90,6 @@
 			</div>
 
 			<div v-cloak v-effect="saveSettings()" class="w-passive-100">
-				<div class="card mb-4 d-sm-none" v-if="store.message.touchTip">
-					<div class="card-body">
-						<div class="mb-2">Double-tap on a square to manually edit it.</div>
-						<div class="text-end">
-							<button class="btn btn-info" @click="store.message.touchTip=false">Got it!</button>
-						</div>
-					</div>
-				</div>
-
-				<div class="card mb-4" v-if="store.message.textShortcut">
-					<div class="card-body">
-						<div class="mb-2">You can now directly input text of 1 or 2 chars into a square, and it will be
-							automatically converted to FFEN syntax if it doesn't match existing syntax.</div>
-						<div class="text-end">
-							<button class="btn btn-info" @click="store.message.textShortcut=false">Got it!</button>
-						</div>
-					</div>
-				</div>
 
 				<div class="mb-3 nav-container">
 					<ul class="nav nav-tabs" style="flex-wrap: nowrap;">
@@ -198,7 +181,7 @@
 
 					<section :class="{show:tab==1}">
 						<div class="row mb-2">
-							<div class="col-12 col-sm-6">
+							<div class="col flex-grow-1" style="flex-basis: 18rem;">
 								<div class="row gx-3 mb-2">
 									<label class="col-auto col-form-label">Chess set:</label>
 									<div class="col">
@@ -247,7 +230,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-12 col-sm-6 mb-2">
+							<div class="col flex-grow-1 mb-2" style="flex-basis: 22rem;">
 								<div class="row gx-3 mb-2">
 									<div class="col">
 										<div class="input-group">
@@ -429,7 +412,7 @@
 								<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 							</button>
 							<div class="mt-2 gx-3 row">
-								<div class="col-12 col-sm-6">
+								<div class="col flex-grow-1" style="flex-basis: 22rem;">
 									<div class="mb-2">
 										<span class="me-3">Turn:</span>
 										<div class="form-check d-inline-block me-3">
@@ -467,7 +450,7 @@
 										</span>
 									</div>
 								</div>
-								<div class="col-12 col-sm-6">
+								<div class="col flex-grow-1" style="flex-basis: 22rem;">
 									<div class="row gx-3 mb-2">
 										<label class="col-auto col-form-label">En passant square: </label>
 										<div class="col">
@@ -504,14 +487,14 @@
 
 					<section :class="{show:tab==4}" v-if="env.isTaiwan">
 						<div class="row gx-3">
-							<div class="col-12 col-sm-8 mb-3">
+							<div class="col flex-grow-1 mb-3" style="flex-basis: max-content;">
 								<div v-scope="Checkbox('BBS.Id', 'Include database Id')"></div>
 								<div v-scope="Checkbox('BBS.coordinates', 'Include Coordinates')"></div>
 								<div v-scope="Checkbox('BBS.notes', 'Include Notes')"></div>
 								<div v-scope="Checkbox('BBS.uncoloredNotes', 'Uncolored Note')"></div>
 								<div v-scope="Checkbox('BBS.redBlue', 'Use Red and Blue in BBS Code')"></div>
 							</div>
-							<div class="col-12 col-sm-4 text-end">
+							<div class="col flex-grow-1 text-end">
 								<span v-scope="CopyButton('Copy BBS Code', BBS.copy, 'btn-primary')"></span>
 							</div>
 						</div>
@@ -521,10 +504,10 @@
 
 			<hr>
 			<div class="mb-4 row small">
-				<div class="col-12 col-md">
-					For more information and API, see <a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a>
-					of
-					this tool on GitHub.
+				<div class="col flex-grow-1" style="flex-basis: max-content;">
+					For more information and API, see
+					<a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a>
+					of this tool on GitHub.
 				</div>
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
 			</div>
