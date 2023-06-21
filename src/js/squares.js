@@ -55,7 +55,7 @@ function squareOnBlur() {
 	// We check the input again on blur, as some browser extensions could
 	// programmatically modify its value without triggering onchange event.
 	if(checkInputCore(this)) toFEN();
-	else if(mode.collapse) draw();
+	else if(mode.collapse) draw(snapshot());
 }
 
 function checkInput() {
