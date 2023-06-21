@@ -142,12 +142,15 @@ export function orthodoxFEN() {
 		if(value != "" && !value.match(/^[kqbnrp]$/i)) return null;
 	}
 	const p = state.play;
-	
+
 	if(!p.enPassant.match(/^[a-h][35]$/)) p.enPassant = ""; // Ignore invalid squares
 	if(p.pass && p.enPassant && (p.enPassant[1] == "3") != (p.turn == "b")) {
 		// In passing mode, auto-correct the turn if ep is given
 		p.turn = p.turn == "b" ? "w" : "b";
 	}
+
+	if(!Number.isSafeInteger(p.halfMove) || p.halfMove < 0) p.halfMove = 0;
+	if(!Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
 
 	const ss = normalSnapshot();
 	return `${makeFEN(ss, 8, 8)} ${p.turn} ${getCastle(ss)} ${p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
