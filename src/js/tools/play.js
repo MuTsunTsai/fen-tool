@@ -108,8 +108,8 @@ export const PLAY = {
 			});
 			toggleReadOnly(true);
 			drawTemplate([]);
-		} catch {
-			alert("This board is not playable.");
+		} catch(e) {
+			alert("This board is not playable:" + e.message.replace(/^.+:/, "").replace(/[^.]$/, "$&."));
 		}
 	},
 	exit() {

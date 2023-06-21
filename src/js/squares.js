@@ -149,6 +149,8 @@ export function orthodoxFEN() {
 function getCastle(snapshot) {
 	let result = "";
 	const c = state.play.castle;
+	// Chess.js doesn't really check if the castling parameters make sense;
+	// so we have to double check the parameters here.
 	if(snapshot[60] == "K") {
 		if(c.K && snapshot[63] == "R") result += "K";
 		if(c.Q && snapshot[56] == "R") result += "Q";
