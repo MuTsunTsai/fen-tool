@@ -108,8 +108,8 @@ function resize() {
 
 	const rem = getREM();
 	if(store.board.collapse) {
-		Zone.style.width = "100%";
-		Zone.style.width = (DragZone.clientWidth + 4 * rem) + "px";
+		Zone.style.width = "120%"; // First we enlarge the whole thing, to correctly measure DragZone.
+		Zone.style.width = (DragZone.clientWidth + 4 * rem) + "px"; // Then we set the size by DragZone.
 	} else {
 		Zone.style.width = "unset";
 	}
