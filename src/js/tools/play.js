@@ -35,8 +35,8 @@ export function move(from, to, promotion) {
 		if(state.play.pass && lastMove && move.color == lastMove.color && move.color == "w") {
 			move.before = move.before.replace(/\d+$/, n => Number(n) + 1);
 			move.after = move.after.replace(/\d+$/, n => Number(n) + 1);
-			chess.load(move.after);
 		}
+		chess.load(move.after); // Prevent "capture king" bug of chess.js
 
 		p.over = overState();
 		p.history.push(move);

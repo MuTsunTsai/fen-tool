@@ -142,13 +142,21 @@ export function orthodoxFEN() {
 		if(value != "" && !value.match(/^[kqbnrp]$/i)) return null;
 	}
 	const p = state.play;
-	return `${makeFEN(normalSnapshot(), 8, 8)} ${p.turn} ${getCastle()} ${p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
+	const ss = normalSnapshot();
+	return `${makeFEN(ss, 8, 8)} ${p.turn} ${getCastle(ss)} ${p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
 }
 
-function getCastle() {
+function getCastle(snapshot) {
 	let result = "";
-	const keys = ["K", "Q", "k", "q"];
-	for(const key of keys) if(state.play.castle[key]) result += key;
+	const c = state.play.castle;
+	if(snapshot[60] == "K") {
+		if(c.K && snapshot[63] == "R") result += "K";
+		if(c.Q && snapshot[56] == "R") result += "Q";
+	}
+	if(snapshot[4] == "k") {
+		if(c.k && snapshot[7] == "r") result += "k";
+		if(c.q && snapshot[0] == "r") result += "q";
+	}
 	return result == "" ? "-" : result;
 }
 
