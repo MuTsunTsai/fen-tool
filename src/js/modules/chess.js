@@ -136,12 +136,11 @@ export function parseMoves(text) {
 		.replace(/;.+$/gm, "") // end-of-line comment
 		.replace(/\b(\d+)\./g, "$1 .")
 		.replace(/\.+/g, m => m.length > 2 ? "..." : "");
-	const moves = text
-		.match(/\.{3}|\S+/g)
-		.filter(m => !m.match(/^\d+$/)); // ignore move numbers
+	let moves = text.match(/\.{3}|\S+/g) ?? [];
+	moves = moves.filter(m => !m.match(/^\d+$/)); // ignore move numbers
 
 	const last = moves[moves.length - 1];
-	if(ends.includes(last)) moves.pop();
+	if(last && ends.includes(last)) moves.pop();
 
 	if(moves[0] == "...") moves.shift();
 	return moves;
