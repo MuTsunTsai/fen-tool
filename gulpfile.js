@@ -99,7 +99,6 @@ gulp.task("sw", () =>
 			],
 			globIgnores: [
 				"sw.js",
-				"modules/**/*", // Not included on purpose
 			],
 		}))
 		.pipe($.terser())
