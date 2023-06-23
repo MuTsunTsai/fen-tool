@@ -3,6 +3,7 @@ import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
 import { state, store } from "../store"
 
+let module;
 let chess;
 let pendingTarget;
 
@@ -20,39 +21,9 @@ addEventListener("keydown", e => {
 });
 
 export function move(from, to, promotion) {
-	const p = state.play;
-	const fen = chess.fen();
-	const cache = p.history.concat();
-
-	try {
-		from = toCoordinate(from);
-		to = toCoordinate(to);
-		const move = chess.move({ from, to, promotion });
-		if(chess.isDraw()) move.san += "=";
-		p.history.length = p.moveNumber + 1;
-
-		const lastMove = p.history[p.history.length - 1];
-		if(state.play.pass && lastMove && move.color == lastMove.color && move.color == "w") {
-			move.before = move.before.replace(/\d+$/, n => Number(n) + 1);
-			move.after = move.after.replace(/\d+$/, n => Number(n) + 1);
-		}
-		chess.load(move.after); // Prevent "capture king" bug of chess.js
-
-		p.over = overState();
-		p.history.push(move);
-		p.moveNumber++;
-		return true;
-	} catch {
-		p.history = cache;
-		chess.load(fen);
-		return false;
-	}
-}
-
-function overState() {
-	if(chess.isCheckmate()) return 1;
-	if(chess.isDraw()) return 2;
-	return 0;
+	from = toCoordinate(from);
+	to = toCoordinate(to);
+	return chess.move({ from, to, promotion });
 }
 
 export function sync() {
@@ -90,6 +61,25 @@ export function checkDragPrecondition(index) {
 	return true;
 }
 
+async function loadModule() {
+	if(!module) {
+		module = await import("./modules/chess.js");
+		module.store.state = state.play;
+		module.store.options = store.PLAY;
+		chess = new module.Chess();
+	}
+}
+
+function start() {
+	Object.assign(state.play, {
+		playing: true,
+		moveNumber: -1,
+		pendingPromotion: false,
+	});
+	toggleReadOnly(true);
+	drawTemplate([]);
+}
+
 export const PLAY = {
 	async start() {
 		const fen = orthodoxFEN();
@@ -97,17 +87,13 @@ export const PLAY = {
 			alert("Only orthodox chess is supported.");
 			return;
 		}
+
 		try {
-			chess = new (await import("./modules/chess.js")).Chess(fen);
-			Object.assign(state.play, {
-				playing: true,
-				moveNumber: -1,
-				over: overState(),
-				pendingPromotion: false,
-				history: []
-			});
-			toggleReadOnly(true);
-			drawTemplate([]);
+			await loadModule();
+			chess.init(fen);
+			state.play.history = [];
+			state.play.over = chess.overState();
+			start();
 		} catch(e) {
 			alert("This board is not playable:" + e.message.replace(/^.+:/, "").replace(/[^.]$/, "$&."));
 		}
@@ -120,11 +106,7 @@ export const PLAY = {
 		drawTemplate([]);
 	},
 	goto(h) {
-		const fen = h ? h.after : state.play.history[0].before;
-		chess.load(fen);
-		state.play.over = overState();
-		state.play.moveNumber = state.play.history.indexOf(h);
-		setFEN(fen);
+		setFEN(chess.goto(h));
 	},
 	reset() {
 		Object.assign(state.play, {
@@ -137,52 +119,27 @@ export const PLAY = {
 		for(const key of keys) state.play.castle[key] = true;
 	},
 	copyGame() {
-		const history = state.play.history;
-		if(history.length == 0) return "";
-		let result = "";
-		if(history[0].color == "b") result += "1...";
-		for(const [i, h] of history.entries()) {
-			if(history[i - 1] && history[i - 1].color == h.color) {
-				if(h.color == "w") result += "... ";
-				else result += PLAY.number(h) + "...";
-			}
-			if(h.color == "w") result += PLAY.number(h) + ". ";
-			result += PLAY.format(h) + " ";
-		}
-		return result.trimEnd();
+		return chess.copyGame();
+	},
+	copyPGN() {
+		return chess.copyPGN();
 	},
 	number(h) {
-		return h.before.match(/\d+$/)[0];
+		return module.number(h);
 	},
 	format(h) {
-		if(!h) console.log(state.play.history);
-		let san = h.san;
-		const symbol = store.PLAY.symbol == "unicode" ? unicode :
-			store.PLAY.symbol == "german" ? german : null;
-		if(symbol) {
-			for(const [k, s] of Object.entries(symbol)) {
-				san = san.replace(k, s);
-			}
+		return module.format(h);
+	},
+	async pasteMoves() {
+		const text = await navigator.clipboard.readText();
+		chess.addMoves(module.parseMoves(text));
+	},
+	async pasteGame() {
+		const text = await navigator.clipboard.readText();
+		await loadModule();
+		if(chess.loadGame(text)) {
+			sync();
+			start();
 		}
-		if(store.PLAY.ep && h.flags.includes("e")) san += " e.p.";
-		return san;
 	}
 }
-
-const unicode = {
-	"K": "♔",
-	"Q": "♕",
-	"B": "♗",
-	"N": "♘",
-	"R": "♖",
-	"P": "♙",
-};
-
-const german = {
-	"K": "K",
-	"Q": "D",
-	"B": "L",
-	"N": "S",
-	"R": "T",
-	"P": "B",
-};

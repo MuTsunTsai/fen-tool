@@ -236,14 +236,15 @@
 										<div class="row gx-3">
 											<div class="col">
 												<div class="input-group">
-													<button class="btn btn-secondary px-2" :disabled="store.board.w==1" type="button"
-															onclick="Layout.setWidth(-1)">
+													<button class="btn btn-secondary px-2" :disabled="store.board.w==1"
+															type="button" onclick="Layout.setWidth(-1)">
 														<i class="fa-solid fa-minus"></i>
 													</button>
-													<input type="number" class="form-control text-center px-0" min="1" title="Files"
-														   :value="store.board.w" onchange="Layout.setWidth(this)"
+													<input type="number" class="form-control text-center px-0" min="1"
+														   title="Files" :value="store.board.w" onchange="Layout.setWidth(this)"
 														   onfocus="this.select()">
-													<button class="btn btn-secondary px-2" type="button" onclick="Layout.setWidth(1)">
+													<button class="btn btn-secondary px-2" type="button"
+															onclick="Layout.setWidth(1)">
 														<i class="fa-solid fa-plus"></i>
 													</button>
 												</div>
@@ -251,14 +252,15 @@
 											<label class="col-auto col-form-label">x</label>
 											<div class="col">
 												<div class="input-group">
-													<button class="btn btn-secondary px-2" :disabled="store.board.h==1" type="button"
-															onclick="Layout.setHeight(-1)">
+													<button class="btn btn-secondary px-2" :disabled="store.board.h==1"
+															type="button" onclick="Layout.setHeight(-1)">
 														<i class="fa-solid fa-minus"></i>
 													</button>
-													<input type="number" class="form-control text-center px-0" min="1" title="Rows"
-														   :value="store.board.h" onchange="Layout.setHeight(this)"
+													<input type="number" class="form-control text-center px-0" min="1"
+														   title="Rows" :value="store.board.h" onchange="Layout.setHeight(this)"
 														   onfocus="this.select()">
-													<button class="btn btn-secondary px-2" type="button" onclick="Layout.setHeight(1)">
+													<button class="btn btn-secondary px-2" type="button"
+															onclick="Layout.setHeight(1)">
 														<i class="fa-solid fa-plus"></i>
 													</button>
 												</div>
@@ -287,7 +289,8 @@
 											   v-model.number="store.board.knightOffset" @input="redraw()">
 									</div>
 								</div>
-								<div class="d-none d-md-block" v-scope="Checkbox('board.collapse', 'Always collapse boards', resize)"></div>
+								<div class="d-none d-md-block"
+									 v-scope="Checkbox('board.collapse', 'Always collapse boards', resize)"></div>
 							</div>
 						</div>
 					</section>
@@ -381,7 +384,11 @@
 							</div>
 							<div>
 								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
-								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>
+								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>&nbsp;
+								<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>&nbsp;
+								<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteMoves">
+									<i class="fa-solid fa-paste"></i> Paste moves
+								</button>
 							</div>
 							<div class="mt-2">
 								<span class="me-3">Symbol:</span>
@@ -412,10 +419,15 @@
 							</div>
 						</template>
 						<template v-else>
-							<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;
-							<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset">
-								<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
-							</button>
+							<div>
+								<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;
+								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset">
+									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
+								</button>&nbsp;
+								<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteGame">
+									<i class="fa-solid fa-paste"></i> Paste PGN
+								</button>
+							</div>
 							<div class="mt-2 gx-3 row">
 								<div class="col flex-grow-1" style="flex-basis: 22rem;">
 									<div class="mb-2">
