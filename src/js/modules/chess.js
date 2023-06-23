@@ -137,7 +137,7 @@ export function parseMoves(text) {
 		.replace(/\b(\d+)\./g, "$1 .")
 		.replace(/\.+/g, m => m.length > 2 ? "..." : "");
 	let moves = text.match(/\.{3}|\S+/g) ?? [];
-	moves = moves.filter(m => !m.match(/^\d+$/)); // ignore move numbers
+	moves = moves.filter(m => !m.match(/^\$?\d+$/)); // ignore move numbers and NAG
 
 	const last = moves[moves.length - 1];
 	if(last && ends.includes(last)) moves.pop();
