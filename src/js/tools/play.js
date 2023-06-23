@@ -73,7 +73,6 @@ async function loadModule() {
 function start() {
 	Object.assign(state.play, {
 		playing: true,
-		moveNumber: -1,
 		pendingPromotion: false,
 	});
 	toggleReadOnly(true);

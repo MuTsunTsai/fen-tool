@@ -19,6 +19,7 @@ export class Chess extends ChessBase {
 	init(fen) {
 		this.initFEN = fen;
 		store.state.history.length = 0;
+		store.state.moveNumber = -1;
 		this.load(fen);
 	}
 
