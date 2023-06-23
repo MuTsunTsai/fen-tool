@@ -91,7 +91,6 @@ export const PLAY = {
 		try {
 			await loadModule();
 			chess.init(fen);
-			state.play.history = [];
 			state.play.over = chess.overState();
 			start();
 		} catch(e) {
