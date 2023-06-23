@@ -55,7 +55,7 @@ export function CopyButton(label, factory, cls, dis) {
 export async function readText() {
 	if(env.canPaste) return await navigator.clipboard.readText();
 	else {
-		alert(`Pasting text is not enabled in your browser.\nIf you're using Firefox, this can be enabled by the following.\n1. Visit "about:config" in your address bar.\n2. Search for "dom.events.asyncClipboard.readText".\n3. Toggle its value to true.\n4. Reload this tool.`);
+		alert(`Pasting text is not enabled in your browser.\nIf you're using Firefox on desktops or Firefox Nightly on Android, this can be enabled by the following.\n1. Visit "about:config" in your address bar.\n2. Search for "dom.events.asyncClipboard.readText".\n3. Toggle its value to true.\n4. Reload this tool.`);
 		throw true;
 	}
 }
