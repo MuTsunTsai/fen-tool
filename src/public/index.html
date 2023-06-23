@@ -54,7 +54,7 @@
 						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
-						<button class="btn btn-secondary" :disabled="state.play.playing" title="Paste" onclick="FEN.paste()">
+						<button v-if="env.canPaste" class="btn btn-secondary" :disabled="state.play.playing" title="Paste" onclick="FEN.paste()">
 							<i class="fa-solid fa-paste"></i>
 						</button>
 					</div>
@@ -424,7 +424,7 @@
 								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>&nbsp;
-								<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteGame">
+								<button class="btn btn-secondary" @click="PLAY.pasteGame">
 									<i class="fa-solid fa-paste"></i> Paste PGN
 								</button>
 							</div>

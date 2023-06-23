@@ -1,3 +1,4 @@
+import { readText } from "../copy";
 import { toCoordinate } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
@@ -129,11 +130,11 @@ export const PLAY = {
 		return module.format(h);
 	},
 	async pasteMoves() {
-		const text = await navigator.clipboard.readText();
+		const text = await readText();
 		chess.addMoves(module.parseMoves(text));
 	},
 	async pasteGame() {
-		const text = await navigator.clipboard.readText();
+		const text = await readText();
 		await loadModule();
 		if(chess.loadGame(text)) {
 			sync();

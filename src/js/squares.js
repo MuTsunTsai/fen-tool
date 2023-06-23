@@ -2,6 +2,7 @@ import { FEN } from "./meta/el";
 import { DEFAULT, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { mode, setOption } from "./layout";
 import { state, store } from "./store";
+import { readText } from "./copy";
 
 export const squares = new Array(64);
 export const container = document.getElementById("Squares");
@@ -227,7 +228,7 @@ window.FEN = {
 	},
 	async paste() {
 		gtag("event", "fen_paste");
-		FEN.value = await navigator.clipboard.readText();
+		FEN.value = await readText();
 		toSquares(true);
 	},
 	rotate(d) {
