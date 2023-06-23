@@ -1,4 +1,5 @@
 import { Chess as ChessBase, DEFAULT_POSITION } from "chess.js";
+import { parseMoves } from "./pgn.mjs";
 
 export const store = {};
 
@@ -126,26 +127,6 @@ export class Chess extends ChessBase {
 	}
 }
 
-const ends = ["1-0", "0-1", "1/2-1/2", "*"];
-
-export function parseMoves(text) {
-	// ignore variations
-	while(text != (text = text.replace(/\([^()]*\)/g, ""))) { }
-	text = text
-		.replace(/\{[^}]*\}/g, "") // comments are not nested
-		.replace(/;.+$/gm, "") // end-of-line comment
-		.replace(/\b(\d+)\./g, "$1 .")
-		.replace(/\.+/g, m => m.length > 2 ? "..." : "");
-	let moves = text.match(/\.{3}|\S+/g) ?? [];
-	moves = moves.filter(m => !m.match(/^\$?\d+$/)); // ignore move numbers and NAG
-
-	const last = moves[moves.length - 1];
-	if(last && ends.includes(last)) moves.pop();
-
-	if(moves[0] == "...") moves.shift();
-	return moves;
-}
-
 export function number(h) {
 	return h.before.match(/\d+$/)[0];
 }
@@ -163,6 +144,8 @@ export function format(h) {
 	if(store.options.ep && h.flags.includes("e")) san += " e.p.";
 	return san;
 }
+
+export { parseMoves };
 
 const unicode = {
 	"K": "♔",
