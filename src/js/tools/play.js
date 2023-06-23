@@ -16,9 +16,15 @@ addEventListener("keydown", e => {
 	let n = p.moveNumber;
 	if(!p.playing) return;
 	const k = e.key;
-	if((k == "a" || k == "ArrowLeft") && n > -1) n--;
-	if((k == "d" || k == "ArrowRight") && n < p.history.length - 1) n++;
-	PLAY.goto(p.history[n]);
+	if(k == "a" || k == "ArrowLeft") {
+		e.preventDefault();
+		if(n > -1) n--;
+	}
+	if(k == "d" || k == "ArrowRight") {
+		e.preventDefault();
+		if(n < p.history.length - 1) n++;
+	}
+	if(n != p.moveNumber) PLAY.goto(p.history[n]);
 });
 
 export function move(from, to, promotion) {
