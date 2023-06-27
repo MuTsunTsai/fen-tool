@@ -155,6 +155,8 @@ The internal mechanism used in our SDK is compatible with most front-end framewo
 - `1Echecs` is designed by Christian Poisson.
 - `Alpha` is designed by Eric Bentzen.
 - `Good Companion` is designed by David L. Brown.
-- `Kilfiger` is designed by James Kilfiger [The Difficult Type](http://james.kilfiger.googlepages.com/). The original font name is just "Chess".
+- `Kilfiger` is designed by James Kilfiger [The Difficult Type](http://james.kilfiger.googlepages.com/).\
+  The original font name is just "Chess". Slightly modified for this app.
 - `Merida` is designed by Armando Hernandez Marroquin.
-- `Skak` is designed by Piet Tutelaers and modified by Torben Hoffmann.
+- [`MPChess`](https://github.com/chupinmaxime/mpchess) is designed by Maxime Chupin. Slightly modified for this app.
+- [`Skak`](https://github.com/lehoff/skak) is designed by Piet Tutelaers and modified by Torben Hoffmann.
