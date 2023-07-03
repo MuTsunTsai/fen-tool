@@ -1,6 +1,6 @@
 import { makeOption } from "../meta/option";
 import { inferDimension, parseFEN } from "../meta/fen.mjs";
-import { draw } from "./draw";
+import { dpr, draw } from "./draw";
 import { loadAsset } from "../asset";
 
 const param = new URL(location.href).searchParams;
@@ -23,4 +23,4 @@ const squares = parseFEN(fen, w, h);
 options.w = w;
 options.h = h;
 
-loadAsset("../assets", options).then(assets => draw(assets, squares, options));
+loadAsset("../assets", options, dpr).then(() => draw(squares, options));

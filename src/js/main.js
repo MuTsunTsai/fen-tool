@@ -1,7 +1,7 @@
 import { createApp } from "petite-vue";
 import { store, state, saveSettings } from "./store";
 import { updateSN } from "./squares";
-import { drawTemplate, draw, getBlob, drawEmpty } from "./render";
+import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { YACPDB, PDB, BBS, API } from "./tools";
@@ -66,6 +66,11 @@ function redraw() {
 	drawTemplate();
 }
 
+async function drawExport() {
+	await load();
+	draw();
+}
+
 createApp({
 	env,
 	copyImage,
@@ -85,6 +90,7 @@ createApp({
 	store,
 	state,
 	tab: 0,
+	drawExport,
 	resize() {
 		state.split;
 		Promise.resolve().then(() => setOption({}));

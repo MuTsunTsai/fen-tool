@@ -1,5 +1,6 @@
 import { ONE_EMOJI, convertSN } from "./meta/fen.mjs";
 import { parseBorder } from "./meta/option";
+import { getAsset } from "./asset";
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
@@ -9,33 +10,39 @@ const mask = document.createElement("canvas");
 const maskCtx = mask.getContext("2d");
 
 const maskAlpha = {
-	26: [0, 0, 0, 0, 0, 0, 97, 213, 97, 0, 0, 213, 255, 213, 0, 0, 97, 213, 97, 0, 0, 0, 0, 0, 0],
-	32: [0, 0, 10, 0, 0, 0, 163, 255, 163, 0, 10, 255, 255, 255, 10, 0, 163, 255, 163, 0, 0, 0, 10, 0, 0],
-	38: [0, 12, 62, 12, 0, 12, 220, 255, 220, 12, 62, 255, 255, 255, 62, 12, 220, 255, 220, 12, 0, 12, 62, 12, 0],
-	44: [0, 47, 114, 47, 0, 47, 249, 255, 249, 47, 114, 255, 255, 255, 114, 47, 249, 255, 249, 47, 0, 47, 114, 47, 0]
-}
+	26: "YdVh1QDVYdVh",
+	32: "AAAKAAAAo/+jAAr/AP8KAKP/owAAAAoAAA==",
+	38: "AAw+DAAM3P/cDD7/AP8+DNz/3AwADD4MAA==",
+	44: "AC9yLwAv+f/5L3L/AP9yL/n/+S8AL3IvAA==",
+	52: "A3i2eAN4////eLb/AP+2eP///3gDeLZ4Aw==",
+	64: "AAAEHgQAAAA/5v/mPwAE5v///+YEHv//AP//HgTm////5gQAP+b/5j8AAAAEHgQAAA==",
+	76: "AARZhFkEAAS7////uwRZ//////9ZhP//AP//hFn//////1kEu////7sEAARZhFkEAA==",
+	88: "AEfE68RHAEf8/////EfE///////E6///AP//68T//////8RH/P////xHAEfE68RHAA==",
+};
 
-export function drawBoard(ctx, assets, squares, options, ghost) {
+export function drawBoard(ctx, squares, options, dpr, ghost) {
 	const border = parseBorder(options.border);
+	const assets = getAsset(options, dpr);
 	const w = options.w * options.size + 2 * border.size;
 	const h = options.h * options.size + 2 * border.size;
-	ctx.canvas.width = w;
-	ctx.canvas.height = h;
+	ctx.canvas.width = w * dpr;
+	ctx.canvas.height = h * dpr;
+	ctx.save();
+	ctx.scale(dpr, dpr);
 	const classic = options.bg == "classic";
 	const transparent = ghost || classic;
-	if(transparent) ctx.clearRect(0, 0, w, h);
-	ctx.save();
 	ctx.translate(border.size, border.size);
 	for(let i = 0; i < options.h; i++) {
 		for(let j = 0; j < options.w; j++) {
 			if(!transparent) drawBlank(ctx, i, j, options);
-			drawPiece(ctx, assets, i, j, squares[i * options.w + j], options);
+			drawPiece(ctx, assets, i, j, squares[i * options.w + j], options, dpr);
 		}
 	}
 	ctx.restore();
 	if(classic && !ghost) {
-		createGlow(ctx, options.size);
+		createGlow(ctx, options.size, dpr);
 		ctx.save();
+		ctx.scale(dpr, dpr);
 		ctx.translate(border.size, border.size);
 		for(let i = 0; i < options.h; i++) {
 			for(let j = 0; j < options.w; j++) {
@@ -48,14 +55,15 @@ export function drawBoard(ctx, assets, squares, options, ghost) {
 		ctx.drawImage(mask, 0, 0);
 		ctx.drawImage(pieces, 0, 0);
 	}
+	ctx.scale(dpr, dpr);
 	if(!ghost) drawBorder(ctx, border, w, h);
 }
 
 /**
  * The core drawing method.
  */
-function drawPiece(ctx, assets, i, j, value, options) {
-	const size = options.size;
+function drawPiece(ctx, assets, i, j, value, options, dpr) {
+	const { size } = options;
 	const neutral = value.startsWith("-");
 	if(neutral) value = value.substring(1);
 
@@ -81,9 +89,9 @@ function drawPiece(ctx, assets, i, j, value, options) {
 		const text = value.substring(value.startsWith("''") ? 2 : 1);
 		drawText(ctx, text, size);
 	} else {
-		ctx.drawImage(assets, sx * size, typeIndex * size, size * f, size, 0, 0, size * f, size);
+		ctx.drawImage(assets, sx * size * dpr, typeIndex * size * dpr, size * f * dpr, size * dpr, 0, 0, size * f, size);
 		if(neutral && bw) {
-			ctx.drawImage(assets, (1 + f) * size, typeIndex * size, size * (1 - f), size, size * f, 0, size * (1 - f), size);
+			ctx.drawImage(assets, (1 + f) * size * dpr, typeIndex * size * dpr, size * (1 - f) * dpr, size * dpr, size * f, 0, size * (1 - f), size);
 		}
 	}
 	ctx.restore();
@@ -111,7 +119,7 @@ function drawBorder(ctx, border, w, h) {
 	ctx.restore();
 }
 
-function createGlow(ctx, size) {
+function createGlow(ctx, size, dpr) {
 	const cn = ctx.canvas;
 	mask.width = pieces.width = cn.width;
 	mask.height = pieces.height = cn.height;
@@ -125,15 +133,28 @@ function createGlow(ctx, size) {
 	ctx.restore();
 
 	ctx.save();
-	for(let x = 0; x < 5; x++) {
-		for(let y = 0; y < 5; y++) {
-			const alpha = maskAlpha[size][y * 5 + x];
+	const alphaData = getMask(size * dpr);
+	const bound = Math.sqrt(alphaData.length);
+	const offset = (bound - 1) / 2;
+	for(let x = 0; x < bound; x++) {
+		for(let y = 0; y < bound; y++) {
+			const alpha = alphaData[y * bound + x];
 			if(alpha == 0) continue;
 			ctx.globalAlpha = alpha / 255;
-			maskCtx.drawImage(cn, x - 2, y - 2);
+			maskCtx.drawImage(cn, x - offset, y - offset);
 		}
 	}
 	ctx.restore();
+}
+
+function getMask(id) {
+	if(typeof maskAlpha[id] == "string") {
+		const binary = atob(maskAlpha[id]);
+		const result = [];
+		for(let i = 0; i < binary.length; i++) result.push(binary.charCodeAt(i));
+		maskAlpha[id] = result;
+	}
+	return maskAlpha[id];
 }
 
 function drawBlank(ctx, i, j, options) {

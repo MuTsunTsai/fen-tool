@@ -2,6 +2,7 @@
 export const defaultOption = {
 	pattern: undefined,
 	bg: undefined,
+	exHigh: true,
 	border: "1",
 	blackWhite: false,
 	knightOffset: .6,

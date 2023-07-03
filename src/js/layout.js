@@ -11,6 +11,8 @@ export const mode = {
 	dragging: false,
 };
 
+export const dpr = Math.min(2, Math.floor(devicePixelRatio));
+
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
@@ -44,8 +46,8 @@ export async function setOption(o, force) {
 	const shouldDrawTemplate = shouldRedraw || changed.mode;
 
 	if(shouldDrawTemplate) {
-		let tw = 3 * o.size + 2 * border.size;
-		let th = 8 * o.size + 2 * border.size;
+		let tw = (3 * o.size + 2 * border.size) * dpr;
+		let th = (8 * o.size + 2 * border.size) * dpr;
 		if(mode.hor) {
 			[tw, th] = [th, tw];
 			CN.parentNode.classList.add("mb-3");
@@ -61,8 +63,8 @@ export async function setOption(o, force) {
 	}
 
 	if(shouldDrawBoard) {
-		const bw = o.w * o.size + 2 * border.size;
-		const bh = o.h * o.size + 2 * border.size;
+		const bw = (o.w * o.size + 2 * border.size) * dpr;
+		const bh = (o.h * o.size + 2 * border.size) * dpr;
 		if(CN.width !== bw || CN.height !== bh) {
 			SN.width = CG.width = CN.width = bw;
 			SN.height = CG.height = CN.height = bh;
@@ -87,7 +89,8 @@ function setDimension(dim) {
 
 function resize() {
 	Zone.style.maxWidth = `calc(${bodyWidth()}px + 1rem)`;
-	CN.style.width = TP.style.width = "unset";
+	CN.style.width = (CN.width / dpr) + "px";
+	TP.style.width = (TP.width / dpr) + "px";
 	const { w } = store.board;
 	const r = getRenderSize();
 	if(w > 8 && mode.hor) {
