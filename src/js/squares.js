@@ -144,7 +144,7 @@ export function orthodoxFEN() {
 	}
 	const p = state.play;
 
-	if(!p.enPassant.match(/^[a-h][35]$/)) p.enPassant = ""; // Ignore invalid squares
+	if(!p.enPassant.match(/^[a-h][36]$/)) p.enPassant = ""; // Ignore invalid squares
 	if(p.pass && p.enPassant && (p.enPassant[1] == "3") != (p.turn == "b")) {
 		// In passing mode, auto-correct the turn if ep is given
 		p.turn = p.turn == "b" ? "w" : "b";
