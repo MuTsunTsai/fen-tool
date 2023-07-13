@@ -16,7 +16,7 @@
 		"@types/mocha": "^10.0.1",
 		"chai": "^4.3.7",
 		"gulp": "^4.0.2",
-		"gulp-esbuild": "^0.11.1",
+		"gulp-esbuild": "^0.11.2",
 		"gulp-fontawesome": "^1.0.2",
 		"gulp-html-minifier-terser": "^7.1.0",
 		"gulp-load-plugins": "^2.0.8",
@@ -27,7 +27,7 @@
 		"gulp-terser": "^2.1.0",
 		"gulp-workbox": "^1.0.6",
 		"mocha": "^10.2.0",
-		"sass": "^1.63.4",
+		"sass": "^1.63.6",
 		"serve": "^14.2.0",
 		"vinyl-sourcemaps-apply": "^0.2.1",
 		"workbox-build": "^7.0.0"

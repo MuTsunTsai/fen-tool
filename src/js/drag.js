@@ -88,6 +88,7 @@ function mouseDown(event) {
 			if(sqY > 0 && sqY < 5 && sqX == x) confirmPromotion(fromIndex, types[sqY]);
 		}
 		if(!isCN && state.play.mode == "retro") {
+			event.preventDefault(); // Prevent touchstart triggering mousedown
 			if(mode.hor) [sqX, sqY] = [sqY, sqX];
 			retroClick(sqX, sqY);
 		}

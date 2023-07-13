@@ -102,8 +102,13 @@ function getTemplate() {
 	let result = mode.hor ? templateHorValues : templateValues;
 	if(state.play.playing && state.play.mode == "retro") {
 		result = result.concat();
-		result[18] = "p";
-		result[19] = "P";
+		if(mode.hor) {
+			result[6] = "p";
+			result[14] = "P";
+		}else {
+			result[18] = "p";
+			result[19] = "P";
+		}
 	}
 	return result;
 }
