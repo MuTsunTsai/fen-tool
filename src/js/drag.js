@@ -3,7 +3,7 @@ import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP } from "./meta/el";
 import { templateValues } from "./render";
-import { checkDragPrecondition, checkPromotion, confirmPromotion, move, sync } from "./tools/play";
+import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
 import { types } from "./draw";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
@@ -86,6 +86,10 @@ function mouseDown(event) {
 			if(mode.hor) [sqX, sqY] = [sqY, sqX];
 			const x = draggingValue == "p" ? 0 : 1;
 			if(sqY > 0 && sqY < 5 && sqX == x) confirmPromotion(fromIndex, types[sqY]);
+		}
+		if(!isCN && state.play.mode == "retro") {
+			if(mode.hor) [sqX, sqY] = [sqY, sqX];
+			retroClick(sqX, sqY);
 		}
 		if(!isCN || !checkDragPrecondition(index)) return;
 	}

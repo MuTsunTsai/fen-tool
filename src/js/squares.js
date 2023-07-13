@@ -150,11 +150,12 @@ export function orthodoxFEN() {
 		p.turn = p.turn == "b" ? "w" : "b";
 	}
 
-	if(!Number.isSafeInteger(p.halfMove) || p.halfMove < 0) p.halfMove = 0;
-	if(!Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
+	const isRetro = p.mode == "retro";
+	if(isRetro || !Number.isSafeInteger(p.halfMove) || p.halfMove < 0) p.halfMove = 0;
+	if(isRetro || !Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
 
 	const ss = normalSnapshot();
-	return `${makeFEN(ss, 8, 8)} ${p.turn} ${getCastle(ss)} ${p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
+	return `${makeFEN(ss, 8, 8)} ${p.turn} ${getCastle(ss)} ${!isRetro && p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
 }
 
 function getCastle(snapshot) {
@@ -190,16 +191,19 @@ function toSquares(check) {
 }
 
 export function parseFullFEN(fen) {
+	const s = state.play;
 	const arr = fen.split(" ");
 	if(arr.length == 1) return;
-	if(arr[1] == "w" || arr[1] == "b") state.play.turn = arr[1];
+	if(arr[1] == "w" || arr[1] == "b") s.turn = arr[1];
 	if(arr[2]) {
 		const keys = ["K", "Q", "k", "q"];
-		for(const key of keys) state.play.castle[key] = arr[2].includes(key);
+		for(const key of keys) s.castle[key] = arr[2].includes(key);
 	}
-	state.play.enPassant = !arr[3] || arr[3] == "-" ? "" : arr[3];
-	state.play.halfMove = Number(arr[4] || 0);
-	state.play.fullMove = Number(arr[5] || 1);
+	s.enPassant = !arr[3] || arr[3] == "-" ? "" : arr[3];
+	if(s.mode != "retro") {
+		s.halfMove = Number(arr[4] || 0);
+		s.fullMove = Number(arr[5] || 1);
+	}
 }
 
 export function updateSN() {

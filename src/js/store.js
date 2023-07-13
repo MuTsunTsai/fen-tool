@@ -65,10 +65,14 @@ export const state = reactive({
 			k: true,
 			q: true,
 		},
+		retro: {
+			uncapture: null,
+			unpromote: false,
+		},
 		enPassant: "",
 		halfMove: 0,
 		fullMove: 1,
-		pass: false,
+		mode: "normal",
 	}
 });
 

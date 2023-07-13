@@ -55,6 +55,11 @@ that can be paste directly into posts.
 
 This tool allows you to play on the setup board and record moves.
 Only orthodox chess is supported.
+There are three different modes:
+
+1. Normal: can be used in direct mates and helpmate problems.
+2. Allow passing moves: can be used in for example series helpmate problems.
+3. Retro: playing backwards, used in retrograde analysis problems.
 
 Tip: You can use left/right keys (or A/D keys) to quickly navigate move history.
 

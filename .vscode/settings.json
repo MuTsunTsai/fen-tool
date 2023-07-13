@@ -10,6 +10,9 @@
 		"precache",
 		"precaching",
 		"purgecss",
+		"uncapture",
+		"uncapturing",
+		"unpromote",
 		"YACPDB"
 	],
 	"npm.packageManager": "pnpm"

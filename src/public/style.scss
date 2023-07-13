@@ -235,6 +235,11 @@ label[for] {
 		overflow-y: scroll;
 	}
 
+	.form-control:disabled {
+		background-color: #333;
+		color: #777;
+	}
+
 	.form-control::placeholder {
 		color: #777 !important;
 	}

@@ -5,7 +5,7 @@ import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { YACPDB, PDB, BBS, API } from "./tools";
-import { Checkbox, CheckboxBase } from "./checkbox";
+import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
@@ -76,6 +76,7 @@ createApp({
 	copyImage,
 	CheckboxBase,
 	Checkbox,
+	CheckboxR,
 	CopyButton,
 	redraw,
 	updateBG,

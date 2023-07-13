@@ -1,4 +1,5 @@
 import { readText } from "../copy";
+import { types } from "../draw";
 import { toCoordinate } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
@@ -8,8 +9,13 @@ let module;
 let chess;
 let pendingTarget;
 
+const NORMAL = "normal", PASS = "pass", RETRO = "retro";
+
 const wMask = [4, 7, 10, 13];
 const bMask = [3, 6, 9, 12];
+
+const wrMask = bMask.concat(15, 16, 18);
+const brMask = wMask.concat(15, 16, 19);
 
 addEventListener("keydown", e => {
 	const p = state.play;
@@ -30,7 +36,16 @@ addEventListener("keydown", e => {
 export function move(from, to, promotion) {
 	from = toCoordinate(from);
 	to = toCoordinate(to);
-	return chess.move({ from, to, promotion });
+	if(state.play.mode == RETRO) {
+		const result = chess.retract({ from, to, ...state.play.retro });
+		if(result) {
+			resetRetro();
+			drawRetroTemplate();
+		}
+		return result;
+	} else {
+		return chess.move({ from, to, promotion });
+	}
 }
 
 export function sync() {
@@ -49,7 +64,9 @@ export function confirmPromotion(from, to) {
 }
 
 export function checkPromotion(from, to) {
-	if(state.play.pass && getSquareColor(from) != chess.turn()) chess.switchSide();
+	const mode = state.play.mode;
+	if(mode == RETRO) return false;
+	if(mode == PASS && getSquareColor(from) != chess.turn()) chess.switchSide();
 	if(!chess.checkPromotion(toCoordinate(from), toCoordinate(to))) return false;
 	pendingTarget = to;
 	state.play.pendingPromotion = true;
@@ -62,9 +79,11 @@ function getSquareColor(index) {
 }
 
 export function checkDragPrecondition(index) {
+	const mode = state.play.mode;
 	if(state.play.pendingPromotion) return false;
-	if(chess.isGameOver()) return false;
-	if(!state.play.pass && getSquareColor(index) != chess.turn()) return false;
+	if(mode != RETRO && chess.isGameOver()) return false;
+	const colorMatchTurn = getSquareColor(index) == chess.turn();
+	if(mode != PASS && colorMatchTurn != (mode == NORMAL)) return false;
 	return true;
 }
 
@@ -83,7 +102,37 @@ function start() {
 		pendingPromotion: false,
 	});
 	toggleReadOnly(true);
-	drawTemplate([]);
+	if(state.play.mode == RETRO) {
+		resetRetro();
+		drawRetroTemplate();
+	} else drawTemplate([]);
+}
+
+function resetRetro() {
+	state.play.retro = {
+		uncapture: null,
+		unpromote: false,
+		ep: false,
+	};
+}
+
+function drawRetroTemplate() {
+	drawTemplate(chess.turn() == "b" ? wrMask : brMask);
+}
+
+export function retroClick(x, y) {
+	if(x == 2) return;
+	const retro = state.play.retro;
+	const matchTurn = (x == 0) == (chess.turn() == "b")
+	const toggle = p => retro.uncapture = retro.uncapture == p ? null : p;
+	if(matchTurn) {
+		if(0 < y && y < 7) toggle(types[y]);
+		if(y == 5 || y == 6) retro.unpromote = false;
+	} else if(y == 5) {
+		retro.unpromote = !retro.unpromote;
+		if(retro.uncapture == "p" || retro.uncapture == "c") retro.uncapture = null;
+	}
+	drawRetroTemplate();
 }
 
 export const PLAY = {
@@ -100,7 +149,7 @@ export const PLAY = {
 			state.play.over = chess.overState();
 			start();
 		} catch(e) {
-			alert("This board is not playable:" + e.message.replace(/^.+:/, "").replace(/[^.]$/, "$&."));
+			alert("This board is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&."));
 		}
 	},
 	exit() {
@@ -112,6 +161,10 @@ export const PLAY = {
 	},
 	goto(h) {
 		setFEN(chess.goto(h));
+		if(state.play.mode == RETRO) {
+			resetRetro();
+			drawRetroTemplate();
+		}
 	},
 	reset() {
 		Object.assign(state.play, {

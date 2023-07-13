@@ -36,7 +36,7 @@
 
 	<template id="checkbox">
 		<div class="form-check">
-			<input type="checkbox" class="form-check-input" :id="id" :checked="checked()" @change="change">
+			<input type="checkbox" class="form-check-input" :id="id" :checked="checked()" @change="change" :disabled="disabled()">
 			<label class="form-check-label" :for="id">{{ label }}</label>
 		</div>
 	</template>
@@ -54,7 +54,8 @@
 						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
-						<button v-if="env.canPaste" class="btn btn-secondary" :disabled="state.play.playing" title="Paste" onclick="FEN.paste()">
+						<button v-if="env.canPaste" class="btn btn-secondary" :disabled="state.play.playing" title="Paste"
+								onclick="FEN.paste()">
 							<i class="fa-solid fa-paste"></i>
 						</button>
 					</div>
@@ -388,7 +389,9 @@
 							<div>
 								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
 								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>&nbsp;
-								<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>&nbsp;
+								<span v-if="state.play.mode!='retro'">
+									<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>&nbsp;
+								</span>
 								<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteMoves">
 									<i class="fa-solid fa-paste"></i> Paste moves
 								</button>
@@ -433,39 +436,51 @@
 							</div>
 							<div class="mt-2 gx-3 row">
 								<div class="col flex-grow-1" style="flex-basis: 22rem;">
-									<div class="mb-2">
-										<span class="me-3">Turn:</span>
-										<div class="form-check d-inline-block me-3">
-											<input class="form-check-input" type="radio" :checked="state.play.turn=='w'"
-												   :disabled="state.play.pass" @change="state.play.turn='w'" name="TURN"
-												   id="wTurn">
-											<label class="form-check-label" for="wTurn">
-												White
-											</label>
+									<div class="d-flex align-items-center flex-wrap mb-2">
+										<div class="flex-grow-1 col-form-label" style="flex-basis: max-content;">
+											<span class="me-3">Turn:</span>
+											<div class="form-check d-inline-block me-3">
+												<input class="form-check-input" type="radio" :checked="state.play.turn=='w'"
+													   :disabled="state.play.mode=='pass'" @change="state.play.turn='w'"
+													   name="TURN" id="wTurn">
+												<label class="form-check-label" for="wTurn">
+													White
+												</label>
+											</div>
+											<div class="form-check d-inline-block me-3">
+												<input class="form-check-input" type="radio" :checked="state.play.turn=='b'"
+													   :disabled="state.play.mode=='pass'" @change="state.play.turn='b'"
+													   name="TURN" id="bTurn">
+												<label class="form-check-label" for="bTurn">
+													Black
+												</label>
+											</div>
 										</div>
-										<div class="form-check d-inline-block me-3">
-											<input class="form-check-input" type="radio" :checked="state.play.turn=='b'"
-												   :disabled="state.play.pass" @change="state.play.turn='b'" name="TURN"
-												   id="bTurn">
-											<label class="form-check-label" for="bTurn">
-												Black
-											</label>
+										<div class="flex-grow-1" style="flex-basis: max-content;">
+											<div class="row gx-3">
+												<label class="col-auto col-form-label">Mode:</label>
+												<div class="col">
+													<select class="form-select" v-model="state.play.mode" @change="updateBG">
+														<option value="normal">Normal</option>
+														<option value="pass">Allow passing move</option>
+														<option value="retro">Retro</option>
+													</select>
+												</div>
+											</div>
 										</div>
-										<span v-scope="Checkbox('state.play.pass', 'Allow passing move')"
-											  class="d-inline-block"></span>
 									</div>
 									<div class="mb-2">
 										Castling:
 										<span class="d-inline-block">
-											<span v-scope="Checkbox('state.play.castle.K', 'WK')"
+											<span v-scope="CheckboxR('state.play.castle.K', 'WK')"
 												  class="ms-2 d-inline-block"></span>
-											<span v-scope="Checkbox('state.play.castle.Q', 'WQ')"
+											<span v-scope="CheckboxR('state.play.castle.Q', 'WQ')"
 												  class="ms-2 d-inline-block"></span>
 										</span>
 										<span class="d-inline-block">
-											<span v-scope="Checkbox('state.play.castle.k', 'BK')"
+											<span v-scope="CheckboxR('state.play.castle.k', 'BK')"
 												  class="ms-2 d-inline-block"></span>
-											<span v-scope="Checkbox('state.play.castle.q', 'BQ')"
+											<span v-scope="CheckboxR('state.play.castle.q', 'BQ')"
 												  class="ms-2 d-inline-block"></span>
 										</span>
 									</div>
@@ -474,7 +489,8 @@
 									<div class="row gx-3 mb-2">
 										<label class="col-auto col-form-label">En passant square: </label>
 										<div class="col">
-											<input type="text" class="form-control" maxlength="2" v-model="state.play.enPassant">
+											<input type="text" class="form-control" maxlength="2" v-model="state.play.enPassant"
+												   :disabled="state.play.mode=='retro'">
 										</div>
 									</div>
 									<div class="row gx-3">
@@ -483,7 +499,8 @@
 												<label class="col-auto col-form-label">Half moves: </label>
 												<div class="col">
 													<input type="number" class="form-control" min="0"
-														   v-model.number="state.play.halfMove">
+														   v-model.number="state.play.halfMove"
+														   :disabled="state.play.mode=='retro'">
 												</div>
 											</div>
 										</div>
@@ -492,7 +509,8 @@
 												<label class="col-auto col-form-label">Full moves: </label>
 												<div class="col">
 													<input type="number" class="form-control" min="1"
-														   v-model.number="state.play.fullMove">
+														   v-model.number="state.play.fullMove"
+														   :disabled="state.play.mode=='retro'">
 												</div>
 											</div>
 										</div>

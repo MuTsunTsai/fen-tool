@@ -2,7 +2,7 @@ import { CN, CG, TP, TPG, PV } from "./meta/el";
 import { dpr, mode, setOption } from "./layout";
 import { store, state, assign } from "./store";
 import { pushState, snapshot } from "./squares";
-import { drawBoard } from "./draw";
+import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
 import { parseBorder } from "./meta/option";
 
@@ -47,17 +47,33 @@ export function drawTemplate(except) {
 	if(except) cache.except = except;
 	else except = cache.except;
 	const options = Object.assign({}, store.board, mode.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
-	const squares = mode.hor ? templateHorValues : templateValues;
+	const squares = getTemplate();
 	drawBoard(tCtx, squares, options, dpr);
 	if(!state.play.playing) {
 		drawBoard(tgCtx, squares, options, dpr, true);
 	} else {
+		const { size } = store.board;
+		const isRetro = state.play.mode == "retro";
 		tCtx.save();
 		const border = parseBorder(store.board.border);
 		tCtx.translate(border.size, border.size);
+
+		// draw "ep"
+		if(isRetro) {
+			tCtx.save();
+			tCtx.font = `${size / 2}px sans-serif`;
+			tCtx.strokeStyle = "black";
+			tCtx.lineWidth = size / 12;
+			tCtx.fillStyle = "white";
+			drawEp(1, 7);
+			drawEp(2, 7);
+			tCtx.restore();
+		}
+
+		// draw mask
+		tCtx.save();
 		tCtx.globalAlpha = state.isDark ? 0.5 : 0.4;
 		tCtx.fillStyle = "black";
-		const { size } = store.board;
 		for(let i = 0; i < 3; i++) {
 			for(let j = 0; j < 8; j++) {
 				if(except?.includes(j * 3 + i)) continue;
@@ -66,7 +82,57 @@ export function drawTemplate(except) {
 			}
 		}
 		tCtx.restore();
+
+		// draw selection
+		if(isRetro) {
+			tCtx.save();
+			const retro = state.play.retro;
+			const x = except[0] == 3 ? 0 : 1;
+			tCtx.lineWidth = size / 12;
+			tCtx.strokeStyle = "#0d6efd";
+			if(retro.uncapture) drawSelection(x, types.indexOf(retro.uncapture));
+			if(retro.unpromote) drawSelection(1 - x, 5);
+			tCtx.restore();
+		}
+		tCtx.restore();
 	}
+}
+
+function getTemplate() {
+	let result = mode.hor ? templateHorValues : templateValues;
+	if(state.play.playing && state.play.mode == "retro") {
+		result = result.concat();
+		result[18] = "p";
+		result[19] = "P";
+	}
+	return result;
+}
+
+function drawEp(x, y) {
+	const { size } = store.board;
+	const offset = size / 15;
+	if(mode.hor) [x, y] = [y, x];
+	const measure = tCtx.measureText("ep");
+	const width = measure.width;
+	const descent = measure.actualBoundingBoxDescent;
+	tCtx.strokeText("ep", x * size - width - offset, y * size - descent - offset);
+	tCtx.fillText("ep", x * size - width - offset, y * size - descent - offset);
+}
+
+function drawSelection(x, y) {
+	const { size } = store.board;
+	const unit = size / 8;
+	if(mode.hor) [x, y] = [y, x];
+	const offset = .5;
+	const draw = (...pt) => {
+		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
+		for(let i = 1; i < pt.length; i++)tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
+		tCtx.stroke();
+	};
+	draw([0, 2], [0, 0], [2, 0]);
+	draw([5, 0], [7, 0], [7, 2]);
+	draw([7, 5], [7, 7], [5, 7]);
+	draw([0, 5], [0, 7], [2, 7]);
 }
 
 export async function draw(data) {

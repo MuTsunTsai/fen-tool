@@ -11,10 +11,7 @@ export class Chess extends ChessBase {
 	}
 
 	switchSide() {
-		const fen = this.fen().split(" ");
-		if(fen[1] == "b") fen[1] = "w";
-		else fen[1] = "b";
-		this.load(fen.join(" "));
+		this.load(manipulateFEN(this.fen(), switchSide));
 	}
 
 	init(fen) {
@@ -22,6 +19,97 @@ export class Chess extends ChessBase {
 		store.state.history.length = 0;
 		store.state.moveNumber = -1;
 		this.load(fen);
+
+		// legal checks not covered in chess.js
+		const board = this.board();
+		const hasPawn = r => r.some(p => p && p.type == "p");
+		if(hasPawn(board[0]) || hasPawn(board[7])) {
+			throw new Error("pawns cannot be on the 1st or the 8th rank");
+		}
+
+		const test = new ChessBase(manipulateFEN(fen, switchSide));
+		if(test.isCheck()) {
+			if(this.isCheck()) throw new Error("both kings are under checks");
+			this.initFEN = test.fen();
+			this.load(this.initFEN);
+		}
+	}
+
+	retract(arg) {
+		const { from, to, unpromote } = arg;
+
+		// `c` is a special code for en passant
+		const ep = arg.uncapture == "c";
+		const uncapture = ep ? "p" : arg.uncapture;
+
+		const type = this.get(from)?.type;
+		if(!type) return false;
+		if(ep && type != "p") return false;
+		if(unpromote && (type == "p" || type == "k")) return false;
+		const last = store.state.history[store.state.moveNumber];
+		if(last && last.flags == "e") { // last move is en passant
+			const expectedFrom = last.to.replace("3", "4").replace("6", "5");
+			const expectedTo = last.to.replace("3", "2").replace("6", "7");
+			if(from != expectedFrom || to != expectedTo) return false;
+		}
+
+		// Move the piece
+		const fen = manipulateFEN(this.fen(), switchSide, arr => arr[3] = "-");
+		const temp = new ChessBase(fen);
+		const piece = temp.remove(from);
+		if(unpromote) piece.type = "p";
+		if(!temp.put(piece, to)) return false;
+
+		// Uncapture
+		if(uncapture) {
+			// legal checks
+			const rank = from[1];
+			const color = piece.color == "w" ? "b" : "w";
+			if(uncapture == "p" && (rank == "1" || rank == "8")) {
+				console.log("Cannot uncapture a pawn at the 1st or the 8th rank.");
+				return false;
+			}
+			if(this.board().flat().filter(p => p && p.color == color).length >= 16) {
+				console.log("Too many uncapturing.");
+				return false;
+			}
+
+			const p = { type: uncapture, color };
+			const sq = ep ? getEpSquare(from) : from;
+			if(ep && temp.get(sq)) return false;
+			if(!temp.put(p, sq)) return false;
+			if(ep) {
+				const fen = manipulateFEN(temp.fen(), arr => arr[3] = from);
+				temp.load(fen);
+			}
+		}
+
+		// Castling
+		if(piece.type == "k" && (piece.color == "w" && to == "e1" || piece.color == "b" && to == "e8")) {
+			const rank = to[1];
+			if(from == "g" + rank) temp.put(temp.remove("f" + rank), "h" + rank);
+			if(from == "c" + rank) temp.put(temp.remove("d" + rank), "a" + rank);
+			temp.load(manipulateFEN(temp.fen(), resetCastling));
+		}
+
+		// Check if the retraction is legal
+		const moves = temp.moves({ verbose: true });
+		const move = moves.find(m => m.from == to && m.to == from && (!unpromote || m.promotion == type));
+		if(!move) return false;
+		const test = new ChessBase(manipulateFEN(move.before, switchSide, arr => arr[3] = "-"));
+		if(test.isCheck()) {
+			console.log("must retract checking");
+			return false;
+		}
+
+		// Update state of self
+		if(store.state.moveNumber >= 0) move.before = manipulateFEN(move.before, bumpMove);
+		this.load(move.before);
+		const state = store.state;
+		state.history.length = state.moveNumber + 1;
+		state.history.push(move);
+		state.moveNumber++;
+		return true;
 	}
 
 	move(arg) {
@@ -120,7 +208,7 @@ export class Chess extends ChessBase {
 	}
 
 	goto(h) {
-		const fen = h ? h.after : this.initFEN;
+		const fen = !h ? this.initFEN : store.state.mode == "retro" ? h.before : h.after;
 		this.load(fen);
 		store.state.moveNumber = store.state.history.indexOf(h);
 		return fen;
@@ -128,21 +216,36 @@ export class Chess extends ChessBase {
 }
 
 export function number(h) {
-	return h.before.match(/\d+$/)[0];
+	const num = h.before.match(/\d+$/)[0];
+	const prefix = store.state.mode == "retro" ? "-" : "";
+	return prefix + num;
 }
 
 export function format(h) {
-	let san = h.san;
+	let move = store.state.mode == "retro" ? getFullNotation(h) : h.san;
 	const sym = store.options.symbol;
 	const symbol = sym == "unicode" ? unicode :
 		sym == "german" ? german : null;
 	if(symbol) {
 		for(const [k, s] of Object.entries(symbol)) {
-			san = san.replace(k, s);
+			move = move.replace(k, s);
 		}
 	}
-	if(store.options.ep && h.flags.includes("e")) san += " e.p.";
-	return san;
+	if(store.options.ep && h.flags.includes("e")) move += " e.p.";
+	return move;
+}
+
+function getFullNotation(h) {
+	if(h.flags == "k" || h.flags == "q") return h.san; // castling
+	const p = h.piece.toUpperCase();
+	return (p == "P" ? "" : p) + h.from +
+		(h.captured ? "x" + h.captured.toUpperCase() : "-") +
+		h.to +
+		(h.promotion ? "=" + h.promotion.toUpperCase() : "");
+}
+
+function getEpSquare(sq) {
+	return sq.replace("3", "4").replace("6", "5");
 }
 
 export { parseMoves };
@@ -164,3 +267,21 @@ const german = {
 	"R": "T",
 	"P": "B",
 };
+
+function manipulateFEN(fen, ...factories) {
+	const arr = fen.split(" ");
+	for(const factory of factories) factory(arr);
+	return arr.join(" ");
+}
+
+function switchSide(arr) {
+	arr[1] = arr[1] == "b" ? "w" : "b";
+}
+
+function bumpMove(arr) {
+	if(arr[1] == "w") arr[5] = Number(arr[5]) + 1;
+}
+
+function resetCastling(arr) {
+	arr[2] = "KQkq";
+}
