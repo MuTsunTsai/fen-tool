@@ -57,13 +57,14 @@ export class Chess extends ChessBase {
 		const fen = manipulateFEN(this.fen(), switchSide, arr => arr[3] = "-");
 		const temp = new ChessBase(fen);
 		const piece = temp.remove(from);
+		const rank = from[1];
 		if(unpromote) piece.type = "p";
+		if(piece.type == "p" && (rank == "2" || rank == "7")) return false;
 		if(!temp.put(piece, to)) return false;
 
 		// Uncapture
 		if(uncapture) {
 			// legal checks
-			const rank = from[1];
 			const color = piece.color == "w" ? "b" : "w";
 			if(uncapture == "p" && (rank == "1" || rank == "8")) {
 				console.log("Cannot uncapture a pawn at the 1st or the 8th rank.");
