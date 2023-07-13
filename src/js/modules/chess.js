@@ -59,7 +59,7 @@ export class Chess extends ChessBase {
 		const piece = temp.remove(from);
 		const rank = from[1];
 		if(unpromote) piece.type = "p";
-		if(piece.type == "p" && (rank == "2" || rank == "7")) return false;
+		if(piece.type == "p" && (piece.color == "w" && rank == "2" || piece.color == "b" && rank == "7")) return false;
 		if(!temp.put(piece, to)) return false;
 
 		// Uncapture
