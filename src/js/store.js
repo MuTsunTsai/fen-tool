@@ -20,6 +20,7 @@ const settings = {
 		symbol: null,
 		ep: true,
 		negative: false,
+		zero: false,
 	},
 	feature: {
 		janko: false,

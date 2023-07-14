@@ -246,6 +246,7 @@ export function format(h) {
 		}
 	}
 	if(store.options.ep && h.flags.includes("e")) move = move.replace(/([+#=]?)$/, "ep$1");
+	if(store.options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0")
 	return move;
 }
 

@@ -423,6 +423,9 @@
 							<div class="mt-2">
 								<span v-scope="Checkbox('PLAY.ep', 'Add ep to en passant moves')"></span>
 							</div>
+							<div class="mt-2">
+								<span v-scope="Checkbox('PLAY.zero', 'Use number 0 for castling notation')"></span>
+							</div>
 							<div class="mt-2" v-if="state.play.mode=='retro'">
 								<span v-scope="Checkbox('PLAY.negative', 'Use negative numbers in retro mode')"></span>
 							</div>
