@@ -57,9 +57,9 @@ export class Chess extends ChessBase {
 		}
 
 		// If we've ever uncastled, the corresponding king or rook cannot be moved anymore
-		const castle = this.getCastlingRights(this.turn() == "w" ? "b" : "w");
+		const isWhite = this.turn() == "b";
+		const castle = this.getCastlingRights(isWhite ? "w" : "b");
 		if(type == "k" && (castle.k || castle.q)) return false;
-
 		if(type == "r" && from == (isWhite ? "a1" : "a8") && castle.q) return false;
 		if(type == "r" && from == (isWhite ? "h1" : "h8") && castle.k) return false;
 
@@ -67,7 +67,6 @@ export class Chess extends ChessBase {
 		const fen = manipulateFEN(this.fen(), switchSide, arr => arr[3] = "-");
 		const temp = new Chess(fen);
 		const piece = temp.remove(from);
-		const isWhite = piece.color == "w";
 		const rank = from[1];
 		if(unpromote) piece.type = "p";
 		if(piece.type == "p" && (isWhite && rank == "2" || !isWhite && rank == "7")) return false;
