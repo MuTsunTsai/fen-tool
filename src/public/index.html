@@ -383,8 +383,8 @@
 									<span class="btn step px-1 py-0" @click="PLAY.goto(h)"
 										  :class="[{active:i==state.play.moveNumber}, state.isDark?'btn-secondary':'btn-light']">{{PLAY.format(h)}}</span>
 								</span>
-								<span v-if="state.play.over==1">Checkmate.</span>
-								<span v-if="state.play.over==2">Draw.</span>
+								<span v-if="state.play.mode!='retro'&&state.play.over==1">Checkmate.</span>
+								<span v-if="state.play.mode!='retro'&&state.play.over==2">Draw.</span>
 							</div>
 							<div>
 								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
@@ -421,7 +421,7 @@
 								</div>
 							</div>
 							<div class="mt-2">
-								<span v-scope="Checkbox('PLAY.ep', 'Add e.p. to en passant moves')"></span>
+								<span v-scope="Checkbox('PLAY.ep', 'Add ep to en passant moves')"></span>
 							</div>
 						</template>
 						<template v-else>

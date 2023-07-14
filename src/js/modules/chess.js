@@ -232,17 +232,21 @@ export function format(h) {
 			move = move.replace(k, s);
 		}
 	}
-	if(store.options.ep && h.flags.includes("e")) move += " e.p.";
+	if(store.options.ep && h.flags.includes("e")) move = move.replace(/([+#=]?)$/, "ep$1");
 	return move;
 }
 
 function getFullNotation(h) {
 	if(h.flags == "k" || h.flags == "q") return h.san; // castling
 	const p = h.piece.toUpperCase();
+	const c = h.captured && h.captured != "p" ? h.captured.toUpperCase() : "";
+	const e = h.san.match(/[+#=]$/);
+	const suffix = e ? e[0] : "";
 	return (p == "P" ? "" : p) + h.from +
-		(h.captured ? "x" + h.captured.toUpperCase() : "-") +
+		(h.captured ? "x" + c : "-") +
 		h.to +
-		(h.promotion ? "=" + h.promotion.toUpperCase() : "");
+		(h.promotion ? "=" + h.promotion.toUpperCase() : "") +
+		suffix;
 }
 
 function getEpSquare(sq) {
