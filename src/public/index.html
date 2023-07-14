@@ -367,7 +367,7 @@
 					</section>
 
 					<section :class="{show:tab==6}">
-						<template v-if="state.play.playing">
+						<div v-if="state.play.playing">
 							<div class="mb-3">
 								<span>
 									<span class="btn step px-1 py-0 me-3" @click="PLAY.goto()"
@@ -423,7 +423,10 @@
 							<div class="mt-2">
 								<span v-scope="Checkbox('PLAY.ep', 'Add ep to en passant moves')"></span>
 							</div>
-						</template>
+							<div class="mt-2" v-if="state.play.mode=='retro'">
+								<span v-scope="Checkbox('PLAY.negative', 'Use negative numbers in retro mode')"></span>
+							</div>
+						</div>
 						<template v-else>
 							<div>
 								<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;

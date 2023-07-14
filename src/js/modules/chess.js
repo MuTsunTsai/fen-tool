@@ -231,7 +231,7 @@ export class Chess extends ChessBase {
 
 export function number(h) {
 	const num = h.before.match(/\d+$/)[0];
-	const prefix = store.state.mode == "retro" ? "-" : "";
+	const prefix = store.state.mode == "retro" && store.options.negative ? "-" : "";
 	return prefix + num;
 }
 
@@ -252,7 +252,7 @@ export function format(h) {
 function getFullNotation(h) {
 	if(h.flags == "k" || h.flags == "q") return h.san; // castling
 	const p = h.piece.toUpperCase();
-	const c = h.captured && h.captured != "p" ? h.captured.toUpperCase() : "";
+	const c = h.captured ? h.captured.toUpperCase() : "";
 	const e = h.san.match(/[+#=]$/);
 	const suffix = e ? e[0] : "";
 	return (p == "P" ? "" : p) + h.from +

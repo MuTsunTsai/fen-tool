@@ -19,6 +19,7 @@ const settings = {
 	PLAY: {
 		symbol: null,
 		ep: true,
+		negative: false,
 	},
 	feature: {
 		janko: false,
