@@ -132,12 +132,13 @@ function drawSelection(x, y) {
 	const draw = (...pt) => {
 		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
 		for(let i = 1; i < pt.length; i++)tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
-		tCtx.stroke();
 	};
+	tCtx.beginPath();
 	draw([0, 2], [0, 0], [2, 0]);
 	draw([5, 0], [7, 0], [7, 2]);
 	draw([7, 5], [7, 7], [5, 7]);
 	draw([0, 5], [0, 7], [2, 7]);
+	tCtx.stroke();
 }
 
 export async function draw(data) {
