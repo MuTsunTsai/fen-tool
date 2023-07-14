@@ -27,9 +27,10 @@ export class Chess extends ChessBase {
 			throw new Error("pawns cannot be on the 1st or the 8th rank");
 		}
 
-		const test = new ChessBase(manipulateFEN(fen, switchSide));
+		const test = testOtherSideCheck(fen);
 		if(test.isCheck()) {
 			if(this.isCheck()) throw new Error("both kings are under checks");
+			// automatically switch turn regardless of assignment
 			this.initFEN = test.fen();
 			this.load(this.initFEN);
 		}
@@ -112,7 +113,7 @@ export class Chess extends ChessBase {
 		const moves = temp.moves({ verbose: true });
 		const move = moves.find(m => m.from == to && m.to == from && (!unpromote || m.promotion == type));
 		if(!move) return false;
-		const test = new ChessBase(manipulateFEN(move.before, switchSide, arr => arr[3] = "-"));
+		const test = testOtherSideCheck(move.before);
 		if(test.isCheck()) {
 			console.log("must retract checking");
 			return false;
@@ -235,6 +236,10 @@ export class Chess extends ChessBase {
 		store.state.moveNumber = store.state.history.indexOf(h);
 		return fen;
 	}
+}
+
+export function testOtherSideCheck(fen) {
+	return new ChessBase(manipulateFEN(fen, switchSide, arr => arr[3] = "-"))
 }
 
 export function number(h) {
