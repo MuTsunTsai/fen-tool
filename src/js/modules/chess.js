@@ -42,6 +42,7 @@ export class Chess extends ChessBase {
 		const ep = arg.uncapture == "c";
 		const uncapture = ep ? "p" : arg.uncapture;
 
+		// Basic legal checks
 		const type = this.get(from)?.type;
 		if(!type) return false;
 		if(ep && type != "p") return false;
@@ -53,19 +54,26 @@ export class Chess extends ChessBase {
 			if(from != expectedFrom || to != expectedTo) return false;
 		}
 
+		// If we've ever uncastled, the corresponding king or rook cannot be moved anymore
+		const castle = this.getCastlingRights(this.turn() == "w" ? "b" : "w");
+		if(type == "k" && (castle.k || castle.q)) return false;
+		if(type == "r" && from[0] == "a" && castle.q) return false;
+		if(type == "r" && from[0] == "h" && castle.k) return false;
+
 		// Move the piece
 		const fen = manipulateFEN(this.fen(), switchSide, arr => arr[3] = "-");
 		const temp = new ChessBase(fen);
 		const piece = temp.remove(from);
+		const isWhite = piece.color == "w";
 		const rank = from[1];
 		if(unpromote) piece.type = "p";
-		if(piece.type == "p" && (piece.color == "w" && rank == "2" || piece.color == "b" && rank == "7")) return false;
+		if(piece.type == "p" && (isWhite && rank == "2" || !isWhite && rank == "7")) return false;
 		if(!temp.put(piece, to)) return false;
 
 		// Uncapture
 		if(uncapture) {
 			// legal checks
-			const color = piece.color == "w" ? "b" : "w";
+			const color = isWhite ? "b" : "w";
 			if(uncapture == "p" && (rank == "1" || rank == "8")) {
 				console.log("Cannot uncapture a pawn at the 1st or the 8th rank.");
 				return false;
@@ -86,11 +94,16 @@ export class Chess extends ChessBase {
 		}
 
 		// Castling
-		if(piece.type == "k" && (piece.color == "w" && to == "e1" || piece.color == "b" && to == "e8")) {
+		if(piece.type == "k" && (isWhite && to == "e1" || !isWhite && to == "e8")) {
 			const rank = to[1];
-			if(from == "g" + rank) temp.put(temp.remove("f" + rank), "h" + rank);
-			if(from == "c" + rank) temp.put(temp.remove("d" + rank), "a" + rank);
-			temp.load(manipulateFEN(temp.fen(), resetCastling));
+			if(from == "g" + rank) {
+				temp.put(temp.remove("f" + rank), "h" + rank);
+				temp.setCastlingRights(piece.color, { k: true });
+			}
+			if(from == "c" + rank) {
+				temp.put(temp.remove("d" + rank), "a" + rank);
+				temp.setCastlingRights(piece.color, { q: true });
+			}
 		}
 
 		// Check if the retraction is legal
@@ -285,8 +298,4 @@ function switchSide(arr) {
 
 function bumpMove(arr) {
 	if(arr[1] == "w") arr[5] = Number(arr[5]) + 1;
-}
-
-function resetCastling(arr) {
-	arr[2] = "KQkq";
 }

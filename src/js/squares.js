@@ -155,7 +155,9 @@ export function orthodoxFEN() {
 	if(isRetro || !Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
 
 	const ss = normalSnapshot();
-	return `${makeFEN(ss, 8, 8)} ${p.turn} ${getCastle(ss)} ${!isRetro && p.enPassant || "-"} ${p.halfMove} ${p.fullMove}`;
+	const castle = isRetro ? "-" : getCastle(ss);
+	const ep = isRetro ? "-" : p.enPassant;
+	return `${makeFEN(ss, 8, 8)} ${p.turn} ${castle} ${ep} ${p.halfMove} ${p.fullMove}`;
 }
 
 function getCastle(snapshot) {

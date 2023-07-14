@@ -162,6 +162,7 @@ export const PLAY = {
 	goto(h) {
 		setFEN(chess.goto(h));
 		if(state.play.mode == RETRO) {
+			console.log(chess.fen())
 			resetRetro();
 			drawRetroTemplate();
 		}
