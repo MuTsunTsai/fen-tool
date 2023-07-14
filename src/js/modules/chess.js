@@ -37,6 +37,7 @@ export class Chess extends ChessBase {
 
 	retract(arg) {
 		const { from, to, unpromote } = arg;
+		if(this.get(to)) return false;
 
 		// `c` is a special code for en passant
 		const ep = arg.uncapture == "c";
@@ -62,7 +63,7 @@ export class Chess extends ChessBase {
 
 		// Move the piece
 		const fen = manipulateFEN(this.fen(), switchSide, arr => arr[3] = "-");
-		const temp = new ChessBase(fen);
+		const temp = new Chess(fen);
 		const piece = temp.remove(from);
 		const isWhite = piece.color == "w";
 		const rank = from[1];
@@ -85,6 +86,7 @@ export class Chess extends ChessBase {
 
 			const p = { type: uncapture, color };
 			const sq = ep ? getEpSquare(from) : from;
+			if(ep && rank != (isWhite ? "6" : "3")) return false;
 			if(ep && temp.get(sq)) return false;
 			if(!temp.put(p, sq)) return false;
 			if(ep) {
@@ -97,11 +99,11 @@ export class Chess extends ChessBase {
 		if(piece.type == "k" && (isWhite && to == "e1" || !isWhite && to == "e8")) {
 			const rank = to[1];
 			if(from == "g" + rank) {
-				temp.put(temp.remove("f" + rank), "h" + rank);
+				if(!temp._tryRetract("f" + rank, "h" + rank)) return false;
 				temp.setCastlingRights(piece.color, { k: true });
 			}
 			if(from == "c" + rank) {
-				temp.put(temp.remove("d" + rank), "a" + rank);
+				if(!temp._tryRetract("d" + rank, "a" + rank)) return false;
 				temp.setCastlingRights(piece.color, { q: true });
 			}
 		}
@@ -123,6 +125,12 @@ export class Chess extends ChessBase {
 		state.history.length = state.moveNumber + 1;
 		state.history.push(move);
 		state.moveNumber++;
+		return true;
+	}
+
+	_tryRetract(from, to) {
+		if(this.get(to)) return false;
+		this.put(this.remove(from), to);
 		return true;
 	}
 
