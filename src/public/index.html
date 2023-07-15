@@ -389,9 +389,7 @@
 							<div>
 								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
 								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>&nbsp;
-								<span v-if="state.play.mode!='retro'">
-									<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>&nbsp;
-								</span>
+								<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>&nbsp;
 								<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteMoves">
 									<i class="fa-solid fa-paste"></i> Paste moves
 								</button>

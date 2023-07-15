@@ -221,11 +221,28 @@ export class Chess extends ChessBase {
 	}
 
 	copyPGN() {
-		let result = ""
-		if(this.initFEN != DEFAULT_POSITION) {
-			result += `[SetUp "1"]\n[FEN "${this.initFEN}"]\n\n`;
+		let result = "";
+		if(store.state.mode == "retro") {
+			const history = store.state.history;
+			const last = history.length - 1;
+			const fen = history.length > 0 ? history[last].before : this.initFEN;
+			if(fen != DEFAULT_POSITION) {
+				result += `[SetUp "1"]\n[FEN "${fen}"]\n\n`;
+			}
+			let m = 1;
+			for(let i = last; i >= 0; i--) {
+				if(history[i].color == "w" || i == last) {
+					result += (m++) + ". ";
+					if(i == last && history[i].color == "b") result += "... ";
+				}
+				result += history[i].san + " ";
+			}
+		} else {
+			if(this.initFEN != DEFAULT_POSITION) {
+				result += `[SetUp "1"]\n[FEN "${this.initFEN}"]\n\n`;
+			}
+			result += this.copyGame();
 		}
-		result += this.copyGame();
 		return result;
 	}
 
@@ -275,7 +292,7 @@ export function format(h) {
 			move = move.replace(k, s);
 		}
 	}
-	if(isRetro || store.options.ep && h.flags.includes("e")) {
+	if((isRetro || store.options.ep) && h.flags.includes("e")) {
 		// In retro mode, "ep" is mandatory, otherwise it would be ambiguous in general
 		move = move.replace(/([+#=]?)$/, "ep$1");
 	}
