@@ -175,10 +175,6 @@ export class Chess extends ChessBase {
 				if(move == "...") continue;
 				const retract = parseRetroMove(move);
 				if(!this.retract(retract)) {
-					if(retract.uncapture == "p") {
-						retract.uncapture == "c"; // maybe it's an en passant without the ep notation?
-						if(this.retract(retract)) continue;
-					}
 					alert("Something went wrong in the move: " + move);
 					break;
 				}
@@ -269,7 +265,8 @@ export function number(h) {
 }
 
 export function format(h) {
-	let move = store.state.mode == "retro" ? getFullNotation(h) : h.san;
+	const isRetro = store.state.mode == "retro";
+	let move = isRetro ? getFullNotation(h) : h.san;
 	const sym = store.options.symbol;
 	const symbol = sym == "unicode" ? unicode :
 		sym == "german" ? german : null;
@@ -278,7 +275,10 @@ export function format(h) {
 			move = move.replace(k, s);
 		}
 	}
-	if(store.options.ep && h.flags.includes("e")) move = move.replace(/([+#=]?)$/, "ep$1");
+	if(isRetro || store.options.ep && h.flags.includes("e")) {
+		// In retro mode, "ep" is mandatory, otherwise it would be ambiguous in general
+		move = move.replace(/([+#=]?)$/, "ep$1");
+	}
 	if(store.options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0")
 	return move;
 }
