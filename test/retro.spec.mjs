@@ -36,7 +36,7 @@ describe("Retro mode", function() {
 		expect(chess.retract({ from: "g6", to: "f5", uncapture: "c" })).to.be.true;
 		expect(chess.retract({ from: "b6", to: "b5" })).to.be.false;
 		expect(chess.retract({ from: "g5", to: "g6" })).to.be.false;
-		expect(chess.retract({ from: "g5", to: "g7" })).to.be.true;
+		expect(chess.retract({ from: "g5", to: "g7" }), "Must retract two step pawn move").to.be.true;
 	});
 
 	it("Cannot uncastle if the home square of the rook is occupied", function() {

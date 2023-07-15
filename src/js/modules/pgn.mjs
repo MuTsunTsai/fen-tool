@@ -7,7 +7,7 @@ export function parseMoves(text) {
 	text = text
 		.replace(/\{[^}]*\}/g, "") // comments are not nested
 		.replace(/;.+$/gm, "") // end-of-line comment
-		.replace(/\b(\d+)\./g, "$1 .")
+		.replace(/\b(-?\d+)\./g, "$1 .")
 		.replace(/\.+/g, m => m.length > 2 ? "... " : "")
 		.replace(/\s+/g, " ")
 		.trim();
@@ -49,5 +49,5 @@ export function parseMoves(text) {
 }
 
 function isNum(s) {
-	return (/^\d+$/).test(s);
+	return (/^-?\d+$/).test(s);
 }

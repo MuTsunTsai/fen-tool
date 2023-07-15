@@ -37,6 +37,7 @@ export class Chess extends ChessBase {
 	}
 
 	retract(arg) {
+		if(!arg) return false;
 		const { from, to, unpromote } = arg;
 		if(this.get(to)) return false;
 
@@ -168,20 +169,35 @@ export class Chess extends ChessBase {
 	}
 
 	addMoves(moves) {
-		let sideDetermined = false; // Whether we're on the right track
 		if(!moves || moves.length == 0) return;
-		for(const move of moves) {
-			if(move == "...") {
-				if(store.state.pass) this.switchSide();
-			} else if(this.move(move)) {
-				sideDetermined = true;
-			} else {
-				if(!sideDetermined && store.state.pass) {
-					this.switchSide(); // try switch
-					if(this.move(move)) continue;
+		if(store.state.mode == "retro") {
+			for(const move of moves) {
+				if(move == "...") continue;
+				const retract = parseRetroMove(move);
+				if(!this.retract(retract)) {
+					if(retract.uncapture == "p") {
+						retract.uncapture == "c"; // maybe it's an en passant without the ep notation?
+						if(this.retract(retract)) continue;
+					}
+					alert("Something went wrong in the move: " + move);
+					break;
 				}
-				alert("Something went wrong in the move: " + move);
-				break;
+			}
+		} else {
+			let sideDetermined = false; // Whether we're on the right track
+			for(const move of moves) {
+				if(move == "...") {
+					if(store.state.pass) this.switchSide();
+				} else if(this.move(move)) {
+					sideDetermined = true;
+				} else {
+					if(!sideDetermined && store.state.pass) {
+						this.switchSide(); // try switch
+						if(this.move(move)) continue;
+					}
+					alert("Something went wrong in the move: " + move);
+					break;
+				}
 			}
 		}
 	}
@@ -316,4 +332,15 @@ function switchSide(arr) {
 
 function bumpMove(arr) {
 	if(arr[1] == "w") arr[5] = Number(arr[5]) + 1;
+}
+
+function parseRetroMove(move) {
+	const match = move.match(/^\w?([a-h][1-8])[-x](\w?)([a-h][1-8])(ep)?(?:=(\w))?/);
+	if(!match) return null;
+	return {
+		from: match[3],
+		to: match[1],
+		uncapture: match[4] ? "c" : match[2] ? match[2].toLowerCase() : null,
+		unpromote: Boolean(match[5]),
+	};
 }

@@ -8,6 +8,11 @@ describe("PGN Parsing", function() {
 		expect(result).to.eql(["e4", "e5", "Nf3", "Nc6"]);
 	});
 
+	it("Works with retros", function() {
+		const result = parseMoves("-1. Kb3xPc3+ b4xPc3ep+ -2. c2-c4 Bc6-d5+");
+		expect(result).to.eql(["Kb3xPc3+", "b4xPc3ep+", "c2-c4", "Bc6-d5+"]);
+	});
+
 	it("Works with comments in between", function() {
 		const result = parseMoves("1. e4 { next token is number } 1... e5 2. Nf3 { or not } ...Nc6");
 		expect(result).to.eql(["e4", "e5", "Nf3", "Nc6"]);

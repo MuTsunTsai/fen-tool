@@ -10,6 +10,7 @@ describe("UAO code page", function() {
 	it("Contains UAO characters", function() {
 		expect(isInUAO("堃")).to.be.true;
 		expect(isInUAO("あ")).to.be.true;
+		expect(isInUAO("俥")).to.be.true;
 	});
 
 	it("Does not contain other characters", function() {

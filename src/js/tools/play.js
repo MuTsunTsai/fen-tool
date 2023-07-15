@@ -192,6 +192,7 @@ export const PLAY = {
 	async pasteMoves() {
 		const text = await readText();
 		chess.addMoves(module.parseMoves(text));
+		sync();
 	},
 	async pasteGame() {
 		const text = await readText();
