@@ -50,7 +50,9 @@ export class Chess extends ChessBase {
 		if(ep && type != "p") return false;
 		if(unpromote && (type == "p" || type == "k")) return false;
 		const last = store.state.history[store.state.moveNumber];
-		if(last && last.flags == "e") { // last move is en passant
+
+		// If the last retraction is en passant, the only legal retraction is the 2-step pawn
+		if(last && last.flags == "e") {
 			const expectedFrom = last.to.replace("3", "4").replace("6", "5");
 			const expectedTo = last.to.replace("3", "2").replace("6", "7");
 			if(from != expectedFrom || to != expectedTo) return false;
@@ -131,7 +133,9 @@ export class Chess extends ChessBase {
 
 	_tryRetract(from, to) {
 		if(this.get(to)) return false;
-		this.put(this.remove(from), to);
+		const piece = this.remove(from);
+		if(!piece) return false;
+		this.put(piece, to);
 		return true;
 	}
 
