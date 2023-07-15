@@ -139,7 +139,7 @@ gulp.task("ptt", () =>
 );
 
 gulp.task("chess", () =>
-	gulp.src("src/js/modules/chess.js")
+	gulp.src("src/js/modules/chess.mjs")
 		.pipe($.newer({
 			dest: "docs/modules/chess.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
