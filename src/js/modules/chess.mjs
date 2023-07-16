@@ -294,7 +294,8 @@ export function format(h) {
 		}
 	}
 	if((isRetro || store.options.ep) && h.flags.includes("e")) {
-		// In retro mode, "ep" is mandatory, otherwise it would be ambiguous in general
+		// In retro mode, "ep" is mandatory, otherwise it would be ambiguous in general.
+		// It could be inferred if the next retraction is also given, but we cannot expect that.
 		move = move.replace(/([+#=]?)$/, "ep$1");
 	}
 	if(store.options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0")

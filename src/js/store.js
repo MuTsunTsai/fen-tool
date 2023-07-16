@@ -1,5 +1,5 @@
 import { reactive } from "petite-vue";
-import { defaultOption, parseBorder } from "./meta/option";
+import { defaultOption, getDimensions } from "./meta/option";
 import { CN } from "./meta/el";
 
 export const search = new URL(location.href).searchParams;
@@ -82,10 +82,18 @@ export function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));
 }
 
-export function getRenderSize(tp) {
-	const { size, w, border } = store.board;
-	const b = parseBorder(border).size;
-	const factor = (tp || CN).clientWidth / (size * (tp ? 8 : w) + b * 2);
+export function getRenderSize(tp, horTemplate) {
+	const { size, w } = store.board;
+	const { border, margin } = getDimensions(store.board, horTemplate);
+	const bSize = border.size;
+	const factor = (tp || CN).clientWidth / (size * (tp ? 8 : w) + bSize * 2 + (tp ? 0 : margin.x));
 	const s = size * factor;
-	return { b: b * factor, s };
+	const offset = {
+		x: (bSize + margin.x) * factor,
+		y: bSize * factor,
+		r: bSize * factor,
+		b: (bSize + margin.y) * factor,
+	};
+	const width = (w * size + border.size * 2 + margin.x) * factor;
+	return { s, offset, width };
 }

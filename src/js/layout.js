@@ -2,14 +2,8 @@ import { CN, SN, CG, TP, TPG } from "./meta/el";
 import { getRenderSize, search, state, store } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
-import { BORDER, parseBorder } from "./meta/option";
+import { getDimensions, sanitizeBorder } from "./meta/option";
 import { env } from "./meta/env";
-
-export const mode = {
-	hor: false,
-	collapse: false,
-	dragging: false,
-};
 
 export const dpr = Math.min(2, Math.floor(devicePixelRatio));
 
@@ -21,6 +15,12 @@ function bodyWidth() {
 	return document.body.clientWidth / (state.split ? 2 : 1);
 }
 
+export const layoutMode = {
+	hor: false,
+	collapse: false,
+	dragging: false,
+};
+
 export async function setOption(o, force) {
 	const options = store.board;
 	const changed = {};
@@ -29,13 +29,13 @@ export async function setOption(o, force) {
 		if(changed[key]) options[key] = o[key];
 		else o[key] = options[key];
 	}
-	const border = parseBorder(o.border);
+	const { border, margin, w, h } = getDimensions(o);
 
 	// Decide mode
 	const rem = getREM();
-	const newMode = bodyWidth() < (o.w + 3) * o.size + 4 * border.size + 4.1 * rem;
-	changed.mode = newMode !== mode.hor;
-	mode.hor = newMode;
+	const newMode = bodyWidth() < (o.w + 3) * o.size + margin.x + 4 * border.size + 4.2 * rem;
+	changed.mode = newMode !== layoutMode.hor;
+	layoutMode.hor = newMode;
 
 	const dimChange = changed.w || changed.h;
 	if(dimChange || force) createSquares();
@@ -48,7 +48,7 @@ export async function setOption(o, force) {
 	if(shouldDrawTemplate) {
 		let tw = (3 * o.size + 2 * border.size) * dpr;
 		let th = (8 * o.size + 2 * border.size) * dpr;
-		if(mode.hor) {
+		if(layoutMode.hor) {
 			[tw, th] = [th, tw];
 			CN.parentNode.classList.add("mb-3");
 			TP.classList.remove("ms-4");
@@ -63,8 +63,8 @@ export async function setOption(o, force) {
 	}
 
 	if(shouldDrawBoard) {
-		const bw = (o.w * o.size + 2 * border.size) * dpr;
-		const bh = (o.h * o.size + 2 * border.size) * dpr;
+		const bw = w * dpr;
+		const bh = h * dpr;
 		if(CN.width !== bw || CN.height !== bh) {
 			SN.width = CG.width = CN.width = bw;
 			SN.height = CG.height = CN.height = bh;
@@ -93,14 +93,13 @@ function resize() {
 	TP.style.width = (TP.width / dpr) + "px";
 	const { w } = store.board;
 	const r = getRenderSize();
-	if(w > 8 && mode.hor) {
-		const { b, s } = r;
-		TP.style.width = 8 * s + 2 * b + "px";
-	} else if(w < 8 && mode.hor) {
-		const { b, s } = getRenderSize(TP);
-		CN.style.width = w * s + 2 * b + "px";
+	if(w > 8 && layoutMode.hor) {
+		TP.style.width = r.width + "px";
+	} else if(w < 8 && layoutMode.hor) {
+		const { width } = getRenderSize(TP);
+		CN.style.width = width + "px";
 	}
-	container.style.borderWidth = r.b + "px";
+	container.style.borderWidth = `${r.offset.y}px ${r.offset.r}px ${r.offset.b}px ${r.offset.x}px`;
 
 	const rem = getREM();
 	if(store.board.collapse) {
@@ -120,15 +119,15 @@ function resize() {
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
-		EditZone.style.textAlign = mode.hor ? "center" : "start";
+		EditZone.style.textAlign = layoutMode.hor ? "center" : "start";
 		Zone.classList.add("collapse");
-		mode.collapse = true;
+		layoutMode.collapse = true;
 	} else {
 		EditZone.style.marginTop = "0";
 		EditZone.style.width = "unset";
 		EditZone.style.textAlign = "unset";
 		Zone.classList.remove("collapse");
-		mode.collapse = false;
+		layoutMode.collapse = false;
 	}
 }
 
@@ -173,10 +172,12 @@ window.Layout = {
 	setOption,
 	setDimension,
 	setBorder(el) {
-		if(!el.value.match(BORDER)) {
+		const border = sanitizeBorder(el.value);
+		if(!border) {
 			el.value = store.board.border;
 		} else {
-			setOption({ border: el.value });
+			el.value = border;
+			setOption({ border });
 		}
 	},
 	setHeight(el) {

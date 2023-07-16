@@ -1,7 +1,7 @@
 import { store } from "../store";
 import { FEN } from "../meta/el";
 import { CE } from "../render";
-import { parseBorder } from "../meta/option";
+import { getDimensions } from "../meta/option";
 import { inferDimension, makeFEN } from "../meta/fen.mjs";
 import { normalSnapshot } from "../squares";
 
@@ -68,9 +68,7 @@ export const API = {
 		gtag("event", "fen_copy_embed");
 		const options = store.board;
 		let url = getEmbedUrl();
-		const borderSize = parseBorder(options.border).size;
-		const w = options.size * options.w + 2 * borderSize;
-		const h = options.size * options.h + 2 * borderSize;
+		const { w, h } = getDimensions(options);
 		return `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
 	},
 	copyEmbedUrl() {

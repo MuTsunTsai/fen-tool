@@ -1,6 +1,6 @@
 import { ONE_EMOJI, convertSN } from "./meta/fen.mjs";
-import { parseBorder } from "./meta/option";
 import { getAsset } from "./asset";
+import { getDimensions } from "./meta/option";
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
@@ -20,18 +20,16 @@ const maskAlpha = {
 	88: "AEfE68RHAEf8/////EfE///////E6///AP//68T//////8RH/P////xHAEfE68RHAA==",
 };
 
-export function drawBoard(ctx, squares, options, dpr, ghost) {
-	const border = parseBorder(options.border);
+export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
+	const { w, h, border, offset, margin } = getDimensions(options, isTemplate);
 	const assets = getAsset(options, dpr);
-	const w = options.w * options.size + 2 * border.size;
-	const h = options.h * options.size + 2 * border.size;
 	ctx.canvas.width = w * dpr;
 	ctx.canvas.height = h * dpr;
 	ctx.save();
 	ctx.scale(dpr, dpr);
 	const classic = options.bg == "classic";
 	const transparent = ghost || classic;
-	ctx.translate(border.size, border.size);
+	ctx.translate(offset.x, offset.y);
 	for(let i = 0; i < options.h; i++) {
 		for(let j = 0; j < options.w; j++) {
 			if(!transparent) drawBlank(ctx, i, j, options);
@@ -43,7 +41,7 @@ export function drawBoard(ctx, squares, options, dpr, ghost) {
 		createGlow(ctx, options.size, dpr);
 		ctx.save();
 		ctx.scale(dpr, dpr);
-		ctx.translate(border.size, border.size);
+		ctx.translate(offset.x, offset.y);
 		for(let i = 0; i < options.h; i++) {
 			for(let j = 0; j < options.w; j++) {
 				drawBlank(ctx, i, j, options);
@@ -56,7 +54,7 @@ export function drawBoard(ctx, squares, options, dpr, ghost) {
 		ctx.drawImage(pieces, 0, 0);
 	}
 	ctx.scale(dpr, dpr);
-	if(!ghost) drawBorder(ctx, border, w, h);
+	if(!ghost) drawBorder(ctx, border, w, h, margin);
 }
 
 /**
@@ -104,8 +102,11 @@ function background(pattern, i, j) {
 	return bg;
 }
 
-function drawBorder(ctx, border, w, h) {
+function drawBorder(ctx, border, w, h, margin) {
 	ctx.save();
+	ctx.translate(margin.x, 0);
+	w -= margin.x;
+	h -= margin.y;
 	let cursor = 0;
 	for(let i = 0; i < border.array.length; i++) {
 		const width = border.array[i];

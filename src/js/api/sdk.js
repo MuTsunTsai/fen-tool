@@ -1,5 +1,5 @@
 import { inferDimension } from "../meta/fen.mjs";
-import { makeOption, parseBorder } from "../meta/option";
+import { getDimensions, makeOption } from "../meta/option";
 
 const script = document.currentScript;
 const apiURL = new URL("api/", script.src);
@@ -17,10 +17,11 @@ function setup(img) {
 	};
 	const fen = img.getAttribute("fen");
 	const options = makeOption(Object.assign({}, globalOptions, img.dataset));
-	const b = parseBorder(options.border).size;
-	const { w, h } = inferDimension(fen) || options;
-	img.width = options.size * w + 2 * b;
-	img.height = options.size * h + 2 * b;
+	const dim = inferDimension(fen);
+	if(dim) Object.assign(options, dim);
+	const { w, h } = getDimensions(options);
+	img.width = w;
+	img.height = h;
 	frame.contentWindow.postMessage({ fen, options }, "*", [channel.port2]);
 }
 

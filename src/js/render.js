@@ -1,10 +1,10 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
-import { dpr, mode, setOption } from "./layout";
+import { dpr, setOption, layoutMode } from "./layout";
 import { store, state, assign } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
-import { parseBorder } from "./meta/option";
+import { getDimensions } from "./meta/option";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -46,17 +46,17 @@ addEventListener("storage", e => {
 export function drawTemplate(except) {
 	if(except) cache.except = except;
 	else except = cache.except;
-	const options = Object.assign({}, store.board, mode.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
+	const options = Object.assign({}, store.board, layoutMode.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = getTemplate();
-	drawBoard(tCtx, squares, options, dpr);
+	drawBoard(tCtx, squares, options, dpr, false, layoutMode.hor);
 	if(!state.play.playing) {
-		drawBoard(tgCtx, squares, options, dpr, true);
+		drawBoard(tgCtx, squares, options, dpr, true, layoutMode.hor);
 	} else {
 		const { size } = store.board;
 		const isRetro = state.play.mode == "retro";
 		tCtx.save();
-		const border = parseBorder(store.board.border);
-		tCtx.translate(border.size, border.size);
+		const { offset } = getDimensions(store.board, layoutMode.hor);
+		tCtx.translate(offset.x, offset.y);
 
 		// draw "ep"
 		if(isRetro) {
@@ -77,7 +77,7 @@ export function drawTemplate(except) {
 		for(let i = 0; i < 3; i++) {
 			for(let j = 0; j < 8; j++) {
 				if(except?.includes(j * 3 + i)) continue;
-				const [x, y] = mode.hor ? [j, i] : [i, j];
+				const [x, y] = layoutMode.hor ? [j, i] : [i, j];
 				tCtx.fillRect(x * size, y * size, size, size);
 			}
 		}
@@ -99,13 +99,13 @@ export function drawTemplate(except) {
 }
 
 function getTemplate() {
-	let result = mode.hor ? templateHorValues : templateValues;
+	let result = layoutMode.hor ? templateHorValues : templateValues;
 	if(state.play.playing && state.play.mode == "retro") {
 		result = result.concat();
-		if(mode.hor) {
+		if(layoutMode.hor) {
 			result[6] = "p";
 			result[14] = "P";
-		}else {
+		} else {
 			result[18] = "p";
 			result[19] = "P";
 		}
@@ -116,7 +116,7 @@ function getTemplate() {
 function drawEp(x, y) {
 	const { size } = store.board;
 	const offset = size / 15;
-	if(mode.hor) [x, y] = [y, x];
+	if(layoutMode.hor) [x, y] = [y, x];
 	const measure = tCtx.measureText("ep");
 	const width = measure.width;
 	const descent = measure.actualBoundingBoxDescent;
@@ -127,7 +127,7 @@ function drawEp(x, y) {
 function drawSelection(x, y) {
 	const { size } = store.board;
 	const unit = size / 8;
-	if(mode.hor) [x, y] = [y, x];
+	if(layoutMode.hor) [x, y] = [y, x];
 	const offset = .5;
 	const draw = (...pt) => {
 		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
@@ -147,9 +147,9 @@ export async function draw(data) {
 	const options = store.board;
 	drawBoard(ctx, data, options, dpr);
 	drawBoard(eCtx, data, options, getExportDPR());
-	if(!mode.dragging) drawBoard(gCtx, data, options, dpr, true);
+	if(!layoutMode.dragging) drawBoard(gCtx, data, options, dpr, true);
 
-	if(!mode.dragging) pushState();
+	if(!layoutMode.dragging) pushState();
 	if(location.protocol.startsWith("http")) {
 		const a = document.getElementById("Save");
 		if(a.href) URL.revokeObjectURL(a.href);

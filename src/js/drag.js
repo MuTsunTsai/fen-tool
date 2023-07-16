@@ -1,4 +1,4 @@
-import { mode } from "./layout";
+import { layoutMode } from "./layout";
 import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP } from "./meta/el";
@@ -25,31 +25,31 @@ export function initDrag() {
 
 function mousemove(event) {
 	wrapEvent(event);
-	if(mode.dragging == "pending" && getDisplacement(event) > 5) {
+	if(layoutMode.dragging == "pending" && getDisplacement(event) > 5) {
 		if(draggingValue) dragStart(event, true);
-		else mode.dragging = false;
+		else layoutMode.dragging = false;
 	}
-	if(mode.dragging === true) dragMove(event);
+	if(layoutMode.dragging === true) dragMove(event);
 }
 
 function mouseup(event) {
-	if(mode.dragging == "pending" && !state.play.playing) {
+	if(layoutMode.dragging == "pending" && !state.play.playing) {
 		const now = performance.now();
 		if(now - lastTap < 300) sq.focus();
 		lastTap = now;
 		event.preventDefault(); // Prevent touchend triggering mouseup
-		mode.dragging = false;
+		layoutMode.dragging = false;
 	}
 
-	if(!mode.dragging) return;
-	mode.dragging = false;
+	if(!layoutMode.dragging) return;
+	layoutMode.dragging = false;
 	if(!draggingValue) return;
 	wrapEvent(event);
 	const { w, h } = store.board;
-	const { b, s } = getRenderSize();
+	const { s, offset } = getRenderSize();
 	const r = CN.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - b) / s);
-	const x = Math.floor((event.clientX - r.left - b) / s);
+	const y = Math.floor((event.clientY - r.top - offset.y) / s);
+	const x = Math.floor((event.clientX - r.left - offset.x) / s);
 	const index = y * w + x;
 	ghost.style.display = "none";
 	const inBoard = y > -1 && y < h && x > -1 && x < w;
@@ -71,25 +71,25 @@ function mouseDown(event) {
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
-	const { b, s } = getRenderSize();
+	const { offset, s } = getRenderSize();
 	const { w } = store.board;
 	const isCN = this != TP;
 	startX = event.offsetX;
 	startY = event.offsetY;
-	sqX = Math.floor((startX - b) / s);
-	sqY = Math.floor((startY - b) / s);
+	sqX = Math.floor((startX - offset.x) / s);
+	sqY = Math.floor((startY - offset.y) / s);
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 
 	if(state.play.playing) {
 		if(!isCN && state.play.pendingPromotion) {
-			if(mode.hor) [sqX, sqY] = [sqY, sqX];
+			if(layoutMode.hor) [sqX, sqY] = [sqY, sqX];
 			const x = draggingValue == "p" ? 0 : 1;
 			if(sqY > 0 && sqY < 5 && sqX == x) confirmPromotion(fromIndex, types[sqY]);
 		}
 		if(!isCN && state.play.mode == "retro") {
 			event.preventDefault(); // Prevent touchstart triggering mousedown
-			if(mode.hor) [sqX, sqY] = [sqY, sqX];
+			if(layoutMode.hor) [sqX, sqY] = [sqY, sqX];
 			retroClick(sqX, sqY);
 		}
 		if(!isCN || !checkDragPrecondition(index)) return;
@@ -98,7 +98,7 @@ function mouseDown(event) {
 	if(isCN) {
 		fromIndex = index;
 		sq = squares[index];
-		mode.dragging = "pending";
+		layoutMode.dragging = "pending";
 		draggingValue = undefined;
 	}
 	if(!isCN || sq.value != "") {
@@ -107,7 +107,7 @@ function mouseDown(event) {
 		if(isCN) {
 			draggingValue = sq.value;
 		} else {
-			draggingValue = mode.hor ? templateValues[sqX * 3 + sqY] : templateValues[index];
+			draggingValue = layoutMode.hor ? templateValues[sqX * 3 + sqY] : templateValues[index];
 			dragStart(event)
 		}
 	}
@@ -119,7 +119,7 @@ function dragStart(event, isCN) {
 		sq.value = "";
 		toFEN();
 	}
-	mode.dragging = true;
+	layoutMode.dragging = true;
 	dragMove(event);
 }
 
@@ -131,11 +131,11 @@ function getDisplacement(event) {
 }
 
 function dragMove(event) {
-	const { b, s } = getRenderSize();
+	const { offset, s } = getRenderSize();
 	const { w, h } = store.board;
 	const r = CN.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - b) / s);
-	const x = Math.floor((event.clientX - r.left - b) / s);
+	const y = Math.floor((event.clientY - r.top - offset.y) / s);
+	const x = Math.floor((event.clientX - r.left - offset.x) / s);
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < h && x > -1 && x < w) {
 		ghost.style.left = r.left + (x - sqX) * s + scrollLeft + "px";
