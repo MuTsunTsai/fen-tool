@@ -67,7 +67,7 @@ export class Chess extends ChessBase {
 		if(type == "r" && from == (isWhite ? "h1" : "h8") && castle.k) return false;
 
 		// Move the piece
-		const fen = manipulateFEN(this.fen(), switchSide, arr => arr[3] = "-");
+		const fen = manipulateFEN(this.fen(), switchSide, resetEp);
 		const temp = new Chess(fen);
 		const piece = temp.remove(from);
 		const rank = from[1];
@@ -225,7 +225,8 @@ export class Chess extends ChessBase {
 		if(store.state.mode == "retro") {
 			const history = store.state.history;
 			const last = history.length - 1;
-			const fen = history.length > 0 ? history[last].before : this.initFEN;
+			const rawFEN = history.length > 0 ? history[last].before : this.initFEN;
+			const fen = manipulateFEN(rawFEN, resetMove);
 			if(fen != DEFAULT_POSITION) {
 				result += `[SetUp "1"]\n[FEN "${fen}"]\n\n`;
 			}
@@ -272,7 +273,7 @@ export class Chess extends ChessBase {
 }
 
 export function testOtherSideCheck(fen) {
-	return new ChessBase(manipulateFEN(fen, switchSide, arr => arr[3] = "-"))
+	return new ChessBase(manipulateFEN(fen, switchSide, resetEp))
 }
 
 export function number(h) {
@@ -343,13 +344,15 @@ function manipulateFEN(fen, ...factories) {
 	return arr.join(" ");
 }
 
-function switchSide(arr) {
-	arr[1] = arr[1] == "b" ? "w" : "b";
-}
-
-function bumpMove(arr) {
+const switchSide = arr => arr[1] = arr[1] == "b" ? "w" : "b";
+const bumpMove = arr => {
 	if(arr[1] == "w") arr[5] = Number(arr[5]) + 1;
-}
+};
+const resetEp = arr => arr[3] = "-";
+const resetMove = arr => {
+	arr[4] = 0;
+	arr[5] = 1;
+};
 
 function parseRetroMove(move) {
 	const match = move.match(/^\w?([a-h][1-8])[-x](\w?)([a-h][1-8])(ep)?(?:=(\w))?/);
