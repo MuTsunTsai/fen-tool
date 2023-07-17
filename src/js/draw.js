@@ -54,6 +54,12 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
 		ctx.drawImage(pieces, 0, 0);
 	}
 	ctx.scale(dpr, dpr);
+	if(isTemplate === undefined && options.coordinates) {
+		ctx.save();
+		ctx.translate(offset.x, offset.y);
+		drawCoordinates(ctx, options, border.size);
+		ctx.restore();
+	}
 	if(!ghost) drawBorder(ctx, border, w, h, margin);
 }
 
@@ -62,7 +68,7 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
  */
 function drawPiece(ctx, assets, i, j, value, options, dpr) {
 	const { size } = options;
-	const neutral = value.startsWith("-");
+	const neutral = value && value.startsWith("-");
 	if(neutral) value = value.substring(1);
 
 	const match = value.match(/^\*(\d)/);
@@ -118,6 +124,31 @@ function drawBorder(ctx, border, w, h, margin) {
 		cursor += width;
 	}
 	ctx.restore();
+}
+
+function drawCoordinates(ctx, options, bSize) {
+	const { size, w, h } = options;
+	ctx.font = '15px sans-serif';
+	ctx.strokeStyle = "black";
+	ctx.lineWidth = 2;
+	ctx.fillStyle = "white";
+	ctx.lineJoin = "round";
+	for(let i = 0; i < h && i < 26; i++) {
+		const text = String.fromCharCode(97 + i);
+		const measure = ctx.measureText(text);
+		const y = size * (h - i) - (size - 10) / 2;
+		const x = (20 - measure.width) / 2 - 20 - bSize;
+		ctx.strokeText(text, x, y);
+		ctx.fillText(text, x, y);
+	}
+	for(let i = 0; i < w; i++) {
+		const text = (i + 1).toString();
+		const measure = ctx.measureText(text);
+		const y = size * h + 18;
+		const x = size * i + (size - measure.width) / 2;
+		ctx.strokeText(text, x, y);
+		ctx.fillText(text, x, y);
+	}
 }
 
 function createGlow(ctx, size, dpr) {

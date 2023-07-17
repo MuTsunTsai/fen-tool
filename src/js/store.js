@@ -95,5 +95,5 @@ export function getRenderSize(tp, horTemplate) {
 		b: (bSize + margin.y) * factor,
 	};
 	const width = (w * size + border.size * 2 + margin.x) * factor;
-	return { s, offset, width };
+	return { b: bSize * factor, s, offset, width };
 }

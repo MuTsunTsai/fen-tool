@@ -71,13 +71,14 @@ function mouseDown(event) {
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
-	const { offset, s } = getRenderSize();
-	const { w } = store.board;
 	const isCN = this != TP;
+	const { offset, s, b } = getRenderSize();
+	const { w } = store.board;
 	startX = event.offsetX;
 	startY = event.offsetY;
-	sqX = Math.floor((startX - offset.x) / s);
-	sqY = Math.floor((startY - offset.y) / s);
+	const [ox, oy] = isCN ? [offset.x, offset.y] : [b, b];
+	sqX = Math.floor((startX - ox) / s);
+	sqY = Math.floor((startY - oy) / s);
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
 
@@ -103,7 +104,8 @@ function mouseDown(event) {
 	}
 	if(!isCN || sq.value != "") {
 		event.preventDefault();
-		ghost.style.clip = `rect(${sqY * s + b + 1}px,${(sqX + 1) * s + b - 1}px,${(sqY + 1) * s + b - 1}px,${sqX * s + b + 1}px)`;
+		console.log(`rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`);
+		ghost.style.clip = `rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`;
 		if(isCN) {
 			draggingValue = sq.value;
 		} else {

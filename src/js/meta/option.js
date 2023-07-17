@@ -10,6 +10,7 @@ export const defaultOption = {
 	size: 44,
 	w: 8,
 	h: 8,
+	coordinates: false,
 	set: "1echecs",
 	collapse: false,
 };
@@ -69,11 +70,11 @@ function parseBorder(border) {
 
 export function getDimensions(options, horTemplate) {
 	const border = parseBorder(options.border);
-	const margin = { x: 0, y: 0 }; // TODO
+	const margin = options.coordinates ? { x: 20, y: 20 } : { x: 0, y: 0 };
 	if(horTemplate === true) margin.y = 0;
 	if(horTemplate === false) margin.x = 0;
 	const w = options.w * options.size + 2 * border.size + margin.x;
 	const h = options.h * options.size + 2 * border.size + margin.y;
-	const offset = {x: border.size + margin.x, y: border.size };
+	const offset = { x: border.size + margin.x, y: border.size };
 	return { w, h, border, offset, margin };
 }

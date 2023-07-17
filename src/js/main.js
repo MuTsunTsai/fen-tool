@@ -81,6 +81,9 @@ createApp({
 	redraw,
 	updateBG,
 	updateSN,
+	toggleCoordinates() {
+		setOption({}, true);
+	},
 	get DB() {
 		return store.DB.use == "PDB" ? PDB : YACPDB;
 	},

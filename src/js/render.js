@@ -65,6 +65,7 @@ export function drawTemplate(except) {
 			tCtx.strokeStyle = "black";
 			tCtx.lineWidth = size / 12;
 			tCtx.fillStyle = "white";
+			tCtx.lineJoin = "round";
 			drawEp(1, 7);
 			drawEp(2, 7);
 			tCtx.restore();
