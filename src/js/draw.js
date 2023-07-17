@@ -133,18 +133,18 @@ function drawCoordinates(ctx, options, bSize) {
 	ctx.lineWidth = 2;
 	ctx.fillStyle = "white";
 	ctx.lineJoin = "round";
-	for(let i = 0; i < h && i < 26; i++) {
-		const text = String.fromCharCode(97 + i);
+	for(let i = 0; i < h; i++) {
+		const text = (i + 1).toString();
 		const measure = ctx.measureText(text);
 		const y = size * (h - i) - (size - 10) / 2;
 		const x = (LABEL_MARGIN - measure.width) / 2 - LABEL_MARGIN - bSize;
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);
 	}
-	for(let i = 0; i < w; i++) {
-		const text = (i + 1).toString();
+	for(let i = 0; i < w && i < 26; i++) {
+		const text = String.fromCharCode(97 + i);
 		const measure = ctx.measureText(text);
-		const y = size * h + 18 + bSize;
+		const y = size * h + LABEL_MARGIN + bSize - 5;
 		const x = size * i + (size - measure.width) / 2;
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);
