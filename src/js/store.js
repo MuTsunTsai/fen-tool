@@ -86,7 +86,8 @@ export function getRenderSize(tp, horTemplate) {
 	const { size, w } = store.board;
 	const { border, margin } = getDimensions(store.board, horTemplate);
 	const bSize = border.size;
-	const factor = (tp || CN).clientWidth / (size * (tp ? 8 : w) + bSize * 2 + (tp ? 0 : margin.x));
+	const files = tp ? (horTemplate ? 8 : 3) : w;
+	const factor = (tp || CN).clientWidth / (size * files + bSize * 2 + margin.x);
 	const s = size * factor;
 	const offset = {
 		x: (bSize + margin.x) * factor,
@@ -95,5 +96,5 @@ export function getRenderSize(tp, horTemplate) {
 		b: (bSize + margin.y) * factor,
 	};
 	const width = (w * size + border.size * 2 + margin.x) * factor;
-	return { b: bSize * factor, s, offset, width };
+	return { s, offset, width };
 }

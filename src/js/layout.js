@@ -49,10 +49,11 @@ export async function setOption(o, force) {
 		let tw = (3 * o.size + 2 * border.size) * dpr;
 		let th = (8 * o.size + 2 * border.size) * dpr;
 		if(layoutMode.hor) {
-			[tw, th] = [th, tw];
+			[tw, th] = [th + margin.x, tw];
 			CN.parentNode.classList.add("mb-3");
 			TP.classList.remove("ms-4");
 		} else {
+			th += margin.y;
 			CN.parentNode.classList.remove("mb-3");
 			TP.classList.add("ms-4");
 		}

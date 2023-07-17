@@ -68,9 +68,11 @@ function parseBorder(border) {
 	return { array, size };
 }
 
+export const LABEL_MARGIN = 20;
+
 export function getDimensions(options, horTemplate) {
 	const border = parseBorder(options.border);
-	const margin = options.coordinates ? { x: 20, y: 20 } : { x: 0, y: 0 };
+	const margin = options.coordinates ? { x: LABEL_MARGIN, y: LABEL_MARGIN } : { x: 0, y: 0 };
 	if(horTemplate === true) margin.y = 0;
 	if(horTemplate === false) margin.x = 0;
 	const w = options.w * options.size + 2 * border.size + margin.x;

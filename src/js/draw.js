@@ -1,6 +1,6 @@
 import { ONE_EMOJI, convertSN } from "./meta/fen.mjs";
 import { getAsset } from "./asset";
-import { getDimensions } from "./meta/option";
+import { LABEL_MARGIN, getDimensions } from "./meta/option";
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
@@ -137,14 +137,14 @@ function drawCoordinates(ctx, options, bSize) {
 		const text = String.fromCharCode(97 + i);
 		const measure = ctx.measureText(text);
 		const y = size * (h - i) - (size - 10) / 2;
-		const x = (20 - measure.width) / 2 - 20 - bSize;
+		const x = (LABEL_MARGIN - measure.width) / 2 - LABEL_MARGIN - bSize;
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);
 	}
 	for(let i = 0; i < w; i++) {
 		const text = (i + 1).toString();
 		const measure = ctx.measureText(text);
-		const y = size * h + 18;
+		const y = size * h + 18 + bSize;
 		const x = size * i + (size - measure.width) / 2;
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);

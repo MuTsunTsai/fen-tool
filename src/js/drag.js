@@ -1,10 +1,11 @@
 import { layoutMode } from "./layout";
 import { getRenderSize, state, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
-import { CN, PV, TP } from "./meta/el";
+import { CN, PV, TP, CG, TPG } from "./meta/el";
 import { templateValues } from "./render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
 import { types } from "./draw";
+import { LABEL_MARGIN } from "./meta/option";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
 let ghost, draggingValue, fromIndex;
@@ -72,15 +73,15 @@ function mouseDown(event) {
 
 	if(document.activeElement) document.activeElement.blur();
 	const isCN = this != TP;
-	const { offset, s, b } = getRenderSize();
+	const { offset, s } = isCN ? getRenderSize() : getRenderSize(TP, layoutMode.hor);
 	const { w } = store.board;
 	startX = event.offsetX;
 	startY = event.offsetY;
-	const [ox, oy] = isCN ? [offset.x, offset.y] : [b, b];
+	const [ox, oy] = [offset.x, offset.y];
 	sqX = Math.floor((startX - ox) / s);
 	sqY = Math.floor((startY - oy) / s);
 	const index = sqY * (isCN ? w : 3) + sqX;
-	ghost = document.getElementById(isCN ? "CanvasGhost" : "TemplateGhost");
+	ghost = isCN ? CG : TPG;
 
 	if(state.play.playing) {
 		if(!isCN && state.play.pendingPromotion) {
@@ -104,7 +105,6 @@ function mouseDown(event) {
 	}
 	if(!isCN || sq.value != "") {
 		event.preventDefault();
-		console.log(`rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`);
 		ghost.style.clip = `rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`;
 		if(isCN) {
 			draggingValue = sq.value;
@@ -134,13 +134,14 @@ function getDisplacement(event) {
 
 function dragMove(event) {
 	const { offset, s } = getRenderSize();
-	const { w, h } = store.board;
+	const { w, h, coordinates } = store.board;
 	const r = CN.getBoundingClientRect();
+	const left = ghost == TPG && coordinates && !layoutMode.hor ? r.left + LABEL_MARGIN : r.left;
 	const y = Math.floor((event.clientY - r.top - offset.y) / s);
 	const x = Math.floor((event.clientX - r.left - offset.x) / s);
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < h && x > -1 && x < w) {
-		ghost.style.left = r.left + (x - sqX) * s + scrollLeft + "px";
+		ghost.style.left = left + (x - sqX) * s + scrollLeft + "px";
 		ghost.style.top = r.top + (y - sqY) * s + scrollTop + "px";
 	} else {
 		ghost.style.left = event.clientX + scrollLeft + 1 - startX + "px";
