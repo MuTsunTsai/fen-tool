@@ -542,7 +542,7 @@
 								<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">Cancel</button>
 							</div>
 						</div>
-						<pre v-if="state.popeye.output" class="form-control" v-text="state.popeye.output"></pre>
+						<pre v-if="state.popeye.output&&tab==7" class="form-control" v-text="state.popeye.output"></pre>
 					</section>
 
 					<section :class="{show:tab==4}" v-if="env.isTaiwan">
