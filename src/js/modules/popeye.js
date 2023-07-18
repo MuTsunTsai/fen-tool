@@ -27,4 +27,6 @@ addEventListener("message", event => {
 		_free(argv[i]);
 	}
 	_free(ptrArgv);
+
+	postMessage(null);
 });

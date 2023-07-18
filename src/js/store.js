@@ -77,6 +77,7 @@ export const state = reactive({
 		mode: "normal",
 	},
 	popeye: {
+		running: false,
 		input: "",
 		output: "",
 	},

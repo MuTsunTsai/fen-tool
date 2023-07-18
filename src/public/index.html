@@ -538,7 +538,8 @@
 								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">Popeye documentation</a>
 							</div>
 							<div class="col-auto text-end">
-								<button type="button" class="btn btn-primary" @click="popeye">Run</button>
+								<button v-if="!state.popeye.running" type="button" class="btn btn-primary" @click="Popeye.run">Run</button>
+								<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">Cancel</button>
 							</div>
 						</div>
 						<pre v-if="state.popeye.output" class="form-control" v-text="state.popeye.output"></pre>

@@ -138,7 +138,7 @@ export function toFEN() {
 export function orthodoxForsyth(useSN = false) {
 	const { w, h } = store.board;
 	if(w != 8 || h != 8) return null;
-	const ss = normalSnapshot(useSN);
+	const ss = useSN && store.board.SN ? snapshot() : normalSnapshot(useSN);
 	for(const s of ss) {
 		if(s != "" && !s.match(/^[kqbsnrp]$/i)) return null;
 	}
