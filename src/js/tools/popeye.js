@@ -6,7 +6,7 @@ let startTime;
 
 function stop() {
 	const remain = 1000 - (performance.now() - startTime);
-	setTimeout(() => state.popeye.running = false, Math.min(0, remain));
+	setTimeout(() => state.popeye.running = false, Math.max(0, remain));
 }
 
 export const Popeye = {
