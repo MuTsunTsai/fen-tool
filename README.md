@@ -68,7 +68,7 @@ Tip: You can use left/right keys (or A/D keys) to quickly navigate move history.
 This tool integrates [Popeye](https://github.com/thomas-maeder/popeye),
 one of the most powerful and popular chess problem solvers.
 Just put the problem description in the input box
-(forsyth notation and `noboard` option will be added automatically)
+(Forsyth notation and `noboard` option will be added automatically)
 and press `Run`!
 See [Popeye documentation](https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt) for more.
 
