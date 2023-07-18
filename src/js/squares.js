@@ -112,8 +112,8 @@ export function snapshot() {
 	return squares.map(s => s.value);
 }
 
-export function normalSnapshot() {
-	return snapshot().map(v => convertSN(v, false, true));
+export function normalSnapshot(useSN = false) {
+	return snapshot().map(v => convertSN(v, useSN, true));
 }
 
 export function paste(shot, ow, oh) {
@@ -135,13 +135,19 @@ export function toFEN() {
 	draw(data);
 }
 
-export function orthodoxFEN() {
+export function orthodoxForsyth(useSN = false) {
 	const { w, h } = store.board;
 	if(w != 8 || h != 8) return null;
-	for(const s of squares) {
-		const value = convertSN(s.value, false, true);
-		if(value != "" && !value.match(/^[kqbnrp]$/i)) return null;
+	const ss = normalSnapshot(useSN);
+	for(const s of ss) {
+		if(s != "" && !s.match(/^[kqbsnrp]$/i)) return null;
 	}
+	return makeFEN(ss, 8, 8);
+}
+
+export function orthodoxFEN() {
+	const forsyth = orthodoxForsyth();
+	if(!forsyth) return null;
 	const p = state.play;
 
 	if(!p.enPassant.match(/^[a-h][36]$/)) p.enPassant = ""; // Ignore invalid squares
@@ -154,25 +160,25 @@ export function orthodoxFEN() {
 	if(isRetro || !Number.isSafeInteger(p.halfMove) || p.halfMove < 0) p.halfMove = 0;
 	if(isRetro || !Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
 
-	const ss = normalSnapshot();
-	const castle = isRetro ? "-" : getCastle(ss);
+	const castle = isRetro ? "-" : getCastle();
 	const ep = isRetro ? "-" : p.enPassant || "-";
-	return `${makeFEN(ss, 8, 8)} ${p.turn} ${castle} ${ep} ${p.halfMove} ${p.fullMove}`;
+	return `${forsyth} ${p.turn} ${castle} ${ep} ${p.halfMove} ${p.fullMove}`;
 }
 
-function getCastle(snapshot) {
+function getCastle() {
+	const ss = snapshot();
 	let result = "";
 	const c = state.play.castle;
 	// Chess.js doesn't really check if the castling parameters make sense;
 	// so we have to double check the parameters here.
 	// TODO: support Chess960 here
-	if(snapshot[60] == "K") {
-		if(c.K && snapshot[63] == "R") result += "K";
-		if(c.Q && snapshot[56] == "R") result += "Q";
+	if(ss[60] == "K") {
+		if(c.K && ss[63] == "R") result += "K";
+		if(c.Q && ss[56] == "R") result += "Q";
 	}
-	if(snapshot[4] == "k") {
-		if(c.k && snapshot[7] == "r") result += "k";
-		if(c.q && snapshot[0] == "r") result += "q";
+	if(ss[4] == "k") {
+		if(c.k && ss[7] == "r") result += "k";
+		if(c.q && ss[0] == "r") result += "q";
 	}
 	return result == "" ? "-" : result;
 }

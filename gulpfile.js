@@ -149,10 +149,21 @@ gulp.task("chess", () =>
 		.pipe(gulp.dest("docs/modules"))
 );
 
+gulp.task("popeye", () =>
+	gulp.src(["src/js/modules/popeye.js", "src/js/modules/py.js"])
+		.pipe($.newer({
+			dest: "docs/modules/py.js",
+			extra: [__filename]
+		}))
+		.pipe($.if(file => file.stem == "popeye", $.terser()))
+		.pipe($.concat("py.js"))
+		.pipe(gulp.dest("docs/modules"))
+);
+
 gulp.task("fa", () =>
 	gulp.src(htmlSource)
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt", "chess"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt", "chess", "popeye"), "sw"));

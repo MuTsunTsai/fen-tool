@@ -11,6 +11,7 @@ import { env } from "./meta/env";
 import { SN } from "./meta/el";
 import { normalFEN } from "./tools/api";
 import { PLAY } from "./tools/play";
+import { popeye } from "./tools/popeye";
 
 initLayout();
 initDrag();
@@ -81,6 +82,7 @@ createApp({
 	redraw,
 	updateBG,
 	updateSN,
+	popeye,
 	toggleCoordinates() {
 		setOption({}, true);
 	},

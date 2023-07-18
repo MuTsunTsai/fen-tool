@@ -75,7 +75,11 @@ export const state = reactive({
 		halfMove: 0,
 		fullMove: 1,
 		mode: "normal",
-	}
+	},
+	popeye: {
+		input: "",
+		output: "",
+	},
 });
 
 export function saveSettings() {

@@ -109,6 +109,9 @@
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==6}" @click="tab=6">Play</div>
 						</li>
+						<li class="nav-item">
+							<div class="nav-link" :class="{active:tab==7}" @click="tab=7">Popeye</div>
+						</li>
 						<li class="nav-item" v-if="env.isTaiwan">
 							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
 						</li>
@@ -526,6 +529,19 @@
 								</div>
 							</div>
 						</template>
+					</section>
+
+					<section :class="{show:tab==7}">
+						<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"></textarea>
+						<div class="mb-3 row">
+							<div class="col col-form-label">
+								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">Popeye documentation</a>
+							</div>
+							<div class="col-auto text-end">
+								<button type="button" class="btn btn-primary" @click="popeye">Run</button>
+							</div>
+						</div>
+						<pre v-if="state.popeye.output" class="form-control" v-text="state.popeye.output"></pre>
 					</section>
 
 					<section :class="{show:tab==4}" v-if="env.isTaiwan">

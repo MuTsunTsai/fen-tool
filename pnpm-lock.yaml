@@ -34,6 +34,9 @@ devDependencies:
   '@types/chai':
     specifier: ^4.3.5
     version: 4.3.5
+  '@types/gulp-concat':
+    specifier: ^0.0.34
+    version: 0.0.34
   '@types/gulp-load-plugins':
     specifier: ^0.0.34
     version: 0.0.34
@@ -46,6 +49,9 @@ devDependencies:
   gulp:
     specifier: ^4.0.2
     version: 4.0.2
+  gulp-concat:
+    specifier: ^2.6.1
+    version: 2.6.1
   gulp-esbuild:
     specifier: ^0.11.2
     version: 0.11.2
@@ -55,6 +61,9 @@ devDependencies:
   gulp-html-minifier-terser:
     specifier: ^7.1.0
     version: 7.1.0
+  gulp-if:
+    specifier: ^3.0.0
+    version: 3.0.0
   gulp-load-plugins:
     specifier: ^2.0.8
     version: 2.0.8
@@ -1611,6 +1620,12 @@ packages:
     resolution: {integrity: sha512-Q5Vn3yjTDyCMV50TB6VRIbQNxSE4OmZR86VSbGaNpfUolm0iePBB4KdEEHmxoY5sT2+2DIvXW0rvMDP2nHZ4Mg==}
     dev: true
 
+  /@types/gulp-concat@0.0.34:
+    resolution: {integrity: sha512-UczGRR/XFvx6QfOxzK2DVeeKQaiXRpPyQNDezpMNJ30uOCUKiR2muQN8v9oX1GOuqhx1zAkp71t4zZIK+kXfBQ==}
+    dependencies:
+      '@types/node': 20.4.2
+    dev: true
+
   /@types/gulp-load-plugins@0.0.34:
     resolution: {integrity: sha512-5ZUU1kfKNcn063fEpljKj3Jbk7Iv3K8AMSlst3aK67q2A4S/tsnuF7JG4dpUIfYCeAIDPK8t6UeQGUzPEI4dMQ==}
     dependencies:
@@ -2434,6 +2449,12 @@ packages:
       typedarray: 0.0.6
     dev: true
 
+  /concat-with-sourcemaps@1.1.0:
+    resolution: {integrity: sha512-4gEjHJFT9e+2W/77h/DS5SGUgwDaOwprX8L/gl5+3ixnzkVJJsZWDSelmN3Oilw3LNDZjZV0yqH1hLG3k6nghg==}
+    dependencies:
+      source-map: 0.6.1
+    dev: true
+
   /content-disposition@0.5.2:
     resolution: {integrity: sha512-kRGRZw3bLlFISDBgwTSA1TMBFN6J6GWDeubmDE3AF+3+yXL8hTWv8r5rkLbqYXY4RjPk/EzHnClI3zQf1cFmHA==}
     engines: {node: '>= 0.6'}
@@ -2613,6 +2634,15 @@ packages:
       end-of-stream: 1.4.4
       inherits: 2.0.4
       readable-stream: 2.3.8
+      stream-shift: 1.0.1
+    dev: true
+
+  /duplexify@4.1.2:
+    resolution: {integrity: sha512-fz3OjcNCHmRP12MJoZMPglx8m4rrFP8rovnk4vT8Fs+aonZoCwGg10dSsQsfP/E62eZcPTMSMP6686fu9Qlqtw==}
+    dependencies:
+      end-of-stream: 1.4.4
+      inherits: 2.0.4
+      readable-stream: 3.6.2
       stream-shift: 1.0.1
     dev: true
 
@@ -3085,6 +3115,10 @@ packages:
       for-in: 1.0.2
     dev: true
 
+  /fork-stream@0.0.4:
+    resolution: {integrity: sha512-Pqq5NnT78ehvUnAk/We/Jr22vSvanRlFTpAmQ88xBY/M1TlHe+P0ILuEyXS595ysdGfaj22634LBkGMA2GTcpA==}
+    dev: true
+
   /fragment-cache@0.2.1:
     resolution: {integrity: sha512-GMBAbW9antB8iZRHLoGw0b3HANt57diZYFO/HL1JGIC1MjKrdmhxvrJbupnVvpys0zsz7yBApXdQyfepKly2kA==}
     engines: {node: '>=0.10.0'}
@@ -3362,6 +3396,15 @@ packages:
       - supports-color
     dev: true
 
+  /gulp-concat@2.6.1:
+    resolution: {integrity: sha512-a2scActrQrDBpBbR3WUZGyGS1JEPLg5PZJdIa7/Bi3GuKAmPYDK6SFhy/NZq5R8KsKKFvtfR0fakbUCcKGCCjg==}
+    engines: {node: '>= 0.10'}
+    dependencies:
+      concat-with-sourcemaps: 1.1.0
+      through2: 2.0.5
+      vinyl: 2.2.1
+    dev: true
+
   /gulp-esbuild@0.11.2:
     resolution: {integrity: sha512-skS81h8Rco/JpWxnU8IWFUnhYVSy9Y7ImpmpKNCf1N5+h4i8OMfaPzHF+F8X2rP+Rv0QarpTjHGodSU4OwRsTA==}
     engines: {node: '>=12'}
@@ -3391,6 +3434,14 @@ packages:
       through2: 4.0.2
     dev: true
 
+  /gulp-if@3.0.0:
+    resolution: {integrity: sha512-fCUEngzNiEZEK2YuPm+sdMpO6ukb8+/qzbGfJBXyNOXz85bCG7yBI+pPSl+N90d7gnLvMsarthsAImx0qy7BAw==}
+    dependencies:
+      gulp-match: 1.1.0
+      ternary-stream: 3.0.0
+      through2: 3.0.2
+    dev: true
+
   /gulp-load-plugins@2.0.8:
     resolution: {integrity: sha512-BS0aRx67WnWPt8stEDvwt+biD2gQ1NwDMgxuUhX5+AQSujqlcSecbdL+U6g0zu2S3YjOuY+eGmnXjT2J3hRMIg==}
     engines: {node: '>=8'}
@@ -3402,6 +3453,12 @@ packages:
       has-gulplog: 1.0.0
       micromatch: 4.0.5
       resolve: 1.22.2
+    dev: true
+
+  /gulp-match@1.1.0:
+    resolution: {integrity: sha512-DlyVxa1Gj24DitY2OjEsS+X6tDpretuxD6wTfhXE/Rw2hweqc1f6D/XtsJmoiCwLWfXgR87W9ozEityPCVzGtQ==}
+    dependencies:
+      minimatch: 3.1.2
     dev: true
 
   /gulp-newer@1.4.0:
@@ -5638,6 +5695,15 @@ packages:
       unique-string: 2.0.0
     dev: true
 
+  /ternary-stream@3.0.0:
+    resolution: {integrity: sha512-oIzdi+UL/JdktkT+7KU5tSIQjj8pbShj3OASuvDEhm0NT5lppsm7aXWAmAq4/QMaBIyfuEcNLbAQA+HpaISobQ==}
+    dependencies:
+      duplexify: 4.1.2
+      fork-stream: 0.0.4
+      merge-stream: 2.0.0
+      through2: 3.0.2
+    dev: true
+
   /terser@5.19.0:
     resolution: {integrity: sha512-JpcpGOQLOXm2jsomozdMDpd5f8ZHh1rR48OFgWUH3QsyZcfPgv2qDCYbcDEAYNd4OZRj2bWYKpwdll/udZCk/Q==}
     engines: {node: '>=10'}
@@ -5666,6 +5732,13 @@ packages:
     dependencies:
       readable-stream: 2.3.8
       xtend: 4.0.2
+    dev: true
+
+  /through2@3.0.2:
+    resolution: {integrity: sha512-enaDQ4MUyP2W6ZyT6EsMzqBPZaM/avg8iuo+l2d3QCs0J+6RaqkHV/2/lOwDTueBHeJ/2LG9lrLW3d5rWPucuQ==}
+    dependencies:
+      inherits: 2.0.4
+      readable-stream: 3.6.2
     dev: true
 
   /through2@4.0.2:
