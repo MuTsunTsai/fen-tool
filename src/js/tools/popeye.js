@@ -1,3 +1,4 @@
+import { nextTick } from "petite-vue";
 import { orthodoxForsyth } from "../squares";
 import { state } from "../store";
 
@@ -7,18 +8,29 @@ let startTime;
 let output;
 let suffix;
 let int;
+let shouldScroll = false;
 
 function stop(keepRunning) {
 	const remain = 1000 - (performance.now() - startTime);
 	state.popeye.output = output;
+	tryScroll();
 	clearInterval(int);
 	if(!keepRunning) setTimeout(() => state.popeye.running = false, Math.max(0, remain));
 }
 
 function animate() {
 	suffix += ".";
-	if(suffix.length == "5") suffix = ".";
+	if(suffix.length == 5) suffix = ".";
 	state.popeye.output = output + "\n" + suffix;
+	tryScroll();
+}
+
+function tryScroll() {
+	const el = document.getElementById("Output");
+	if(shouldScroll && el) {
+		shouldScroll = false;
+		nextTick(() => el.scrollTop = el.scrollHeight - el.clientHeight);
+	}
 }
 
 function terminate(keepRunning) {
@@ -47,8 +59,13 @@ export const Popeye = {
 					terminate(true);
 					Popeye.run();
 					output = "Fallback to JS mode.\n";
-				} else if(event.data === null) stop();
-				else output += event.data + "\n";
+				} else if(event.data === null) {
+					stop();
+				} else {
+					const el = document.getElementById("Output");
+					shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
+					output += event.data + "\n";
+				}
 			};
 		}
 
