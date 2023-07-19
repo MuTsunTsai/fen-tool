@@ -137,6 +137,8 @@ export function retroClick(x, y) {
 
 export const PLAY = {
 	async start() {
+		gtag("event", "fen_play_" + state.play.mode);
+
 		const fen = orthodoxFEN();
 		if(!fen) {
 			alert("Only orthodox chess is supported.");

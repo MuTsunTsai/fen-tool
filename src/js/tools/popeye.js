@@ -29,6 +29,8 @@ function terminate(keepRunning) {
 
 export const Popeye = {
 	run() {
+		gtag("event", "fen_popeye_run");
+
 		// Precondition
 		const fen = orthodoxForsyth(true);
 		if(!fen) {
@@ -54,7 +56,7 @@ export const Popeye = {
 		output = "";
 		suffix = ".";
 		int = setInterval(animate, 500);
-		const input = `fors ${fen}\n${state.popeye.input}\nopti noboard`
+		const input = `fors ${fen}\n${state.popeye.input}\nopti noboard`;
 		startTime = performance.now();
 		state.popeye.running = true;
 		worker.postMessage(input);
