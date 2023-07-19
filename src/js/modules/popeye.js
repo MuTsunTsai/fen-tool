@@ -12,8 +12,8 @@ const ready = new Promise(resolve => Module.postRun = resolve);
 Module.print = postMessage;
 Module.printErr = text => {
 	if(text.includes("Maximum call stack size exceeded")) {
-		// Safari has a bug that could result in this error when running wasm in worker.
-		// In that case we fallback to use asm.js instead.
+		// Some versions of Safari and iOS has a bug that could result in this error
+		// when running wasm in worker. In that case we fallback to use asm.js instead.
 		postMessage(-1);
 	} else postMessage(text);
 };
