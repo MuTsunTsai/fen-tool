@@ -532,14 +532,20 @@
 					</section>
 
 					<section :class="{show:tab==7}">
-						<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input" placeholder="Put stipulations and options etc. here"></textarea>
+						<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
+								  placeholder="Put stipulations and options etc. here"></textarea>
 						<div class="mb-3 row">
 							<div class="col col-form-label">
-								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">Popeye documentation</a>
+								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">Popeye
+									documentation</a>
 							</div>
 							<div class="col-auto text-end">
-								<button v-if="!state.popeye.running" type="button" class="btn btn-primary" @click="Popeye.run">Run</button>
-								<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">Cancel</button>
+								<button v-if="!state.popeye.running" type="button" class="btn btn-primary" @click="Popeye.run">
+									<i class="fa-solid fa-play"></i>&ensp;Run
+								</button>
+								<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">
+									<i class="fa-solid fa-stop"></i>&ensp;Cancel
+								</button>
 							</div>
 						</div>
 						<pre v-if="state.popeye.output&&tab==7" class="form-control" v-text="state.popeye.output"></pre>
