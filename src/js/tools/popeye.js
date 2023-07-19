@@ -8,11 +8,11 @@ let output;
 let suffix;
 let int;
 
-function stop() {
+function stop(keepRunning) {
 	const remain = 1000 - (performance.now() - startTime);
 	state.popeye.output = output;
 	clearInterval(int);
-	setTimeout(() => state.popeye.running = false, Math.max(0, remain));
+	if(!keepRunning) setTimeout(() => state.popeye.running = false, Math.max(0, remain));
 }
 
 function animate() {
@@ -21,10 +21,10 @@ function animate() {
 	state.popeye.output = output + "\n" + suffix;
 }
 
-function terminate() {
+function terminate(keepRunning) {
 	worker.terminate();
 	worker = undefined;
-	stop();
+	stop(keepRunning);
 }
 
 export const Popeye = {
@@ -41,9 +41,8 @@ export const Popeye = {
 			worker = new Worker(path);
 			worker.onmessage = event => {
 				if(event.data === -1) {
-					console.log("fallback");
 					path = "modules/py.asm.js"; // fallback to asm.js
-					terminate();
+					terminate(true);
 					Popeye.run();
 					output = "Fallback to JS mode.\n";
 				} else if(event.data === null) stop();
