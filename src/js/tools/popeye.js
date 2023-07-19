@@ -1,6 +1,7 @@
 import { orthodoxForsyth } from "../squares";
 import { state } from "../store";
 
+let path = "modules/py.js";
 let worker;
 let startTime;
 let output;
@@ -20,20 +21,37 @@ function animate() {
 	state.popeye.output = output + "\n" + suffix;
 }
 
+function terminate() {
+	worker.terminate();
+	worker = undefined;
+	stop();
+}
+
 export const Popeye = {
 	run() {
-		if(!worker) {
-			worker = new Worker("modules/py.js");
-			worker.onmessage = event => {
-				if(event.data === null) stop();
-				else output += event.data + "\n";
-			};
-		}
+		// Precondition
 		const fen = orthodoxForsyth(true);
 		if(!fen) {
 			alert("Only orthodox pieces are supported for now.");
 			return;
 		}
+
+		// Setup
+		if(!worker) {
+			worker = new Worker(path);
+			worker.onmessage = event => {
+				if(event.data === -1) {
+					console.log("fallback");
+					path = "modules/py.asm.js"; // fallback to asm.js
+					terminate();
+					Popeye.run();
+					output = "Fallback to JS mode.\n";
+				} else if(event.data === null) stop();
+				else output += event.data + "\n";
+			};
+		}
+
+		// Initialize
 		output = "";
 		suffix = ".";
 		int = setInterval(animate, 500);
@@ -43,10 +61,6 @@ export const Popeye = {
 		worker.postMessage(input);
 	},
 	cancel() {
-		if(worker) {
-			worker.terminate();
-			worker = undefined;
-			stop();
-		}
-	}
+		if(worker) terminate();
+	},
 };

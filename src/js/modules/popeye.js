@@ -9,11 +9,21 @@ var Module = {
 
 const ready = new Promise(resolve => Module.postRun = resolve);
 
-Module.print = Module.printErr = text => postMessage(text);
+Module.print = postMessage;
+Module.printErr = text => {
+	if(text.includes("Maximum call stack size exceeded")) {
+		// Safari has a bug that could result in this error when running wasm in worker.
+		// In that case we fallback to use asm.js instead.
+		postMessage(-1);
+	} else postMessage(text);
+};
 
-addEventListener("message", async event => {
+addEventListener("message", async event =>{
 	await ready;
 	FS.writeFile(popeyeInputFile, "BeginProblem\n" + event.data + "\nEndProblem");
-	callMain(args);
-	postMessage(null);
+	try {
+		callMain(args);
+	} finally {
+		postMessage(null); // signify finished
+	}
 });
