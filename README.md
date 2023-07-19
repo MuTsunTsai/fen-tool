@@ -72,7 +72,14 @@ Just put the problem description in the input box
 and press `Run`!
 See [Popeye documentation](https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt) for more.
 
-Thanks to Dmitri Turevski for compiling Popeye in JavaScript.
+By default it will run Popeye in WebAssembly,
+but it is known that it will get a runtime error in some versions of Safari and iOS.
+In that case it will automatically fallback to run Popeye in asm.js
+(it's slower, but works).
+
+Thanks to [Dmitri Turevski](https://github.com/dturevski)
+for sharing his experience in compiling Popeye using
+[Emscripten](https://github.com/emscripten-core/emscripten).
 
 
 <br>
