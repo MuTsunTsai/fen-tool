@@ -1,5 +1,5 @@
 import { FEN } from "./meta/el";
-import { DEFAULT, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
+import { DEFAULT, INIT_FEN, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
 import { setOption, layoutMode } from "./layout";
 import { state, store } from "./store";
 import { readText } from "./copy";
@@ -230,9 +230,10 @@ window.FEN = {
 		for(const sq of squares) sq.value = "";
 		toFEN();
 	},
+	set: setFEN,
 	reset() {
 		setOption({ w: 8, h: 8 });
-		setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+		setFEN(INIT_FEN);
 	},
 	copy() {
 		gtag("event", "fen_copy");

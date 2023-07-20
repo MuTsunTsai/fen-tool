@@ -1,6 +1,6 @@
 import { squares, setFEN } from "../squares";
 import { store } from "../store";
-import { makeFEN, toYACPDB, toCoordinate, convertSN } from "../meta/fen.mjs";
+import { makeFEN, toYACPDB, toSquare, convertSN } from "../meta/fen.mjs";
 import { DB } from "../meta/el";
 
 export const YACPDB = {
@@ -61,7 +61,7 @@ function createQuery() {
 			if(v.match(/\d/)) continue; // rotation not supported;
 			if(v.startsWith("!")) v = "n" + v.toUpperCase();
 			else v = (v == v.toLowerCase() ? "b" : "w") + v.toUpperCase();
-			pieces.push(v + toCoordinate(i, j));
+			pieces.push(v + toSquare(i, j));
 		}
 	}
 	let result = `MatrixExtended("${pieces.join(" ")}", false, false, "None")`;
@@ -79,7 +79,7 @@ function createEdit() {
 			if(!match) continue;
 			const type = convertSN(match[2], false, true).toUpperCase();
 			const color = match[1] ? "n" : v == v.toLowerCase() ? "b" : "w";
-			groups[color].push(type + toCoordinate(i, j));
+			groups[color].push(type + toSquare(i, j));
 		}
 	}
 	let result = [];

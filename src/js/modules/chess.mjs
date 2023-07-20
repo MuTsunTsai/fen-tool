@@ -67,7 +67,7 @@ export class Chess extends ChessBase {
 		if(type == "r" && from == (isWhite ? "h1" : "h8") && castle.k) return false;
 
 		// Move the piece
-		const fen = manipulateFEN(this.fen(), switchSide, resetEp);
+		const fen = manipulateFEN(this.fen(), switchSide);
 		const temp = new Chess(fen);
 		const piece = temp.remove(from);
 		const rank = from[1];
@@ -273,7 +273,7 @@ export class Chess extends ChessBase {
 }
 
 export function testOtherSideCheck(fen) {
-	return new ChessBase(manipulateFEN(fen, switchSide, resetEp))
+	return new ChessBase(manipulateFEN(fen, switchSide))
 }
 
 export function number(h) {
@@ -345,11 +345,13 @@ function manipulateFEN(fen, ...factories) {
 	return arr.join(" ");
 }
 
-const switchSide = arr => arr[1] = arr[1] == "b" ? "w" : "b";
+const switchSide = arr => {
+	arr[1] = arr[1] == "b" ? "w" : "b";
+	arr[3] = "-"; // Always reset ep
+};
 const bumpMove = arr => {
 	if(arr[1] == "w") arr[5] = Number(arr[5]) + 1;
 };
-const resetEp = arr => arr[3] = "-";
 const resetMove = arr => {
 	arr[4] = 0;
 	arr[5] = 1;

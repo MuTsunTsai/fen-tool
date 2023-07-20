@@ -1,7 +1,7 @@
 import { store } from "../store";
 import { squares, setFEN } from "../squares";
 import { types } from "../draw";
-import { toCoordinate } from "../meta/fen.mjs";
+import { toSquare } from "../meta/fen.mjs";
 import { DB } from "../meta/el";
 
 export const PDB = {
@@ -48,7 +48,7 @@ function createQuery() {
 			if(!v.match(/^[kqbsnrp]$/i)) continue; // only orthodox pieces are supported
 			const type = pdbMap[types.indexOf(v.toLowerCase().replace("s", "n"))];
 			const color = v == v.toLowerCase() ? "s" : "w";
-			pieces.push(color + type + toCoordinate(i, j));
+			pieces.push(color + type + toSquare(i, j));
 		}
 	}
 	let result = `POSITION='${pieces.join(" ")}'`;
@@ -72,7 +72,7 @@ function createEdit() {
 				const rotation = rotationMap[Number(match[2] || 0)];
 				key = color + type + rotation;
 			}
-			groups[key] = (groups[key] || "") + toCoordinate(i, j);
+			groups[key] = (groups[key] || "") + toSquare(i, j);
 		}
 	}
 	const result = [];

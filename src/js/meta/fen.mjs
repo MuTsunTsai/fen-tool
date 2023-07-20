@@ -1,5 +1,6 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
+export const INIT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
 const EMOJI = `[🇦-🇿]{2}|\\p{ExtPict}\\uFE0F?\\p{EMod}?(\\u200D\\p{ExtPict}\\uFE0F?\\p{EMod}?)*`;
 const YACPDB = `\\((!?)([kqbnrp])(\\d?)\\)`; // also captures 3 parts
@@ -134,10 +135,14 @@ export function convertSN(value, useSN, convert) {
 /**
  * Convert to board coordinate notation (only orthodox board is supported).
  */
-export function toCoordinate(i, j) {
+export function toSquare(i, j) {
 	if(j === undefined) {
 		j = i % 8;
 		i = i >>> 3;
 	}
 	return String.fromCharCode(97 + j) + (8 - i);
+}
+
+export function parseSquare(sq) {
+	return (8 - Number(sq[1])) * 8 + (sq.charCodeAt(0) - 97)
 }

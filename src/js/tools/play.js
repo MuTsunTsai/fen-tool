@@ -1,6 +1,6 @@
 import { readText } from "../copy";
 import { types } from "../draw";
-import { toCoordinate } from "../meta/fen.mjs";
+import { toSquare } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
 import { state, store } from "../store"
@@ -34,8 +34,8 @@ addEventListener("keydown", e => {
 });
 
 export function move(from, to, promotion) {
-	from = toCoordinate(from);
-	to = toCoordinate(to);
+	from = toSquare(from);
+	to = toSquare(to);
 	if(state.play.mode == RETRO) {
 		const result = chess.retract({ from, to, ...state.play.retro });
 		if(result) {
@@ -67,7 +67,7 @@ export function checkPromotion(from, to) {
 	const mode = state.play.mode;
 	if(mode == RETRO) return false;
 	if(mode == PASS && getSquareColor(from) != chess.turn()) chess.switchSide();
-	if(!chess.checkPromotion(toCoordinate(from), toCoordinate(to))) return false;
+	if(!chess.checkPromotion(toSquare(from), toSquare(to))) return false;
 	pendingTarget = to;
 	state.play.pendingPromotion = true;
 	drawTemplate(chess.turn() == "b" ? bMask : wMask)
@@ -75,7 +75,7 @@ export function checkPromotion(from, to) {
 }
 
 function getSquareColor(index) {
-	return chess.get(toCoordinate(index)).color;
+	return chess.get(toSquare(index)).color;
 }
 
 export function checkDragPrecondition(index) {
