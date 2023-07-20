@@ -15,12 +15,6 @@ function bodyWidth() {
 	return document.body.clientWidth / (state.split ? 2 : 1);
 }
 
-export const layoutMode = {
-	hor: false,
-	collapse: false,
-	dragging: false,
-};
-
 export async function setOption(o, force) {
 	const options = store.board;
 	const changed = {};
@@ -34,8 +28,8 @@ export async function setOption(o, force) {
 	// Decide mode
 	const rem = getREM();
 	const newMode = bodyWidth() < (o.w + 3) * o.size + margin.x + 4 * border.size + 4.2 * rem;
-	changed.mode = newMode !== layoutMode.hor;
-	layoutMode.hor = newMode;
+	changed.mode = newMode !== state.layout.hor;
+	state.layout.hor = newMode;
 
 	const dimChange = changed.w || changed.h;
 	if(dimChange || force) createSquares();
@@ -48,7 +42,7 @@ export async function setOption(o, force) {
 	if(shouldDrawTemplate) {
 		let tw = (3 * o.size + 2 * border.size) * dpr;
 		let th = (8 * o.size + 2 * border.size) * dpr;
-		if(layoutMode.hor) {
+		if(state.layout.hor) {
 			[tw, th] = [th + margin.x * dpr, tw];
 			CN.parentNode.classList.add("mb-3");
 			TP.classList.remove("ms-4");
@@ -88,15 +82,15 @@ function setDimension(dim) {
 	paste(shot, w, h);
 }
 
-function resize() {
+export function resize() {
 	Zone.style.maxWidth = `calc(${bodyWidth()}px + 1rem)`;
 	CN.style.width = (CN.width / dpr) + "px";
 	TP.style.width = (TP.width / dpr) + "px";
 	const { w } = store.board;
 	const r = getRenderSize();
-	if(w > 8 && layoutMode.hor) {
+	if(w > 8 && state.layout.hor) {
 		TP.style.width = r.width + "px";
-	} else if(w < 8 && layoutMode.hor) {
+	} else if(w < 8 && state.layout.hor) {
 		const { width } = getRenderSize(TP);
 		CN.style.width = width + "px";
 	}
@@ -120,15 +114,15 @@ function resize() {
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
-		EditZone.style.textAlign = layoutMode.hor ? "center" : "start";
+		EditZone.style.textAlign = state.layout.hor ? "center" : "start";
 		Zone.classList.add("collapse");
-		layoutMode.collapse = true;
+		state.layout.collapse = true;
 	} else {
 		EditZone.style.marginTop = "0";
 		EditZone.style.width = "unset";
 		EditZone.style.textAlign = "unset";
 		Zone.classList.remove("collapse");
-		layoutMode.collapse = false;
+		state.layout.collapse = false;
 	}
 }
 

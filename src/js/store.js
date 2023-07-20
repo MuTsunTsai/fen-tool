@@ -77,9 +77,18 @@ export const state = reactive({
 		mode: "normal",
 	},
 	popeye: {
+		index: null,
+		steps: null,
+		playing: false,
+		error: false,
 		running: false,
 		input: "",
 		output: "",
+	},
+	layout: {
+		hor: false,
+		collapse: false,
+		dragging: false,
 	},
 });
 

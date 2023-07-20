@@ -77,9 +77,11 @@ but it is known that it will get a runtime error in some versions of Safari and 
 In that case it will automatically fallback to run Popeye in asm.js
 (it's slower, but works).
 
-Thanks to [Dmitri Turevski](https://github.com/dturevski)
-for sharing his experience in compiling Popeye using
-[Emscripten](https://github.com/emscripten-core/emscripten).
+You can also playback solutions (with the same navigation hotkeys as in play mode).
+Note that this feature is far from complete when it comes to fairy conditions and twin problems.
+Feel free to submit an issue if any solution doesn't play correctly.
+
+Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
 
 
 <br>

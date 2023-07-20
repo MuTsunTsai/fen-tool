@@ -10,7 +10,7 @@ import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
 import { normalFEN } from "./tools/api";
-import { PLAY } from "./tools/play";
+import { PLAY, moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 
 initLayout();
@@ -18,8 +18,27 @@ initDrag();
 
 // https://stackoverflow.com/a/43321596/9953396
 document.addEventListener('mousedown', function(event) {
+	const el = document.activeElement?.nodeName.toLowerCase();
+	if(el == "input" || el == "textarea") return;
 	if(event.detail > 1) event.preventDefault();
 }, false);
+
+addEventListener("keydown", e => {
+	if(!state.play.playing && !state.popeye.playing) return;
+	const el = document.activeElement?.nodeName.toLowerCase();
+	if(el == "input" || el == "textarea") return;
+	const k = e.key;
+	if(k == "a" || k == "ArrowLeft") {
+		e.preventDefault();
+		if(state.play.playing) moveHistory(-1);
+		else Popeye.moveBy(-1);
+	}
+	if(k == "d" || k == "ArrowRight") {
+		e.preventDefault();
+		if(state.play.playing) moveHistory(1);
+		else Popeye.moveBy(1);
+	}
+});
 
 //===========================================================
 // export
@@ -88,6 +107,9 @@ createApp({
 	},
 	get DB() {
 		return store.DB.use == "PDB" ? PDB : YACPDB;
+	},
+	get playing() {
+		return state.play.playing || state.popeye.playing;
 	},
 	YACPDB,
 	BBS,

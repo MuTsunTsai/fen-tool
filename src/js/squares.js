@@ -1,6 +1,6 @@
 import { FEN } from "./meta/el";
 import { DEFAULT, INIT_FEN, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
-import { setOption, layoutMode } from "./layout";
+import { setOption } from "./layout";
 import { state, store } from "./store";
 import { readText } from "./copy";
 
@@ -44,7 +44,7 @@ export function createSquares() {
 
 function squareOnFocus() {
 	this.style.zIndex = "10";
-	if(layoutMode.collapse) {
+	if(state.layout.collapse) {
 		const data = snapshot();
 		data[squares.indexOf(this)] = "";
 		draw(data);
@@ -56,17 +56,17 @@ function squareOnBlur() {
 	// We check the input again on blur, as some browser extensions could
 	// programmatically modify its value without triggering onchange event.
 	if(checkInputCore(this)) toFEN();
-	else if(layoutMode.collapse) draw(snapshot());
+	else if(state.layout.collapse) draw(snapshot());
 }
 
 function checkInput() {
 	checkInputCore(this);
-	if(layoutMode.collapse) this.blur();
+	if(state.layout.collapse) this.blur();
 	toFEN();
 }
 
 function onInput() {
-	if(!layoutMode.collapse) {
+	if(!state.layout.collapse) {
 		const data = snapshot();
 		data[squares.indexOf(this)] = normalize(this.value, store.board.SN);
 		draw(data);
@@ -230,7 +230,6 @@ window.FEN = {
 		for(const sq of squares) sq.value = "";
 		toFEN();
 	},
-	set: setFEN,
 	reset() {
 		setOption({ w: 8, h: 8 });
 		setFEN(INIT_FEN);

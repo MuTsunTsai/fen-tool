@@ -17,21 +17,14 @@ const bMask = [3, 6, 9, 12];
 const wrMask = bMask.concat(15, 16, 18);
 const brMask = wMask.concat(15, 16, 19);
 
-addEventListener("keydown", e => {
+export function moveHistory(v) {
 	const p = state.play;
 	let n = p.moveNumber;
-	if(!p.playing) return;
-	const k = e.key;
-	if(k == "a" || k == "ArrowLeft") {
-		e.preventDefault();
-		if(n > -1) n--;
-	}
-	if(k == "d" || k == "ArrowRight") {
-		e.preventDefault();
-		if(n < p.history.length - 1) n++;
-	}
+	n += v;
+	if(n < -1) n == -1;
+	if(n > p.history.length - 1) n = p.history.length - 1;
 	if(n != p.moveNumber) PLAY.goto(p.history[n]);
-});
+}
 
 export function move(from, to, promotion) {
 	from = toSquare(from);

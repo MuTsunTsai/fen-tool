@@ -1,5 +1,5 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
-import { dpr, setOption, layoutMode } from "./layout";
+import { dpr, setOption } from "./layout";
 import { store, state, assign } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
@@ -46,16 +46,16 @@ addEventListener("storage", e => {
 export function drawTemplate(except) {
 	if(except) cache.except = except;
 	else except = cache.except;
-	const options = Object.assign({}, store.board, layoutMode.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
+	const options = Object.assign({}, store.board, state.layout.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = getTemplate();
-	drawBoard(tCtx, squares, options, dpr, false, layoutMode.hor);
-	if(!state.play.playing) {
-		drawBoard(tgCtx, squares, options, dpr, true, layoutMode.hor);
+	drawBoard(tCtx, squares, options, dpr, false, state.layout.hor);
+	if(!state.play.playing && !state.popeye.playing) {
+		drawBoard(tgCtx, squares, options, dpr, true, state.layout.hor);
 	} else {
 		const { size } = store.board;
 		const isRetro = state.play.mode == "retro";
 		tCtx.save();
-		const { offset } = getDimensions(store.board, layoutMode.hor);
+		const { offset } = getDimensions(store.board, state.layout.hor);
 		tCtx.translate(offset.x, offset.y);
 
 		// draw "ep"
@@ -78,7 +78,7 @@ export function drawTemplate(except) {
 		for(let i = 0; i < 3; i++) {
 			for(let j = 0; j < 8; j++) {
 				if(except?.includes(j * 3 + i)) continue;
-				const [x, y] = layoutMode.hor ? [j, i] : [i, j];
+				const [x, y] = state.layout.hor ? [j, i] : [i, j];
 				tCtx.fillRect(x * size, y * size, size, size);
 			}
 		}
@@ -100,10 +100,10 @@ export function drawTemplate(except) {
 }
 
 function getTemplate() {
-	let result = layoutMode.hor ? templateHorValues : templateValues;
+	let result = state.layout.hor ? templateHorValues : templateValues;
 	if(state.play.playing && state.play.mode == "retro") {
 		result = result.concat();
-		if(layoutMode.hor) {
+		if(state.layout.hor) {
 			result[6] = "p";
 			result[14] = "P";
 		} else {
@@ -117,7 +117,7 @@ function getTemplate() {
 function drawEp(x, y) {
 	const { size } = store.board;
 	const offset = size / 15;
-	if(layoutMode.hor) [x, y] = [y, x];
+	if(state.layout.hor) [x, y] = [y, x];
 	const measure = tCtx.measureText("ep");
 	const width = measure.width;
 	const descent = measure.actualBoundingBoxDescent;
@@ -128,7 +128,7 @@ function drawEp(x, y) {
 function drawSelection(x, y) {
 	const { size } = store.board;
 	const unit = size / 8;
-	if(layoutMode.hor) [x, y] = [y, x];
+	if(state.layout.hor) [x, y] = [y, x];
 	const offset = .5;
 	const draw = (...pt) => {
 		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
@@ -148,9 +148,9 @@ export async function draw(data) {
 	const options = store.board;
 	drawBoard(ctx, data, options, dpr);
 	drawBoard(eCtx, data, options, getExportDPR());
-	if(!layoutMode.dragging) drawBoard(gCtx, data, options, dpr, true);
+	if(!state.layout.dragging) drawBoard(gCtx, data, options, dpr, true);
 
-	if(!layoutMode.dragging) pushState();
+	if(!state.layout.dragging) pushState();
 	if(location.protocol.startsWith("http")) {
 		const a = document.getElementById("Save");
 		if(a.href) URL.revokeObjectURL(a.href);

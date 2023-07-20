@@ -47,14 +47,13 @@
 				<div class="row gx-3 mb-3">
 					<label class="col-auto col-form-label">FEN:</label>
 					<div class="col">
-						<input type="text" class="form-control" :readonly="state.play.playing||undefined" id="FEN"
-							   onchange="FEN.update()">
+						<input type="text" class="form-control" :readonly="playing||undefined" id="FEN" onchange="FEN.update()">
 					</div>
 					<div v-cloak class="col-auto" v-if="env.canCopy">
 						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
-						<button v-if="env.canPaste" class="btn btn-secondary" :disabled="state.play.playing" title="Paste"
+						<button v-if="env.canPaste" class="btn btn-secondary" :disabled="playing" title="Paste"
 								onclick="FEN.paste()">
 							<i class="fa-solid fa-paste"></i>
 						</button>
@@ -70,7 +69,7 @@
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
 								<div id="Squares">
-									<div class="play-mask" v-show="state.play.playing"></div>
+									<div class="play-mask" v-show="playing"></div>
 								</div>
 							</div>
 						</div>
@@ -84,7 +83,7 @@
 								</div>
 								<img id="PV">
 							</div>
-							<canvas id="TP" class="ms-4">
+							<canvas id="TP" class="ms-4" v-show="!state.layout.hor||!state.popeye.playing">
 						</div>
 					</div>
 				</div>
@@ -122,38 +121,34 @@
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<span class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="FEN.empty()"
-										:disabled="state.play.playing">
+								<button type="button" class="btn btn-secondary" onclick="FEN.empty()" :disabled="playing">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="FEN.reset()"
-										:disabled="state.play.playing">
+								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" :disabled="playing">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
 							</span>
 							<span class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)"
-										:disabled="state.play.playing">
+								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)" :disabled="playing">
 									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)"
-										:disabled="state.play.playing">
+								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)" :disabled="playing">
 									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
 								</button>
 							</span>
 							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)"
-									   :disabled="state.play.playing">
+									   :disabled="playing">
 								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="FEN.color(0)"
-									   :disabled="state.play.playing">
+									   :disabled="playing">
 								<input type="button" class="btn btn-secondary" value="All White" onclick="FEN.color(1)"
-									   :disabled="state.play.playing">
+									   :disabled="playing">
 							</span>
 							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="Switch side" title="Texts are not converted"
-									   onclick="FEN.invert(false)" :disabled="state.play.playing">
+									   onclick="FEN.invert(false)" :disabled="playing">
 								<input type="button" class="btn btn-secondary" value="Switch case" title="Texts are converted"
-									   onclick="FEN.invert(true)" :disabled="state.play.playing">
+									   onclick="FEN.invert(true)" :disabled="playing">
 							</span>
 						</div>
 						<div class="text-end">
@@ -350,11 +345,11 @@
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">Problem Id:</label>
 							<div class="col">
-								<input type="text" class="form-control" id="DB" :readonly="state.play.playing||undefined">
+								<input type="text" class="form-control" id="DB" :readonly="playing||undefined">
 							</div>
 							<div class="col-auto">
 								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)"
-									   :disabled="state.play.playing">
+									   :disabled="playing">
 							</div>
 						</div>
 						<div class="row align-items-center flex-wrap">
@@ -434,11 +429,13 @@
 						</div>
 						<template v-else>
 							<div>
-								<button class="btn btn-primary" @click="PLAY.start">Start playing</button>&nbsp;
-								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset">
+								<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start
+									playing</button>&nbsp;
+								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset"
+										:disabled="state.popeye.playing">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>&nbsp;
-								<button class="btn btn-secondary" @click="PLAY.pasteGame">
+								<button class="btn btn-secondary" @click="PLAY.pasteGame" :disabled="state.popeye.playing">
 									<i class="fa-solid fa-paste"></i> Paste PGN
 								</button>
 							</div>
@@ -532,15 +529,21 @@
 					</section>
 
 					<section :class="{show:tab==7}">
-						<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input" :disabled="state.popeye.running"
+						<textarea class="form-control mb-2" v-show="!state.popeye.playing" rows="5" v-model="state.popeye.input"
+								  :disabled="state.popeye.running"
 								  :placeholder="'Put stipulations and options etc. here. For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
-						<div class="mb-3 row">
+						<div class="mb-3 row" v-if="!state.popeye.playing">
 							<div class="col col-form-label">
 								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">Popeye
 									documentation</a>
 							</div>
 							<div class="col-auto text-end">
-								<button v-if="!state.popeye.running" type="button" class="btn btn-primary" @click="Popeye.run">
+								<button type="button" class="btn btn-secondary" @click="Popeye.play"
+										:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
+									Play solution
+								</button>
+								<button v-if="!state.popeye.running" type="button" class="btn btn-primary" @click="Popeye.run"
+										:disabled="state.play.playing">
 									<i class="fa-solid fa-play"></i>&ensp;Run
 								</button>
 								<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">
@@ -548,7 +551,32 @@
 								</button>
 							</div>
 						</div>
-						<div id="Output" v-if="state.popeye.output&&tab==7" class="form-control" v-html="state.popeye.output">
+						<div class="mb-3 row" v-else>
+							<div class="col">
+								<button type="button" class="btn btn-secondary" @click="Popeye.move(0)"
+										:disabled="state.popeye.index<=0">
+									<i class="fa-solid fa-angles-left"></i>
+								</button>
+								<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(-1)"
+										:disabled="state.popeye.index<=0">
+									<i class="fa-solid fa-angle-left"></i>
+								</button>
+								<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(1)"
+										:disabled="state.popeye.index>=state.popeye.steps.length-1">
+									<i class="fa-solid fa-angle-right"></i>
+								</button>
+								<button type="button" class="btn btn-secondary" @click="Popeye.move(state.popeye.steps.length-1)"
+										:disabled="state.popeye.index>=state.popeye.steps.length-1">
+									<i class="fa-solid fa-angles-right"></i>
+								</button>
+							</div>
+							<div class="col-auto text-end">
+								<button type="button" class="btn btn-secondary" @click="Popeye.exit">
+									Exit playing
+								</button>
+							</div>
+						</div>
+						<div id="Output" v-show="state.popeye.output&&tab==7" class="form-control" v-html="state.popeye.output">
 						</div>
 						<!-- stub for purge css -->
 						<span class="text-danger"></span>
