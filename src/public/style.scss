@@ -206,7 +206,7 @@ label[for] {
 	max-height: 70vh;
 	overflow: auto;
 	font-family: monospace;
-	white-space: nowrap;
+	white-space: pre;
 }
 
 @media (prefers-color-scheme: light) {
