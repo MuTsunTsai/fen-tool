@@ -21,7 +21,7 @@ function stop(keepRunning) {
 function animate() {
 	suffix += ".";
 	if(suffix.length == 5) suffix = ".";
-	state.popeye.output = output + "\n" + suffix;
+	state.popeye.output =output + "<br>" + suffix;
 	tryScroll();
 }
 
@@ -54,17 +54,19 @@ export const Popeye = {
 		if(!worker) {
 			worker = new Worker(path);
 			worker.onmessage = event => {
-				if(event.data === -1) {
+				const data = event.data;
+				if(data === -1) {
 					path = "modules/py.asm.js"; // fallback to asm.js
 					terminate(true);
 					Popeye.run();
-					output = "Fallback to JS mode.\n";
-				} else if(event.data === null) {
+					output = "Fallback to JS mode.<br>";
+				} else if(data === null) {
 					stop();
 				} else {
 					const el = document.getElementById("Output");
 					shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
-					output += event.data + "\n";
+					if("text" in data) output += data.text + "<br>";
+					if("err" in data) output += `<span class="text-danger">${data.err}</span><br>`;
 				}
 			};
 		}

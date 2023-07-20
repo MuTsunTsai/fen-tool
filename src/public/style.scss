@@ -202,6 +202,13 @@ label[for] {
 	color: yellow;
 }
 
+#Output {
+	max-height: 70vh;
+	overflow: auto;
+	font-family: monospace;
+	white-space: nowrap;
+}
+
 @media (prefers-color-scheme: light) {
 	.btn-secondary {
 		--bs-btn-color: #000;
