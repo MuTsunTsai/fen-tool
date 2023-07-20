@@ -5,7 +5,7 @@ import { state } from "../store";
 let path = "modules/py.js";
 let worker;
 let startTime;
-let output;
+let output; // in HTML
 let suffix;
 let int;
 let shouldScroll = false;
@@ -21,7 +21,7 @@ function stop(keepRunning) {
 function animate() {
 	suffix += ".";
 	if(suffix.length == 5) suffix = ".";
-	state.popeye.output =output + "<br>" + suffix;
+	state.popeye.output = output + "<br>" + suffix;
 	tryScroll();
 }
 
@@ -37,6 +37,10 @@ function terminate(keepRunning) {
 	worker.terminate();
 	worker = undefined;
 	stop(keepRunning);
+}
+
+function escapeHtml(text) {
+	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export const Popeye = {
@@ -65,8 +69,8 @@ export const Popeye = {
 				} else {
 					const el = document.getElementById("Output");
 					shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
-					if("text" in data) output += data.text + "<br>";
-					if("err" in data) output += `<span class="text-danger">${data.err}</span><br>`;
+					if(typeof data.text == "string") output += escapeHtml(data.text) + "<br>";
+					if(typeof data.err == "string") output += `<span class="text-danger">${escapeHtml(data.err)}</span><br>`;
 				}
 			};
 		}
