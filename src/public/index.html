@@ -532,7 +532,7 @@
 					</section>
 
 					<section :class="{show:tab==7}">
-						<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
+						<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input" :disabled="state.popeye.running"
 								  :placeholder="'Put stipulations and options etc. here. For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
 						<div class="mb-3 row">
 							<div class="col col-form-label">

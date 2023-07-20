@@ -65,7 +65,7 @@ export const Popeye = {
 				} else {
 					const el = document.getElementById("Output");
 					shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
-					if("text" in data) output += data.text.replace + "<br>";
+					if("text" in data) output += data.text + "<br>";
 					if("err" in data) output += `<span class="text-danger">${data.err}</span><br>`;
 				}
 			};
