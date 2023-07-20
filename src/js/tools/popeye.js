@@ -65,7 +65,7 @@ export const Popeye = {
 				} else {
 					const el = document.getElementById("Output");
 					shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
-					if("text" in data) output += data.text + "<br>";
+					if("text" in data) output += data.text.replace + "<br>";
 					if("err" in data) output += `<span class="text-danger">${data.err}</span><br>`;
 				}
 			};
@@ -75,7 +75,7 @@ export const Popeye = {
 		output = "";
 		suffix = ".";
 		int = setInterval(animate, 500);
-		const input = `fors ${fen}\n${state.popeye.input}\nopti noboard`;
+		const input = `fors ${fen}\nopti noboard\n${state.popeye.input}`;
 		startTime = performance.now();
 		state.popeye.running = true;
 		worker.postMessage(input);
