@@ -4,7 +4,7 @@ const SQ = `[a-h][1-8]`;
 const P = `(?:[A-Z]|[0-9A-Z][0-9A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
 const Extra = String.raw`(\+)?([nwb])?(${P})(${SQ})(?:=(${P}))?(?:&lt;-&gt;${P}${SQ})?`;
-const Main = String.raw`(?:0-0(?:-0)?|(?:[nwb])?${P}?(${SQ})[-*](${SQ})(?:-(${SQ}))?(?:=(${P}))?( ep\.)?)`;
+const Main = String.raw`(?:(0-0(?:-0)?|(?:[nwb])?${P}?(${SQ})[-*](${SQ})(?:-(${SQ}))?)(?:=(${P}))?( ep\.)?)`;
 const Step = String.raw`(\d+\.(?:\.\.)?)?(${Main}(?:\/${Main})*)(?:\[(${Extra})\])?(?: [+#=])?`;
 
 const TWIN = new RegExp(Twin);
@@ -90,7 +90,7 @@ export function parseSolution(input, initFEN, output, factory) {
 			}
 
 			// Handle extra instructions
-			const extra = match[13];
+			const extra = match[15];
 			if(extra) makeExtra(board, extra);
 
 			const fen = makeFEN(board, 8, 8);
@@ -150,16 +150,17 @@ function getDuplexSeparator(output) {
 
 function makeMove(board, color, arr) {
 	// console.log(arr);
-	if(arr[0].startsWith("0-0")) {
+	if(arr[1].startsWith("0-0")) {
 		const rank = color == "w" ? "1" : "8";
-		const sq = arr[0] == "0-0" ? ["g", "h", "f"] : ["c", "a", "d"];
+		const sq = arr[1] == "0-0" ? ["g", "h", "f"] : ["c", "a", "d"];
 		movePiece(board, "e" + rank, sq[0] + rank);
 		movePiece(board, sq[1] + rank, sq[2] + rank);
+		if(arr[5]) setPiece(board, sq[2] + rank, arr[5], color); // Einstein castling
 	} else {
-		movePiece(board, arr[1], arr[2]);
-		if(arr[5]) setPiece(board, getEpSquare(arr[2]), ""); // en passant
-		if(arr[3]) movePiece(board, arr[2], arr[3]); // Take&Make
-		if(arr[4]) setPiece(board, arr[2], arr[4], color);
+		movePiece(board, arr[2], arr[3]);
+		if(arr[6]) setPiece(board, getEpSquare(arr[3]), ""); // en passant
+		if(arr[4]) movePiece(board, arr[3], arr[4]); // Take&Make
+		if(arr[5]) setPiece(board, arr[3], arr[5], color); // promotion
 	}
 }
 
@@ -206,9 +207,9 @@ function makeTwin(board, text) {
 	}
 }
 
-const MOVE = new RegExp(String.raw`[nwb]${P}(${SQ})--&gt;(${SQ})`);
-const EXCHANGE = new RegExp(String.raw`[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})`);
-const ADD_REMOVE = new RegExp(String.raw`([+-])([nwb])(${P})(${SQ})`);
+const MOVE = new RegExp(`[nwb]${P}(${SQ})--&gt;(${SQ})`);
+const EXCHANGE = new RegExp(`[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})`);
+const ADD_REMOVE = new RegExp(`([+-])([nwb])(${P})(${SQ})`);
 
 function processTwinCommand(board, command) {
 	let arr = command.match(MOVE);
