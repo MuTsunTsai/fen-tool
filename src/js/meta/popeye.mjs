@@ -4,7 +4,7 @@ const SQ = `[a-h][1-8]`;
 const P = `(?:[A-Z]|[0-9A-Z][0-9A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
 const Extra = String.raw`(\+)?([nwb])?(${P})(${SQ})(?:=(${P}))?(?:&lt;-&gt;${P}${SQ})?`;
-const Main = String.raw`(?:0-0(?:-0)?|(?:[nwb])?(?:${P})?(${SQ})[-*](${SQ})(?:-(${SQ}))?(?:=(${P}))?( ep\.)?)`;
+const Main = String.raw`(?:0-0(?:-0)?|(?:[nwb])?${P}?(${SQ})[-*](${SQ})(?:-(${SQ}))?(?:=(${P}))?( ep\.)?)`;
 const Step = String.raw`(\d+\.(?:\.\.)?)?(${Main}(?:\/${Main})*)(?:\[(${Extra})\])?(?: [+#=])?`;
 
 const TWIN = new RegExp(Twin);
@@ -206,12 +206,13 @@ function makeTwin(board, text) {
 	}
 }
 
-const MOVE = /[nwb]${P}(${SQ})--&gt;(${SQ})/;
-const EXCHANGE = /[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})/;
-const ADD_REMOVE = /([+-])([nwb])(${P})(${SQ})/;
+const MOVE = new RegExp(String.raw`[nwb]${P}(${SQ})--&gt;(${SQ})`);
+const EXCHANGE = new RegExp(String.raw`[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})`);
+const ADD_REMOVE = new RegExp(String.raw`([+-])([nwb])(${P})(${SQ})`);
 
 function processTwinCommand(board, command) {
 	let arr = command.match(MOVE);
+	console.log(command, arr)
 	if(arr) return movePiece(board, arr[1], arr[2]);
 
 	arr = command.match(EXCHANGE);
