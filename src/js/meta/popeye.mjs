@@ -24,7 +24,7 @@ export function parseSolution(input, initFEN, output, factory) {
 	const stip = getStipulation(input);
 	const ordering = inferMoveOrdering(stip, halfDuplex);
 	let currentOrdering = ordering;
-	const isPG = (/^dia/i).test(stip);
+	const isPG = (/dia/i).test(stip);
 	const init = isPG ? INIT_FEN : toNormalFEN(initFEN);
 	let lastPosition = init;
 	let error = false;
