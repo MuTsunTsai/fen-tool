@@ -131,6 +131,7 @@ export const Popeye = {
 		if(worker) terminate();
 	},
 	play() {
+		gtag("event", "fen_popeye_play");
 		state.popeye.output = formatSolution(input, initFEN, output);
 		nextTick(() => {
 			const popeye = state.popeye;
@@ -138,6 +139,7 @@ export const Popeye = {
 			popeye.steps.forEach(s => s.onclick = stepClick);
 			popeye.index = 0;
 			popeye.steps[0].classList.add("active");
+			setFEN(popeye.steps[0].dataset.fen);
 			popeye.playing = true;
 			drawTemplate([]);
 			nextTick(resize);
