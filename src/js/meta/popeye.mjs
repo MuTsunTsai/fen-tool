@@ -212,7 +212,6 @@ const ADD_REMOVE = new RegExp(String.raw`([+-])([nwb])(${P})(${SQ})`);
 
 function processTwinCommand(board, command) {
 	let arr = command.match(MOVE);
-	console.log(command, arr)
 	if(arr) return movePiece(board, arr[1], arr[2]);
 
 	arr = command.match(EXCHANGE);

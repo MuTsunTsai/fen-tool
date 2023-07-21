@@ -4,6 +4,7 @@ import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { getDimensions, sanitizeBorder } from "./meta/option";
 import { env } from "./meta/env";
+import { nextTick } from "petite-vue";
 
 export const dpr = Math.min(2, Math.floor(devicePixelRatio));
 
@@ -73,6 +74,8 @@ export async function setOption(o, force) {
 	if(shouldUpdateAsset) await load();
 	if(shouldDrawBoard) draw();
 	if(shouldDrawTemplate) drawTemplate();
+
+	nextTick(resize); // Just in case; solves glitch in Popeye play mode
 }
 
 function setDimension(dim) {
