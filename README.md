@@ -45,12 +45,6 @@ that can be used when adding or editing a problem in PDB.
 This is similar to the PDB tool, with the addition of copying YACPDB style FEN.
 Note that rotation is not supported in board edit syntax.
 
-### BBS
-
-This tool is for Taiwan BBS forums such as PTT, so it is shown only in Taiwan.
-It generates colored BBS text (with traditional Chinese annotations)
-that can be paste directly into posts.
-
 ### Play mode
 
 This tool allows you to play on the setup board and record moves.
@@ -83,6 +77,11 @@ Feel free to submit an issue if any solution doesn't play correctly.
 
 Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
 
+### BBS
+
+This tool is for Taiwan BBS forums such as PTT, so it is shown only in Taiwan.
+It generates colored BBS text (with traditional Chinese annotations)
+that can be paste directly into posts.
 
 <br>
 
