@@ -58,7 +58,7 @@ export function parseFEN(fen, w = 8, h = 8) {
 /**
  * Make FFEN from an array of values.
  */
-export function makeFEN(values, w, h) {
+export function makeFEN(values, w = 8, h = 8) {
 	let aggregateSpaces = 0, result = "";
 	function flush() {
 		if(aggregateSpaces) result += aggregateSpaces;

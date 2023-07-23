@@ -206,9 +206,12 @@ describe("Popeye", function() {
 		});
 
 		it("Works with KobulKing", function() {
-			// fors 8/2k2p2/8/8/3K4/8/5s2/1b6
-			// stip h#3
-			// cond kobul senti
+			/*
+			rema https://www.thehoppermagazine.com/SS110
+			fors 8/2k2p2/8/8/3K4/8/5s2/1b6
+			stip h#3
+			cond kobul senti
+			*/
 			const input = "stip h#3\ncond kobul senti";
 			const fen = "8/2k2p2/8/8/3K4/8/5s2/1b6";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Bb1-e4 Kd4-c5[+wPd4]   2.Be4-c6[+bPe4] Kc5*c6[c7=rB][+wPc5] +   3.rBc7-b8[+bPc7] Kc6-b7[+wPc6] #<br>  1.Sf2-e4[+bPf2] Kd4-e5[+wPd4]   2.Se4-f6[+bPe4] Ke5*f6[c7=rS][+wPe5]   3.rSc7-e8[+bPc7] + Kf6-e7[+wPf6] #<br><br>solution finished. Time = 1.633 s<br><br><br>";
@@ -221,6 +224,40 @@ describe("Popeye", function() {
 			expect(result[10]).to.equal("8/2n2p2/5K2/4P3/3Pp3/8/5p2/1b6");
 		});
 
+		it("Works with imitators", function() {
+			/*
+			rema P1178914
+			fors rsbqkbsr/pppppppp/8/8/8/8/6P1/8
+			stip h#4
+			cond MirrorCirce imitator b6h6
+			opti nowk
+			*/
+			const input1 = "stip h#4\ncond MirrorCirce imitator b6h6\nopti nowk";
+			const fen1 = "rsbqkbsr/pppppppp/8/8/8/8/6P1/8";
+			const output1 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.f7-f5[Ib4,h4] g2-g4[Ib6,h6]   2.h7-h6[Ib5,h5] g4*f5[Ia6,g6][+bPf2]   3.Sb8-c6[Ib4,h4] f5-f6[Ib5,h5]   4.f2-f1[Ib4,h4]=I f6-f7[Ib5,h5,f2] #<br><br>solution finished. Time = 0.163 s<br><br><br>";
+
+			const result1 = parse(input1, fen1, output1);
+			expect(result1.length).to.equal(9);
+
+			expect(result1[0]).to.equal("rnbqkbnr/pppppppp/1-c5-c/8/8/8/6P1/8");
+			expect(result1[8]).to.equal("r1bqkbnr/pppppPp1/2n4p/1-c5-c/8/8/5-c2/8");
+
+			/*
+			rema P1258141
+			fors 5k2/5P1S/5K2/8/8/7P/8/8
+			stip =3
+			cond imitator h6
+			opti vari
+			*/
+			const input2 = "stip =3\ncond imitator h5\nopti vari";
+			const fen2 = "5k2/5P1N/5K2/8/8/7P/8/8";
+			const output2 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.Sh7-g5[Ig4] ! threat:<br>          2.Sg5-e4[Ie3] =<br>          2.Sg5-h7[Ih6] =<br>          2.Sg5-e6[Ie5] =<br>      1...Kf8-g8[Ih4]<br>          2.f7-f8[Ih5]=I zugzwang.<br>              2...Kg8-f7[Ig4,e7] +<br>                  3.Kf6-g7[Ih5,f8] =<br>              2...Kg8-g7[Ih4,f7] +<br>                  3.Kf6-f7[Ih5,f8] =<br><br><br>solution finished. Time = 0.048 s<br><br><br>";
+
+			const result2 = parse(input2, fen2, output2);
+			expect(result2.length).to.equal(11);
+
+			expect(result2[6]).to.equal("5-ck1/8/5K2/6N-c/8/7P/8/8");
+		});
 	});
 
 });

@@ -3,9 +3,9 @@ import { INIT_FEN, makeFEN, parseSquare, parseFEN } from "./fen.mjs";
 const SQ = `[a-h][1-8]`;
 const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
-const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:=(?<pc>[nwb])?(?<p>${P}))?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)`;
+const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:\[[^\]]+\])*(?:=(?<pc>[nwb])?(?<p>${P}))?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)(?:\[[^\]]+\])*`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
-const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?<ef>(?:\[[^\]]+\])*)(?: [+#=])?`;
+const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?: [+#=])?`;
 
 const TWIN = new RegExp(Twin);
 const MAIN = new RegExp(Main);
@@ -19,17 +19,18 @@ export function parseSolution(input, initFEN, output, factory) {
 	if(!initFEN) return output;
 	console.log(output);
 
-	const { duplex, halfDuplex } = parseOption(input);
+	const { duplex, halfDuplex, initImitators } = parseInput(input);
 
 	const stip = getStipulation(input);
 	const ordering = inferMoveOrdering(stip, halfDuplex);
 	let currentOrdering = ordering;
 	const isPG = (/dia/i).test(stip);
-	const init = isPG ? INIT_FEN : toNormalFEN(initFEN);
+	const init = addImitator(isPG ? INIT_FEN : toNormalFEN(initFEN), initImitators);
 	let lastPosition = init;
 	let error = false;
 	const stack = [];
 	let board = parseFEN(init);
+	let imitators = initImitators?.concat();
 
 	let hasTwin = false;
 	output = output
@@ -65,7 +66,7 @@ export function parseSolution(input, initFEN, output, factory) {
 				stack.length = 0;
 				board = parseFEN(twin[1] ? lastPosition : init);
 				makeTwin(board, twin[2]);
-				const fen = makeFEN(board, 8, 8);
+				const fen = makeFEN(board);
 				lastPosition = fen;
 				return factory(text, fen);
 			}
@@ -79,26 +80,32 @@ export function parseSolution(input, initFEN, output, factory) {
 					// Retract
 					const fen = index > 0 ? stack[index - 1].fen : init;
 					board = parseFEN(fen);
+					if(imitators) imitators = index > 0 ? stack[index - 1].imitators.concat() : initImitators.concat();
 					stack.length = index;
 				}
 			}
 			const color = currentOrdering[!count || count.endsWith("...") ? 1 : 0];
 
+			if(imitators) {
+				for(const sq of imitators) setPiece(board, sq, "");
+				imitators.length = 0;
+			}
+
 			// Make main moves; could have more than one (e.g. Rokagogo)
 			const moves = match.groups.main.split("/");
-			for(const move of moves) {
+			for(let move of moves) {
 				const m = move.match(MAIN);
-				makeMove(board, color, m.groups);
+				makeMove(board, color, m.groups, imitators);
+
+				// Handle effects
+				const effects = move.match(/(?<=\[)[^\[\]]+(?=\])/g);
+				if(effects) {
+					effects.forEach(effect => makeEffect(board, effect, imitators));
+				}
 			}
 
-			// Handle effects
-			const effects = match.groups.ef;
-			if(effects) {
-				effects.match(/[^\[\]]+/g).forEach(effect => makeEffect(board, effect));
-			}
-
-			const fen = makeFEN(board, 8, 8);
-			if(count) stack.push({ move: count, color, fen })
+			const fen = makeFEN(board);
+			if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() })
 			return factory(text, fen);
 		} catch(e) {
 			// Something is not right. Give up.
@@ -124,14 +131,26 @@ export function inferMoveOrdering(stip, halfDuplex) {
 	return halfDuplex ? flipOrdering(result) : result;
 }
 
-function parseOption(input) {
-	const options = input
+function addImitator(fen, imitators) {
+	if(!imitators) return fen;
+	const board = parseFEN(fen);
+	for(const sq of imitators) {
+		board[parseSquare(sq)] = "-c";
+	}
+	return makeFEN(board);
+}
+
+const IMITATOR = new RegExp(String.raw`\bimit\w*\s+(?:${SQ})+`, "ig");
+
+function parseInput(input) {
+	input = input
 		.replace(/\n/g, " ")
 		.replace(/\b(cond|opti|stip|ssti|fors|piec|twin)/ig, "\n$&")
-		.split("\n")
-		.filter(c => c.match(/^opti/i))
-		.join(" ");
+		.split("\n");
+	const options = input.filter(c => c.match(/^opti/i)).join(" ");
+	const conditions = input.filter(c => c.match(/^cond/i)).join(" ");
 	return {
+		initImitators: conditions.match(IMITATOR)?.join(" ").match(new RegExp(SQ, "g")),
 		duplex: /\bdupl/i.test(options),
 		halfDuplex: /\bhalf/i.test(options),
 	};
@@ -152,7 +171,7 @@ function getDuplexSeparator(output) {
 	return "\n".repeat(Math.max(...counts));
 }
 
-function makeMove(board, color, g) {
+function makeMove(board, color, g, imitators) {
 	let to, p;
 	if(g.move.startsWith("0-0")) {
 		const rank = color == "w" ? "1" : "8";
@@ -164,7 +183,12 @@ function makeMove(board, color, g) {
 		if(g.ep) setPiece(board, getEpSquare(g.to), ""); // en passant
 		if(g.then) movePiece(board, g.to, to = g.then); // Take&Make
 	}
-	if(g.p) setPiece(board, to, p = g.p, g.pc ? g.pc : color); // promotion & Einstein castling
+	if(g.p == "I") {
+		imitators.push(to);
+		setPiece(board, to, "I", "n");
+	} else if(g.p) {
+		setPiece(board, to, p = g.p, g.pc ? g.pc : color); // promotion & Einstein
+	}
 	if(g.cc) setPiece(board, to, p, g.cc); // Volage
 }
 
@@ -200,8 +224,9 @@ const EF_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p
 const EF_MOVE = new RegExp(String.raw`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
 const EF_SWAP = new RegExp(String.raw`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
 const EF_CHANGE = new RegExp(String.raw`^(?<at>${SQ})=(?<c>[nwb])?(?:r?(?<p>${P}))?$`);
+const EF_IMITATOR = new RegExp(String.raw`^I${SQ}(,${SQ})*$`);
 
-function makeEffect(board, extra) {
+function makeEffect(board, extra, imitators) {
 	let g = extra.match(EF_ADD)?.groups;
 	if(g) return setPiece(board, g.at, g.p || g.is, g.c);
 
@@ -216,7 +241,14 @@ function makeEffect(board, extra) {
 	if(g) return exchange(board, g.from, g.to);
 
 	g = extra.match(EF_CHANGE)?.groups;
-	if(g) setPiece(board, g.at, g.p || getPiece(board, g.at), g.c || getColor(board, g.at));
+	if(g) return setPiece(board, g.at, g.p || getPiece(board, g.at), g.c || getColor(board, g.at));
+
+	g = extra.match(EF_IMITATOR);
+	if(g) {
+		imitators.push(...extra.match(new RegExp(SQ, "g")));
+		for(const sq of imitators) setPiece(board, sq, "I", "n");
+		return;
+	}
 }
 
 function getPiece(board, at) {
@@ -278,5 +310,12 @@ export function toNormalFEN(fen) {
 }
 
 function toNormalPiece(p) {
-	return p.replace(/s/g, "n").replace(/S/g, "N");
+	const pieceMap = {
+		"I": "C",
+		"S": "N",
+	};
+	for(const key in pieceMap) {
+		p = p.replace(key, pieceMap[key]).replace(key.toLowerCase(), pieceMap[key].toLowerCase());
+	}
+	return p;
 }
