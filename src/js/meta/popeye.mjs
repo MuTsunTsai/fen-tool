@@ -2,8 +2,14 @@ import { INIT_FEN, makeFEN, parseSquare, parseFEN } from "./fen.mjs";
 
 const SQ = `[a-h][1-8]`;
 const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
+const Effect = String.raw`\[[^\]]+\]`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
-const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:\[[^\]]+\])*(?:=(?<pc>[nwb])?(?<p>${P}))?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)(?:\[[^\]]+\])*`;
+const Normal = `(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?`;
+const Promotion = `=(?<pc>[nwb])?(?<p>${P})`;
+
+// Note that effect could occur before or after promotion notation.
+// This is one thing that is somewhat inconsistent in Popeye output.
+const Main = String.raw`(?:(?<move>0-0(?:-0)?|${Normal})(?:${Effect})*(?:${Promotion})?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)(?:${Effect})*`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
 const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?: [+#=])?`;
 
@@ -86,6 +92,7 @@ export function parseSolution(input, initFEN, output, factory) {
 			}
 			const color = currentOrdering[!count || count.endsWith("...") ? 1 : 0];
 
+			// Clear all imitators first
 			if(imitators) {
 				for(const sq of imitators) setPiece(board, sq, "");
 				imitators.length = 0;
@@ -221,10 +228,10 @@ function setPiece(board, sq, piece, color) {
 }
 
 const EF_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p>${P}))?$`);
-const EF_MOVE = new RegExp(String.raw`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
-const EF_SWAP = new RegExp(String.raw`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
-const EF_CHANGE = new RegExp(String.raw`^(?<at>${SQ})=(?<c>[nwb])?(?:r?(?<p>${P}))?$`);
-const EF_IMITATOR = new RegExp(String.raw`^I${SQ}(,${SQ})*$`);
+const EF_MOVE = new RegExp(`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
+const EF_SWAP = new RegExp(`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
+const EF_CHANGE = new RegExp(`^(?<at>${SQ})=(?<c>[nwb])?(?:r?(?<p>${P}))?$`);
+const EF_IMITATOR = new RegExp(`^I${SQ}(,${SQ})*$`);
 
 function makeEffect(board, extra, imitators) {
 	let g = extra.match(EF_ADD)?.groups;
