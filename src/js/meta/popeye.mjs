@@ -3,15 +3,13 @@ import { INIT_FEN, makeFEN, parseSquare, parseFEN } from "./fen.mjs";
 const SQ = `[a-h][1-8]`;
 const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
-//const Extra = String.raw`(?<add>\+)?(?<c>[nwb])?(?<is>${P})?(?<from>${SQ})(?:=(?<pc>[nwb])?(?<p>${P}))?(?:(?<sym>(?:&lt;)?-&gt;)${P}(?<to>${SQ}))?`;
 const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:=(?<pc>[nwb])?(?<p>${P}))?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
-const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?<ex>(?:\[[^\]]+\])*)(?: [+#=])?`;
+const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?<ef>(?:\[[^\]]+\])*)(?: [+#=])?`;
 
 const TWIN = new RegExp(Twin);
 const MAIN = new RegExp(Main);
 const STEP = new RegExp(Step);
-// const EXTRA = new RegExp(Extra);
 
 export function formatSolution(input, initFEN, output) {
 	return parseSolution(input, initFEN, output, makeStep);
@@ -93,10 +91,10 @@ export function parseSolution(input, initFEN, output, factory) {
 				makeMove(board, color, m.groups);
 			}
 
-			// Handle extra instructions
-			const extra = match.groups.ex;
-			if(extra) {
-				extra.match(/[^\[\]]+/g).forEach(ex => makeExtra(board, ex));
+			// Handle effects
+			const effects = match.groups.ef;
+			if(effects) {
+				effects.match(/[^\[\]]+/g).forEach(effect => makeEffect(board, effect));
 			}
 
 			const fen = makeFEN(board, 8, 8);
@@ -198,27 +196,26 @@ function setPiece(board, sq, piece, color) {
 	board[parseSquare(sq)] = piece;
 }
 
-const EX_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p>${P}))?$`);
-const EX_MOVE = new RegExp(String.raw`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
-const EX_SWAP = new RegExp(String.raw`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
-const EX_COLOR = new RegExp(String.raw`^(?<at>${SQ})=(?<c>[nwb])$`);
+const EF_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p>${P}))?$`);
+const EF_MOVE = new RegExp(String.raw`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
+const EF_SWAP = new RegExp(String.raw`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
+const EF_COLOR = new RegExp(String.raw`^(?<at>${SQ})=(?<c>[nwb])$`);
 
-function makeExtra(board, extra) {
-	console.log(extra);
-	let g = extra.match(EX_ADD)?.groups;
+function makeEffect(board, extra) {
+	let g = extra.match(EF_ADD)?.groups;
 	if(g) return setPiece(board, g.at, g.p || g.is, g.c);
 
-	g = extra.match(EX_MOVE)?.groups;
+	g = extra.match(EF_MOVE)?.groups;
 	if(g) {
 		movePiece(board, g.from, g.to);
 		if(g.p) setPiece(board, g.to, g.p, g.c);
 		return;
 	}
 
-	g = extra.match(EX_SWAP)?.groups;
+	g = extra.match(EF_SWAP)?.groups;
 	if(g) return exchange(board, g.from, g.to);
 
-	g = extra.match(EX_COLOR)?.groups;
+	g = extra.match(EF_COLOR)?.groups;
 	if(g) return setPiece(board, g.at, getPiece(board, g.at), g.c);
 }
 
@@ -238,18 +235,18 @@ function makeTwin(board, text) {
 	}
 }
 
-const MOVE = new RegExp(`^[nwb]${P}(${SQ})--&gt;(${SQ})$`);
-const EXCHANGE = new RegExp(`^[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})$`);
-const ADD_REMOVE = new RegExp(`^([+-]?)([nwb])(${P})(${SQ})$`);
+const TW_MOVE = new RegExp(`^[nwb]${P}(${SQ})--&gt;(${SQ})$`);
+const TW_EXCHANGE = new RegExp(`^[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})$`);
+const TW_ADD_REMOVE = new RegExp(`^([+-]?)([nwb])(${P})(${SQ})$`);
 
 function processTwinCommand(board, command) {
-	let arr = command.match(MOVE);
+	let arr = command.match(TW_MOVE);
 	if(arr) return movePiece(board, arr[1], arr[2]);
 
-	arr = command.match(EXCHANGE);
+	arr = command.match(TW_EXCHANGE);
 	if(arr) return exchange(board, arr[1], arr[2]);
 
-	arr = command.match(ADD_REMOVE);
+	arr = command.match(TW_ADD_REMOVE);
 	if(arr) {
 		if(arr[1] == "+" || arr[1] == "") setPiece(board, arr[4], arr[3], arr[2]);
 		else setPiece(board, arr[4], "");
