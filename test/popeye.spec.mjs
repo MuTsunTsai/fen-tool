@@ -129,7 +129,7 @@ describe("Popeye", function() {
 
 		it("Works with twin add, neutral piece", function() {
 			/*
-			remark P0534816
+			rema P0534816
 			fors 8/5P2/8/8/8/8/5p2/k7
 			stip h#2
 			opti nowk
@@ -144,6 +144,25 @@ describe("Popeye", function() {
 
 			expect(result[5]).to.equal("8/5P2/8/8/8/8/5-p2/k7");
 			expect(result[6]).to.equal("8/5P2/8/8/8/8/8/k4-n2");
+		});
+
+		it("Works with Volage", function() {
+			/*
+			rema P1178572
+			fors 8/8/5Kp1/8/8/5k2/pp6/8
+			stip ser-h=3
+			cond circe volage
+			*/
+			const input = "stip ser-h=3\ncond circe volage";
+			const fen = "8/8/5Kp1/8/8/5k2/pp6/8";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.b2-b1=B=w   2.a2*b1=Q[+wBf1]   3.Qb1-e1=w Kf6-g5 =<br><br>solution finished. Time = 0.057 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(5);
+
+			expect(result[1]).to.equal("8/8/5Kp1/8/8/5k2/p7/1B6");
+			expect(result[2]).to.equal("8/8/5Kp1/8/8/5k2/8/1q3B2");
+			expect(result[3]).to.equal("8/8/5Kp1/8/8/5k2/8/4QB2");
 		});
 
 	});

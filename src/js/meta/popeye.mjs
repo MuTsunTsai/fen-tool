@@ -4,7 +4,7 @@ const SQ = `[a-h][1-8]`;
 const P = `(?:[A-Z]|[0-9A-Z][0-9A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
 const Extra = String.raw`(\+)?([nwb])?(${P})(${SQ})(?:=(${P}))?(?:&lt;-&gt;${P}${SQ})?`;
-const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:=(?<pc>n)?(?<p>${P}))?(?<ep> ep\.)?)`;
+const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:=(?<pc>[nwb])?(?<p>${P}))?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
 const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?:\[(?<ex>${Extra})\])?(?: [+#=])?`;
 
@@ -152,18 +152,20 @@ function getDuplexSeparator(output) {
 }
 
 function makeMove(board, color, g) {
-	let to;
+	let to, p;
+	console.log(g);
 	if(g.move.startsWith("0-0")) {
 		const rank = color == "w" ? "1" : "8";
 		const sq = g.move == "0-0" ? ["g", "h", "f"] : ["c", "a", "d"];
 		movePiece(board, "e" + rank, sq[0] + rank);
-		movePiece(board, sq[1] + rank, to = sq[2] + rank);
+		p = movePiece(board, sq[1] + rank, to = sq[2] + rank);
 	} else {
-		movePiece(board, g.from, to = g.to);
+		p = movePiece(board, g.from, to = g.to);
 		if(g.ep) setPiece(board, getEpSquare(g.to), ""); // en passant
 		if(g.then) movePiece(board, g.to, to = g.then); // Take&Make
 	}
-	if(g.p) setPiece(board, to, g.p, g.pc ? g.pc : color); // promotion & Einstein castling
+	if(g.p) setPiece(board, to, p = g.p, g.pc ? g.pc : color); // promotion & Einstein castling
+	if(g.cc) setPiece(board, to, p, g.cc); // Volage
 }
 
 function getEpSquare(sq) {
@@ -175,6 +177,7 @@ function movePiece(board, from, to) {
 	to = parseSquare(to);
 	board[to] = board[from];
 	board[from] = "";
+	return board[to];
 }
 
 function exchange(board, from, to) {
@@ -187,6 +190,7 @@ function exchange(board, from, to) {
 
 function setPiece(board, sq, piece, color) {
 	piece = toNormalPiece(piece);
+	if(color == "w") piece = piece.toUpperCase();
 	if(color == "b") piece = piece.toLowerCase();
 	if(color == "n") piece = "-" + piece.toLowerCase();
 	board[parseSquare(sq)] = piece;
