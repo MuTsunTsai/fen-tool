@@ -1,17 +1,17 @@
 import { INIT_FEN, makeFEN, parseSquare, parseFEN } from "./fen.mjs";
 
 const SQ = `[a-h][1-8]`;
-const P = `(?:[A-Z]|[0-9A-Z][0-9A-Z])`;
+const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
-const Extra = String.raw`(\+)?([nwb])?(${P})(${SQ})(?:=(${P}))?(?:&lt;-&gt;${P}${SQ})?`;
+//const Extra = String.raw`(?<add>\+)?(?<c>[nwb])?(?<is>${P})?(?<from>${SQ})(?:=(?<pc>[nwb])?(?<p>${P}))?(?:(?<sym>(?:&lt;)?-&gt;)${P}(?<to>${SQ}))?`;
 const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:=(?<pc>[nwb])?(?<p>${P}))?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
-const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?:\[(?<ex>${Extra})\])?(?: [+#=])?`;
+const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?<ex>(?:\[[^\]]+\])*)(?: [+#=])?`;
 
 const TWIN = new RegExp(Twin);
 const MAIN = new RegExp(Main);
 const STEP = new RegExp(Step);
-const EXTRA = new RegExp(Extra);
+// const EXTRA = new RegExp(Extra);
 
 export function formatSolution(input, initFEN, output) {
 	return parseSolution(input, initFEN, output, makeStep);
@@ -49,6 +49,7 @@ export function parseSolution(input, initFEN, output, factory) {
 	// Main replacement
 	let solutionPrinted = false;
 	output = output.replace(TOKEN, text => {
+		// console.log(text);
 		if(error) return text;
 		try {
 			if(text == duplexSeparator) {
@@ -94,7 +95,9 @@ export function parseSolution(input, initFEN, output, factory) {
 
 			// Handle extra instructions
 			const extra = match.groups.ex;
-			if(extra) makeExtra(board, extra);
+			if(extra) {
+				extra.match(/[^\[\]]+/g).forEach(ex => makeExtra(board, ex));
+			}
 
 			const fen = makeFEN(board, 8, 8);
 			if(count) stack.push({ move: count, color, fen })
@@ -153,7 +156,6 @@ function getDuplexSeparator(output) {
 
 function makeMove(board, color, g) {
 	let to, p;
-	console.log(g);
 	if(g.move.startsWith("0-0")) {
 		const rank = color == "w" ? "1" : "8";
 		const sq = g.move == "0-0" ? ["g", "h", "f"] : ["c", "a", "d"];
@@ -196,11 +198,33 @@ function setPiece(board, sq, piece, color) {
 	board[parseSquare(sq)] = piece;
 }
 
+const EX_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p>${P}))?$`);
+const EX_MOVE = new RegExp(String.raw`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
+const EX_SWAP = new RegExp(String.raw`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
+const EX_COLOR = new RegExp(String.raw`^(?<at>${SQ})=(?<c>[nwb])$`);
+
 function makeExtra(board, extra) {
-	const arr = extra.match(EXTRA);
-	if(arr[1] == "+") {
-		setPiece(board, arr[4], arr[5] || arr[3], arr[2]);
+	console.log(extra);
+	let g = extra.match(EX_ADD)?.groups;
+	if(g) return setPiece(board, g.at, g.p || g.is, g.c);
+
+	g = extra.match(EX_MOVE)?.groups;
+	if(g) {
+		movePiece(board, g.from, g.to);
+		if(g.p) setPiece(board, g.to, g.p, g.c);
+		return;
 	}
+
+	g = extra.match(EX_SWAP)?.groups;
+	if(g) return exchange(board, g.from, g.to);
+
+	g = extra.match(EX_COLOR)?.groups;
+	if(g) return setPiece(board, g.at, getPiece(board, g.at), g.c);
+}
+
+function getPiece(board, at) {
+	const p = board[parseSquare(at)];
+	return p.match(new RegExp(P, "i"))[0].toUpperCase();
 }
 
 function makeTwin(board, text) {

@@ -165,6 +165,46 @@ describe("Popeye", function() {
 			expect(result[3]).to.equal("8/8/5Kp1/8/8/5k2/8/4QB2");
 		});
 
+		it("Works with swapping", function() {
+			/*
+			rema P1067437
+			fors rsbQKbsr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RSBkqBSR
+			stip dia4.5
+			cond swapping
+			*/
+			const input = "stip dia4.5\ncond swapping";
+			const fen = "rnbQKbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBkqBNR";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.e2-e4 c7-c6   2.Qd1-h5 Qd8-b6   3.Ke1-d1 Qb6-e3   4.Qh5-a5 Qe3-e1[Ke8&lt;-&gt;Kd1]   5.Qa5-d8 dia<br><br>solution finished. Time = 9.284 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(10);
+
+			expect(result[9]).to.equal("rnbQKbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBkqBNR");
+		});
+
+		it("Works with Masand, AntiSuperCirce", function() {
+			/*
+			rema P1255792
+			fors 6K1/3q4/2p4k/1R1r4/8/8/8/8
+			stip hs#3
+			cond masand antisupercirce
+			*/
+			const input = "stip hs#3\ncond masand antisupercirce";
+			const fen = "6K1/3q4/2p4k/1R1r4/8/8/8/8";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Rb5-a5 Qd7-e6[d5=w][c6=w] +   2.Kg8-h8 Qe6*c6[bQc6-&gt;b7]   3.Rd5-d6 + Qb7-b8[d6=b] #<br>  1.Rb5-b7 Qd7-c8[c6=w][b7=b] +   2.c6*b7[wPb7-&gt;e8=Q] Qc8-c1   3.Qe8-e6[d5=w] + Qc1-c8[e6=b] #<br><br>solution finished. Time = 40.379 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(13);
+
+			expect(result[2]).to.equal("6K1/8/2P1q2k/R2R4/8/8/8/8");
+			expect(result[4]).to.equal("7K/1q6/7k/R2R4/8/8/8/8");
+			expect(result[6]).to.equal("1q5K/8/3r3k/R7/8/8/8/8");
+			expect(result[8]).to.equal("2q3K1/1r6/2P4k/3r4/8/8/8/8");
+			expect(result[9]).to.equal("2q1Q1K1/8/7k/3r4/8/8/8/8");
+			expect(result[11]).to.equal("6K1/8/4Q2k/3R4/8/8/8/2q5");
+			expect(result[12]).to.equal("2q3K1/8/4q2k/3R4/8/8/8/8");
+		});
+
 	});
 
 });

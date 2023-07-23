@@ -31,3 +31,23 @@ stip hs#6
 fors 8/1P6/2p3R1/K1p5/7k/8/2p5/8
 stip hr#2
 cond ExclusiveChess
+
+<!-- Tibet -->
+rema P1075867
+fors 8/2P5/8/6K1/8/8/k3p3/8
+stip h=3
+cond circe tibet
+opti whitetoplay
+
+<!-- Andernach -->
+rema P0005385
+fors rsbqkbsr/ppp1pppp/8/8/8/8/PPPPPPPP/RSBQKB1R
+stip dia3.0
+cond Andernach
+
+<!-- AMU -->
+rema P1211011
+fors 4k3/3p4/8/4P3/8/8/8/8
+stip h#4
+opti nowk
+cond madrasi supercirce amu
