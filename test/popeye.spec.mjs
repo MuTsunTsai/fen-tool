@@ -205,6 +205,22 @@ describe("Popeye", function() {
 			expect(result[12]).to.equal("2q3K1/8/4q2k/3R4/8/8/8/8");
 		});
 
+		it("Works with KobulKing", function() {
+			// fors 8/2k2p2/8/8/3K4/8/5s2/1b6
+			// stip h#3
+			// cond kobul senti
+			const input = "stip h#3\ncond kobul senti";
+			const fen = "8/2k2p2/8/8/3K4/8/5s2/1b6";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Bb1-e4 Kd4-c5[+wPd4]   2.Be4-c6[+bPe4] Kc5*c6[c7=rB][+wPc5] +   3.rBc7-b8[+bPc7] Kc6-b7[+wPc6] #<br>  1.Sf2-e4[+bPf2] Kd4-e5[+wPd4]   2.Se4-f6[+bPe4] Ke5*f6[c7=rS][+wPe5]   3.rSc7-e8[+bPc7] + Kf6-e7[+wPf6] #<br><br>solution finished. Time = 1.633 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(13);
+
+			expect(result[4]).to.equal("8/2b2p2/2K5/2P5/3Pp3/8/5n2/8");
+			expect(result[6]).to.equal("1b6/1Kp2p2/2P5/2P5/3Pp3/8/5n2/8");
+			expect(result[10]).to.equal("8/2n2p2/5K2/4P3/3Pp3/8/5p2/1b6");
+		});
+
 	});
 
 });
