@@ -4,8 +4,9 @@ const SQ = `[a-h][1-8]`;
 const P = `(?:[A-Z]|[0-9A-Z][0-9A-Z])`;
 const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
 const Extra = String.raw`(\+)?([nwb])?(${P})(${SQ})(?:=(${P}))?(?:&lt;-&gt;${P}${SQ})?`;
-const Main = String.raw`(?:(0-0(?:-0)?|(?:[nwb])?${P}?(${SQ})[-*](${SQ})(?:-(${SQ}))?)(?:=(${P}))?( ep\.)?)`;
-const Step = String.raw`(\d+\.(?:\.\.)?)?(${Main}(?:\/${Main})*)(?:\[(${Extra})\])?(?: [+#=])?`;
+const Main = String.raw`(?:(?<move>0-0(?:-0)?|(?:[nwb])?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?:-(?<then>${SQ}))?)(?:=(?<pc>n)?(?<p>${P}))?(?<ep> ep\.)?)`;
+const Main_raw = Main.replace(/\?<[^>]+>/g, "");
+const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?:\[(?<ex>${Extra})\])?(?: [+#=])?`;
 
 const TWIN = new RegExp(Twin);
 const MAIN = new RegExp(Main);
@@ -18,6 +19,7 @@ export function formatSolution(input, initFEN, output) {
 
 export function parseSolution(input, initFEN, output, factory) {
 	if(!initFEN) return output;
+	console.log(output);
 
 	const { duplex, halfDuplex } = parseOption(input);
 
@@ -71,8 +73,9 @@ export function parseSolution(input, initFEN, output, factory) {
 
 			solutionPrinted = true;
 			const match = text.match(STEP);
-			if(match[1]) {
-				const index = stack.findIndex(s => s.move == match[1] || parseInt(s.move) > parseInt(match[1]));
+			const count = match.groups.count;
+			if(count) {
+				const index = stack.findIndex(s => s.move == count || parseInt(s.move) > parseInt(count));
 				if(index >= 0) {
 					// Retract
 					const fen = index > 0 ? stack[index - 1].fen : init;
@@ -80,22 +83,22 @@ export function parseSolution(input, initFEN, output, factory) {
 					stack.length = index;
 				}
 			}
-			const color = currentOrdering[!match[1] || match[1].endsWith("...") ? 1 : 0];
+			const color = currentOrdering[!count || count.endsWith("...") ? 1 : 0];
 
 			// Make main moves; could have more than one (e.g. Rokagogo)
-			const moves = match[2].split("/");
+			const moves = match.groups.main.split("/");
 			for(const move of moves) {
 				const m = move.match(MAIN);
-				makeMove(board, color, m);
+				makeMove(board, color, m.groups);
 			}
 
 			// Handle extra instructions
-			const extra = match[15];
+			const extra = match.groups.ex;
 			if(extra) makeExtra(board, extra);
 
 			const fen = makeFEN(board, 8, 8);
-			if(match[1]) stack.push({ move: match[1], color, fen })
-			return factory(match[0], fen);
+			if(count) stack.push({ move: count, color, fen })
+			return factory(text, fen);
 		} catch(e) {
 			// Something is not right. Give up.
 			console.log(e, text);
@@ -148,20 +151,19 @@ function getDuplexSeparator(output) {
 	return "\n".repeat(Math.max(...counts));
 }
 
-function makeMove(board, color, arr) {
-	// console.log(arr);
-	if(arr[1].startsWith("0-0")) {
+function makeMove(board, color, g) {
+	let to;
+	if(g.move.startsWith("0-0")) {
 		const rank = color == "w" ? "1" : "8";
-		const sq = arr[1] == "0-0" ? ["g", "h", "f"] : ["c", "a", "d"];
+		const sq = g.move == "0-0" ? ["g", "h", "f"] : ["c", "a", "d"];
 		movePiece(board, "e" + rank, sq[0] + rank);
-		movePiece(board, sq[1] + rank, sq[2] + rank);
-		if(arr[5]) setPiece(board, sq[2] + rank, arr[5], color); // Einstein castling
+		movePiece(board, sq[1] + rank, to = sq[2] + rank);
 	} else {
-		movePiece(board, arr[2], arr[3]);
-		if(arr[6]) setPiece(board, getEpSquare(arr[3]), ""); // en passant
-		if(arr[4]) movePiece(board, arr[3], arr[4]); // Take&Make
-		if(arr[5]) setPiece(board, arr[3], arr[5], color); // promotion
+		movePiece(board, g.from, to = g.to);
+		if(g.ep) setPiece(board, getEpSquare(g.to), ""); // en passant
+		if(g.then) movePiece(board, g.to, to = g.then); // Take&Make
 	}
+	if(g.p) setPiece(board, to, g.p, g.pc ? g.pc : color); // promotion & Einstein castling
 }
 
 function getEpSquare(sq) {
@@ -184,8 +186,9 @@ function exchange(board, from, to) {
 }
 
 function setPiece(board, sq, piece, color) {
-	piece = toNormalFEN(piece);
+	piece = toNormalPiece(piece);
 	if(color == "b") piece = piece.toLowerCase();
+	if(color == "n") piece = "-" + piece.toLowerCase();
 	board[parseSquare(sq)] = piece;
 }
 
@@ -207,9 +210,9 @@ function makeTwin(board, text) {
 	}
 }
 
-const MOVE = new RegExp(`[nwb]${P}(${SQ})--&gt;(${SQ})`);
-const EXCHANGE = new RegExp(`[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})`);
-const ADD_REMOVE = new RegExp(`([+-])([nwb])(${P})(${SQ})`);
+const MOVE = new RegExp(`^[nwb]${P}(${SQ})--&gt;(${SQ})$`);
+const EXCHANGE = new RegExp(`^[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})$`);
+const ADD_REMOVE = new RegExp(`^([+-]?)([nwb])(${P})(${SQ})$`);
 
 function processTwinCommand(board, command) {
 	let arr = command.match(MOVE);
@@ -220,8 +223,8 @@ function processTwinCommand(board, command) {
 
 	arr = command.match(ADD_REMOVE);
 	if(arr) {
-		if(arr[1] == "+") setPiece(board, arr[3], arr[2], arr[1])
-		else setPiece(board, arr[3], "");
+		if(arr[1] == "+" || arr[1] == "") setPiece(board, arr[4], arr[3], arr[2]);
+		else setPiece(board, arr[4], "");
 		return;
 	}
 }
@@ -230,6 +233,19 @@ function makeStep(text, fen) {
 	return `<span class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
+const FEN_TOKEN = new RegExp(String.raw`/|\d+|[+-=]?${P}`, "ig");
+
 export function toNormalFEN(fen) {
-	return fen.replace(/s/g, "n").replace(/S/g, "N");
+	const arr = fen.match(FEN_TOKEN);
+	return arr.map(t => {
+		if(t == "/" || t.match(/^\d+$/)) return t;
+		if(t.startsWith("+")) t = t.substring(1).toUpperCase();
+		if(t.startsWith("-")) t = t.substring(1).toLowerCase();
+		if(t.startsWith("=")) t = "-" + t.substring(1).toLowerCase();
+		return toNormalPiece(t);
+	}).join("");
+}
+
+function toNormalPiece(p) {
+	return p.replace(/s/g, "n").replace(/S/g, "N");
 }

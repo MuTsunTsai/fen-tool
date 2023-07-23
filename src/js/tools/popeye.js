@@ -1,9 +1,10 @@
 import { nextTick } from "petite-vue";
-import { orthodoxForsyth, setFEN } from "../squares";
-import { state } from "../store";
+import { setFEN, snapshot } from "../squares";
+import { state, store } from "../store";
 import { formatSolution, toNormalFEN } from "../meta/popeye.mjs";
 import { resize } from "../layout";
 import { drawTemplate } from "../render";
+import { makeFEN } from "../meta/fen.mjs";
 
 let path = "modules/py.js";
 let worker;
@@ -95,23 +96,37 @@ function escapeHtml(text) {
 
 function parseInput(text) {
 	text = text
-		.replace(/\b(rema|auth|orig|titl)\w*\s.+$/g, "")
+		.replace(/\b(rema|auth|orig|titl)\w*\s.+$/gm, "")
 		.replace(/\bprot\w*\s+\S+/i, "")		// remove protocol
 		.replace(/\bbeg\w*/i, "")				// remove BeginProblem
-		.replace(/\bnext\s[\s\S]+$/im, "")	// accept only one problem input
+		.replace(/\bnext\s[\s\S]+$/i, "")	// accept only one problem input
 		.replace(/\bend\w*/i, "");			// remove EndProblem
 	if(/\b(fors|piec)\w*\b/i.test(text)) {
 		// If Forsyth command is used, get the board from it
 		// Pieces command is not supported for now
 		initFEN = text.match(/\bfors\w*\s+(\S+)/i)?.[1];
 		if(initFEN) setFEN(toNormalFEN(initFEN));
-
 		return text; // board is assigned manually
 	} else {
-		initFEN = orthodoxForsyth(true);
+		initFEN = getPopeyeFEN();
 		if(!initFEN) return null;
 		return `fors ${initFEN}\n${text}`;
 	}
+}
+
+function toPopeyePiece(p) {
+	if(p.startsWith("-")) p = "=" + p.substring(1).toLowerCase();
+	if(!store.board.SN) {
+		p = p.replace("n", "s").replace("N", "S");
+	}
+	return p;
+}
+
+export function getPopeyeFEN() {
+	const { w, h } = store.board;
+	if(w != 8 || h != 8) return null;
+	const arr = snapshot().map(toPopeyePiece);
+	return makeFEN(arr, 8, 8);
 }
 
 export const Popeye = {

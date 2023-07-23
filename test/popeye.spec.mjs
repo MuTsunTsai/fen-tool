@@ -69,6 +69,12 @@ describe("Popeye", function() {
 		});
 
 		it("Works with promotion, Rokagogo", function() {
+			/*
+			fors 8/8/8/1S2P3/2B5/8/2k2P2/4K2R
+			stip #4
+			cond Rokagogo
+			opti vari
+			*/
 			const input = "stip #4\ncond Rokagogo";
 			const fen = "8/8/8/1N2P3/2B5/8/2k2P2/4K2R";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.e5-e6 ! threat:<br>          2.e6-e7 threat:<br>                  3.e7-e8=R threat:<br>                          4.Ke1-e3/wRe8-e2 #<br><br><br>solution finished. Time = 0.407 s<br><br><br>";
@@ -119,7 +125,26 @@ describe("Popeye", function() {
 			expect(result[4]).to.equal("5b2/3b2p1/1B6/1p3n2/2Rkr3/pP6/Kn6/2q3q1");
 			expect(result[5]).to.equal("8/3b4/1p6/1pb2n2/R2kr1p1/pP6/Kn5p/6B1");
 			expect(result[9]).to.equal("8/3br3/1p6/1pb2n2/n2k2R1/pP2B3/K6p/7n");
-		})
+		});
+
+		it("Works with twin add, neutral piece", function() {
+			/*
+			remark P0534816
+			fors 8/5P2/8/8/8/8/5p2/k7
+			stip h#2
+			opti nowk
+			twin add neutral Pf2
+			*/
+			const input = "stip h#2\nopti nowk\ntwin add neutral Pf2";
+			const fen = "8/5P2/8/8/8/8/5p2/k7";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.f2-f1=R f7-f8=Q   2.Rf1-b1 Qf8-a3 #<br><br>b) nPf2  <br><br>  1.nPf2-f1=nS f7-f8=Q   2.nSf1-d2 Qf8-a3 #<br>  1.nPf2-f1=nB f7-f8=Q   2.nBf1-d3 Qf8-a3 #<br><br>solution finished. Time = 0.068 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(14);
+
+			expect(result[5]).to.equal("8/5P2/8/8/8/8/5-p2/k7");
+			expect(result[6]).to.equal("8/5P2/8/8/8/8/8/k4-n2");
+		});
 
 	});
 

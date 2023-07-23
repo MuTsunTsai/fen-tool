@@ -112,8 +112,8 @@ export function snapshot() {
 	return squares.map(s => s.value);
 }
 
-export function normalSnapshot(useSN = false) {
-	return snapshot().map(v => convertSN(v, useSN, true));
+export function normalSnapshot() {
+	return snapshot().map(v => convertSN(v, false, true));
 }
 
 export function paste(shot, ow, oh) {
@@ -135,10 +135,10 @@ export function toFEN() {
 	draw(data);
 }
 
-export function orthodoxForsyth(useSN = false) {
+function orthodoxForsyth() {
 	const { w, h } = store.board;
 	if(w != 8 || h != 8) return null;
-	const ss = useSN && store.board.SN ? snapshot() : normalSnapshot(useSN);
+	const ss = normalSnapshot();
 	for(const s of ss) {
 		if(s != "" && !s.match(/^[kqbsnrp]$/i)) return null;
 	}
