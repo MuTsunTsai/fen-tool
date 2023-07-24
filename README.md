@@ -1,7 +1,7 @@
 # FEN-Tool
 
 This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess,
-specifically designed with the needs of the chess puzzle community in mind.
+specifically designed with the needs of the chess composition community in mind.
 
 ## 💡 How to use
 
@@ -62,18 +62,17 @@ Tip: You can use left/right keys (or A/D keys) to quickly navigate move history.
 This tool integrates [Popeye](https://github.com/thomas-maeder/popeye),
 one of the most powerful and popular chess problem solvers.
 Just put the problem description in the input box
-(Forsyth notation and `noboard` option will be added automatically)
-and press `Run`!
+(Forsyth notation of the current board will be added automatically if not given) and press `Run`!
 See [Popeye documentation](https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt) for more.
+After the computation completes, you can also playback solutions
+(with the same navigation hotkeys as in play mode).
+
+Note that fairy pieces are not supported for the moment.
 
 By default it will run Popeye in WebAssembly,
 but it is known that it will get a runtime error in some versions of Safari and iOS.
 In that case it will automatically fallback to run Popeye in asm.js
 (it's slower, but works).
-
-You can also playback solutions (with the same navigation hotkeys as in play mode).
-Note that this feature is far from complete when it comes to fairy conditions and twin problems.
-Feel free to submit an issue if any solution doesn't play correctly.
 
 Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
 

@@ -100,19 +100,19 @@
 							<div class="nav-link" :class="{active:tab==1}" @click="tab=1">Options</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==5}" @click="tab=5">API</div>
-						</li>
-						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">DB</div>
+							<div class="nav-link" :class="{active:tab==7}" @click="tab=7">Popeye</div>
 						</li>
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==6}" @click="tab=6">Play</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==7}" @click="tab=7">Popeye</div>
+							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">DB</div>
 						</li>
 						<li class="nav-item" v-if="env.isTaiwan">
 							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
+						</li>
+						<li class="nav-item">
+							<div class="nav-link" :class="{active:tab==5}" @click="tab=5">API</div>
 						</li>
 					</ul>
 				</div>
@@ -129,12 +129,42 @@
 								</button>
 							</span>
 							<span class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(-1)" :disabled="playing">
-									<i class="fa-solid fa-rotate-left"></i>&ensp;Rotate CCW
-								</button>
-								<button type="button" class="btn btn-secondary" onclick="FEN.rotate(1)" :disabled="playing">
-									<i class="fa-solid fa-rotate-right"></i>&ensp;Rotate CW
-								</button>
+								<span class="d-inline-block">
+									<button type="button" class="btn btn-secondary" title="Shift leftwards"
+											onclick="FEN.shift(-1,0)" :disabled="playing">
+										<i class="fa-solid fa-arrow-left"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" title="Shift rightwards"
+											onclick="FEN.shift(1,0)" :disabled="playing">
+										<i class="fa-solid fa-arrow-right"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" title="Shift upwards"
+											onclick="FEN.shift(0,-1)" :disabled="playing">
+										<i class="fa-solid fa-arrow-up"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" title="Shift downwards"
+											onclick="FEN.shift(0,1)" :disabled="playing">
+										<i class="fa-solid fa-arrow-down"></i>
+									</button>
+								</span>
+								<span class="d-inline-block">
+									<button type="button" class="btn btn-secondary" title="Rotate counterclockwise"
+											onclick="FEN.rotate(-1)" :disabled="playing">
+										<i class="fa-solid fa-rotate-left"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" title="Rotate clockwise"
+											onclick="FEN.rotate(1)" :disabled="playing">
+										<i class="fa-solid fa-rotate-right"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" title="Mirror horizontally"
+											onclick="FEN.mirror('-')" :disabled="playing">
+										<i class="fa-solid fa-arrows-left-right"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" title="Mirror vertically"
+											onclick="FEN.mirror('|')" :disabled="playing">
+										<i class="fa-solid fa-arrows-up-down"></i>
+									</button>
+								</span>
 							</span>
 							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)"

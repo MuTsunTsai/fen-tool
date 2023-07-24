@@ -1,5 +1,5 @@
 import { FEN } from "./meta/el";
-import { DEFAULT, INIT_FEN, convertSN, inferDimension, makeFEN, normalize, parseFEN } from "./meta/fen.mjs";
+import { DEFAULT, INIT_FEN, convertSN, inferDimension, invert, makeFEN, mirror, normalize, parseFEN, rotate, shift } from "./meta/fen.mjs";
 import { setOption } from "./layout";
 import { state, store } from "./store";
 import { readText } from "./copy";
@@ -224,6 +224,11 @@ export function toggleReadOnly(readOnly) {
 	for(const s of squares) s.readOnly = readOnly;
 }
 
+function replace(board) {
+	board.forEach((v, i) => squares[i].value = v);
+	toFEN();
+}
+
 window.FEN = {
 	update: () => toSquares(true),
 	empty() {
@@ -244,16 +249,9 @@ window.FEN = {
 		toSquares(true);
 	},
 	rotate(d) {
-		const temp = snapshot();
 		const { w, h } = store.board;
 		if(w !== h) setOption({ w: h, h: w });
-		for(let i = 0; i < w; i++) {
-			for(let j = 0; j < h; j++) {
-				const target = d == 1 ? (h - 1 - j) * w + i : j * w + (w - 1 - i);
-				squares[i * h + j].value = temp[target];
-			}
-		}
-		toFEN();
+		replace(rotate(snapshot(), d, w, h));
 	},
 	color(c) {
 		for(const sq of squares) {
@@ -268,15 +266,14 @@ window.FEN = {
 		toFEN();
 	},
 	invert(l) {
-		for(const sq of squares) {
-			let s = sq.value;
-			if(s == "" || s.startsWith("-")) continue;
-			if(!l && s.startsWith("'")) continue;
-			const t = s.toLowerCase();
-			if(s == t) s = s.toUpperCase();
-			else s = t;
-			sq.value = s;
-		}
-		toFEN();
+		replace(invert(snapshot(), l));
+	},
+	shift(dx, dy) {
+		const { w, h } = store.board;
+		replace(shift(snapshot(), dx, dy, w, h));
+	},
+	mirror(d) {
+		const { w, h } = store.board;
+		replace(mirror(snapshot(), d, w, h));
 	},
 }

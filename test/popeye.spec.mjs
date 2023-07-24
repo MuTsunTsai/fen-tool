@@ -243,6 +243,31 @@ describe("Popeye", function() {
 			expect(result[12]).to.equal("bN2Q1q1/3rn3/pb1p1Rp1/2pkp3/2P1r3/1P1K4/1p6/7B");
 		});
 
+		it("Works with all twin commands", function() {
+			/*
+			fors 8/8/8/8/1k6/8/1K2R3/8
+			stip =1
+			twin mir a1<-->h1
+			twin sub R S
+			twin rotate 90
+			twin cont shift a2 b2
+			twin rotate 180 shift e4 d4 polish
+			twin mir a1<-->h8
+			*/
+			const input = "stip =1\ntwin mir a1<-->h1\ntwin sub R S\ntwin rotate 90\ntwin cont shift a2 b2\ntwin rotate 180 shift e4 d4 polish\ntwin mir a1<-->h8";
+			const fen = "8/8/8/8/1k6/8/1K2R3/8";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br><br>b) mirror a1&lt;--&gt;h1  <br><br><br>c) R ==&gt; S  <br><br><br>d) rotate 90  <br><br><br>+e) shift a2 ==&gt; b2  <br><br><br>f) rotate 180  shift e4 ==&gt; d4  PolishType  <br><br><br>g) mirror a1&lt;--&gt;h8  <br><br><br>solution finished. Time = 0.135 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(7);
+
+			expect(result[1]).to.equal("8/8/8/8/6k1/8/3R2K1/8");
+			expect(result[2]).to.equal("8/8/8/8/1k6/8/1K2N3/8");
+			expect(result[3]).to.equal("8/8/8/6R1/8/8/4k1K1/8");
+			expect(result[4]).to.equal("8/8/8/7R/8/8/5k1K/8");
+			expect(result[5]).to.equal("8/2r2k2/8/5K2/8/8/8/8");
+			expect(result[6]).to.equal("8/8/8/1R6/8/8/1K1k4/8")
+		});
 
 		it("Works with imitators", function() {
 			/*

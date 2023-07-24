@@ -143,6 +143,72 @@ export function toSquare(i, j) {
 	return String.fromCharCode(97 + j) + (8 - i);
 }
 
+export function parseXY(sq) {
+	return { x: sq.charCodeAt(0) - 97, y: 8 - Number(sq[1]) };
+}
+
 export function parseSquare(sq) {
-	return (8 - Number(sq[1])) * 8 + (sq.charCodeAt(0) - 97)
+	const { x, y } = parseXY(sq);
+	return y * 8 + x;
+}
+
+export function shift(array, dx, dy, w = 8, h = 8) {
+	const result = [];
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			const x = j - dx, y = i - dy;
+			const inBoard = 0 <= x && x < w && 0 <= y && y < h;
+			result[i * w + j] = inBoard ? array[y * w + x] : "";
+		}
+	}
+	return result;
+}
+
+export function mirror(array, d, w = 8, h = 8) {
+	const result = [];
+	for(let i = 0; i < h; i++) {
+		for(let j = 0; j < w; j++) {
+			let x = j, y = i;
+			if(d == "-") x = w - 1 - x;
+			if(d == "|" || d == "/") y = h - 1 - y;
+			if(d == "/" || d == "\\") {
+				const d = y - x;
+				x += d;
+				y -= d;
+			}
+			if(d == "/") y = h - 1 - y;
+			result[i * w + j] = array[y * w + x];
+		}
+	}
+	return result;
+}
+
+/**
+ * Rotate an array and return the new array.
+ * @param {number} d direction, -1 for counterclockwise, 1 for clockwise, 2 for 180-degree.
+ */
+export function rotate(array, d, w = 8, h = 8) {
+	const result = [];
+	for(let i = 0; i < w; i++) {
+		for(let j = 0; j < h; j++) {
+			const target = d == 1 ? (h - 1 - j) * w + i : d == 2 ? (w - 1 - i) * h + (h - 1 - j) : j * w + (w - 1 - i);
+			result[i * h + j] = array[target];
+		}
+	}
+	return result;
+}
+
+/**
+ * Switch the upper/lower cases.
+ * @param {boolean} l Whether to also switch texts.
+ */
+export function invert(array, l) {
+	return array.map(s => {
+		if(s == "" || s.startsWith("-")) return s;
+		if(!l && s.startsWith("'")) return s;
+		const t = s.toLowerCase();
+		if(s == t) s = s.toUpperCase();
+		else s = t;
+		return s;
+	});
 }
