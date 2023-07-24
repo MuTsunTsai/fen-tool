@@ -86,7 +86,7 @@ export function parseSolution(input, initFEN, output, factory) {
 					// Retract
 					const fen = index > 0 ? stack[index - 1].fen : init;
 					board = parseFEN(fen);
-					if(imitators) imitators = index > 0 ? stack[index - 1].imitators.concat() : initImitators.concat();
+					if(imitators) imitators = (index > 0 ? stack[index - 1].imitators : initImitators).concat();
 					stack.length = index;
 				}
 			}
@@ -228,6 +228,7 @@ function setPiece(board, sq, piece, color) {
 }
 
 const EF_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p>${P}))?$`);
+const EF_REMOVE = new RegExp(String.raw`^-([nwb]${P})?(?<at>${SQ})$`);
 const EF_MOVE = new RegExp(`^(?<c>[nwb])${P}(?<from>${SQ})-&gt;(?<to>${SQ})(=(?<p>${P}))?$`);
 const EF_SWAP = new RegExp(`^${P}(?<from>${SQ})&lt;-&gt;${P}(?<to>${SQ})$`);
 const EF_CHANGE = new RegExp(`^(?<at>${SQ})=(?<c>[nwb])?(?:r?(?<p>${P}))?$`);
@@ -236,6 +237,9 @@ const EF_IMITATOR = new RegExp(`^I${SQ}(,${SQ})*$`);
 function makeEffect(board, extra, imitators) {
 	let g = extra.match(EF_ADD)?.groups;
 	if(g) return setPiece(board, g.at, g.p || g.is, g.c);
+
+	g = extra.match(EF_REMOVE)?.groups;
+	if(g) return setPiece(board, g.at, "");
 
 	g = extra.match(EF_MOVE)?.groups;
 	if(g) {
@@ -316,13 +320,16 @@ export function toNormalFEN(fen) {
 	}).join("");
 }
 
+export const pieceMap = {
+	"C": ["I"],
+	"N": ["S"],
+};
+
 function toNormalPiece(p) {
-	const pieceMap = {
-		"I": "C",
-		"S": "N",
-	};
 	for(const key in pieceMap) {
-		p = p.replace(key, pieceMap[key]).replace(key.toLowerCase(), pieceMap[key].toLowerCase());
+		for(const s of pieceMap[key]) {
+			p = p.replace(s, key).replace(s.toLowerCase(), key.toLowerCase());
+		}
 	}
 	return p;
 }

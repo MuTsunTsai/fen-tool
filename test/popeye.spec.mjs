@@ -224,6 +224,26 @@ describe("Popeye", function() {
 			expect(result[10]).to.equal("8/2n2p2/5K2/4P3/3Pp3/8/5p2/1b6");
 		});
 
+		it("Works with Breton", function() {
+			/*
+			rema P1364988
+			fors 1S2Q1q1/Pb1rs3/pb1p1Rp1/2pkp3/2s1r3/1P1K4/1pP5/7B
+			stip #2
+			cond breton
+			opti vari
+			*/
+			const input = "stip #2\ncond breton\nopti vari";
+			const fen = "1S2Q1q1/Pb1rs3/pb1p1Rp1/2pkp3/2s1r3/1P1K4/1pP5/7B";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.a7-a8=S ! threat:<br>          2.b3*c4[-wSa8] #<br>      1...Sc4-a3<br>          2.Sa8*b6[-wBh1] #<br>      1...Sc4-d2<br>          2.Sa8*b6[-wBh1] #<br>      1...Sc4-e3<br>          2.Sa8*b6[-wBh1] #<br>      1...Sc4-a5<br>          2.Sa8*b6[-wBh1] #<br>      1...Bb7*a8[-bSc4]<br>          2.c2-c4 #<br>      1...Bb7*a8[-bSe7]<br>          2.Bh1*e4[-wRf6] #<br><br><br>solution finished. Time = 0.025 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(15);
+
+			expect(result[4]).to.equal("1N2Q1q1/1b1rn3/pN1p1Rp1/2pkp3/4r3/nP1K4/1pP5/8");
+			expect(result[12]).to.equal("bN2Q1q1/3rn3/pb1p1Rp1/2pkp3/2P1r3/1P1K4/1p6/7B");
+		});
+
+
 		it("Works with imitators", function() {
 			/*
 			rema P1178914
