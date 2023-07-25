@@ -54,6 +54,7 @@ export const state = reactive({
 	loading: true,
 	split: false,
 	isDark: mm.matches,
+	pieceCount: "(0+0)",
 	play: {
 		playing: false,
 		pendingPromotion: false,

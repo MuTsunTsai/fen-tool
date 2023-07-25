@@ -148,14 +148,28 @@ export async function draw(data) {
 	const options = store.board;
 	drawBoard(ctx, data, options, dpr);
 	drawBoard(eCtx, data, options, getExportDPR());
-	if(!state.layout.dragging) drawBoard(gCtx, data, options, dpr, true);
-
-	if(!state.layout.dragging) pushState();
+	updatePieceCount(data);
+	if(!state.layout.dragging) {
+		drawBoard(gCtx, data, options, dpr, true);
+		pushState();
+	}
 	if(location.protocol.startsWith("http")) {
 		const a = document.getElementById("Save");
 		if(a.href) URL.revokeObjectURL(a.href);
 		PV.src = a.href = URL.createObjectURL(await getBlob());
 	}
+}
+
+function updatePieceCount(data) {
+	let w = 0, b = 0, n = 0, t = 0;
+	for(const s of data) {
+		if(s == "") continue;
+		if(s.startsWith("'")) t++;
+		else if(s.startsWith("-")) n++;
+		else if(s == s.toUpperCase()) w++;
+		else b++;
+	}
+	state.pieceCount = `(${w}+${b}${n > 0 ? "+" + n : ""}${t > 0 ? "+" + t : ""})`;
 }
 
 export function drawEmpty(ctx) {

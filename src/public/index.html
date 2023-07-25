@@ -44,12 +44,13 @@
 	<main class="d-flex justify-content-center p-3">
 		<div class="flex-grow-0 text-start" style="max-width: 100%;">
 			<div class="w-passive-100">
-				<div class="row gx-3 mb-3">
-					<label class="col-auto col-form-label">FEN:</label>
-					<div class="col">
-						<input type="text" class="form-control" :readonly="playing||undefined" id="FEN" onchange="FEN.update()">
+				<div class="row gx-3 mb-1">
+					<div class="col mb-2" style="flex-basis: 15rem; flex-grow:1000;">
+						<input type="text" class="form-control" placeholder="Enter FEN here" :readonly="playing||undefined"
+							   id="FEN" onchange="FEN.update()">
 					</div>
-					<div v-cloak class="col-auto" v-if="env.canCopy">
+					<div v-cloak class="col ps-0 mb-2 text-end" style="flex-basis: max-content;" v-if="env.canCopy">
+						<label class="col-form-label pe-2" v-text="state.pieceCount"></label>
 						<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
