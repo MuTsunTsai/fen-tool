@@ -46,7 +46,7 @@ export function parseSolution(input, initFEN, output, factory) {
 			hasTwin = true;
 			return `${factory("a)", init)}\n`;
 		});
-	if(!hasTwin) output = output.replace(/^(Popeye.+?)\n/, `$1 ${factory("Beginning", init)}\n`);
+	if(!hasTwin) output = output.replace(/^(Popeye.+?)$/m, `$1 ${factory("Beginning", init)}`);
 
 	const duplexSeparator = duplex ? getDuplexSeparator(output) : "";
 	const duplexSeparatorReg = duplexSeparator ? duplexSeparator.replace(/\n/g, "\\n") + "|" : "";
