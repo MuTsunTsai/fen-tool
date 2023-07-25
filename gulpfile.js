@@ -159,6 +159,7 @@ gulp.task("popeye", () =>
 		}))
 		.pipe($.if(file => file.stem == "popeye", $.terser()))
 		.pipe($.concat("py.js"))
+		.pipe($.terser({ toplevel: true }))
 		.pipe(gulp.dest("docs/modules"))
 );
 
@@ -170,6 +171,7 @@ gulp.task("pyasm", () =>
 		}))
 		.pipe($.if(file => file.stem == "popeye", $.terser()))
 		.pipe($.concat("py.asm.js"))
+		.pipe($.terser()) // cannot drop top-level variables for some reason
 		.pipe(gulp.dest("docs/modules"))
 );
 
