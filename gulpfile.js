@@ -95,7 +95,10 @@ gulp.task("sw", () =>
 				"**/*.js",
 				"**/*.css",
 				"**/*.woff2",
-				"**/*.png",
+				"assets/*.png",
+				"assets/x2/*.png",
+				"assets/icon/icon-32.png",
+				"assets/icon/icon-192.png",
 				"**/*.wasm",
 			],
 			globIgnores: [
