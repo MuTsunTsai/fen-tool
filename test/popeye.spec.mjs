@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { getStipulation, inferMoveOrdering, parseSolution } from "../src/js/meta/popeye.mjs";
-import { INIT_FEN } from "../src/js/meta/fen.mjs";
+import { INIT_FORSYTH } from "../src/js/meta/fen.mjs";
 
 describe("Popeye", function() {
 
@@ -63,7 +63,7 @@ describe("Popeye", function() {
 			const result = parse(input, fen, output);
 			expect(result.length).to.equal(13);
 
-			expect(result[0]).to.equal(INIT_FEN);
+			expect(result[0]).to.equal(INIT_FORSYTH);
 			expect(result[6]).to.equal("rnbqk1nr/pppp1ppp/8/4p3/1P1P4/3Q4/P1P1PPPP/RNb1KBNR");
 			expect(result[12]).to.equal("rnbqkbnr/pppp1p1p/8/4p1p1/1PQP4/8/P1PNPPPP/2KR1BNR");
 		});

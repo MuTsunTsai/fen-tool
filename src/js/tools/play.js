@@ -2,7 +2,7 @@ import { readText } from "../copy";
 import { types } from "../draw";
 import { toSquare } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
-import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
+import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly, resetEdwards } from "../squares";
 import { state, store } from "../store"
 
 let module;
@@ -163,14 +163,7 @@ export const PLAY = {
 		}
 	},
 	reset() {
-		Object.assign(state.play, {
-			turn: "w",
-			enPassant: "",
-			halfMove: 0,
-			fullMove: 1,
-		});
-		const keys = ["K", "Q", "k", "q"];
-		for(const key of keys) state.play.castle[key] = true;
+		resetEdwards();
 	},
 	copyGame() {
 		return chess.copyGame();

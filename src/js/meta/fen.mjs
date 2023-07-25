@@ -1,6 +1,6 @@
 
 export const DEFAULT = "8/8/8/8/8/8/8/8";
-export const INIT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+export const INIT_FORSYTH = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
 const EMOJI = `[🇦-🇿]{2}|\\p{ExtPict}\\uFE0F?\\p{EMod}?(\\u200D\\p{ExtPict}\\uFE0F?\\p{EMod}?)*`;
 const YACPDB = `\\((!?)([kqbnrp])(\\d?)\\)`; // also captures 3 parts
@@ -56,9 +56,9 @@ export function parseFEN(fen, w = 8, h = 8) {
 }
 
 /**
- * Make FFEN from an array of values.
+ * Make Forsyth notation from an array of values.
  */
-export function makeFEN(values, w = 8, h = 8) {
+export function makeForsyth(values, w = 8, h = 8) {
 	let aggregateSpaces = 0, result = "";
 	function flush() {
 		if(aggregateSpaces) result += aggregateSpaces;

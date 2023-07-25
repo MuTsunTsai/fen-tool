@@ -1,6 +1,6 @@
 import { squares, setFEN } from "../squares";
 import { store } from "../store";
-import { makeFEN, toYACPDB, toSquare, convertSN } from "../meta/fen.mjs";
+import { makeForsyth, toYACPDB, toSquare, convertSN } from "../meta/fen.mjs";
 import { DB } from "../meta/el";
 
 export const YACPDB = {
@@ -8,7 +8,7 @@ export const YACPDB = {
 		gtag("event", "fen_yacpdb_copyFEN");
 		const { w, h } = store.board;
 		const values = squares.map(s => toYACPDB(s.value));
-		return makeFEN(values, w, h);
+		return makeForsyth(values, w, h);
 	},
 	async fetch(bt) {
 		try {
@@ -28,7 +28,7 @@ export const YACPDB = {
 				}
 				for(const b of list.black) add(b.toLowerCase());
 				for(const w of list.white) add(w);
-				setFEN(makeFEN(values), w, h);
+				setFEN(makeForsyth(values), w, h);
 			}
 		} catch {
 			alert("An error has occurred. Please try again later.");

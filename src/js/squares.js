@@ -1,5 +1,5 @@
 import { FEN } from "./meta/el";
-import { DEFAULT, INIT_FEN, convertSN, inferDimension, invert, makeFEN, mirror, normalize, parseFEN, rotate, shift } from "./meta/fen.mjs";
+import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, mirror, normalize, parseFEN, rotate, shift } from "./meta/fen.mjs";
 import { setOption } from "./layout";
 import { state, store } from "./store";
 import { readText } from "./copy";
@@ -88,8 +88,23 @@ export function setSquare(sq, value) {
 }
 
 export function setFEN(v, check) {
-	FEN.value = v;
+	const arr = parseEdwards(v);
+	FEN.value = arr[0] + (store.board.fullFEN ? Edwards() : "");;
 	toSquares(check);
+}
+
+function parseEdwards(v) {
+	const arr = v.split(" ");
+	if(arr[1] && arr[1].match(/^[wb]$/)) state.play.turn = arr[1];
+	if(arr[2] && arr[2].match(/^(-|[kq]+)$/i)) {
+		for(const key in state.play.castle) {
+			state.play.castle[key] = arr[2].includes(key);
+		}
+	}
+	if(arr[3] && arr[3].match(/^[a-h][36]$/)) state.play.enPassant = arr[3];
+	if(arr[4] && arr[4].match(/^\d+$/)) state.play.halfMove = Number(arr[4]);
+	if(arr[5] && arr[5].match(/^\d+$/)) state.play.fullMove = Number(arr[5]);
+	return arr;
 }
 
 export function loadState() {
@@ -102,7 +117,7 @@ addEventListener("popstate", loadState);
 
 export function pushState() {
 	const current = location.search;
-	const url = FEN.value == DEFAULT ? "" : "?fen=" + encodeURI(FEN.value);
+	const url = FEN.value == DEFAULT ? "" : "?fen=" + encodeURI(FEN.value.split(" ")[0]);
 	if(url !== decodeURIComponent(current)) {
 		history.pushState(null, "", url || ".");
 	}
@@ -129,10 +144,15 @@ export function paste(shot, ow, oh) {
 }
 
 export function toFEN() {
-	const { w, h } = store.board;
-	const data = snapshot();
-	FEN.value = makeFEN(data, w, h);
+	const data = updateEdwards();
 	draw(data);
+}
+
+export function updateEdwards() {
+	const { w, h, fullFEN } = store.board;
+	const data = snapshot();
+	FEN.value = makeForsyth(data, w, h) + (fullFEN ? Edwards() : "");
+	return data;
 }
 
 function orthodoxForsyth() {
@@ -142,43 +162,56 @@ function orthodoxForsyth() {
 	for(const s of ss) {
 		if(s != "" && !s.match(/^[kqbsnrp]$/i)) return null;
 	}
-	return makeFEN(ss, 8, 8);
+	return makeForsyth(ss, 8, 8);
 }
 
 export function orthodoxFEN() {
 	const forsyth = orthodoxForsyth();
 	if(!forsyth) return null;
+	return forsyth + Edwards(true);
+}
+
+function Edwards(check) {
 	const p = state.play;
 
 	if(!p.enPassant.match(/^[a-h][36]$/)) p.enPassant = ""; // Ignore invalid squares
-	if(p.pass && p.enPassant && (p.enPassant[1] == "3") != (p.turn == "b")) {
+	if(check && p.pass && p.enPassant && (p.enPassant[1] == "3") != (p.turn == "b")) {
 		// In passing mode, auto-correct the turn if ep is given
 		p.turn = p.turn == "b" ? "w" : "b";
 	}
 
 	const isRetro = p.mode == "retro";
-	if(isRetro || !Number.isSafeInteger(p.halfMove) || p.halfMove < 0) p.halfMove = 0;
-	if(isRetro || !Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
+	if(check) {
+		if(isRetro || !Number.isSafeInteger(p.halfMove) || p.halfMove < 0) p.halfMove = 0;
+		if(isRetro || !Number.isSafeInteger(p.fullMove) || p.fullMove < 1) p.fullMove = 1;
+	}
 
-	const castle = isRetro ? "-" : getCastle();
+	const castle = isRetro ? "-" : getCastle(check);
 	const ep = isRetro ? "-" : p.enPassant || "-";
-	return `${forsyth} ${p.turn} ${castle} ${ep} ${p.halfMove} ${p.fullMove}`;
+	return ` ${p.turn} ${castle} ${ep} ${p.halfMove} ${p.fullMove}`;
 }
 
-function getCastle() {
+function getCastle(check) {
 	const ss = snapshot();
 	let result = "";
 	const c = state.play.castle;
-	// Chess.js doesn't really check if the castling parameters make sense;
-	// so we have to double check the parameters here.
-	// TODO: support Chess960 here
-	if(ss[60] == "K") {
-		if(c.K && ss[63] == "R") result += "K";
-		if(c.Q && ss[56] == "R") result += "Q";
-	}
-	if(ss[4] == "k") {
-		if(c.k && ss[7] == "r") result += "k";
-		if(c.q && ss[0] == "r") result += "q";
+	if(check) {
+		// Chess.js doesn't really check if the castling parameters make sense;
+		// so we have to double check the parameters here.
+		// TODO: support Chess960 here
+		if(ss[60] == "K") {
+			if(c.K && ss[63] == "R") result += "K";
+			if(c.Q && ss[56] == "R") result += "Q";
+		}
+		if(ss[4] == "k") {
+			if(c.k && ss[7] == "r") result += "k";
+			if(c.q && ss[0] == "r") result += "q";
+		}
+	} else {
+		if(c.K) result += "K";
+		if(c.Q) result += "Q";
+		if(c.k) result += "k";
+		if(c.q) result += "q";
 	}
 	return result == "" ? "-" : result;
 }
@@ -229,15 +262,30 @@ function replace(board) {
 	toFEN();
 }
 
+export function resetEdwards() {
+	Object.assign(state.play, {
+		turn: "w",
+		enPassant: "",
+		halfMove: 0,
+		fullMove: 1,
+	});
+	const keys = ["K", "Q", "k", "q"];
+	for(const key of keys) state.play.castle[key] = true;
+}
+
 window.FEN = {
-	update: () => toSquares(true),
+	update: () => {
+		parseEdwards(FEN.value);
+		toSquares(true);
+	},
 	empty() {
 		for(const sq of squares) sq.value = "";
 		toFEN();
 	},
 	reset() {
 		setOption({ w: 8, h: 8 });
-		setFEN(INIT_FEN);
+		if(store.board.fullFEN) resetEdwards();
+		setFEN(INIT_FORSYTH);
 	},
 	copy() {
 		gtag("event", "fen_copy");
@@ -245,8 +293,7 @@ window.FEN = {
 	},
 	async paste() {
 		gtag("event", "fen_paste");
-		FEN.value = await readText();
-		toSquares(true);
+		setFEN(await readText(), true);
 	},
 	rotate(d) {
 		const { w, h } = store.board;

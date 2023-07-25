@@ -4,7 +4,7 @@ import { state, store } from "../store";
 import { formatSolution, toNormalFEN } from "../meta/popeye.mjs";
 import { resize } from "../layout";
 import { drawTemplate } from "../render";
-import { makeFEN } from "../meta/fen.mjs";
+import { makeForsyth } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
 
 let path = "modules/py.js";
@@ -137,7 +137,7 @@ export function getPopeyeFEN() {
 	const { w, h } = store.board;
 	if(w != 8 || h != 8) return null;
 	const arr = snapshot().map(toPopeyePiece);
-	return makeFEN(arr, 8, 8);
+	return makeForsyth(arr, 8, 8);
 }
 
 export const Popeye = {

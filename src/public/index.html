@@ -325,6 +325,7 @@
 								<div class="d-none d-md-block"
 									 v-scope="Checkbox('board.collapse', 'Always collapse boards', resize)"></div>
 								<div v-scope="Checkbox('board.coordinates', 'Show coordinate labels', toggleCoordinates)"></div>
+								<div v-scope="Checkbox('board.fullFEN', 'Show full FEN', toFEN)"></div>
 							</div>
 						</div>
 					</section>
@@ -459,7 +460,7 @@
 							</div>
 						</div>
 						<template v-else>
-							<div>
+							<div v-effect="updateEdwards()">
 								<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start
 									playing</button>&nbsp;
 								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset"

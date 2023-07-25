@@ -1,6 +1,6 @@
 import { createApp } from "petite-vue";
 import { store, state, saveSettings } from "./store";
-import { updateSN } from "./squares";
+import { updateSN, toFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
@@ -9,7 +9,7 @@ import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
-import { normalFEN } from "./tools/api";
+import { normalForsyth } from "./tools/api";
 import { PLAY, moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 
@@ -63,7 +63,7 @@ window.share = async function(bt) {
 				// Actually FF Android hasn't implement `text` parameter yet,
 				// but it won't hurt adding it either.
 				// See https://caniuse.com/mdn-api_navigator_canshare_data_text_parameter
-				text: normalFEN(),
+				text: normalForsyth(),
 			});
 		} finally {
 			bt.disabled = false;
@@ -102,6 +102,8 @@ createApp({
 	updateBG,
 	updateSN,
 	Popeye,
+	updateEdwards,
+	toFEN,
 	toggleCoordinates() {
 		setOption({}, true);
 	},

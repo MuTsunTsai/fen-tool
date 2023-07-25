@@ -10,6 +10,7 @@ export const defaultOption = {
 	size: 44,
 	w: 8,
 	h: 8,
+	fullFEN: false,
 	coordinates: false,
 	set: "1echecs",
 	collapse: false,

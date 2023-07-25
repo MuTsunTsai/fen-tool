@@ -2,17 +2,17 @@ import { store } from "../store";
 import { FEN } from "../meta/el";
 import { CE } from "../render";
 import { getDimensions } from "../meta/option";
-import { inferDimension, makeFEN } from "../meta/fen.mjs";
+import { inferDimension, makeForsyth } from "../meta/fen.mjs";
 import { normalSnapshot } from "../squares";
 
 function getURL(url) {
 	return new URL(url, location.href).toString();
 }
 
-export function normalFEN() {
+export function normalForsyth() {
 	const { SN, w, h } = store.board;
 	if(SN) {
-		return makeFEN(normalSnapshot(), w, h);
+		return makeForsyth(normalSnapshot(), w, h);
 	} else {
 		return FEN.value;
 	}
@@ -20,7 +20,7 @@ export function normalFEN() {
 
 function getEmbedUrl() {
 	const options = store.board;
-	const fen = normalFEN();
+	const fen = normalForsyth();
 	let url = getURL("gen/?fen=" + fen);
 	if(options.size != 44) url += "&size=" + options.size;
 	if(options.set != "1echecs") url += "&set=" + options.set;
@@ -35,7 +35,7 @@ function getEmbedUrl() {
 export const API = {
 	copyJanko() {
 		gtag("event", "fen_copy_janko");
-		return "https://www.janko.at/Retros/d.php?ff=" + normalFEN();
+		return "https://www.janko.at/Retros/d.php?ff=" + normalForsyth();
 	},
 	copyBase64() {
 		gtag("event", "fen_link_copy64");
@@ -77,7 +77,7 @@ export const API = {
 	},
 	copyImg() {
 		gtag("event", "fen_copy_sdkImg");
-		return `<img fen="${normalFEN()}">`;
+		return `<img fen="${normalForsyth()}">`;
 	},
 	copySDK() {
 		gtag("event", "fen_copy_sdk");

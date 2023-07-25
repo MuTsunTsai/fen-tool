@@ -1,4 +1,4 @@
-import { INIT_FEN, makeFEN, parseSquare, parseFEN, rotate, invert, parseXY, shift, mirror } from "./fen.mjs";
+import { INIT_FORSYTH, makeForsyth, parseSquare, parseFEN, rotate, invert, parseXY, shift, mirror } from "./fen.mjs";
 import { createAbbrExp, createAbbrReg } from "./regex.mjs";
 
 const SQ = `[a-h][1-8]`;
@@ -32,7 +32,7 @@ export function parseSolution(input, initFEN, output, factory) {
 	const ordering = inferMoveOrdering(stip, halfDuplex);
 	let currentOrdering = ordering;
 	const isPG = (/dia/i).test(stip);
-	const init = addImitator(isPG ? INIT_FEN : toNormalFEN(initFEN), initImitators);
+	const init = addImitator(isPG ? INIT_FORSYTH : toNormalFEN(initFEN), initImitators);
 	let lastPosition = init;
 	let error = false;
 	const stack = [];
@@ -73,7 +73,7 @@ export function parseSolution(input, initFEN, output, factory) {
 				stack.length = 0;
 				board = parseFEN(twin[1] ? lastPosition : init);
 				makeTwin(board, twin[2]);
-				const fen = makeFEN(board);
+				const fen = makeForsyth(board);
 				lastPosition = fen;
 				return factory(text, fen);
 			}
@@ -112,7 +112,7 @@ export function parseSolution(input, initFEN, output, factory) {
 				}
 			}
 
-			const fen = makeFEN(board);
+			const fen = makeForsyth(board);
 			if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() })
 			return factory(text, fen);
 		} catch(e) {
@@ -145,7 +145,7 @@ function addImitator(fen, imitators) {
 	for(const sq of imitators) {
 		board[parseSquare(sq)] = "-c";
 	}
-	return makeFEN(board);
+	return makeForsyth(board);
 }
 
 const IMITATOR = new RegExp(String.raw`\bimit\w*\s+(?:${SQ})+`, "ig");
