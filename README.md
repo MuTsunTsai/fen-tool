@@ -10,6 +10,10 @@ and on the input boxes on the left you can manually input variations that are no
 For mobile devices, the two boards are one and you can enable manual input by double-tapping on the squares.
 Options and tools should be mostly self-explanatory.
 
+You can also install FEN Tool as a standalone app on your device!
+Just visit the site using Chrome (on devices other than iPhone), Edge (on desktops), or Safari (on an iPhone),
+and use the "Install application" (or "Add to home screen") function in your browser to install it.
+
 <br>
 
 ## ♟️ Notation
