@@ -117,7 +117,8 @@ addEventListener("popstate", loadState);
 
 export function pushState() {
 	const current = location.search;
-	const url = FEN.value == DEFAULT ? "" : "?fen=" + encodeURI(FEN.value.split(" ")[0]);
+	const forsyth = FEN.value.split(" ")[0];
+	const url = forsyth == DEFAULT ? "" : "?fen=" + encodeURI(forsyth);
 	if(url !== decodeURIComponent(current)) {
 		history.pushState(null, "", url || ".");
 	}
