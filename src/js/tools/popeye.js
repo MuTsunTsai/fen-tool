@@ -5,6 +5,7 @@ import { formatSolution, toNormalFEN } from "../meta/popeye.mjs";
 import { resize } from "../layout";
 import { drawTemplate } from "../render";
 import { makeFEN } from "../meta/fen.mjs";
+import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
 
 let path = "modules/py.js";
 let worker;
@@ -94,17 +95,27 @@ function escapeHtml(text) {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+const Commands = ["remark", "author", "origin", "title"];
+const COMMANDS = new RegExp(String.raw`(?:${Commands.map(createAbbrExp).join("|")})\s.+$`, "igm");
+const PROTOCOL = new RegExp(String.raw`${createAbbrExp("protocol")}\s+\S+`, "i");
+const BEGIN = createAbbrReg("beginProblem");
+const END = createAbbrReg("endProblem");
+const NEXT = /\bnext\s[\s\S]+$/i;
+const FORSYTH = createAbbrExp("forsyth");
+const PIECES = createAbbrExp("pieces");
+
 function parseInput(text) {
 	text = text
-		.replace(/\b(rema|auth|orig|titl)\w*\s.+$/gm, "")
-		.replace(/\bprot\w*\s+\S+/i, "")		// remove protocol
-		.replace(/\bbeg\w*/i, "")				// remove BeginProblem
-		.replace(/\bnext\s[\s\S]+$/i, "")	// accept only one problem input
-		.replace(/\bend\w*/i, "");			// remove EndProblem
-	if(/\b(fors|piec)\w*\b/i.test(text)) {
+		.replace(COMMANDS, "")	// remove remark, author, origin, title
+		.replace(PROTOCOL, "")	// remove protocol
+		.replace(BEGIN, "")		// remove BeginProblem
+		.replace(NEXT, "")		// accept only one problem input
+		.replace(END, "");		// remove EndProblem
+
+	if(new RegExp(`${FORSYTH}|${PIECES}`, "i").test(text)) {
 		// If Forsyth command is used, get the board from it
 		// Pieces command is not supported for now
-		initFEN = text.match(/\bfors\w*\s+(\S+)/i)?.[1];
+		initFEN = text.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
 		if(initFEN) setFEN(toNormalFEN(initFEN));
 		return text; // board is assigned manually
 	} else {

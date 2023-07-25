@@ -1,4 +1,5 @@
 import { INIT_FEN, makeFEN, parseSquare, parseFEN, rotate, invert, parseXY, shift, mirror } from "./fen.mjs";
+import { createAbbrExp, createAbbrReg } from "./regex.mjs";
 
 const SQ = `[a-h][1-8]`;
 const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
@@ -23,7 +24,7 @@ export function formatSolution(input, initFEN, output) {
 
 export function parseSolution(input, initFEN, output, factory) {
 	if(!initFEN) return output;
-	console.log(output);
+	// console.log(output);
 
 	const { duplex, halfDuplex, initImitators } = parseInput(input);
 
@@ -149,17 +150,22 @@ function addImitator(fen, imitators) {
 
 const IMITATOR = new RegExp(String.raw`\bimit\w*\s+(?:${SQ})+`, "ig");
 
+const Commands = ["condition", "option", "stipulation", "sstipulation", "forsyth", "pieces", "twin"];
+const COMMANDS = new RegExp(Commands.map(createAbbrExp).join("|"), "ig");
+const DUPLEX = createAbbrReg("duplex");
+const HALF_DUPLEX = createAbbrReg("halfDuplex");
+
 function parseInput(input) {
 	input = input
 		.replace(/\n/g, " ")
-		.replace(/\b(cond|opti|stip|ssti|fors|piec|twin)/ig, "\n$&")
+		.replace(COMMANDS, "\n$&")
 		.split("\n");
 	const options = input.filter(c => c.match(/^opti/i)).join(" ");
 	const conditions = input.filter(c => c.match(/^cond/i)).join(" ");
 	return {
 		initImitators: conditions.match(IMITATOR)?.join(" ").match(new RegExp(SQ, "g")),
-		duplex: /\bdupl/i.test(options),
-		halfDuplex: /\bhalf/i.test(options),
+		duplex: DUPLEX.test(options),
+		halfDuplex: HALF_DUPLEX.test(options),
 	};
 }
 
