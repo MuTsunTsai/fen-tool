@@ -12,6 +12,7 @@ const purgeOption = {
 			/^--bs-btn-disabled/,
 			/^--bs-nav-tabs/,
 		],
+		standard: ["text-danger"],
 	},
 	// for Bootstrap
 	variables: true,

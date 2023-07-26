@@ -44,7 +44,7 @@ function tryScroll() {
 function stop(restart) {
 	worker.terminate();
 	worker = undefined;
-	const remain = 1000 - (performance.now() - startTime);
+	const remain = 500 - (performance.now() - startTime);
 	tryScroll();
 	clearInterval(interval);
 	if(!restart) {

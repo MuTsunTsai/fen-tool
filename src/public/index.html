@@ -210,7 +210,7 @@
 
 			<div v-cloak v-effect="saveSettings()" class="w-passive-100">
 
-				<div class="mb-3 nav-container">
+				<div class="mb-3 nav-container" :class="{'mt-n3':state.layout.hor&&state.popeye.playing}">
 					<ul class="nav nav-tabs" style="flex-wrap: nowrap;">
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==0}" @click="tab=0">Edit</div>
@@ -688,15 +688,15 @@
 									documentation</a>
 							</div>
 							<div class="col-auto text-end">
-								<button type="button" class="btn btn-secondary" @click="Popeye.play"
+								<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
 										:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
 									Play solution
 								</button>
-								<button v-if="!state.popeye.running" type="button" class="btn btn-primary" @click="Popeye.run"
+								<button v-if="!state.popeye.running" type="button" class="btn btn-primary m-0" @click="Popeye.run"
 										:disabled="state.play.playing">
 									<i class="fa-solid fa-play"></i>&ensp;Run
 								</button>
-								<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">
+								<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
 									<i class="fa-solid fa-stop"></i>&ensp;Cancel
 								</button>
 							</div>
@@ -728,8 +728,6 @@
 						</div>
 						<div id="Output" v-show="state.popeye.output&&tab==7" class="form-control" v-html="state.popeye.output">
 						</div>
-						<!-- stub for purge css -->
-						<span class="text-danger"></span>
 					</section>
 
 					<section :class="{show:tab==4}" v-if="env.isTaiwan">
@@ -758,6 +756,8 @@
 				</div>
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
 			</div>
+			<!-- stub for purge css -->
+			<span class="d-none "></span>
 		</div>
 	</main>
 	<iframe v-if="state.split" src="."></iframe>
