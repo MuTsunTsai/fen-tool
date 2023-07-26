@@ -19,16 +19,6 @@ let shouldScroll = false;
 
 const el = document.getElementById("Output");
 
-function stop(keepRunning) {
-	const remain = 1000 - (performance.now() - startTime);
-	tryScroll();
-	clearInterval(interval);
-	if(!keepRunning) {
-		state.popeye.output = output;
-		setTimeout(() => state.popeye.running = false, Math.max(0, remain));
-	}
-}
-
 function stepClick() {
 	setFEN(this.dataset.fen);
 	const popeye = state.popeye;
@@ -51,37 +41,44 @@ function tryScroll() {
 	}
 }
 
-function terminate(keepRunning) {
+function stop(restart) {
 	worker.terminate();
 	worker = undefined;
-	stop(keepRunning);
+	const remain = 1000 - (performance.now() - startTime);
+	tryScroll();
+	clearInterval(interval);
+	if(!restart) {
+		state.popeye.output = output;
+		setTimeout(() => state.popeye.running = false, Math.max(0, remain));
+	}
+	createWorker();
+}
+
+function createWorker() {
+	if(worker) return;
+	worker = new Worker(path);
+	worker.onmessage = event => {
+		const data = event.data;
+		if(data === -1) {
+			path = "modules/py.asm.js"; // fallback to asm.js
+			stop(true);
+			output = "Fallback to JS mode.<br>";
+		} else if(data === null) {
+			stop();
+		} else {
+			shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
+			if(typeof data.text == "string") output += escapeHtml(data.text) + "<br>";
+			if(typeof data.err == "string") {
+				state.popeye.error = true;
+				output += `<span class="text-danger">${escapeHtml(data.err)}</span><br>`;
+			}
+		}
+	};
 }
 
 function start() {
-	// Setup
-	if(!worker) {
-		worker = new Worker(path);
-		worker.onmessage = event => {
-			const data = event.data;
-			if(data === -1) {
-				path = "modules/py.asm.js"; // fallback to asm.js
-				terminate(true);
-				start();
-				output = "Fallback to JS mode.<br>";
-			} else if(data === null) {
-				stop();
-			} else {
-				shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
-				if(typeof data.text == "string") output += escapeHtml(data.text) + "<br>";
-				if(typeof data.err == "string") {
-					state.popeye.error = true;
-					output += `<span class="text-danger">${escapeHtml(data.err)}</span><br>`;
-				}
-			}
-		};
-	}
+	createWorker();
 
-	// Initialize
 	output = "";
 	suffix = ".";
 	state.popeye.error = false;
@@ -154,7 +151,7 @@ export const Popeye = {
 		start();
 	},
 	cancel() {
-		if(worker) terminate();
+		if(worker) stop();
 	},
 	play() {
 		gtag("event", "fen_popeye_play");
