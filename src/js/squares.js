@@ -111,21 +111,15 @@ export async function loadState() {
 	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
-	const image = url.searchParams.get("image");
 	if(fen) setFEN(fen, true);
-	if(image) {
-		alert("Image handling under development: " + image);
-		const response = await fetch("shareImage?image=" + image);
-		console.log(await response.text());
-	}
 }
 addEventListener("popstate", loadState);
 
 export function pushState() {
-	const current = location.search;
+	const current = new URL(location.href).searchParams.get("fen") || DEFAULT;
 	const forsyth = FEN.value.split(" ")[0];
-	const url = forsyth == DEFAULT ? "" : "?fen=" + encodeURI(forsyth);
-	if(url !== decodeURIComponent(current)) {
+	const url = forsyth == DEFAULT ? "" : "?fen=" + encodeURIComponent(forsyth);
+	if(forsyth !== current) {
 		history.pushState(null, "", url || ".");
 	}
 }

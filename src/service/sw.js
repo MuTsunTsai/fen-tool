@@ -30,11 +30,10 @@ routing.registerRoute(
 		console.log(event);
 		const formData = await event.request.formData();
 		const fen = formData.get("fen");
-		const image = formData.get("image");
+		const image = formData.get("image"); // a File object
 		const params = [];
 		if(fen) params.push("fen=" + encodeURIComponent(fen));
 		if(image) {
-			console.log(image);
 			imageStore.set(++imageIndex, image)
 			params.push("image=" + imageIndex);
 		}
@@ -50,6 +49,8 @@ routing.registerRoute(
 		const index = url.searchParams.get("image");
 		const image = imageStore.get(index);
 		imageStore.delete(index);
+
+		// it's OK to use File object (which is a Blob) here
 		return new Response(image);
 	},
 );

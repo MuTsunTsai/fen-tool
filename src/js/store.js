@@ -45,6 +45,16 @@ assign(settings, savedSettings);
 
 if(search.has("janko")) settings.feature.janko = true;
 
+async function loadImage() {
+	const image = search.get("image");
+	if(image) {
+		alert("Image handling under development: " + image);
+		const response = await fetch("shareImage?image=" + image);
+		console.log(await response.blob());
+	}
+}
+loadImage();
+
 export const store = reactive(settings);
 
 const mm = matchMedia("(prefers-color-scheme: dark)");
