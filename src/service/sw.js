@@ -6,9 +6,9 @@ import * as strategies from "workbox-strategies";
 // Receive share data
 // reference: https://web.dev/workbox-share-targets/
 routing.registerRoute(
-	({ url, method }) => {
-		console.log(url, method);
-		return url.pathname == "/fen-tool/share" && method == "POST";
+	({ url }) => {
+		console.log(url);
+		return url.pathname == "/fen-tool/share";
 	},
 	async ({ event }) => {
 		console.log(event);
@@ -24,7 +24,8 @@ routing.registerRoute(
 		const url = "/fen-tool" + (params.length > 0 ? "?" + params.join("&") : "");
 		console.log(url);
 		return Response.redirect(url, 303);
-	}
+	},
+	"POST"
 );
 
 self.addEventListener("fetch", event => {
