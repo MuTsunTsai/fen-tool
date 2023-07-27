@@ -111,7 +111,9 @@ export function loadState() {
 	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
+	const image = url.searchParams.get("image");
 	if(fen) setFEN(fen, true);
+	if(image) alert("Image handling under development: " + image);
 }
 addEventListener("popstate", loadState);
 

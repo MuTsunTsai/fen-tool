@@ -23,6 +23,26 @@ const netOnly = new strategies.NetworkOnly({
 	fetchOptions: { cache: "reload" },
 });
 
+// Receive share data
+// reference: https://web.dev/workbox-share-targets/
+routing.registerRoute(
+	"/fen-tool",
+	async ({ event }) => {
+		const formData = await event.request.formData();
+		const fen = formData.get("fen");
+		const image = formData.get("image");
+		const params = [];
+		if(fen) params.push("fen=" + encodeURIComponent(fen));
+		if(image) {
+			const url = URL.createObjectURL(new Blob([image]));
+			params.push("image=" + encodeURIComponent(url));
+		}
+		params.join("&");
+		Response.redirect("/fen-tool" + (params.length > 0 ? "?" + params.join("&") : ""), 303);
+	},
+	"POST"
+);
+
 // Third-party requests
 routing.registerRoute(({ url }) => url.host != "mutsuntsai.github.io", netOnly);
 
