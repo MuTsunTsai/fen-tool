@@ -38,7 +38,7 @@ routing.registerRoute(
 			params.push("image=" + encodeURIComponent(url));
 		}
 		params.join("&");
-		Response.redirect("/fen-tool" + (params.length > 0 ? "?" + params.join("&") : ""), 303);
+		return Response.redirect("/fen-tool" + (params.length > 0 ? "?" + params.join("&") : ""), 303);
 	},
 	"POST"
 );
