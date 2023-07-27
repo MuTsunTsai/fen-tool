@@ -3,17 +3,6 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
-self.addEventListener("fetch", event => {
-	console.log("fetch", event);
-});
-
-// Activate Workbox GA
-googleAnalytics.initialize();
-
-// Default resources use StaleWhileRevalidate strategy
-const defaultHandler = new strategies.StaleWhileRevalidate({ cacheName: "assets" });
-routing.setDefaultHandler(defaultHandler);
-
 // Receive share data
 // reference: https://web.dev/workbox-share-targets/
 routing.registerRoute(
@@ -37,6 +26,17 @@ routing.registerRoute(
 		return Response.redirect(url, 303);
 	}
 );
+
+self.addEventListener("fetch", event => {
+	console.log("fetch", event);
+});
+
+// Activate Workbox GA
+googleAnalytics.initialize();
+
+// Default resources use StaleWhileRevalidate strategy
+const defaultHandler = new strategies.StaleWhileRevalidate({ cacheName: "assets" });
+routing.setDefaultHandler(defaultHandler);
 
 // Activates workbox-precaching
 const precacheController = new precaching.PrecacheController({ cacheName: "assets" });
