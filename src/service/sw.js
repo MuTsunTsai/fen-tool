@@ -3,6 +3,10 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
+self.addEventListener("fetch", event => {
+	console.log("fetch", event);
+});
+
 // Activate Workbox GA
 googleAnalytics.initialize();
 
