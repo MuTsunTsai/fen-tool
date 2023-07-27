@@ -107,7 +107,7 @@ function parseEdwards(v) {
 	return arr;
 }
 
-export async function loadState() {
+async function loadState() {
 	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");

@@ -1,5 +1,5 @@
 import { createApp } from "petite-vue";
-import { store, state, saveSettings } from "./store";
+import { store, state, saveSettings, noEditing } from "./store";
 import { updateSN, toFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
@@ -12,6 +12,7 @@ import { SN } from "./meta/el";
 import { normalForsyth } from "./tools/api";
 import { PLAY, moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
+import { openFile } from "./tools/scan";
 
 initLayout();
 initDrag();
@@ -101,6 +102,7 @@ createApp({
 	redraw,
 	updateBG,
 	updateSN,
+	openFile,
 	Popeye,
 	updateEdwards,
 	toFEN,
@@ -110,8 +112,11 @@ createApp({
 	get DB() {
 		return store.DB.use == "PDB" ? PDB : YACPDB;
 	},
-	get playing() {
-		return state.play.playing || state.popeye.playing;
+	get noEditing() {
+		return noEditing();
+	},
+	get hideTemplate() {
+		return state.layout.hor && state.popeye.playing;
 	},
 	YACPDB,
 	BBS,

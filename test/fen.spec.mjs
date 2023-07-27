@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { inferDimension, makeFEN, parseFEN } from "../src/js/meta/fen.mjs";
+import { inferDimension, makeForsyth, parseFEN } from "../src/js/meta/fen.mjs";
 
 describe("FEN Parsing", function() {
 
@@ -88,7 +88,7 @@ describe("FEN Parsing", function() {
 describe("Make FEN", function() {
 
 	it("Works in all cases", function() {
-		const fen = makeFEN([
+		const fen = makeForsyth([
 			"r", "n", "b", "q", "k", "b", "n", "r",
 			"p", "", "", "p", "p", "p", "p", "p",
 			"", "", "'A", "", "", "", "", "",

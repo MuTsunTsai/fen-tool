@@ -172,7 +172,7 @@
 						<button v-if="env.canCopy" class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
-						<button v-if="env.canCopy&&env.canPaste" class="btn btn-secondary" :disabled="playing" title="Paste"
+						<button v-if="env.canCopy&&env.canPaste" class="btn btn-secondary" :disabled="noEditing" title="Paste"
 								onclick="FEN.paste()">
 							<i class="fa-solid fa-paste"></i>
 						</button>
@@ -188,7 +188,7 @@
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
 								<div id="Squares">
-									<div class="play-mask" v-show="playing"></div>
+									<div class="play-mask" v-show="noEditing"></div>
 								</div>
 							</div>
 						</div>
@@ -202,7 +202,7 @@
 								</div>
 								<img id="PV">
 							</div>
-							<canvas id="TP" class="ms-4" v-show="!state.layout.hor||!state.popeye.playing">
+							<canvas id="TP" class="ms-4" v-show="!hideTemplate">
 						</div>
 					</div>
 				</div>
@@ -210,7 +210,7 @@
 
 			<div v-cloak v-effect="saveSettings()" class="w-passive-100">
 
-				<div class="mb-3 nav-container" :class="{'mt-n3':state.layout.hor&&state.popeye.playing}">
+				<div class="mb-3 nav-container" :class="{'mt-n3':hideTemplate}">
 					<ul class="nav nav-tabs" style="flex-wrap: nowrap;">
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:tab==0}" @click="tab=0">Edit</div>
@@ -240,64 +240,64 @@
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<span class="d-inline-block">
-								<button type="button" class="btn btn-secondary" onclick="FEN.empty()" :disabled="playing">
+								<button type="button" class="btn btn-secondary" onclick="FEN.empty()" :disabled="noEditing">
 									<i class="fa-solid fa-trash-can"></i>&ensp;Empty board
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" :disabled="playing">
+								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" :disabled="noEditing">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 								</button>
 							</span>
 							<span class="d-inline-block">
 								<span class="d-inline-block">
 									<button type="button" class="btn btn-secondary" title="Shift leftwards"
-											onclick="FEN.shift(-1,0)" :disabled="playing">
+											onclick="FEN.shift(-1,0)" :disabled="noEditing">
 										<i class="fa-solid fa-arrow-left"></i>
 									</button>
 									<button type="button" class="btn btn-secondary" title="Shift rightwards"
-											onclick="FEN.shift(1,0)" :disabled="playing">
+											onclick="FEN.shift(1,0)" :disabled="noEditing">
 										<i class="fa-solid fa-arrow-right"></i>
 									</button>
 									<button type="button" class="btn btn-secondary" title="Shift upwards"
-											onclick="FEN.shift(0,-1)" :disabled="playing">
+											onclick="FEN.shift(0,-1)" :disabled="noEditing">
 										<i class="fa-solid fa-arrow-up"></i>
 									</button>
 									<button type="button" class="btn btn-secondary" title="Shift downwards"
-											onclick="FEN.shift(0,1)" :disabled="playing">
+											onclick="FEN.shift(0,1)" :disabled="noEditing">
 										<i class="fa-solid fa-arrow-down"></i>
 									</button>
 								</span>
 								<span class="d-inline-block">
 									<button type="button" class="btn btn-secondary" title="Rotate counterclockwise"
-											onclick="FEN.rotate(-1)" :disabled="playing">
+											onclick="FEN.rotate(-1)" :disabled="noEditing">
 										<i class="fa-solid fa-rotate-left"></i>
 									</button>
 									<button type="button" class="btn btn-secondary" title="Rotate clockwise"
-											onclick="FEN.rotate(1)" :disabled="playing">
+											onclick="FEN.rotate(1)" :disabled="noEditing">
 										<i class="fa-solid fa-rotate-right"></i>
 									</button>
 									<button type="button" class="btn btn-secondary" title="Mirror horizontally"
-											onclick="FEN.mirror('-')" :disabled="playing">
+											onclick="FEN.mirror('-')" :disabled="noEditing">
 										<i class="fa-solid fa-arrows-left-right"></i>
 									</button>
 									<button type="button" class="btn btn-secondary" title="Mirror vertically"
-											onclick="FEN.mirror('|')" :disabled="playing">
+											onclick="FEN.mirror('|')" :disabled="noEditing">
 										<i class="fa-solid fa-arrows-up-down"></i>
 									</button>
 								</span>
 							</span>
 							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="All Black" onclick="FEN.color(-1)"
-									   :disabled="playing">
+									   :disabled="noEditing">
 								<input type="button" class="btn btn-secondary" value="All Neutral" onclick="FEN.color(0)"
-									   :disabled="playing">
+									   :disabled="noEditing">
 								<input type="button" class="btn btn-secondary" value="All White" onclick="FEN.color(1)"
-									   :disabled="playing">
+									   :disabled="noEditing">
 							</span>
 							<span class="d-inline-block">
 								<input type="button" class="btn btn-secondary" value="Switch side" title="Texts are not converted"
-									   onclick="FEN.invert(false)" :disabled="playing">
+									   onclick="FEN.invert(false)" :disabled="noEditing">
 								<input type="button" class="btn btn-secondary" value="Switch case" title="Texts are converted"
-									   onclick="FEN.invert(true)" :disabled="playing">
+									   onclick="FEN.invert(true)" :disabled="noEditing">
 							</span>
 						</div>
 						<div class="text-end">
@@ -499,7 +499,7 @@
 							</div>
 							<div class="col-auto">
 								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)"
-									   :disabled="playing">
+									   :disabled="noEditing">
 							</div>
 						</div>
 						<div class="row align-items-center flex-wrap">

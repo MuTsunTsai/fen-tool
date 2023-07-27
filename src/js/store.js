@@ -45,16 +45,6 @@ assign(settings, savedSettings);
 
 if(search.has("janko")) settings.feature.janko = true;
 
-async function loadImage() {
-	const image = search.get("image");
-	if(image) {
-		alert("Image handling under development");
-		const response = await fetch("shareImage?image=" + image);
-		console.log("receive", await response.blob());
-	}
-}
-loadImage();
-
 export const store = reactive(settings);
 
 const mm = matchMedia("(prefers-color-scheme: dark)");
@@ -122,4 +112,8 @@ export function getRenderSize(tp, horTemplate) {
 	};
 	const width = (w * size + border.size * 2 + margin.x) * factor;
 	return { s, offset, width };
+}
+
+export function noEditing() {
+	return state.play.playing || state.popeye.playing;
 }

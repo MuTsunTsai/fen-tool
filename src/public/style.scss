@@ -141,6 +141,15 @@ section {
 	opacity: 0;
 }
 
+.loader {
+	transition: opacity 0s 0s;
+	
+	&.show {
+		transition: opacity 0.25s 0.5s;
+		opacity: 1;
+	}
+}
+
 #Zone {
 	margin-left: -1.5rem;
 	margin-right: -1.5rem;
@@ -180,30 +189,21 @@ label[for] {
 .nav-container {
 	overflow: auto hidden;
 	scrollbar-width: none; /* Firefox */
-}
 
-.nav-container::-webkit-scrollbar {
-	/* WebKit */
-	width: 0;
-	height: 0;
-}
-
-.loader {
-	transition: opacity 0s 0s;
-}
-
-.loader.show {
-	transition: opacity 0.25s 0.5s;
-	opacity: 1;
+	&::-webkit-scrollbar {
+		/* WebKit */
+		width: 0;
+		height: 0;
+	}
 }
 
 .step {
 	vertical-align: unset;
 	user-select: unset;
-}
 
-.step.btn-secondary.active {
-	color: yellow;
+	&.btn-secondary.active {
+		color: yellow;
+	}
 }
 
 #Output {

@@ -19,6 +19,8 @@ const precacheRoute = new precaching.PrecacheRoute(precacheController, {
 });
 routing.registerRoute(precacheRoute);
 
+// Since URL.createObjectURL doesn't work with service worker,
+// we need to implement our own image store and route.
 const imageStore = new Map();
 let imageIndex = 0;
 
@@ -42,13 +44,13 @@ routing.registerRoute(
 	"POST"
 );
 
+// Route for getting the image
 routing.registerRoute(
 	({ url }) => url.pathname.startsWith("/fen-tool/shareImage"),
 	({ url }) => {
 		const index = Number(url.searchParams.get("image"));
 		const image = imageStore.get(index);
 		imageStore.delete(index);
-		console.log("sw response", image);
 
 		// it's OK to use File object (which is a Blob) here
 		return new Response(image);

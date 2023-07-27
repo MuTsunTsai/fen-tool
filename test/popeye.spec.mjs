@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { getStipulation, inferMoveOrdering, parseSolution } from "../src/js/meta/popeye.mjs";
+import { getStipulation, inferMoveOrdering, parseSolution } from "../src/js/meta/popeye/popeye.mjs";
 import { INIT_FORSYTH } from "../src/js/meta/fen.mjs";
 
 describe("Popeye", function() {

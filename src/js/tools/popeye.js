@@ -1,7 +1,7 @@
 import { nextTick } from "petite-vue";
 import { setFEN, snapshot } from "../squares";
 import { state, store } from "../store";
-import { formatSolution, toNormalFEN } from "../meta/popeye.mjs";
+import { formatSolution, toNormalFEN } from "../meta/popeye/popeye.mjs";
 import { resize } from "../layout";
 import { drawTemplate } from "../render";
 import { makeForsyth } from "../meta/fen.mjs";

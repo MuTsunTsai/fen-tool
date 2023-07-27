@@ -1,6 +1,6 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
 import { dpr, setOption } from "./layout";
-import { store, state, assign } from "./store";
+import { store, state, assign, noEditing } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
@@ -49,7 +49,7 @@ export function drawTemplate(except) {
 	const options = Object.assign({}, store.board, state.layout.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = getTemplate();
 	drawBoard(tCtx, squares, options, dpr, false, state.layout.hor);
-	if(!state.play.playing && !state.popeye.playing) {
+	if(!noEditing()) {
 		drawBoard(tgCtx, squares, options, dpr, true, state.layout.hor);
 	} else {
 		const { size } = store.board;
