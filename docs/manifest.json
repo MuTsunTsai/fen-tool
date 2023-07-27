@@ -53,7 +53,7 @@
 		}
 	],
 	"share_target": {
-		"action": "/fen-tool",
+		"action": "/fen-tool/share",
 		"method": "POST",
 		"enctype": "multipart/form-data",
 		"params": {

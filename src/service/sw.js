@@ -15,7 +15,7 @@ routing.setDefaultHandler(defaultHandler);
 routing.registerRoute(
 	({ url, method }) => {
 		console.log(url, method);
-		return url.pathname == "/fen-tool" && method == "POST";
+		return url.pathname == "/fen-tool/share" && method == "POST";
 	},
 	async ({ event }) => {
 		console.log(event);
