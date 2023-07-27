@@ -48,9 +48,9 @@ if(search.has("janko")) settings.feature.janko = true;
 async function loadImage() {
 	const image = search.get("image");
 	if(image) {
-		alert("Image handling under development: " + image);
+		alert("Image handling under development");
 		const response = await fetch("shareImage?image=" + image);
-		console.log(await response.blob());
+		console.log("receive", await response.blob());
 	}
 }
 loadImage();

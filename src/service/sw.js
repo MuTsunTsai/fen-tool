@@ -27,7 +27,6 @@ let imageIndex = 0;
 routing.registerRoute(
 	({ url }) => url.pathname.startsWith("/fen-tool/share"),
 	async ({ event }) => {
-		console.log(event);
 		const formData = await event.request.formData();
 		const fen = formData.get("fen");
 		const image = formData.get("image"); // a File object
@@ -46,9 +45,10 @@ routing.registerRoute(
 routing.registerRoute(
 	({ url }) => url.pathname.startsWith("/fen-tool/shareImage"),
 	({ url }) => {
-		const index = url.searchParams.get("image");
+		const index = Number(url.searchParams.get("image"));
 		const image = imageStore.get(index);
 		imageStore.delete(index);
+		console.log("sw response", image);
 
 		// it's OK to use File object (which is a Blob) here
 		return new Response(image);
