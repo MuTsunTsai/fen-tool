@@ -58,6 +58,7 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 	tab: 0,
 	pieceCount: "(0+0)",
 	play: {
+		initFEN: null,
 		playing: false,
 		pendingPromotion: false,
 		moveNumber: -1,
@@ -80,6 +81,7 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 		mode: "normal",
 	},
 	popeye: {
+		initFEN: null,
 		index: null,
 		steps: null,
 		playing: false,
@@ -87,6 +89,8 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 		running: false,
 		input: "",
 		output: "",
+		intInput: null,
+		intOutput: null,
 	},
 	layout: {
 		hor: false,
@@ -94,7 +98,6 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 		dragging: false,
 	},
 });
-console.log(JSON.stringify(state));
 
 export function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));

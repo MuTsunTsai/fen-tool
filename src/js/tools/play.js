@@ -7,8 +7,12 @@ import { state, store } from "../store"
 
 // Restore playing session
 if(state.play.playing) {
-	state.play.playing = false;
-	loadModule().then(() => state.play.playing = true);
+	const p = state.play;
+	p.playing = false;
+	loadModule().then(() => {
+		p.playing = true;
+		PLAY.goto(p.history[p.moveNumber]);
+	});
 }
 
 let module;
@@ -163,7 +167,6 @@ export const PLAY = {
 	goto(h) {
 		setFEN(chess.goto(h));
 		if(state.play.mode == RETRO) {
-			console.log(chess.fen())
 			resetRetro();
 			drawRetroTemplate();
 		}

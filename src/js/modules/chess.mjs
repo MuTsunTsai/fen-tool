@@ -15,7 +15,7 @@ export class Chess extends ChessBase {
 	}
 
 	init(fen) {
-		this.initFEN = fen;
+		store.state.initFEN = fen;
 		store.state.history.length = 0;
 		store.state.moveNumber = -1;
 		this.load(fen);
@@ -31,8 +31,8 @@ export class Chess extends ChessBase {
 		if(test.isCheck()) {
 			if(this.isCheck()) throw new Error("both kings are under checks");
 			// automatically switch turn regardless of assignment
-			this.initFEN = test.fen();
-			this.load(this.initFEN);
+			store.state.initFEN = test.fen();
+			this.load(store.state.initFEN);
 		}
 	}
 
@@ -225,7 +225,7 @@ export class Chess extends ChessBase {
 		if(store.state.mode == "retro") {
 			const history = store.state.history;
 			const last = history.length - 1;
-			const rawFEN = history.length > 0 ? history[last].before : this.initFEN;
+			const rawFEN = history.length > 0 ? history[last].before : store.state.initFEN;
 			const fen = manipulateFEN(rawFEN, resetMove);
 			if(fen != DEFAULT_POSITION) {
 				result += `[SetUp "1"]\n[FEN "${fen}"]\n\n`;
@@ -239,8 +239,8 @@ export class Chess extends ChessBase {
 				result += history[i].san + " ";
 			}
 		} else {
-			if(this.initFEN != DEFAULT_POSITION) {
-				result += `[SetUp "1"]\n[FEN "${this.initFEN}"]\n\n`;
+			if(store.state.initFEN != DEFAULT_POSITION) {
+				result += `[SetUp "1"]\n[FEN "${store.state.initFEN}"]\n\n`;
 			}
 			result += this.copyGame();
 		}
@@ -265,7 +265,7 @@ export class Chess extends ChessBase {
 	}
 
 	goto(h) {
-		const fen = !h ? this.initFEN : store.state.mode == "retro" ? h.before : h.after;
+		const fen = !h ? store.state.initFEN : store.state.mode == "retro" ? h.before : h.after;
 		this.load(fen);
 		store.state.moveNumber = store.state.history.indexOf(h);
 		return fen;

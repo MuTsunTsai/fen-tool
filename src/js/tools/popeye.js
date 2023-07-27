@@ -3,34 +3,35 @@ import { setFEN, snapshot } from "../squares";
 import { state, store } from "../store";
 import { formatSolution, toNormalFEN } from "../meta/popeye/popeye.mjs";
 import { resize } from "../layout";
-import { drawTemplate } from "../render";
+import { drawTemplate, load } from "../render";
 import { makeForsyth } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
+
+// Session
+state.popeye.running = false; // Do not restore this state
+if(state.popeye.playing) nextTick(() => setupStepElements(true));
 
 let path = "modules/py.js";
 let worker;
 let startTime;
-let input;
-let output; // in HTML
 let suffix;
 let interval;
-let initFEN;
 let shouldScroll = false;
 
 const el = document.getElementById("Output");
 
 function stepClick() {
 	setFEN(this.dataset.fen);
-	const popeye = state.popeye;
-	popeye.steps[popeye.index].classList.remove("active");
-	popeye.index = popeye.steps.indexOf(this);
+	const p = state.popeye;
+	p.steps[p.index].classList.remove("active");
+	p.index = p.steps.indexOf(this);
 	this.classList.add("active");
 }
 
 function animate() {
 	suffix += ".";
 	if(suffix.length == 5) suffix = ".";
-	state.popeye.output = output + "<br>" + suffix;
+	state.popeye.output = state.popeye.intOutput + "<br>" + suffix;
 	tryScroll();
 }
 
@@ -48,7 +49,7 @@ function stop(restart) {
 	tryScroll();
 	clearInterval(interval);
 	if(!restart) {
-		state.popeye.output = output;
+		state.popeye.output = state.popeye.intOutput;
 		setTimeout(() => state.popeye.running = false, Math.max(0, remain));
 	}
 	createWorker();
@@ -62,15 +63,15 @@ function createWorker() {
 		if(data === -1) {
 			path = "modules/py.asm.js"; // fallback to asm.js
 			stop(true);
-			output = "Fallback to JS mode.<br>";
+			state.popeye.intOutput = "Fallback to JS mode.<br>";
 		} else if(data === null) {
 			stop();
 		} else {
 			shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
-			if(typeof data.text == "string") output += escapeHtml(data.text) + "<br>";
+			if(typeof data.text == "string") state.popeye.intOutput += escapeHtml(data.text) + "<br>";
 			if(typeof data.err == "string") {
 				state.popeye.error = true;
-				output += `<span class="text-danger">${escapeHtml(data.err)}</span><br>`;
+				state.popeye.intOutput += `<span class="text-danger">${escapeHtml(data.err)}</span><br>`;
 			}
 		}
 	};
@@ -79,13 +80,14 @@ function createWorker() {
 function start() {
 	createWorker();
 
-	output = "";
 	suffix = ".";
-	state.popeye.error = false;
+	const p = state.popeye;
+	p.intOutput = "";
+	p.error = false;
+	p.running = true;
 	interval = setInterval(animate, 500);
 	startTime = performance.now();
-	state.popeye.running = true;
-	worker.postMessage("Opti NoBoard\n" + input); // NoBoard is used in any case
+	worker.postMessage("Opti NoBoard\n" + p.intInput); // NoBoard is used in any case
 }
 
 function escapeHtml(text) {
@@ -109,16 +111,17 @@ function parseInput(text) {
 		.replace(NEXT, "")		// accept only one problem input
 		.replace(END, "");		// remove EndProblem
 
+	const p = state.popeye;
 	if(new RegExp(`${FORSYTH}|${PIECES}`, "i").test(text)) {
 		// If Forsyth command is used, get the board from it
 		// Pieces command is not supported for now
-		initFEN = text.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
-		if(initFEN) setFEN(toNormalFEN(initFEN));
+		p.initFEN = text.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
+		if(p.initFEN) setFEN(toNormalFEN(p.initFEN));
 		return text; // board is assigned manually
 	} else {
-		initFEN = getPopeyeFEN();
-		if(!initFEN) return null;
-		return `fors ${initFEN}\n${text}`;
+		p.initFEN = getPopeyeFEN();
+		if(!p.initFEN) return null;
+		return `fors ${p.initFEN}\n${text}`;
 	}
 }
 
@@ -137,13 +140,27 @@ export function getPopeyeFEN() {
 	return makeForsyth(arr, 8, 8);
 }
 
+async function setupStepElements(restore) {
+	const p = state.popeye;
+	p.steps = [...el.querySelectorAll("span")];
+	p.steps.forEach(s => s.onclick = stepClick);
+	p.index = 0;
+	p.steps[0].classList.add("active");
+	setFEN(p.steps[0].dataset.fen);
+	p.playing = true;
+	if(restore) await load();
+	drawTemplate([]);
+	nextTick(resize);
+}
+
 export const Popeye = {
 	run() {
 		gtag("event", "fen_popeye_run");
 
 		// Precondition
-		input = parseInput(state.popeye.input);
-		if(!input) {
+		const p = state.popeye;
+		p.intInput = parseInput(p.input);
+		if(!p.intInput) {
 			alert("Only orthodox pieces are supported for now.");
 			return;
 		}
@@ -154,40 +171,32 @@ export const Popeye = {
 		if(worker) stop();
 	},
 	play() {
+		const p = state.popeye;
 		gtag("event", "fen_popeye_play");
-		state.popeye.output = formatSolution(input, initFEN, output);
-		nextTick(() => {
-			const popeye = state.popeye;
-			popeye.steps = [...el.querySelectorAll("span")];
-			popeye.steps.forEach(s => s.onclick = stepClick);
-			popeye.index = 0;
-			popeye.steps[0].classList.add("active");
-			setFEN(popeye.steps[0].dataset.fen);
-			popeye.playing = true;
-			drawTemplate([]);
-			nextTick(resize);
-		});
+		p.output = formatSolution(p.intInput, p.initFEN, p.intOutput);
+		nextTick(setupStepElements);
 	},
 	exit() {
-		state.popeye.output = output;
-		state.popeye.playing = false;
+		const p = state.popeye;
+		p.output = p.intOutput;
+		p.playing = false;
 		drawTemplate([]);
 		nextTick(resize);
 	},
 	moveBy(v) {
-		const popeye = state.popeye;
-		let n = popeye.index;
+		const p = state.popeye;
+		let n = p.index;
 		n += v;
 		if(n < 0) n = 0;
-		if(n > popeye.steps.length - 1) n = popeye.steps.length - 1;
+		if(n > p.steps.length - 1) n = p.steps.length - 1;
 		Popeye.move(n);
 	},
 	move(n) {
-		const popeye = state.popeye;
-		if(n == popeye.index) return;
-		popeye.steps[popeye.index].classList.remove("active");
-		popeye.index = n;
-		const step = popeye.steps[n];
+		const p = state.popeye;
+		if(n == p.index) return;
+		p.steps[p.index].classList.remove("active");
+		p.index = n;
+		const step = p.steps[n];
 		step.classList.add("active");
 		setFEN(step.dataset.fen);
 	}
