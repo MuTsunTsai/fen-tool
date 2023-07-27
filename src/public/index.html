@@ -164,7 +164,7 @@
 			<div class="w-passive-100">
 				<div class="row gx-3 mb-1">
 					<div class="col mb-2" style="flex-basis: 15rem; flex-grow:1000;">
-						<input type="text" class="form-control" placeholder="Enter FEN here" :readonly="playing||undefined"
+						<input type="text" class="form-control" placeholder="Enter FEN here" :readonly="noEditing||undefined"
 							   id="FEN" onchange="FEN.update()">
 					</div>
 					<div v-cloak class="col ps-0 mb-2 text-end" style="white-space:nowrap; flex-basis:max-content;">
@@ -495,7 +495,7 @@
 						<div class="row gx-3 mb-3">
 							<label class="col-auto col-form-label">Problem Id:</label>
 							<div class="col">
-								<input type="text" class="form-control" id="DB" :readonly="playing||undefined">
+								<input type="text" class="form-control" id="DB" :readonly="noEditing||undefined">
 							</div>
 							<div class="col-auto">
 								<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)"
@@ -693,7 +693,7 @@
 									Play solution
 								</button>
 								<button v-if="!state.popeye.running" type="button" class="btn btn-primary m-0" @click="Popeye.run"
-										:disabled="state.play.playing">
+										:disabled="state.play.playing||!state.popeye.input.trim()">
 									<i class="fa-solid fa-play"></i>&ensp;Run
 								</button>
 								<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
