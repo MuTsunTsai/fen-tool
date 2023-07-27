@@ -214,38 +214,38 @@
 				</div>
 			</div>
 
-			<div v-cloak v-effect="saveSettings()" class="w-passive-100">
+			<div v-cloak class="w-passive-100">
 
 				<!-- Navigation -->
 				<div class="mb-3 nav-container" :class="{'mt-n3':hideTemplate}">
 					<ul class="nav nav-tabs" style="flex-wrap: nowrap;">
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==0}" @click="tab=0">Edit</div>
+							<div class="nav-link" :class="{active:state.tab==0}" @click="state.tab=0">Edit</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==1}" @click="tab=1">Options</div>
+							<div class="nav-link" :class="{active:state.tab==1}" @click="state.tab=1">Options</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==7}" @click="tab=7">Popeye</div>
+							<div class="nav-link" :class="{active:state.tab==7}" @click="state.tab=7">Popeye</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==6}" @click="tab=6">Play</div>
+							<div class="nav-link" :class="{active:state.tab==6}" @click="state.tab=6">Play</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==2}" @click="tab=2">DB</div>
+							<div class="nav-link" :class="{active:state.tab==2}" @click="state.tab=2">DB</div>
 						</li>
 						<li class="nav-item" v-if="env.isTaiwan">
-							<div class="nav-link" :class="{active:tab==4}" @click="tab=4">BBS</div>
+							<div class="nav-link" :class="{active:state.tab==4}" @click="state.tab=4">BBS</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:tab==5}" @click="tab=5">API</div>
+							<div class="nav-link" :class="{active:state.tab==5}" @click="state.tab=5">API</div>
 						</li>
 					</ul>
 				</div>
 
 				<div class="d-flex mb-4">
 					<!-- Edit -->
-					<section :class="{show:tab==0}">
+					<section :class="{show:state.tab==0}">
 						<div class="mb-3">
 							<span class="d-inline-block">
 								<button type="button" class="btn btn-secondary" onclick="FEN.empty()" :disabled="noEditing">
@@ -336,7 +336,7 @@
 					</section>
 
 					<!-- Option -->
-					<section :class="{show:tab==1}">
+					<section :class="{show:state.tab==1}" v-effect="saveSettings()">
 						<div class="row mb-2">
 							<div class="col flex-grow-1" style="flex-basis: 18rem;">
 								<div class="row gx-3 mb-2">
@@ -458,7 +458,7 @@
 					</section>
 
 					<!-- API -->
-					<section :class="{show:tab==5}">
+					<section :class="{show:state.tab==5}">
 						<div class="mb-2">
 							<span
 								  v-scope="CopyButton('Copy base64 link', API.copyBase64, 'btn-secondary', !location.protocol.startsWith('http'))"></span>
@@ -478,7 +478,7 @@
 					</section>
 
 					<!-- DB -->
-					<section :class="{show:tab==2}">
+					<section :class="{show:state.tab==2}">
 						<div class="row gx-3 mb-2 align-items-center">
 							<label class="col-auto col-form-label">Use database: </label>
 							<div class="col">
@@ -527,7 +527,7 @@
 					</section>
 
 					<!-- Play -->
-					<section :class="{show:tab==6}">
+					<section :class="{show:state.tab==6}" v-effect="saveSession()">
 						<div v-if="state.play.playing">
 							<div class="mb-3">
 								<span>
@@ -691,7 +691,7 @@
 					</section>
 
 					<!-- Popeye -->
-					<section :class="{show:tab==7}">
+					<section :class="{show:state.tab==7}">
 						<textarea class="form-control mb-2" v-show="!state.popeye.playing" rows="5" v-model="state.popeye.input"
 								  :disabled="state.popeye.running"
 								  :placeholder="'For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
@@ -740,12 +740,12 @@
 								</button>
 							</div>
 						</div>
-						<div id="Output" v-show="state.popeye.output&&tab==7" class="form-control" v-html="state.popeye.output">
+						<div id="Output" v-show="state.popeye.output&&state.tab==7" class="form-control" v-html="state.popeye.output">
 						</div>
 					</section>
 
 					<!-- BBS -->
-					<section :class="{show:tab==4}" v-if="env.isTaiwan">
+					<section :class="{show:state.tab==4}" v-if="env.isTaiwan">
 						<div class="row gx-3">
 							<div class="col flex-grow-1 mb-3" style="flex-basis: max-content;">
 								<div v-scope="Checkbox('BBS.Id', 'Include database Id')"></div>

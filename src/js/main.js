@@ -2,7 +2,7 @@ import { createApp } from "petite-vue";
 import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 
-import { store, state, saveSettings, noEditing } from "./store";
+import { store, state, saveSettings, saveSession, noEditing } from "./store";
 import { updateSN, toFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
@@ -128,11 +128,11 @@ createApp({
 	PLAY,
 	store,
 	state,
-	tab: 0,
 	drawExport,
 	resize() {
 		state.split;
 		Promise.resolve().then(() => setOption({}));
 	},
 	saveSettings,
+	saveSession,
 }).mount();

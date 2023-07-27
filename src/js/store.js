@@ -50,10 +50,12 @@ export const store = reactive(settings);
 const mm = matchMedia("(prefers-color-scheme: dark)");
 mm.onchange = () => state.isDark = mm.matches;
 
-export const state = reactive({
+const savedState = sessionStorage.getItem("state");
+export const state = reactive(savedState ? JSON.parse(savedState) : {
 	loading: true,
 	split: false,
 	isDark: mm.matches,
+	tab: 0,
 	pieceCount: "(0+0)",
 	play: {
 		playing: false,
@@ -92,9 +94,14 @@ export const state = reactive({
 		dragging: false,
 	},
 });
+console.log(JSON.stringify(state));
 
 export function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));
+}
+
+export function saveSession() {
+	sessionStorage.setItem("state", JSON.stringify(state));
 }
 
 export function getRenderSize(tp, horTemplate) {

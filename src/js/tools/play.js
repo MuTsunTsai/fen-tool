@@ -5,6 +5,12 @@ import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly, resetEdwards } from "../squares";
 import { state, store } from "../store"
 
+// Restore playing session
+if(state.play.playing) {
+	state.play.playing = false;
+	loadModule().then(() => state.play.playing = true);
+}
+
 let module;
 let chess;
 let pendingTarget;
