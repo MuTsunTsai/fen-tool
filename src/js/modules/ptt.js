@@ -1,7 +1,5 @@
 import { isInUAO } from "./uao.mjs";
 
-// This module is only loaded when needed.
-
 const DIGITS = "０１２３４５６７８９".split("");
 
 const fullWidthMap = (function() {

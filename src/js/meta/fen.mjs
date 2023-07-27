@@ -12,6 +12,9 @@ export const ONE_EMOJI = RegExp(`^(?:${EMOJI})$`, "u");
 const VALUE = RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
 const FEN_UNIT = RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
+/**
+ * @param {string} fen 
+ */
 export function inferDimension(fen) {
 	const values = fen.match(FEN_UNIT) || [];
 	const rows = [0];
@@ -30,6 +33,7 @@ export function inferDimension(fen) {
 
 /**
  * Parse FEN syntax.
+ * @param {string} fen 
  * @returns An array of values for each squares.
  */
 export function parseFEN(fen, w = 8, h = 8) {
@@ -57,6 +61,7 @@ export function parseFEN(fen, w = 8, h = 8) {
 
 /**
  * Make Forsyth notation from an array of values.
+ * @param {string[]} values 
  */
 export function makeForsyth(values, w = 8, h = 8) {
 	let aggregateSpaces = 0, result = "";
@@ -134,6 +139,8 @@ export function convertSN(value, useSN, convert) {
 
 /**
  * Convert to board coordinate notation (only orthodox board is supported).
+ * @param {number} i
+ * @param {number} j
  */
 export function toSquare(i, j) {
 	if(j === undefined) {

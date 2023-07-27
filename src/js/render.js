@@ -43,6 +43,9 @@ addEventListener("storage", e => {
 	}
 });
 
+/**
+ * @param {number[]} except 
+ */
 export function drawTemplate(except) {
 	if(except) cache.except = except;
 	else except = cache.except;

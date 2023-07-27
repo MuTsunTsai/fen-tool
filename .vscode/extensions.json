@@ -1,5 +1,6 @@
 {
 	"recommendations": [
-		"hbenl.vscode-mocha-test-adapter"
+		"hbenl.vscode-mocha-test-adapter",
+		"maptz.regionfolder"
 	]
 }

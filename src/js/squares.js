@@ -232,6 +232,9 @@ function toSquares(check) {
 	else draw(snapshot());
 }
 
+/**
+ * @param {string} fen 
+ */
 export function parseFullFEN(fen) {
 	const s = state.play;
 	const arr = fen.split(" ");

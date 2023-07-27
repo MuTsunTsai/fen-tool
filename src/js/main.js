@@ -1,15 +1,19 @@
 import { createApp } from "petite-vue";
+import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
+import { CopyButton, copyImage } from "./copy";
+
 import { store, state, saveSettings, noEditing } from "./store";
 import { updateSN, toFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
-import { YACPDB, PDB, BBS, API } from "./tools";
-import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
-import { CopyButton, copyImage } from "./copy";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
-import { normalForsyth } from "./tools/api";
+
+import { YACPDB } from "./tools/yacpdb";
+import { PDB } from "./tools/pdb";
+import { BBS } from "./tools/bbs";
+import { API, normalForsyth } from "./tools/api";
 import { PLAY, moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 import { openFile } from "./tools/scan";

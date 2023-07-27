@@ -21,6 +21,9 @@ const BORDER = /^\d+(,\d+)*$/;
 const sizes = [26, 32, 38, 44];
 const sets = ["1echecs", "alpha", "goodCompanion", "merida", "skak"];
 
+/**
+ * @param {string} border 
+ */
 export function sanitizeBorder(border) {
 	if(typeof border != "string") return null;
 	// Allow nearly arbitrary input
@@ -60,6 +63,9 @@ export function makeOption(option) {
 	return result;
 }
 
+/**
+ * @param {string} border 
+ */
 function parseBorder(border) {
 	const array = border.split(",").map(n => {
 		const result = Number(n);
@@ -71,6 +77,9 @@ function parseBorder(border) {
 
 export const LABEL_MARGIN = 20;
 
+/**
+ * @param {boolean|undefined} horTemplate 
+ */
 export function getDimensions(options, horTemplate) {
 	const border = parseBorder(options.border);
 	const margin = options.coordinates ? { x: LABEL_MARGIN, y: LABEL_MARGIN } : { x: 0, y: 0 };

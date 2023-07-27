@@ -34,7 +34,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-title" content="FEN Tool">
 
-	<!-- iOS splash screens -->
+	<!-- #region iOS splash screens -->
 	<link rel="apple-touch-startup-image"
 		  media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
 		  href="assets/splash/iPhone_14_Pro_Max_landscape.png">
@@ -137,6 +137,7 @@
 	<link rel="apple-touch-startup-image"
 		  media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
 		  href="assets/splash/8.3__iPad_Mini_portrait.png">
+	<!-- #endregion -->
 
 	<link href="lib/css/all.min.css" rel="stylesheet" />
 	<link href="style.css" rel="stylesheet">
@@ -146,6 +147,7 @@
 
 <body class="m-0" v-scope :class="{split:state.split}">
 
+	<!-- #region Templates -->
 	<template id="copyBtn">
 		<button type="button" class="btn nowrap" :class="cls" @click="copy" :disabled="dis||state==1">
 			<i :class="['fa-solid fa-clipboard', 'fa-spin fa-solid fa-spinner', 'fa-solid fa-check'][state]"></i>&ensp;{{ label }}
@@ -158,9 +160,12 @@
 			<label class="form-check-label" :for="id">{{ label }}</label>
 		</div>
 	</template>
+	<!-- #endregion -->
 
 	<main class="d-flex justify-content-center p-3">
 		<div class="flex-grow-0 text-start" style="max-width: 100%;">
+
+			<!-- FEN header -->
 			<div class="w-passive-100">
 				<div class="row gx-3 mb-1">
 					<div class="col mb-2" style="flex-basis: 15rem; flex-grow:1000;">
@@ -180,6 +185,7 @@
 				</div>
 			</div>
 
+			<!-- Zone -->
 			<div class="text-center">
 				<div class="d-inline-blocck" style="overflow: hidden;">
 					<div id="Zone" class="d-inline-flex justify-content-center text-center collapse"
@@ -210,6 +216,7 @@
 
 			<div v-cloak v-effect="saveSettings()" class="w-passive-100">
 
+				<!-- Navigation -->
 				<div class="mb-3 nav-container" :class="{'mt-n3':hideTemplate}">
 					<ul class="nav nav-tabs" style="flex-wrap: nowrap;">
 						<li class="nav-item">
@@ -237,6 +244,7 @@
 				</div>
 
 				<div class="d-flex mb-4">
+					<!-- Edit -->
 					<section :class="{show:tab==0}">
 						<div class="mb-3">
 							<span class="d-inline-block">
@@ -327,6 +335,7 @@
 						</div>
 					</section>
 
+					<!-- Option -->
 					<section :class="{show:tab==1}">
 						<div class="row mb-2">
 							<div class="col flex-grow-1" style="flex-basis: 18rem;">
@@ -448,6 +457,7 @@
 						</div>
 					</section>
 
+					<!-- API -->
 					<section :class="{show:tab==5}">
 						<div class="mb-2">
 							<span
@@ -467,6 +477,7 @@
 						</div>
 					</section>
 
+					<!-- DB -->
 					<section :class="{show:tab==2}">
 						<div class="row gx-3 mb-2 align-items-center">
 							<label class="col-auto col-form-label">Use database: </label>
@@ -515,6 +526,7 @@
 						</div>
 					</section>
 
+					<!-- Play -->
 					<section :class="{show:tab==6}">
 						<div v-if="state.play.playing">
 							<div class="mb-3">
@@ -678,14 +690,16 @@
 						</template>
 					</section>
 
+					<!-- Popeye -->
 					<section :class="{show:tab==7}">
 						<textarea class="form-control mb-2" v-show="!state.popeye.playing" rows="5" v-model="state.popeye.input"
 								  :disabled="state.popeye.running"
-								  :placeholder="'Put stipulations and options etc. here. For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
+								  :placeholder="'For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
 						<div class="mb-3 row" v-if="!state.popeye.playing">
 							<div class="col col-form-label">
-								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">Popeye
-									documentation</a>
+								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
+									Popeye documentation
+								</a>
 							</div>
 							<div class="col-auto text-end">
 								<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
@@ -730,6 +744,7 @@
 						</div>
 					</section>
 
+					<!-- BBS -->
 					<section :class="{show:tab==4}" v-if="env.isTaiwan">
 						<div class="row gx-3">
 							<div class="col flex-grow-1 mb-3" style="flex-basis: max-content;">
@@ -748,6 +763,7 @@
 			</div>
 
 			<hr>
+			<!-- Footer -->
 			<div class="mb-4 row small">
 				<div class="col flex-grow-1" style="flex-basis: max-content;">
 					For more information and API, see
@@ -756,8 +772,6 @@
 				</div>
 				<div class="col-auto text-end">Copyright © 2023 Mu-Tsun Tsai</div>
 			</div>
-			<!-- stub for purge css -->
-			<span class="d-none "></span>
 		</div>
 	</main>
 	<iframe v-if="state.split" src="."></iframe>

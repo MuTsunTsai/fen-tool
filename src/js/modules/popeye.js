@@ -1,3 +1,4 @@
+// This file is appended before py.js or py.asm.js
 
 const popeyeInputFile = "/test.inp";
 const popeyeMaxMem = "512M";

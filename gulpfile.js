@@ -21,6 +21,7 @@ const purgeOption = {
 const htmlOption = {
 	collapseWhitespace: true,
 	removeComments: true,
+	ignoreCustomComments: [],
 	minifyCSS: true,
 	minifyJS: {
 		ie8: true
