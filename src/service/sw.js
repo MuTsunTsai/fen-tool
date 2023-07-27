@@ -3,35 +3,6 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
-// Receive share data
-// reference: https://web.dev/workbox-share-targets/
-routing.registerRoute(
-	({ url }) => {
-		console.log(url);
-		return url.pathname == "/fen-tool/share";
-	},
-	async ({ event }) => {
-		console.log(event);
-		const formData = await event.request.formData();
-		const fen = formData.get("fen");
-		const image = formData.get("image");
-		const params = [];
-		if(fen) params.push("fen=" + encodeURIComponent(fen));
-		if(image) {
-			const url = URL.createObjectURL(new Blob([image]));
-			params.push("image=" + encodeURIComponent(url));
-		}
-		const url = "/fen-tool" + (params.length > 0 ? "?" + params.join("&") : "");
-		console.log(url);
-		return Response.redirect(url, 303);
-	},
-	"POST"
-);
-
-self.addEventListener("fetch", event => {
-	console.log("fetch", event);
-});
-
 // Activate Workbox GA
 googleAnalytics.initialize();
 
@@ -47,6 +18,41 @@ const precacheRoute = new precaching.PrecacheRoute(precacheController, {
 	cleanURLs: false,
 });
 routing.registerRoute(precacheRoute);
+
+const imageStore = new Map();
+let imageIndex = 0;
+
+// Receive share data
+// reference: https://web.dev/workbox-share-targets/
+routing.registerRoute(
+	({ url }) => url.pathname.startsWith("/fen-tool/share"),
+	async ({ event }) => {
+		console.log(event);
+		const formData = await event.request.formData();
+		const fen = formData.get("fen");
+		const image = formData.get("image");
+		const params = [];
+		if(fen) params.push("fen=" + encodeURIComponent(fen));
+		if(image) {
+			console.log(image);
+			imageStore.set(++imageIndex, image)
+			params.push("image=" + imageIndex);
+		}
+		const url = "/fen-tool" + (params.length > 0 ? "?" + params.join("&") : "");
+		return Response.redirect(url, 303);
+	},
+	"POST"
+);
+
+routing.registerRoute(
+	({ url }) => url.pathname.startsWith("/fen-tool/shareImage"),
+	({ url }) => {
+		const index = url.searchParams.get("image");
+		const image = imageStore.get(index);
+		imageStore.delete(index);
+		return new Response(image);
+	},
+);
 
 const netOnly = new strategies.NetworkOnly({
 	fetchOptions: { cache: "reload" },

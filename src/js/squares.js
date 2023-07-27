@@ -107,13 +107,17 @@ function parseEdwards(v) {
 	return arr;
 }
 
-export function loadState() {
+export async function loadState() {
 	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
 	const image = url.searchParams.get("image");
 	if(fen) setFEN(fen, true);
-	if(image) alert("Image handling under development: " + image);
+	if(image) {
+		alert("Image handling under development: " + image);
+		const response = await fetch("shareImage?image=" + image);
+		console.log(await response.text());
+	}
 }
 addEventListener("popstate", loadState);
 
