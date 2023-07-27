@@ -13,7 +13,10 @@ routing.setDefaultHandler(defaultHandler);
 // Receive share data
 // reference: https://web.dev/workbox-share-targets/
 routing.registerRoute(
-	"/fen-tool",
+	({ url, method }) => {
+		console.log(url, method);
+		return url.pathname == "/fen-tool" && method == "POST";
+	},
 	async ({ event }) => {
 		console.log(event);
 		const formData = await event.request.formData();
@@ -25,10 +28,10 @@ routing.registerRoute(
 			const url = URL.createObjectURL(new Blob([image]));
 			params.push("image=" + encodeURIComponent(url));
 		}
-		params.join("&");
-		return Response.redirect("/fen-tool" + (params.length > 0 ? "?" + params.join("&") : ""), 303);
-	},
-	"POST"
+		const url = "/fen-tool" + (params.length > 0 ? "?" + params.join("&") : "");
+		console.log(url);
+		return Response.redirect(url, 303);
+	}
 );
 
 // Activates workbox-precaching
