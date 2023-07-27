@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { getStipulation, inferMoveOrdering, parseSolution } from "../src/js/meta/popeye/popeye.mjs";
+import { getStipulations, inferMoveOrdering, parseSolution } from "../src/js/meta/popeye/popeye.mjs";
 import { INIT_FORSYTH } from "../src/js/meta/fen.mjs";
 
 describe("Popeye", function() {
@@ -7,10 +7,10 @@ describe("Popeye", function() {
 	describe("Stipulation", function() {
 
 		it("Allows spaces before the final number", function() {
-			expect(getStipulation("opti no board stipulation   #  2")).to.equal("#2");
-			expect(getStipulation("stip \n dia    6.0")).to.equal("dia6.0");
-			expect(getStipulation("stip dia     6 .0")).to.equal("dia6");
-			expect(getStipulation("stip dia6 6.0"),
+			expect(getStipulations("opti no board stipulation   #  2")[0]).to.equal("#2");
+			expect(getStipulations("stip \n dia    6.0")[0]).to.equal("dia6.0");
+			expect(getStipulations("stip dia     6 .0")[0]).to.equal("dia6");
+			expect(getStipulations("stip dia6 6.0")[0],
 				"but only if the last character of the first segment is not a digit"
 			).to.equal("dia6");
 		});
@@ -266,7 +266,7 @@ describe("Popeye", function() {
 			expect(result[3]).to.equal("8/8/8/6R1/8/8/4k1K1/8");
 			expect(result[4]).to.equal("8/8/8/7R/8/8/5k1K/8");
 			expect(result[5]).to.equal("8/2r2k2/8/5K2/8/8/8/8");
-			expect(result[6]).to.equal("8/8/8/1R6/8/8/1K1k4/8")
+			expect(result[6]).to.equal("8/8/8/1R6/8/8/1K1k4/8");
 		});
 
 		it("Works with imitators", function() {
@@ -303,6 +303,26 @@ describe("Popeye", function() {
 
 			expect(result2[6]).to.equal("5-ck1/8/5K2/6N-c/8/7P/8/8");
 		});
+
+		it("Works with twin stipulation", function() {
+			/*
+			rema P1072567
+			fors 8/8/6S1/8/6pp/6k1/4K1B1/7R
+			stip h#2
+			opti vari
+			twin move e2 e1 stip s#2
+			*/
+			const input = "stip h#2\nopti vari\ntwin move e2 e1 stip s#2";
+			const fen = "8/8/6N1/8/6pp/6k1/4K1B1/7R";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.h4-h3 Sg6-f4   2.h3*g2 Sf4-h5 #<br><br>b) wKe2--&gt;e1  s#2  <br><br>   1.0-0 ! zugzwang.<br>      1...h4-h3<br>          2.Bg2-h1<br>              2...h3-h2 #<br><br><br>solution finished. Time = 0.084 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(10);
+
+			expect(result[6]).to.equal("8/8/6N1/8/6pp/6k1/6B1/5RK1");
+		});
+
+		
 	});
 
 });

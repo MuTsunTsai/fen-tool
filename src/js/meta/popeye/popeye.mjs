@@ -12,13 +12,14 @@ export function formatSolution(input, initFEN, output) {
 
 export function parseSolution(input, initFEN, output, factory) {
 	if(!initFEN) return output;
-	// console.log(output);
+	console.log(output);
 
 	const { duplex, halfDuplex, initImitators } = parseInput(input);
 
-	const stip = getStipulation(input);
-	const ordering = inferMoveOrdering(stip, halfDuplex);
-	const isPG = (/dia/i).test(stip);
+	let stipIndex = 0;
+	const stipulations = getStipulations(input);
+	const ordering = inferMoveOrdering(stipulations[0], halfDuplex);
+	const isPG = (/dia/i).test(stipulations[0]);
 	const init = addImitator(isPG ? INIT_FORSYTH : toNormalFEN(initFEN), initImitators);
 	const state = {
 		init,
@@ -29,6 +30,7 @@ export function parseSolution(input, initFEN, output, factory) {
 		imitators: initImitators?.concat(),
 	};
 	let lastPosition = init;
+	let lastOrdering = ordering;
 	let error = false;
 
 	let hasTwin = false;
@@ -61,9 +63,14 @@ export function parseSolution(input, initFEN, output, factory) {
 			const twin = text.match(TWIN);
 			if(twin) {
 				solutionPrinted = false;
-				state.currentOrdering = ordering; // reset
+				const cont = Boolean(twin[1]);
+				const stip = stipulations[++stipIndex];
+				state.currentOrdering = lastOrdering =
+					stip ? inferMoveOrdering(stip, halfDuplex) : // infer from stip first
+					cont ? lastOrdering : // then use the last one if it's continued
+					ordering; // otherwise reset
 				state.stack.length = 0;
-				state.board = parseFEN(twin[1] ? lastPosition : init);
+				state.board = parseFEN(cont ? lastPosition : init);
 				makeTwin(state.board, twin[2]);
 				const fen = makeForsyth(state.board);
 				lastPosition = fen;
@@ -84,8 +91,11 @@ export function parseSolution(input, initFEN, output, factory) {
 
 const STIP = new RegExp(String.raw`${createAbbrExp("stipulation")}\s+(\S*(?:\d|[^\d\s]\s+\d+(?:\.[05])?))`, "i");
 
-export function getStipulation(input) {
-	return input.match(STIP)?.[1].replace(/\s/g, "");
+/**
+ * @param {string} input 
+ */
+export function getStipulations(input) {
+	return input.split(/\btwin\b/i).map(sec => sec.match(STIP)?.[1].replace(/\s/g, ""));
 }
 
 /** Try to guess the WB/BW move ordering; this is needed only for castling. */
