@@ -2,7 +2,7 @@ $enable-negative-margins: true;
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
-* {
+html, .nav-container {
 	/*
 	Disable scroll bouncing for iOS 16+.
 	There isn't much we can do for iOS < 16. There are some examples
