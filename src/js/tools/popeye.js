@@ -199,5 +199,14 @@ export const Popeye = {
 		const step = p.steps[n];
 		step.classList.add("active");
 		setFEN(step.dataset.fen);
+
+		// We cannot simply use scrollIntoView here, as that will also scroll the entire page,
+		// which is not the desired behavior.
+		if(el.scrollTop > step.offsetTop) el.scrollTop = step.offsetTop;
+		const bottom = step.offsetTop + step.clientHeight - el.clientHeight;
+		if(el.scrollTop < bottom) el.scrollTop = bottom;
+		if(el.scrollLeft > step.offsetLeft) el.scrollLeft = step.offsetLeft;
+		const right = step.offsetLeft + step.clientWidth - el.clientWidth;
+		if(el.scrollLeft < right) el.scrollLeft = right;
 	}
 };
