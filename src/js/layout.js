@@ -90,12 +90,14 @@ export function resize() {
 	CN.style.width = (CN.width / dpr) + "px";
 	TP.style.width = (TP.width / dpr) + "px";
 	const { w } = store.board;
-	const r = getRenderSize();
-	if(w > 8 && status.hor) {
-		TP.style.width = r.width + "px";
-	} else if(w < 8 && status.hor) {
-		const { width } = getRenderSize(TP);
-		CN.style.width = width + "px";
+	const r = getRenderSize(undefined, undefined, 8);
+	if(status.hor) {
+		if(w > 8) {
+			TP.style.width = r.width + "px";
+		} else if(w < 8) {
+			const { width } = getRenderSize(TP, true, w);
+			CN.style.width = width + "px";
+		}
 	}
 	container.style.borderWidth = `${r.offset.y}px ${r.offset.r}px ${r.offset.b}px ${r.offset.x}px`;
 

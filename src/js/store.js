@@ -115,7 +115,7 @@ export function saveSession() {
 	if(env.isTop) sessionStorage.setItem("state", JSON.stringify(state));
 }
 
-export function getRenderSize(tp, horTemplate) {
+export function getRenderSize(tp, horTemplate, requestWidth) {
 	const { size, w } = store.board;
 	const { border, margin } = getDimensions(store.board, horTemplate);
 	const bSize = border.size;
@@ -128,7 +128,7 @@ export function getRenderSize(tp, horTemplate) {
 		r: bSize * factor,
 		b: (bSize + margin.y) * factor,
 	};
-	const width = (w * size + border.size * 2 + margin.x) * factor;
+	const width = ((requestWidth || w) * size + border.size * 2 + margin.x) * factor;
 	return { s, offset, width };
 }
 
