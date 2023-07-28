@@ -16,6 +16,7 @@ let worker;
 let startTime;
 let suffix;
 let interval;
+let outputCount;
 let shouldScroll = false;
 
 const el = document.getElementById("Output");
@@ -51,8 +52,10 @@ function stop(restart) {
 	if(!restart) {
 		state.popeye.output = state.popeye.intOutput;
 		setTimeout(() => state.popeye.running = false, Math.max(0, remain));
+		createWorker();
+	} else {
+		start();
 	}
-	createWorker();
 }
 
 function createWorker() {
@@ -60,7 +63,12 @@ function createWorker() {
 	worker = new Worker(path);
 	worker.onmessage = event => {
 		const data = event.data;
-		if(data === -1) {
+		if(++outputCount > 3000) {
+			// Restrict the output to 3000 lines.
+			// Too much output is bad for user experience, and is not what this app is meant for.
+			state.popeye.intOutput += `<br><span class="text-danger">Too much output. Please modify the input to prevent excessive output.</span><br>`
+			stop();
+		} else if(data === -1) {
 			path = "modules/py.asm.js"; // fallback to asm.js
 			stop(true);
 			state.popeye.intOutput = "Fallback to JS mode.<br>";
@@ -82,6 +90,7 @@ function start() {
 
 	suffix = ".";
 	const p = state.popeye;
+	outputCount = 0;
 	p.intOutput = "";
 	p.error = false;
 	p.running = true;
