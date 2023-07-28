@@ -6,6 +6,12 @@ const supportedTypes = ["image/png", "image/jpeg", "image/bmp", "image/webp"];
 async function loadImage() {
 	const index = search.get("image");
 	if(index) {
+		// Remove search param, preventing re-triggering on reload
+		const url = new URL(location.href);
+		url.searchParams.delete("image");
+		history.replaceState(null, "", url.toString());
+
+		// Load image;
 		const response = await fetch("shareImage?image=" + index);
 		scan(await response.blob());
 	}
