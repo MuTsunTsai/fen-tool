@@ -1,6 +1,7 @@
 import { reactive } from "petite-vue";
 import { defaultOption, getDimensions } from "./meta/option";
 import { CN } from "./meta/el";
+import { env } from "./meta/env";
 
 export const search = new URL(location.href).searchParams;
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
@@ -50,7 +51,8 @@ export const store = reactive(settings);
 const mm = matchMedia("(prefers-color-scheme: dark)");
 mm.onchange = () => state.isDark = mm.matches;
 
-const savedState = sessionStorage.getItem("state");
+// Load session only for top
+const savedState = env.isTop ? sessionStorage.getItem("state") : null;
 export const state = reactive(savedState ? JSON.parse(savedState) : {
 	loading: true,
 	split: false,
@@ -104,7 +106,8 @@ export function saveSettings() {
 }
 
 export function saveSession() {
-	sessionStorage.setItem("state", JSON.stringify(state));
+	// Save session only for top
+	if(env.isTop) sessionStorage.setItem("state", JSON.stringify(state));
 }
 
 export function getRenderSize(tp, horTemplate) {

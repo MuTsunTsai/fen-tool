@@ -13,7 +13,7 @@ const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
 
 function bodyWidth() {
-	return document.body.clientWidth / (state.split && env.isTop ? 2 : 1);
+	return document.body.clientWidth / (state.split ? 2 : 1);
 }
 
 export async function setOption(o, force) {

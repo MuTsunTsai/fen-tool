@@ -145,7 +145,7 @@
 	<script src="main.js" defer></script>
 </head>
 
-<body class="m-0" v-scope :class="{split:state.split&&env.isTop}">
+<body class="m-0" v-scope :class="{split:state.split}">
 
 	<!-- #region Templates -->
 	<template id="copyBtn">
@@ -774,7 +774,7 @@
 			</div>
 		</div>
 	</main>
-	<iframe v-if="state.split&&env.isTop" src="."></iframe>
+	<iframe v-if="state.split" src="."></iframe>
 
 	<canvas id="CanvasGhost" class="ghost" width="210" height="210"></canvas>
 	<canvas id="TemplateGhost" class="ghost"></canvas>
