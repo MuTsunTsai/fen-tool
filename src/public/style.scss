@@ -2,8 +2,7 @@ $enable-negative-margins: true;
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
-html,
-body {
+* {
 	/*
 	Disable scroll bouncing for iOS 16+.
 	There isn't much we can do for iOS < 16. There are some examples
@@ -12,7 +11,10 @@ body {
 	of other elements.
 	*/
 	overscroll-behavior: none;
+}
 
+html,
+body {
 	font-size: 10pt;
 }
 
