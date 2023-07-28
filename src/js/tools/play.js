@@ -171,6 +171,13 @@ export const PLAY = {
 			drawRetroTemplate();
 		}
 	},
+	move(n) {
+		const p = state.play;
+		if(n != p.moveNumber) PLAY.goto(p.history[n]);
+	},
+	moveBy(v) {
+		moveHistory(v);
+	},
 	reset() {
 		resetEdwards();
 	},

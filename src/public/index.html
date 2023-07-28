@@ -530,8 +530,24 @@
 						<!-- Playing -->
 						<div v-if="state.play.playing">
 							<div class="mb-3">
+								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.move(-1)"
+										:disabled="state.play.moveNumber<0">
+									<i class="fa-solid fa-angles-left"></i>
+								</button>
+								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.moveBy(-1)"
+										:disabled="state.play.moveNumber<0">
+									<i class="fa-solid fa-angle-left"></i>
+								</button>
+								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.moveBy(1)"
+										:disabled="state.play.moveNumber>=state.play.history.length-1">
+									<i class="fa-solid fa-angle-right"></i>
+								</button>
+								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.move(state.play.history.length-1)"
+										:disabled="state.play.moveNumber>=state.play.history.length-1">
+									<i class="fa-solid fa-angles-right"></i>
+								</button>
 								<span>
-									<span class="btn step px-1 py-0 me-3" @click="PLAY.goto()"
+									<span class="btn step px-1 py-0 mx-3" @click="PLAY.goto()"
 										  :class="[{active:-1==state.play.moveNumber}, status.isDark?'btn-secondary':'btn-light']">Beginning</span>
 								</span>
 								<span v-for="(h,i) in state.play.history">
