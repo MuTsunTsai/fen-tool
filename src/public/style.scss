@@ -4,8 +4,15 @@ $enable-negative-margins: true;
 
 html,
 body {
-	// Disable scroll bouncing for iOS 16+
+	/*
+	Disable scroll bouncing for iOS 16+.
+	There isn't much we can do for iOS < 16. There are some examples
+	of using JavaScript to detect and block the default scrolling,
+	but none of those work perfectly and can interfere normal scrolling
+	of other elements.
+	*/
 	overscroll-behavior: none;
+
 	font-size: 10pt;
 }
 

@@ -32,23 +32,3 @@ export const env = {
 };
 
 if(!env.isTop) document.body.style.overflow = "hidden";
-
-// Not a really good polyfill for overscroll-behavior, but acceptable
-const html = document.documentElement;
-const osb = "overscrollBehavior" in html.style;
-if(!osb) {
-	let lastY;
-	const getY = e => e.touches ? e.touches[0].screenY : e.screenY;
-	html.addEventListener("touchstart", e => lastY = getY(e));
-	html.addEventListener("touchmove", evt => {
-		const curY = getY(evt);
-		const delta = (lastY - curY) * devicePixelRatio;
-		const max = html.scrollHeight - html.clientHeight;
-		const isAtTop = delta <= 0 && html.scrollTop + delta <= 0;
-		const isAtBottom = delta >= 0 && html.scrollTop + delta >= max;
-		if(isAtTop || isAtBottom) evt.preventDefault();
-		if(isAtTop) html.scrollTop = 0;
-		if(isAtBottom) html.scrollTop = max;
-		lastY = curY;
-	}, { passive: false });
-}
