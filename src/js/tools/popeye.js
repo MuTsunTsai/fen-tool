@@ -69,6 +69,7 @@ function createWorker() {
 			state.popeye.intOutput += `<br><span class="text-danger">Too much output. Please modify the input to prevent excessive output.</span><br>`
 			stop();
 		} else if(data === -1) {
+			gtag("event", "fen_popeye_fallback");
 			path = "modules/py.asm.js"; // fallback to asm.js
 			stop(true);
 			state.popeye.intOutput = "Fallback to JS mode.<br>";
