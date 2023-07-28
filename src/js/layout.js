@@ -1,5 +1,5 @@
 import { CN, SN, CG, TP, TPG } from "./meta/el";
-import { getRenderSize, search, state, store } from "./store";
+import { getRenderSize, search, state, store, status } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { getDimensions, sanitizeBorder } from "./meta/option";
@@ -29,8 +29,8 @@ export async function setOption(o, force) {
 	// Decide mode
 	const rem = getREM();
 	const newMode = bodyWidth() < (o.w + 3) * o.size + margin.x + 4 * border.size + 4.2 * rem;
-	changed.mode = newMode !== state.layout.hor;
-	state.layout.hor = newMode;
+	changed.mode = newMode !== status.hor;
+	status.hor = newMode;
 
 	const dimChange = changed.w || changed.h;
 	if(dimChange || force) createSquares();
@@ -43,7 +43,7 @@ export async function setOption(o, force) {
 	if(shouldDrawTemplate) {
 		let tw = (3 * o.size + 2 * border.size) * dpr;
 		let th = (8 * o.size + 2 * border.size) * dpr;
-		if(state.layout.hor) {
+		if(status.hor) {
 			[tw, th] = [th + margin.x * dpr, tw];
 			CN.parentNode.classList.add("mb-3");
 			TP.classList.remove("ms-4");
@@ -91,9 +91,9 @@ export function resize() {
 	TP.style.width = (TP.width / dpr) + "px";
 	const { w } = store.board;
 	const r = getRenderSize();
-	if(w > 8 && state.layout.hor) {
+	if(w > 8 && status.hor) {
 		TP.style.width = r.width + "px";
-	} else if(w < 8 && state.layout.hor) {
+	} else if(w < 8 && status.hor) {
 		const { width } = getRenderSize(TP);
 		CN.style.width = width + "px";
 	}
@@ -117,15 +117,15 @@ export function resize() {
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + "px";
 		EditZone.style.width = DragZone.clientWidth + "px";
-		EditZone.style.textAlign = state.layout.hor ? "center" : "start";
+		EditZone.style.textAlign = status.hor ? "center" : "start";
 		Zone.classList.add("collapse");
-		state.layout.collapse = true;
+		status.collapse = true;
 	} else {
 		EditZone.style.marginTop = "0";
 		EditZone.style.width = "unset";
 		EditZone.style.textAlign = "unset";
 		Zone.classList.remove("collapse");
-		state.layout.collapse = false;
+		status.collapse = false;
 	}
 }
 

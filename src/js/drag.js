@@ -1,4 +1,4 @@
-import { getRenderSize, state, store } from "./store";
+import { getRenderSize, state, status, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
 import { templateValues } from "./render";
@@ -25,25 +25,25 @@ export function initDrag() {
 
 function mousemove(event) {
 	wrapEvent(event);
-	if(state.layout.dragging == "pending" && getDisplacement(event) > 5) {
+	if(status.dragging == "pending" && getDisplacement(event) > 5) {
 		if(draggingValue) dragStart(event, true);
-		else state.layout.dragging = false;
+		else status.dragging = false;
 	}
-	if(state.layout.dragging === true) dragMove(event);
+	if(status.dragging === true) dragMove(event);
 }
 
 function mouseup(event) {
 	if(state.popeye.playing) return;
-	if(state.layout.dragging == "pending" && !state.play.playing) {
+	if(status.dragging == "pending" && !state.play.playing) {
 		const now = performance.now();
 		if(now - lastTap < 300) sq.focus();
 		lastTap = now;
 		event.preventDefault(); // Prevent touchend triggering mouseup
-		state.layout.dragging = false;
+		status.dragging = false;
 	}
 
-	if(!state.layout.dragging) return;
-	state.layout.dragging = false;
+	if(!status.dragging) return;
+	status.dragging = false;
 	if(!draggingValue) return;
 	wrapEvent(event);
 	const { w, h } = store.board;
@@ -69,12 +69,12 @@ function mouseup(event) {
 
 function mouseDown(event) {
 	if(state.popeye.playing) return;
-	if(state.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
+	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
 	const isCN = this != TP;
-	const { offset, s } = isCN ? getRenderSize() : getRenderSize(TP, state.layout.hor);
+	const { offset, s } = isCN ? getRenderSize() : getRenderSize(TP, status.hor);
 	const { w } = store.board;
 	startX = event.offsetX;
 	startY = event.offsetY;
@@ -86,13 +86,13 @@ function mouseDown(event) {
 
 	if(state.play.playing) {
 		if(!isCN && state.play.pendingPromotion) {
-			if(state.layout.hor) [sqX, sqY] = [sqY, sqX];
+			if(status.hor) [sqX, sqY] = [sqY, sqX];
 			const x = draggingValue == "p" ? 0 : 1;
 			if(sqY > 0 && sqY < 5 && sqX == x) confirmPromotion(fromIndex, types[sqY]);
 		}
 		if(!isCN && state.play.mode == "retro") {
 			event.preventDefault(); // Prevent touchstart triggering mousedown
-			if(state.layout.hor) [sqX, sqY] = [sqY, sqX];
+			if(status.hor) [sqX, sqY] = [sqY, sqX];
 			retroClick(sqX, sqY);
 		}
 		if(!isCN || !checkDragPrecondition(index)) return;
@@ -101,7 +101,7 @@ function mouseDown(event) {
 	if(isCN) {
 		fromIndex = index;
 		sq = squares[index];
-		state.layout.dragging = "pending";
+		status.dragging = "pending";
 		draggingValue = undefined;
 	}
 	if(!isCN || sq.value != "") {
@@ -110,7 +110,7 @@ function mouseDown(event) {
 		if(isCN) {
 			draggingValue = sq.value;
 		} else {
-			draggingValue = state.layout.hor ? templateValues[sqX * 3 + sqY] : templateValues[index];
+			draggingValue = status.hor ? templateValues[sqX * 3 + sqY] : templateValues[index];
 			dragStart(event)
 		}
 	}
@@ -122,7 +122,7 @@ function dragStart(event, isCN) {
 		sq.value = "";
 		toFEN();
 	}
-	state.layout.dragging = true;
+	status.dragging = true;
 	dragMove(event);
 }
 
@@ -137,7 +137,7 @@ function dragMove(event) {
 	const { offset, s } = getRenderSize();
 	const { w, h, coordinates } = store.board;
 	const r = CN.getBoundingClientRect();
-	const left = ghost == TPG && coordinates && !state.layout.hor ? r.left + LABEL_MARGIN : r.left;
+	const left = ghost == TPG && coordinates && !status.hor ? r.left + LABEL_MARGIN : r.left;
 	const y = Math.floor((event.clientY - r.top - offset.y) / s);
 	const x = Math.floor((event.clientX - r.left - offset.x) / s);
 	const { scrollLeft, scrollTop } = document.documentElement;

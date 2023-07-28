@@ -2,7 +2,7 @@ import { createApp } from "petite-vue";
 import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
 import { CopyButton, copyImage } from "./copy";
 
-import { store, state, saveSettings, saveSession, noEditing } from "./store";
+import { store, state, status, saveSettings, saveSession, noEditing } from "./store";
 import { updateSN, toFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption } from "./layout";
@@ -120,7 +120,7 @@ createApp({
 		return noEditing();
 	},
 	get hideTemplate() {
-		return state.layout.hor && state.popeye.playing;
+		return status.hor && state.popeye.playing;
 	},
 	YACPDB,
 	BBS,
@@ -128,6 +128,7 @@ createApp({
 	PLAY,
 	store,
 	state,
+	status,
 	drawExport,
 	resize() {
 		state.split;

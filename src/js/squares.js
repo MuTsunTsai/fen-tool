@@ -1,7 +1,7 @@
 import { FEN } from "./meta/el";
 import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, mirror, normalize, parseFEN, rotate, shift } from "./meta/fen.mjs";
 import { setOption } from "./layout";
-import { state, store } from "./store";
+import { state, status, store } from "./store";
 import { readText } from "./copy";
 
 export const squares = new Array(64);
@@ -44,7 +44,7 @@ export function createSquares() {
 
 function squareOnFocus() {
 	this.style.zIndex = "10";
-	if(state.layout.collapse) {
+	if(status.collapse) {
 		const data = snapshot();
 		data[squares.indexOf(this)] = "";
 		draw(data);
@@ -56,17 +56,17 @@ function squareOnBlur() {
 	// We check the input again on blur, as some browser extensions could
 	// programmatically modify its value without triggering onchange event.
 	if(checkInputCore(this)) toFEN();
-	else if(state.layout.collapse) draw(snapshot());
+	else if(status.collapse) draw(snapshot());
 }
 
 function checkInput() {
 	checkInputCore(this);
-	if(state.layout.collapse) this.blur();
+	if(status.collapse) this.blur();
 	toFEN();
 }
 
 function onInput() {
-	if(!state.layout.collapse) {
+	if(!status.collapse) {
 		const data = snapshot();
 		data[squares.indexOf(this)] = normalize(this.value, store.board.SN);
 		draw(data);

@@ -173,7 +173,7 @@
 							   id="FEN" onchange="FEN.update()">
 					</div>
 					<div v-cloak class="col ps-0 mb-2 text-end" style="white-space:nowrap; flex-basis:max-content;">
-						<label class="col-form-label pe-2" v-text="state.pieceCount"></label>
+						<label class="col-form-label pe-2" v-text="status.pieceCount"></label>
 						<button v-if="env.canCopy" class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 							<i class="fa-solid fa-clipboard"></i>
 						</button>
@@ -201,7 +201,7 @@
 						<div id="DragZone" class="flex-grow-0 pb-4">
 							<div class="position-relative d-inline-block" style="line-height: 0;">
 								<canvas id="CN"></canvas>
-								<div class="loader" :class="{show:state.loading}">
+								<div class="loader" :class="{show:status.loading}">
 									<div class="h-100 d-flex align-items-center justify-content-center">
 										<i class="display-1 fa-solid fa-spinner fa-spin"></i>
 									</div>
@@ -528,11 +528,12 @@
 
 					<!-- Play -->
 					<section :class="{show:state.tab==6}" v-effect="saveSession()">
+						<!-- Playing -->
 						<div v-if="state.play.playing">
 							<div class="mb-3">
 								<span>
 									<span class="btn step px-1 py-0 me-3" @click="PLAY.goto()"
-										  :class="[{active:-1==state.play.moveNumber}, state.isDark?'btn-secondary':'btn-light']">Beginning</span>
+										  :class="[{active:-1==state.play.moveNumber}, status.isDark?'btn-secondary':'btn-light']">Beginning</span>
 								</span>
 								<span v-for="(h,i) in state.play.history">
 									<span v-if="state.play.history[i-1]&&state.play.history[i-1].color==h.color">
@@ -542,7 +543,7 @@
 									<span v-if="h.color=='b'&&i==0" class="ms-2">{{PLAY.number(h)}}...</span>
 									<span v-if="h.color=='w'" class="ms-2">{{PLAY.number(h)}}.</span>
 									<span class="btn step px-1 py-0" @click="PLAY.goto(h)"
-										  :class="[{active:i==state.play.moveNumber}, state.isDark?'btn-secondary':'btn-light']">{{PLAY.format(h)}}</span>
+										  :class="[{active:i==state.play.moveNumber}, status.isDark?'btn-secondary':'btn-light']">{{PLAY.format(h)}}</span>
 								</span>
 								<span v-if="state.play.mode!='retro'&&state.play.over==1">Checkmate.</span>
 								<span v-if="state.play.mode!='retro'&&state.play.over==2">Draw.</span>
@@ -589,6 +590,7 @@
 								<span v-scope="Checkbox('PLAY.negative', 'Use negative numbers in retro mode')"></span>
 							</div>
 						</div>
+						<!-- Not playing -->
 						<template v-else>
 							<div v-effect="updateEdwards()">
 								<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start

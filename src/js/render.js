@@ -1,6 +1,6 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
 import { dpr, setOption } from "./layout";
-import { store, state, assign, noEditing } from "./store";
+import { store, state, assign, noEditing, status } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
@@ -14,12 +14,12 @@ function getExportDPR() {
 }
 
 export async function load() {
-	state.loading = true;
+	status.loading = true;
 	const tasks = [loadAsset("assets", store.board, dpr)];
 	const exDPR = getExportDPR();
 	if(dpr != exDPR) tasks.push(loadAsset("assets", store.board, exDPR));
 	await Promise.all(tasks);
-	state.loading = false;
+	status.loading = false;
 }
 
 const ctx = CN.getContext("2d");
@@ -49,16 +49,16 @@ addEventListener("storage", e => {
 export function drawTemplate(except) {
 	if(except) cache.except = except;
 	else except = cache.except;
-	const options = Object.assign({}, store.board, state.layout.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
+	const options = Object.assign({}, store.board, status.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = getTemplate();
-	drawBoard(tCtx, squares, options, dpr, false, state.layout.hor);
+	drawBoard(tCtx, squares, options, dpr, false, status.hor);
 	if(!noEditing()) {
-		drawBoard(tgCtx, squares, options, dpr, true, state.layout.hor);
+		drawBoard(tgCtx, squares, options, dpr, true, status.hor);
 	} else {
 		const { size } = store.board;
 		const isRetro = state.play.mode == "retro";
 		tCtx.save();
-		const { offset } = getDimensions(store.board, state.layout.hor);
+		const { offset } = getDimensions(store.board, status.hor);
 		tCtx.translate(offset.x, offset.y);
 
 		// draw "ep"
@@ -76,12 +76,12 @@ export function drawTemplate(except) {
 
 		// draw mask
 		tCtx.save();
-		tCtx.globalAlpha = state.isDark ? 0.5 : 0.4;
+		tCtx.globalAlpha = status.isDark ? 0.5 : 0.4;
 		tCtx.fillStyle = "black";
 		for(let i = 0; i < 3; i++) {
 			for(let j = 0; j < 8; j++) {
 				if(except?.includes(j * 3 + i)) continue;
-				const [x, y] = state.layout.hor ? [j, i] : [i, j];
+				const [x, y] = status.hor ? [j, i] : [i, j];
 				tCtx.fillRect(x * size, y * size, size, size);
 			}
 		}
@@ -103,10 +103,10 @@ export function drawTemplate(except) {
 }
 
 function getTemplate() {
-	let result = state.layout.hor ? templateHorValues : templateValues;
+	let result = status.hor ? templateHorValues : templateValues;
 	if(state.play.playing && state.play.mode == "retro") {
 		result = result.concat();
-		if(state.layout.hor) {
+		if(status.hor) {
 			result[6] = "p";
 			result[14] = "P";
 		} else {
@@ -120,7 +120,7 @@ function getTemplate() {
 function drawEp(x, y) {
 	const { size } = store.board;
 	const offset = size / 15;
-	if(state.layout.hor) [x, y] = [y, x];
+	if(status.hor) [x, y] = [y, x];
 	const measure = tCtx.measureText("ep");
 	const width = measure.width;
 	const descent = measure.actualBoundingBoxDescent;
@@ -131,7 +131,7 @@ function drawEp(x, y) {
 function drawSelection(x, y) {
 	const { size } = store.board;
 	const unit = size / 8;
-	if(state.layout.hor) [x, y] = [y, x];
+	if(status.hor) [x, y] = [y, x];
 	const offset = .5;
 	const draw = (...pt) => {
 		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
@@ -152,7 +152,7 @@ export async function draw(data) {
 	drawBoard(ctx, data, options, dpr);
 	drawBoard(eCtx, data, options, getExportDPR());
 	updatePieceCount(data);
-	if(!state.layout.dragging) {
+	if(!status.dragging) {
 		drawBoard(gCtx, data, options, dpr, true);
 		pushState();
 	}
@@ -172,7 +172,7 @@ function updatePieceCount(data) {
 		else if(s == s.toUpperCase()) w++;
 		else b++;
 	}
-	state.pieceCount = `(${w}+${b}${n > 0 ? "+" + n : ""}${t > 0 ? "+" + t : ""})`;
+	status.pieceCount = `(${w}+${b}${n > 0 ? "+" + n : ""}${t > 0 ? "+" + t : ""})`;
 }
 
 export function drawEmpty(ctx) {

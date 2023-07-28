@@ -4,6 +4,8 @@ import { CN } from "./meta/el";
 import { env } from "./meta/env";
 
 export const search = new URL(location.href).searchParams;
+
+// Persistent settings, and is synchronized across instances
 const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 const settings = {
 	BBS: {
@@ -49,16 +51,24 @@ if(search.has("janko")) settings.feature.janko = true;
 export const store = reactive(settings);
 
 const mm = matchMedia("(prefers-color-scheme: dark)");
-mm.onchange = () => state.isDark = mm.matches;
+mm.onchange = () => status.isDark = mm.matches;
 
-// Load session only for top
+// States that are not saved into session
+export const status = reactive({
+	loading: true,
+	isDark: mm.matches,
+	pieceCount: "(0+0)",
+	hor: false,
+	collapse: false,
+	dragging: false,
+});
+
+// Session data, will be restored on tab reloading/restoring/duplicating
+// (only for top window).
 const savedState = env.isTop ? sessionStorage.getItem("state") : null;
 export const state = reactive(savedState ? JSON.parse(savedState) : {
-	loading: true,
 	split: false,
-	isDark: mm.matches,
 	tab: 0,
-	pieceCount: "(0+0)",
 	play: {
 		initFEN: null,
 		playing: false,
@@ -93,11 +103,6 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 		output: "",
 		intInput: null,
 		intOutput: null,
-	},
-	layout: {
-		hor: false,
-		collapse: false,
-		dragging: false,
 	},
 });
 
