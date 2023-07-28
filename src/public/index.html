@@ -188,8 +188,7 @@
 			<!-- Zone -->
 			<div class="text-center">
 				<div class="d-inline-blocck" style="overflow: hidden;">
-					<div id="Zone" class="d-inline-flex justify-content-center text-center collapse"
-						 style="flex-wrap: wrap-reverse;">
+					<div id="Zone" class="d-inline-flex justify-content-center text-center collapse flex-wrap-reverse">
 						<div id="EditZone" class="flex-grow-0 pb-4">
 							<div class="d-inline-block position-relative">
 								<canvas id="SN"></canvas>
@@ -518,7 +517,7 @@
 								<div v-scope="Checkbox('DB.exact', 'Search exactly these pieces')"></div>
 							</div>
 							<div class="col text-end" style="flex-basis: 24rem;">
-								<span v-scope="CopyButton('Copy search query', ()=>DB.copyQuery, 'btn-secondary')"></span>&nbsp;
+								<span v-scope="CopyButton('Copy search query', ()=>DB.copyQuery, 'btn-secondary')"></span>
 								<button class="btn btn-primary nowrap" @click="DB.search">
 									<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search position
 								</button>
@@ -549,9 +548,9 @@
 								<span v-if="state.play.mode!='retro'&&state.play.over==2">Draw.</span>
 							</div>
 							<div>
-								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>&nbsp;
-								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>&nbsp;
-								<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>&nbsp;
+								<button class="btn btn-secondary" @click="PLAY.exit">Exit playing</button>
+								<span v-scope="CopyButton('Copy game', PLAY.copyGame, 'btn-primary')"></span>
+								<span v-scope="CopyButton('Copy PGN', PLAY.copyPGN, 'btn-primary')"></span>
 								<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteMoves">
 									<i class="fa-solid fa-paste"></i> Paste moves
 								</button>
@@ -594,18 +593,18 @@
 						<template v-else>
 							<div v-effect="updateEdwards()">
 								<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start
-									playing</button>&nbsp;
+									playing</button>
 								<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset"
 										:disabled="state.popeye.playing">
 									<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
-								</button>&nbsp;
+								</button>
 								<button class="btn btn-secondary" @click="PLAY.pasteGame" :disabled="state.popeye.playing">
 									<i class="fa-solid fa-paste"></i> Paste PGN
 								</button>
 							</div>
 							<div class="mt-2 gx-3 row">
 								<div class="col flex-grow-1" style="flex-basis: 22rem;">
-									<div class="d-flex align-items-center flex-wrap mb-2">
+									<div class="d-flex align-items-center flex-wrap-reverse mb-2">
 										<div class="flex-grow-1 col-form-label" style="flex-basis: max-content;">
 											<span class="me-3">Turn:</span>
 											<div class="form-check d-inline-block me-3">
