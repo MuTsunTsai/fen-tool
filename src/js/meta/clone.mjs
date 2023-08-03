@@ -3,23 +3,22 @@
  * Deeply clone the nested contents of an object.
  * Objects on all depths will be cloned, not referred.
  */
-export function deepAssign(target, ...sources) {
-	for(const s of sources) {
-		if(!(s instanceof Object)) continue;
+export function deepAssign(target, source, skipPropertiesNotInTarget = false) {
+	if(!(source instanceof Object)) return target;
 
-		// This also applies to the case where s is an array.
-		// In that case, the keys will automatically be the indices of the array.
-		const keys = Object.keys(s);
+	// This also applies to the case where s is an array.
+	// In that case, the keys will automatically be the indices of the array.
+	const keys = Object.keys(source);
 
-		for(const k of keys) {
-			const v = s[k];
-			if(!(v instanceof Object)) {
-				target[k] = v; // primitive values can be copied directly
-			} else if(target[k] instanceof Object && target[k] != v) { // Make sure that reference is different
-				target[k] = deepAssign(target[k], v);
-			} else {
-				target[k] = clonePolyfill(v);
-			}
+	for(const k of keys) {
+		if(skipPropertiesNotInTarget && !(k in target)) continue;
+		const v = source[k];
+		if(!(v instanceof Object)) {
+			target[k] = v; // primitive values can be copied directly
+		} else if(target[k] instanceof Object && target[k] != v) { // Make sure that reference is different
+			target[k] = deepAssign(target[k], v, skipPropertiesNotInTarget);
+		} else {
+			target[k] = clonePolyfill(v);
 		}
 	}
 	return target;

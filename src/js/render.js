@@ -1,10 +1,11 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
 import { dpr, setOption } from "./layout";
-import { store, state, assign, noEditing, status } from "./store";
+import { store, state, noEditing, status } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
 import { getDimensions } from "./meta/option";
+import { deepAssign } from "./meta/clone.mjs";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -38,7 +39,7 @@ const cache = {
 addEventListener("storage", e => {
 	if(e.storageArea == localStorage && e.key == "settings") {
 		const settings = JSON.parse(localStorage.getItem("settings"));
-		assign(store, settings);
+		deepAssign(store, settings, true);
 		setOption({}, true);
 	}
 });

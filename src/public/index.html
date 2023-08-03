@@ -542,7 +542,8 @@
 										:disabled="state.play.moveNumber>=state.play.history.length-1">
 									<i class="fa-solid fa-angle-right"></i>
 								</button>
-								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.move(state.play.history.length-1)"
+								<button type="button" class="py-0 btn btn-secondary"
+										@click="PLAY.move(state.play.history.length-1)"
 										:disabled="state.play.moveNumber>=state.play.history.length-1">
 									<i class="fa-solid fa-angles-right"></i>
 								</button>
@@ -709,30 +710,49 @@
 
 					<!-- Popeye -->
 					<section :class="{show:state.tab==7}">
-						<textarea class="form-control mb-2" v-show="!state.popeye.playing" rows="5" v-model="state.popeye.input"
-								  :disabled="state.popeye.running"
-								  :placeholder="'For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
-						<div class="mb-3 row" v-if="!state.popeye.playing">
-							<div class="col col-form-label">
-								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
-									Popeye documentation
-								</a>
-							</div>
-							<div class="col-auto text-end">
-								<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
-										:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
-									Play solution
-								</button>
-								<button v-if="!state.popeye.running" type="button" class="btn btn-primary m-0" @click="Popeye.run"
-										:disabled="state.play.playing||!state.popeye.input.trim()">
-									<i class="fa-solid fa-play"></i>&ensp;Run
-								</button>
-								<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
-									<i class="fa-solid fa-stop"></i>&ensp;Cancel
-								</button>
+						<div v-show="!state.popeye.playing&&!state.popeye.editMap">
+							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
+									  :disabled="state.popeye.running"
+									  :placeholder="'For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
+							<div class="mb-3 row">
+								<div class="col col-form-label">
+									<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
+											:disabled="state.popeye.running">
+										Edit fairy piece mapping
+									</button>
+								</div>
+								<div class="col-auto text-end">
+									<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
+											:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
+										Play solution
+									</button>
+									<button v-if="!state.popeye.running" type="button" class="btn btn-primary m-0"
+											@click="Popeye.run" :disabled="state.play.playing||!state.popeye.input.trim()">
+										<i class="fa-solid fa-play"></i>&ensp;Run
+									</button>
+									<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
+										<i class="fa-solid fa-stop"></i>&ensp;Cancel
+									</button>
+								</div>
 							</div>
 						</div>
-						<div class="mb-3 row" v-else>
+						<div v-if="!state.popeye.playing&&state.popeye.editMap">
+							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.mapping"
+									  placeholder="Use the format like *2Q=G for each line."></textarea>
+							<div class="mb-3 row">
+								<div class="col col-form-label">
+									<button type="button" class="btn btn-primary m-0" @click="Popeye.saveMap">
+										Save setting
+									</button>
+								</div>
+								<div class="col-auto text-end">
+									<button type="button" class="btn btn-secondary m-0" @click="Popeye.resetMap">
+										Reset
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="mb-3 row" v-if="state.popeye.playing">
 							<div class="col">
 								<button type="button" class="btn btn-secondary" @click="Popeye.move(0)"
 										:disabled="state.popeye.index<=0">
@@ -757,7 +777,13 @@
 								</button>
 							</div>
 						</div>
-						<div id="Output" v-show="state.popeye.output&&state.tab==7" class="form-control" v-html="state.popeye.output">
+						<div id="Output" v-show="state.popeye.output&&state.tab==7" class="form-control"
+							 v-html="state.popeye.output">
+						</div>
+						<div class="mt-2">
+							<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
+								Popeye documentation
+							</a>
 						</div>
 					</section>
 

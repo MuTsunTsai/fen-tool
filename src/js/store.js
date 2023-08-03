@@ -2,6 +2,8 @@ import { reactive } from "petite-vue";
 import { defaultOption, getDimensions } from "./meta/option";
 import { CN } from "./meta/el";
 import { env } from "./meta/env";
+import { deepAssign } from "./meta/clone.mjs";
+import { defaultCustomMap, pieceMap } from "./meta/popeye/base.mjs";
 
 export const search = new URL(location.href).searchParams;
 
@@ -28,27 +30,21 @@ const settings = {
 	feature: {
 		janko: false,
 	},
+	popeye: {
+		pieceMap: defaultCustomMap,
+	},
 	board: defaultOption,
 	message: {
 		touchTip: true,
 		textShortcut: true,
 	}
 };
-
-export function assign(settings, savedSettings) {
-	for(const group in settings) {
-		for(const key in settings[group]) {
-			if(savedSettings[group] && savedSettings[group][key] !== undefined) {
-				settings[group][key] = savedSettings[group][key];
-			}
-		}
-	}
-}
-assign(settings, savedSettings);
+deepAssign(settings, savedSettings, true);
 
 if(search.has("janko")) settings.feature.janko = true;
 
 export const store = reactive(settings);
+pieceMap.custom = () => store.popeye.pieceMap;
 
 const mm = matchMedia("(prefers-color-scheme: dark)");
 mm.onchange = () => status.isDark = mm.matches;
@@ -103,6 +99,8 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 		output: "",
 		intInput: null,
 		intOutput: null,
+		mapping: "",
+		editMap: false,
 	},
 });
 

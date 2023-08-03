@@ -29,6 +29,25 @@ export function movePiece(board, from, to) {
 	return board[to];
 }
 
+// Partly based on PDB fairy pieces statistics
+export const defaultCustomMap =  {
+	"*2Q": "G",
+	"*2N": "N",
+	"*1N": "Z",
+	"*3N": "CA",
+	"*3B": "GI",
+	"*3Q": "LI",
+	"*1Q": "EQ",
+	"*2P": "BP",
+	"*1B": "AN",
+	"*1K": "PO",
+	"*2K": "ST",
+	"*3K": "DU",
+	"*2R": "WE",
+	"*3R": "PA",
+	"C": "I",
+};
+
 /**
  * This is the mapping suggested by https://github.com/thomas-maeder/popeye/blob/develop/pie-engl.txt
  */
@@ -56,14 +75,38 @@ const defaultPieceMap = {
 	"N": "S",
 };
 
-export const pieceMap = new Map();
+export const pieceMap = {
+	custom: () => ({}),
+	default: {},
+};
 for(const key in defaultPieceMap) {
-	for(const s of defaultPieceMap[key].split(",")) pieceMap.set(s, key);
+	for(const s of defaultPieceMap[key].split(",")) pieceMap.default[s] = key;
 }
 
 export function toNormalPiece(p) {
 	const upper = p.toUpperCase();
-	const normal = pieceMap.get(upper);
+	const normal = pieceMap.custom()[upper] || pieceMap.default[upper];
 	if(normal) return p == upper ? normal : normal.toLowerCase();
 	return p;
+}
+
+/**
+ * @param {string} p 
+ */
+export function toPopeyePiece(p) {
+	let prefix = p.startsWith("-") ? "=" : "";
+	if(prefix) p = p.substring(1);
+	const upper = p.toUpperCase();
+	if(!upper.match(/^[KQBNRP]$/)) {
+		const isWhite = upper == p;
+		const map = pieceMap.custom();
+		if(!(upper in map)) return null;
+		const f = map[upper];
+		p = isWhite ? f : f.toLowerCase();
+		if(p.length == 2) p = "." + p;
+		if(f.match(/^\d+$/) && !prefix) prefix = isWhite ? "+" : "-";
+	} else {
+		p = p.replace("n", "s").replace("N", "S"); // special case
+	}
+	return prefix + p;
 }

@@ -140,7 +140,7 @@ export function convertSN(value, useSN, convert) {
 /**
  * Convert to board coordinate notation (only orthodox board is supported).
  * @param {number} i
- * @param {number} j
+ * @param {number|undefined} j
  */
 export function toSquare(i, j) {
 	if(j === undefined) {

@@ -4,11 +4,14 @@ import { state, store } from "../store";
 import { formatSolution, toNormalFEN } from "../meta/popeye/popeye.mjs";
 import { resize } from "../layout";
 import { drawTemplate, load } from "../render";
-import { makeForsyth } from "../meta/fen.mjs";
+import { makeForsyth, toSquare } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
+import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base.mjs";
+import { clone } from "../meta/clone.mjs";
 
 // Session
 state.popeye.running = false; // Do not restore this state
+state.popeye.editMap = false;
 if(state.popeye.playing) nextTick(() => setupStepElements(true));
 
 let path = "modules/py.js";
@@ -129,25 +132,29 @@ function parseInput(text) {
 		if(p.initFEN) setFEN(toNormalFEN(p.initFEN));
 		return text; // board is assigned manually
 	} else {
-		p.initFEN = getPopeyeFEN();
-		if(!p.initFEN) return null;
+		const { fen, imitators } = getPopeyeFEN();
+		p.initFEN = fen;
+		if(imitators.length) text += "\ncond imitator " + imitators.join("");
 		return `fors ${p.initFEN}\n${text}`;
 	}
-}
-
-function toPopeyePiece(p) {
-	if(p.startsWith("-")) p = "=" + p.substring(1).toLowerCase();
-	if(!store.board.SN) {
-		p = p.replace("n", "s").replace("N", "S");
-	}
-	return p;
 }
 
 export function getPopeyeFEN() {
 	const { w, h } = store.board;
 	if(w != 8 || h != 8) return null;
-	const arr = snapshot().map(toPopeyePiece);
-	return makeForsyth(arr, 8, 8);
+	const imitators = [];
+	const arr = snapshot().map((p, i) => {
+		if(p == "") return p;
+		let f = store.board.SN ? p.replace("s", "n").replace("S", "N").replace("g", "s").replace("G", "S") : p; // normalize
+		f = toPopeyePiece(f);
+		if(!f) throw alert("Unspecified fairy piece: " + p);
+		if(f.match(/^=?i$/i)) {
+			imitators.push(toSquare(i));
+			return "";
+		}
+		return f;
+	});
+	return { fen: makeForsyth(arr, 8, 8), imitators };
 }
 
 async function setupStepElements(restore) {
@@ -166,16 +173,13 @@ async function setupStepElements(restore) {
 export const Popeye = {
 	run() {
 		gtag("event", "fen_popeye_run");
-
-		// Precondition
-		const p = state.popeye;
-		p.intInput = parseInput(p.input);
-		if(!p.intInput) {
-			alert("Only orthodox pieces are supported for now.");
-			return;
+		try {
+			const p = state.popeye;
+			p.intInput = parseInput(p.input);
+			start();
+		} catch {
+			// ignore error
 		}
-
-		start();
 	},
 	cancel() {
 		if(worker) stop();
@@ -218,5 +222,30 @@ export const Popeye = {
 		if(el.scrollLeft > step.offsetLeft) el.scrollLeft = step.offsetLeft;
 		const right = step.offsetLeft + step.clientWidth - el.clientWidth;
 		if(el.scrollLeft < right) el.scrollLeft = right;
+	},
+	editMap() {
+		const map = [];
+		for(const key in store.popeye.pieceMap) {
+			map.push(`${key}=${store.popeye.pieceMap[key]}`);
+		}
+		state.popeye.mapping = map.join("\n");
+		state.popeye.editMap = true;
+	},
+	resetMap() {
+		store.popeye.pieceMap = clone(defaultCustomMap);
+		Popeye.editMap();
+	},
+	saveMap() {
+		const lines = state.popeye.mapping.toUpperCase().split("\n");
+		const map = {};
+		for(const line of lines) {
+			let [k, v] = line.replace(/\s/g, "").split("=");
+			if(k.match(KEY) && v && v.match(VALUE)) map[k] = v;
+		}
+		store.popeye.pieceMap = map;
+		state.popeye.editMap = false;
 	}
 };
+
+const KEY = /^(\*[1-3][KQBNRP]|(\*[1-3])?[CXSTAD]|''..|'.)$/;
+const VALUE = new RegExp(`^${P}$`);

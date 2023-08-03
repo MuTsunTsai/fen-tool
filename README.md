@@ -72,7 +72,8 @@ See [Popeye documentation](https://github.com/thomas-maeder/popeye/blob/master/p
 After the computation completes, you can also playback solutions
 (with the same navigation hotkeys as in play mode).
 
-Note that fairy pieces are not supported for the moment.
+Tip: imitators are represented by neutral circle (`-c`) by default.
+If you have those on the board, it will automatically add the corresponding `condition` command to your input.
 
 By default it will run Popeye in WebAssembly,
 but it is known that it will get a runtime error in some versions of Safari and iOS.
