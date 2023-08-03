@@ -42,6 +42,7 @@ export function parseSolution(input, initFEN, output, factory) {
 			hasTwin = true;
 			return `${factory("a)", init)}\n`;
 		});
+	console.log(init);
 	if(!hasTwin) output = output.replace(/^(Popeye.+?)$/m, `$1 ${factory("Beginning", init)}`);
 
 	const duplexSeparator = options.duplex ? getDuplexSeparator(output) : "";
@@ -119,7 +120,7 @@ function addImitator(fen, imitators) {
 	if(!imitators) return fen;
 	const board = parseFEN(fen);
 	for(const sq of imitators) {
-		board[parseSquare(sq)] = "-c";
+		board[parseSquare(sq)] = "-" + toNormalPiece("i");
 	}
 	return makeForsyth(board);
 }
@@ -164,6 +165,7 @@ function getDuplexSeparator(output) {
 }
 
 function makeStep(text, fen) {
+	fen = fen.replace(/-/g, "&#45;"); // To prevent being processed again
 	return `<span class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
