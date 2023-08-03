@@ -19,7 +19,7 @@ export async function loadAsset(path, options, dpr) {
 
 async function load(path, options, dpr) {
 	const { set, size } = options;
-	if(dpr != 1) path += "/x" + dpr;
+	path += "/x" + dpr;
 	const [pieces, symbols] = await Promise.all([
 		loadImg(`${path}/${set}${size}.png`),
 		loadImg(`${path}/symbol${size}.png`),
