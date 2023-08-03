@@ -30,7 +30,7 @@ export function movePiece(board, from, to) {
 }
 
 // Partly based on PDB fairy pieces statistics
-export const defaultCustomMap =  {
+export const defaultCustomMap = {
 	"*2Q": "G",
 	"*2N": "N",
 	"*1N": "Z",
@@ -85,9 +85,13 @@ for(const key in defaultPieceMap) {
 
 export function toNormalPiece(p) {
 	const upper = p.toUpperCase();
-	const normal = pieceMap.custom()[upper] || pieceMap.default[upper];
+	const normal = findCustom(pieceMap.custom(), upper) || pieceMap.default[upper];
 	if(normal) return p == upper ? normal : normal.toLowerCase();
 	return p;
+}
+
+function findCustom(map, p) {
+	for(const key in map) if(map[key] == p) return key;
 }
 
 /**

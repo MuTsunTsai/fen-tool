@@ -167,7 +167,7 @@ function makeStep(text, fen) {
 	return `<span class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
-const FEN_TOKEN = /\/|\d+|[+-=]?(?:\.[0-9A-Z][0-9A-Z]|[A-Z])/ig;
+const FEN_TOKEN = /\.[0-9A-Z][0-9A-Z]|[A-Z]|\d+|\//ig;
 
 export function toNormalFEN(fen) {
 	const arr = fen.match(FEN_TOKEN);

@@ -6,6 +6,7 @@ import { toPopeyePiece, pieceMap } from "../src/js/meta/popeye/base.mjs";
 pieceMap.custom = () => ({
 	"*1B": "25",
 	"*2Q": "G",
+	"*1Q": "KA",
 });
 
 describe("Popeye", function() {
@@ -390,6 +391,23 @@ describe("Popeye", function() {
 
 				expect(result[4]).to.equal("-r-*2q4-*2n1/1b6/3p4/k7/2p5/p1-n5/-*2n5p1/6K1");
 				expect(result[9]).to.equal("1-*2q3-q2/1b6/3p1k2/5-b2/2p5/p7/-*2n5p1/5-*2qK1");
+			});
+
+			it("Kangaroo", function() {
+				/*
+				rema P1088273
+				fors k7/1.ka6/1.ka6/2K5/8/8/8/8
+				stip ser-h=12
+				*/
+				const input = "stip ser-h=12";
+				const fen = "k7/1.ka6/1.ka6/2K5/8/8/8/8";
+				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Ka8-a7   2.Ka7-a6   3.Ka6-a5   4.Ka5-a4   5.Ka4-b3   6.KAb7-b2   7.Kb3-a4   8.Ka4-a5   9.Ka5-a6  10.Ka6-b7  11.KAb2-b8  12.Kb7-a8 Kc5*b6 =<br><br>solution finished. Time = 0.033 s<br><br><br>";
+
+				const result = parse(input, fen, output);
+				expect(result.length).to.equal(14);
+
+				expect(result[0]).to.equal("k7/1*1q6/1*1q6/2K5/8/8/8/8");
+				expect(result[13]).to.equal("k*1q6/8/1K6/8/8/8/8/8");
 			});
 
 		});
