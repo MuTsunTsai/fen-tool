@@ -40,6 +40,10 @@ const settings = {
 	}
 };
 deepAssign(settings, savedSettings, true);
+if(savedSettings.popeye) {
+	// This one is the exception
+	settings.popeye.pieceMap = savedSettings.popeye.pieceMap;
+}
 
 if(search.has("janko")) settings.feature.janko = true;
 

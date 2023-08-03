@@ -715,7 +715,7 @@
 									  :disabled="state.popeye.running"
 									  :placeholder="'For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
 							<div class="mb-3 row">
-								<div class="col col-form-label">
+								<div class="col">
 									<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
 											:disabled="state.popeye.running">
 										Edit fairy piece mapping
@@ -740,7 +740,7 @@
 							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.mapping"
 									  placeholder="Use the format like *2Q=G for each line."></textarea>
 							<div class="mb-3 row">
-								<div class="col col-form-label">
+								<div class="col">
 									<button type="button" class="btn btn-primary m-0" @click="Popeye.saveMap">
 										Save setting
 									</button>
