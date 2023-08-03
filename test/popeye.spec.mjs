@@ -322,6 +322,22 @@ describe("Popeye", function() {
 			expect(result[6]).to.equal("8/8/6N1/8/6pp/6k1/6B1/5RK1");
 		});
 
+		it("Works with PG & non-PG twins", function() {
+			/*
+			rema P1347104
+			fors rsbqkbsr/ppppppp1/8/8/8/8/PPPP1PPP/RSB1KBSR
+			stip dia4.0
+			twin stip h#1.5
+			*/
+			const input = "stip dia4.0\ntwin stip h#1.5";
+			const fen = "rnbqkbnr/ppppppp1/8/8/8/8/PPPP1PPP/RNB1KBNR";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.e2-e4 Sg8-f6   2.Qd1-h5 Sf6*e4   3.Qh5*h7 Se4-f6   4.Qh7-g8 Sf6*g8 dia<br><br>b) h#1.5  <br><br>  1...Bf1-d3   2.f7-f6 Bd3-g6 #<br><br>solution finished. Time = 0.128 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(13);
+
+			expect(result[9]).to.equal(fen);
+		});
 		
 	});
 

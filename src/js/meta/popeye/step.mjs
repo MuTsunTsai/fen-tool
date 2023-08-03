@@ -1,32 +1,32 @@
-import { makeForsyth, parseFEN } from "../fen.mjs";
+import { INIT_FORSYTH, makeForsyth, parseFEN } from "../fen.mjs";
 import { Main, Step, setPiece, movePiece } from "./base.mjs";
 import { makeEffect } from "./effect.mjs";
 
 const MAIN = new RegExp(Main);
 const STEP = new RegExp(Step);
 
-export function processStep(text, state, factory) {
-	const { stack, init, currentOrdering, initImitators } = state;
+export function processStep(text, problem, state, factory) {
+	const { stack, ordering } = state;
 	const match = text.match(STEP);
 	const count = match.groups.count;
 	if(count) {
 		const index = stack.findIndex(s => s.move == count || parseInt(s.move) > parseInt(count));
 		if(index >= 0) {
 			// Retract
-			const fen = index > 0 ? stack[index - 1].fen : init;
+			const fen = index > 0 ? stack[index - 1].fen : problem.pg ? INIT_FORSYTH : problem.fen;
 			state.board = parseFEN(fen);
 			if(state.imitators) {
-				state.imitators = (index > 0 ? stack[index - 1].imitators : initImitators).concat();
+				state.imitators = (index > 0 ? stack[index - 1].imitators : problem.imitators).concat();
 			}
 			stack.length = index;
 		}
 	}
-	const color = currentOrdering[!count || count.endsWith("...") ? 1 : 0];
+	const color = ordering[!count || count.endsWith("...") ? 1 : 0];
 
 	// Clear all imitators first
-	const { imitators } = state;
+	const { imitators, board } = state;
 	if(imitators) {
-		for(const sq of imitators) setPiece(state.board, sq, "");
+		for(const sq of imitators) setPiece(board, sq, "");
 		imitators.length = 0;
 	}
 
@@ -34,16 +34,16 @@ export function processStep(text, state, factory) {
 	const moves = match.groups.main.split("/");
 	for(let move of moves) {
 		const m = move.match(MAIN);
-		makeMove(state.board, color, m.groups, imitators);
+		makeMove(board, color, m.groups, imitators);
 
 		// Handle effects
 		const effects = move.match(/(?<=\[)[^\[\]]+(?=\])/g);
 		if(effects) {
-			effects.forEach(effect => makeEffect(state.board, effect, imitators));
+			effects.forEach(effect => makeEffect(board, effect, imitators));
 		}
 	}
 
-	const fen = makeForsyth(state.board);
+	const fen = makeForsyth(board);
 	if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() })
 	return factory(text, fen);
 }

@@ -1,7 +1,8 @@
-import { rotate, invert, parseXY, shift, mirror } from "../fen.mjs";
+import { rotate, invert, parseXY, shift, mirror, parseFEN, makeForsyth } from "../fen.mjs";
 import { P, SQ, toNormalPiece, setPiece, movePiece } from "./base.mjs";
 
-export function makeTwin(board, text) {
+export function makeTwin(fen, text) {
+	const board = parseFEN(fen);
 	// Remove spaces for ease of splitting into commands
 	const commands = text
 		.replace(/(mirror|shift|rotate) /g, "$1")
@@ -10,6 +11,7 @@ export function makeTwin(board, text) {
 	for(const command of commands) {
 		processTwinCommand(board, command);
 	}
+	return { fen: makeForsyth(board), board };
 }
 
 const TW_MOVE = new RegExp(`^[nwb]${P}(${SQ})--&gt;(${SQ})$`);

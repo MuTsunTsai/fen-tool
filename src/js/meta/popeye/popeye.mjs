@@ -1,3 +1,4 @@
+import { clone } from "../clone.mjs";
 import { INIT_FORSYTH, makeForsyth, parseSquare, parseFEN } from "../fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../regex.mjs";
 import { SQ, P, Twin, Step, toNormalPiece } from "./base.mjs";
@@ -14,23 +15,24 @@ export function parseSolution(input, initFEN, output, factory) {
 	if(!initFEN) return output;
 	console.log(output);
 
-	const { duplex, halfDuplex, initImitators } = parseInput(input);
-
+	const options = parseInput(input);
 	let stipIndex = 0;
 	const stipulations = getStipulations(input);
-	const ordering = inferMoveOrdering(stipulations[0], halfDuplex);
-	const isPG = (/dia/i).test(stipulations[0]);
-	const init = addImitator(isPG ? INIT_FORSYTH : toNormalFEN(initFEN), initImitators);
+	const initProblem = {
+		pg: (/dia/i).test(stipulations[0]),
+		fen: addImitator(toNormalFEN(initFEN), options.imitators),
+		imitators: options.imitators,
+		ordering: inferMoveOrdering(stipulations[0], options.halfDuplex),
+	};
+	let currentProblem = initProblem;
+
+	const init = currentProblem.pg ? INIT_FORSYTH : currentProblem.fen;
 	const state = {
-		init,
-		initImitators,
-		currentOrdering: ordering,
 		stack: [],
 		board: parseFEN(init),
-		imitators: initImitators?.concat(),
+		ordering: currentProblem.ordering,
+		imitators: currentProblem.imitators?.concat(),
 	};
-	let lastPosition = init;
-	let lastOrdering = ordering;
 	let error = false;
 
 	let hasTwin = false;
@@ -42,7 +44,7 @@ export function parseSolution(input, initFEN, output, factory) {
 		});
 	if(!hasTwin) output = output.replace(/^(Popeye.+?)$/m, `$1 ${factory("Beginning", init)}`);
 
-	const duplexSeparator = duplex ? getDuplexSeparator(output) : "";
+	const duplexSeparator = options.duplex ? getDuplexSeparator(output) : "";
 	const duplexSeparatorReg = duplexSeparator ? duplexSeparator.replace(/\n/g, "\\n") + "|" : "";
 	const TOKEN = new RegExp(duplexSeparatorReg + `(?:${Twin})|(?:${Step})`, "g");
 
@@ -54,7 +56,7 @@ export function parseSolution(input, initFEN, output, factory) {
 		try {
 			if(text == duplexSeparator) {
 				if(solutionPrinted) {
-					state.currentOrdering = flipOrdering(state.currentOrdering);
+					state.ordering = flipOrdering(state.ordering);
 				}
 				return text;
 			}
@@ -63,22 +65,23 @@ export function parseSolution(input, initFEN, output, factory) {
 			const twin = text.match(TWIN);
 			if(twin) {
 				solutionPrinted = false;
-				const cont = Boolean(twin[1]);
+				currentProblem = clone(twin[1] ? currentProblem : initProblem);
 				const stip = stipulations[++stipIndex];
-				state.currentOrdering = lastOrdering =
-					stip ? inferMoveOrdering(stip, halfDuplex) : // infer from stip first
-					cont ? lastOrdering : // then use the last one if it's continued
-					ordering; // otherwise reset
+				if(stip) {
+					currentProblem.ordering = inferMoveOrdering(stip, options.halfDuplex);
+					currentProblem.pg = (/dia/i).test(stip);
+				}
+				state.ordering = currentProblem.ordering;
 				state.stack.length = 0;
-				state.board = parseFEN(cont ? lastPosition : init);
-				makeTwin(state.board, twin[2]);
-				const fen = makeForsyth(state.board);
-				lastPosition = fen;
+
+				const { fen, board } = makeTwin(currentProblem.fen, twin[2]);
+				currentProblem.fen = fen;
+				state.board = currentProblem.pg ? parseFEN(INIT_FORSYTH) : board;
 				return factory(text, fen);
 			}
 
 			solutionPrinted = true;
-			return processStep(text, state, factory);
+			return processStep(text, currentProblem, state, factory);
 		} catch(e) {
 			// Something is not right. Give up.
 			console.log(e, text);
@@ -98,7 +101,11 @@ export function getStipulations(input) {
 	return input.split(/\btwin\b/i).map(sec => sec.match(STIP)?.[1].replace(/\s/g, ""));
 }
 
-/** Try to guess the WB/BW move ordering; this is needed only for castling. */
+/**
+ * Try to guess the WB/BW move ordering; this is needed only for castling.
+ * @param {string} stip 
+ * @param {boolean} halfDuplex 
+ */
 export function inferMoveOrdering(stip, halfDuplex) {
 	// It is assumed there that spaces are removed in stip
 	const m = stip.match(/^(\d+-&gt;)?(?:exact-)?(?:(?:ser|pser|phser|semi|reci)-)?(hs|hr|h|s|r)?/i);
@@ -124,15 +131,18 @@ const COMMANDS = new RegExp(Commands.map(createAbbrExp).join("|"), "ig");
 const DUPLEX = createAbbrReg("duplex");
 const HALF_DUPLEX = createAbbrReg("halfDuplex");
 
+/**
+ * @param {string} input 
+ */
 function parseInput(input) {
-	input = input
+	const commands = input
 		.replace(/\n/g, " ")
 		.replace(COMMANDS, "\n$&")
 		.split("\n");
-	const options = input.filter(c => c.match(/^opti/i)).join(" ");
-	const conditions = input.filter(c => c.match(/^cond/i)).join(" ");
+	const options = commands.filter(c => c.match(/^opti/i)).join(" ");
+	const conditions = commands.filter(c => c.match(/^cond/i)).join(" ");
 	return {
-		initImitators: conditions.match(IMITATOR)?.join(" ").match(new RegExp(SQ, "g")),
+		imitators: conditions.match(IMITATOR)?.join(" ").match(new RegExp(SQ, "g")),
 		duplex: DUPLEX.test(options),
 		halfDuplex: HALF_DUPLEX.test(options),
 	};
