@@ -13,7 +13,7 @@ export const defaultOption = {
 	fullFEN: false,
 	coordinates: false,
 	set: "1echecs",
-	collapse: false,
+	collapse: true,
 };
 
 const BORDER = /^\d+(,\d+)*$/;

@@ -5,9 +5,8 @@ specifically designed with the needs of the chess composition community in mind.
 
 ## 💡 How to use
 
-For desktops, on the board on the right you can simply drag-and-drop piece from the template to arrange them,
-and on the input boxes on the left you can manually input variations that are not available in the template.
-For mobile devices, the two boards are one and you can enable manual input by double-tapping on the squares.
+Simply drag-and-drop pieces from the template to arrange them on the board,
+or manually input FFEN syntax (see below) by double-clicking on the squares.
 Options and tools should be mostly self-explanatory.
 
 You can also install FEN Tool as a standalone app on your device!
@@ -38,17 +37,26 @@ You can also put in the fairy notation used by [YACPDB](https://www.yacpdb.org/)
 
 ## 🛠️ Additional tools
 
-### PDB
+### Popeye
 
-You can fetch a PDB problem by using its ID number,
-or search for a problem using the position (fairy pieces are not supported in search).
-It can also generate PDB board edit syntax (with fairy piece support)
-that can be used when adding or editing a problem in PDB.
+This tool integrates [Popeye](https://github.com/thomas-maeder/popeye),
+one of the most powerful and popular chess problem solvers.
+Just put the problem description in the input box
+(Forsyth notation of the current board will be added automatically if not given) and press `Run`!
+See [Popeye documentation](https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt) for more.
+After the computation completes, you can also playback solutions.
 
-### YACPDB
+Tips:
+1. Imitators are represented by neutral circle (`-c`) by default.
+If you have those on the board, it will automatically add the corresponding `condition` command to your input.
+2. You can use left/right keys (or A/D keys) to quickly navigate move history.
 
-This is similar to the PDB tool, with the addition of copying YACPDB style FEN.
-Note that rotation is not supported in board edit syntax.
+By default it will run Popeye in WebAssembly,
+but it is known that it will get a runtime error in some versions of Safari and iOS.
+In that case it will automatically fallback to run Popeye in asm.js
+(it's slower, but works).
+
+Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
 
 ### Play mode
 
@@ -60,27 +68,17 @@ There are three different modes:
 2. Allow passing moves: can be used in for example series helpmate problems.
 3. Retro: playing backwards, used in retrograde analysis problems.
 
-Tip: You can use left/right keys (or A/D keys) to quickly navigate move history.
+### PDB
 
-### Popeye
+You can fetch a PDB problem by using its ID number,
+or search for a problem using the position (fairy pieces are not supported in search).
+It can also generate PDB board edit syntax (with fairy piece support)
+that can be used when adding or editing a problem in PDB.
 
-This tool integrates [Popeye](https://github.com/thomas-maeder/popeye),
-one of the most powerful and popular chess problem solvers.
-Just put the problem description in the input box
-(Forsyth notation of the current board will be added automatically if not given) and press `Run`!
-See [Popeye documentation](https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt) for more.
-After the computation completes, you can also playback solutions
-(with the same navigation hotkeys as in play mode).
+### YACPDB
 
-Tip: imitators are represented by neutral circle (`-c`) by default.
-If you have those on the board, it will automatically add the corresponding `condition` command to your input.
-
-By default it will run Popeye in WebAssembly,
-but it is known that it will get a runtime error in some versions of Safari and iOS.
-In that case it will automatically fallback to run Popeye in asm.js
-(it's slower, but works).
-
-Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
+This is similar to the PDB tool, with the addition of copying YACPDB style FEN.
+Note that rotation is not supported in board edit syntax.
 
 ### BBS
 
