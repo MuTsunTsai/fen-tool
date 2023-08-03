@@ -1,4 +1,4 @@
-import { getRenderSize, state, status, store } from "./store";
+import { getRenderSize, noEditing, state, status, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
 import { templateValues } from "./render";
@@ -13,6 +13,7 @@ export function initDrag() {
 	PV.onmousedown = mouseDown;
 	PV.ontouchstart = mouseDown;
 	PV.ondragstart = e => e.preventDefault();
+	PV.onwheel = wheel;
 	TP.onmousedown = mouseDown;
 	TP.ontouchstart = mouseDown;
 
@@ -64,6 +65,25 @@ function mouseup(event) {
 		setSquare(squares[index], draggingValue);
 	} else {
 		pushState();
+	}
+}
+
+function wheel(event) {
+	if(noEditing()) return;
+	const { w, h } = store.board;
+	const { offset, s } = getRenderSize();
+	const x = Math.floor((event.offsetX - offset.x) / s);
+	const y = Math.floor((event.offsetY - offset.y) / s);
+	if(y > -1 && y < h && x > -1 && x < w) {
+		const sq = squares[y * w + x];
+		if(sq.value == "") return;
+		event.preventDefault();
+		sq.value = sq.value.replace(/(?<=^-?)(?:\*\d)?(?=.+$)/, r => {
+			if(!r) return "*1";
+			if(r[1] == "3") return "";
+			return "*" + (Number(r[1]) + 1);
+		});
+		toFEN();
 	}
 }
 

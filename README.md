@@ -22,10 +22,11 @@ This tool supports all the [Fairy FEN](https://www.janko.at/Retros/d.htm) syntax
 
 - Use `-` in front to denote neutral pieces (e.g. `-k`).
 - Use `*` + number to denote rotation (e.g. `*2Q`). May be used together with neutral piece (e.g. `-*3b`).
+  **Tip: on desktops, use mouse wheel on the pieces to rotate them directly.**
 - Use `'` + single char or `''`(that's two single-quote, not a double-quote) + double chars to denote text (e.g. `'A`, `''12`). May be used together with rotation (e.g. `*1'A`).\
   Note that you can even use emoji with this syntax (e.g. `'🦆` or `'👨‍👩‍👧‍👦`; composite emoji characters will be recognize as one).  \
   It is worth mentioning that, with the FFEN syntax, it is not possible to type the character `'` itself.\
-  Tip: you can directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.
+  **Tip: you can directly input text of 1 or 2 chars into a square, and it will be automatically converted to FFEN syntax if it doesn't match existing syntax.**
 - Four markers defined in FFEN can be used: `c` (circle), `x` (cross), `s` (square) and `t` (triangle).\
   Note that if "use S for knight" option is on, to avoid ambiguity, we will use `g` (from the German word "geviert") for the square marker instead.\
   We also support two additional markers: `a` (asterisk) and `d` (dame).
