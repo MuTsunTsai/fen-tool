@@ -167,15 +167,18 @@ function makeStep(text, fen) {
 	return `<span class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
-const FEN_TOKEN = new RegExp(String.raw`/|\d+|[+-=]?${P}`, "ig");
+const FEN_TOKEN = /\/|\d+|[+-=]?(?:\.[0-9A-Z][0-9A-Z]|[A-Z])/ig;
 
 export function toNormalFEN(fen) {
 	const arr = fen.match(FEN_TOKEN);
 	return arr.map(t => {
 		if(t == "/" || t.match(/^\d+$/)) return t;
-		if(t.startsWith("+")) t = t.substring(1).toUpperCase();
-		if(t.startsWith("-")) t = t.substring(1).toLowerCase();
-		if(t.startsWith("=")) t = "-" + t.substring(1).toLowerCase();
-		return toNormalPiece(t);
+		const prefix = t.match(/^[+-=]/) ? t[0] : null;
+		if(prefix) t = t.substring(1);
+		t = toNormalPiece(t);
+		if(prefix == "+") t = t.toUpperCase();
+		if(prefix == "-") t = t.toLowerCase();
+		if(prefix == "=") t = "-" + t.toLowerCase();
+		return t;
 	}).join("");
 }

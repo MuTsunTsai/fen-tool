@@ -35,7 +35,7 @@ describe("Popeye", function() {
 
 		it("Retracts move on solution branches", function() {
 			const input = "stip #3";
-			const fen = "r3k3/ppp1p2p/Nb2p3/P1PP2Pp/4N3/7B/3PPRP1/4K2R";
+			const fen = "r3k3/ppp1p2p/Sb2p3/P1PP2Pp/4S3/7B/3PPRP1/4K2R";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.Rh1-f1 ! threat:<br>          2.Rf2-f8 +<br>              2...Ke8-d7<br>                  3.Bh3*e6 #<br>          2.Bh3*e6 threat:<br>                  3.Rf2-f8 #<br>      1...Bb6*a5<br>          2.Rf2-f8 +<br>              2...Ke8-d7<br>                  3.Bh3*e6 #<br>      1...Bb6*c5<br>          2.Rf2-f8 +<br>              2...Ke8-d7<br>                  3.Sa6*c5 #<br>                  3.Bh3*e6 #<br>      1...0-0-0<br>          2.Bh3*e6 +<br>              2...Rd8-d7<br>                  3.Rf2-f8 #<br>      1...Ke8-d7<br>          2.Bh3*e6 +<br>              2...Kd7-e8<br>                  3.Rf2-f8 #<br>              2...Kd7-d8<br>                  3.Rf2-f8 #<br><br><br>solution finished. Time = 0.078 s<br><br><br>";
 
 			const result = parse(input, fen, output);
@@ -46,7 +46,7 @@ describe("Popeye", function() {
 
 		it("Works with en passant", function() {
 			const input = "stip #2";
-			const fen = "3N1n2/K2b1Rn1/1Q6/p2k1q2/2p1pP2/2r1r3/3P4/3N4";
+			const fen = "3S1s2/K2b1Rs1/1Q6/p2k1q2/2p1pP2/2r1r3/3P4/3S4";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.d2-d4 ! threat:<br>          2.Qb6-c5 #<br>      1...c4*d3 ep.<br>          2.Sd1*e3 #<br>      1...e4*d3 ep.<br>          2.Sd1*c3 #<br>      1...Sg7-e6<br>          2.Rf7*f5 #<br>      1...Sf8-e6<br>          2.Rf7*d7 #<br><br><br>solution finished. Time = 0.060 s<br><br><br>";
 
 			const result = parse(input, fen, output);
@@ -76,7 +76,7 @@ describe("Popeye", function() {
 			opti vari
 			*/
 			const input = "stip #4\ncond Rokagogo";
-			const fen = "8/8/8/1N2P3/2B5/8/2k2P2/4K2R";
+			const fen = "8/8/8/1S2P3/2B5/8/2k2P2/4K2R";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.e5-e6 ! threat:<br>          2.e6-e7 threat:<br>                  3.e7-e8=R threat:<br>                          4.Ke1-e3/wRe8-e2 #<br><br><br>solution finished. Time = 0.407 s<br><br><br>";
 
 			const result = parse(input, fen, output);
@@ -116,7 +116,7 @@ describe("Popeye", function() {
 
 		it("Works with twin move, CouscousCirce, Isardam", function() {
 			const input = "stip h#2\ncond CouscousCirce Isardam\ntwin move g7 g4";
-			const fen = "8/3b2p1/1p6/1pb2n2/R2kr3/pP6/Kn5p/6B1";
+			const fen = "8/3b2p1/1p6/1pb2s2/R2kr3/pP6/Ks5p/6B1";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.h2*g1=Q[+wBd8] Ra4-c4   2.Bc5-f8 Bd8*b6[+bPc1=Q] #<br><br>b) bPg7--&gt;g4  <br><br>  1.Sb2*a4[+wRg8] Bg1-e3   2.Re4-e7 Rg8*g4[+bPh1=S] #<br><br>solution finished. Time = 2.097 s<br><br><br>";
 
 			const result = parse(input, fen, output);
@@ -295,7 +295,7 @@ describe("Popeye", function() {
 			opti vari
 			*/
 			const input2 = "stip =3\ncond imitator h5\nopti vari";
-			const fen2 = "5k2/5P1N/5K2/8/8/7P/8/8";
+			const fen2 = "5k2/5P1S/5K2/8/8/7P/8/8";
 			const output2 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.Sh7-g5[Ig4] ! threat:<br>          2.Sg5-e4[Ie3] =<br>          2.Sg5-h7[Ih6] =<br>          2.Sg5-e6[Ie5] =<br>      1...Kf8-g8[Ih4]<br>          2.f7-f8[Ih5]=I zugzwang.<br>              2...Kg8-f7[Ig4,e7] +<br>                  3.Kf6-g7[Ih5,f8] =<br>              2...Kg8-g7[Ih4,f7] +<br>                  3.Kf6-f7[Ih5,f8] =<br><br><br>solution finished. Time = 0.048 s<br><br><br>";
 
 			const result2 = parse(input2, fen2, output2);
@@ -313,7 +313,7 @@ describe("Popeye", function() {
 			twin move e2 e1 stip s#2
 			*/
 			const input = "stip h#2\nopti vari\ntwin move e2 e1 stip s#2";
-			const fen = "8/8/6N1/8/6pp/6k1/4K1B1/7R";
+			const fen = "8/8/6S1/8/6pp/6k1/4K1B1/7R";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.h4-h3 Sg6-f4   2.h3*g2 Sf4-h5 #<br><br>b) wKe2--&gt;e1  s#2  <br><br>   1.0-0 ! zugzwang.<br>      1...h4-h3<br>          2.Bg2-h1<br>              2...h3-h2 #<br><br><br>solution finished. Time = 0.084 s<br><br><br>";
 
 			const result = parse(input, fen, output);
@@ -330,13 +330,32 @@ describe("Popeye", function() {
 			twin stip h#1.5
 			*/
 			const input = "stip dia4.0\ntwin stip h#1.5";
-			const fen = "rnbqkbnr/ppppppp1/8/8/8/8/PPPP1PPP/RNB1KBNR";
+			const fen = "rsbqkbsr/ppppppp1/8/8/8/8/PPPP1PPP/RSB1KBSR";
 			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.e2-e4 Sg8-f6   2.Qd1-h5 Sf6*e4   3.Qh5*h7 Se4-f6   4.Qh7-g8 Sf6*g8 dia<br><br>b) h#1.5  <br><br>  1...Bf1-d3   2.f7-f6 Bd3-g6 #<br><br>solution finished. Time = 0.128 s<br><br><br>";
 
 			const result = parse(input, fen, output);
 			expect(result.length).to.equal(13);
 
-			expect(result[9]).to.equal(fen);
+			expect(result[9]).to.equal("rnbqkbnr/ppppppp1/8/8/8/8/PPPP1PPP/RNB1KBNR");
+		});
+
+		it("Works with fairy pieces", function() {
+			/*
+			rema P0500886
+			fors 8/1b3=p=p1/3p4/k7/2p5/p7/=n1=p3p1/1=g4K1
+			stip h#2
+			cond circe
+			twin move a5 f6
+			*/
+			const input = "stip h#2\ncond circe\ntwin move a5 f6";
+			const fen = "8/1b3=p=p1/3p4/k7/2p5/p7/=n1=p3p1/1=g4K1";
+			const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.nPc2*b1=nS[+nGb8] nPg7-g8=nR   2.nSb1-c3 nPf7*g8=nN[+nRa8] #<br><br>b) bKa5--&gt;f6  <br><br>  1.nPc2*b1=nB[+nGb8] nPf7-f8=nG   2.nBb1-f5 nPg7*f8=nQ[+nGf1] #<br><br>solution finished. Time = 1.900 s<br><br><br>";
+
+			const result = parse(input, fen, output);
+			expect(result.length).to.equal(10);
+
+			expect(result[4]).to.equal("-r-*2q4-*2n1/1b6/3p4/k7/2p5/p1-n5/-*2n5p1/6K1");
+			expect(result[9]).to.equal("1-*2q3-q2/1b6/3p1k2/5-b2/2p5/p7/-*2n5p1/5-*2qK1");
 		});
 		
 	});
