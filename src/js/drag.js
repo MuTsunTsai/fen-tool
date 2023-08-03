@@ -78,7 +78,7 @@ function wheel(event) {
 		const sq = squares[y * w + x];
 		if(sq.value == "") return;
 		event.preventDefault();
-		sq.value = sq.value.replace(/(?<=^-?)(?:\*\d)?(?=.+$)/, r => {
+		sq.value = sq.value.replace(/(?<=^-?)(?:\*\d)?(?=[^-].*$)/, r => {
 			if(!r) return "*1";
 			if(r[1] == "3") return "";
 			return "*" + (Number(r[1]) + 1);
