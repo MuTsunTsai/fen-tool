@@ -23,14 +23,6 @@ let shouldScroll = false;
 
 const el = document.getElementById("Output");
 
-function stepClick() {
-	setFEN(this.dataset.fen);
-	const p = state.popeye;
-	p.steps[p.index].classList.remove("active");
-	p.index = p.steps.indexOf(this);
-	this.classList.add("active");
-}
-
 function animate() {
 	suffix += ".";
 	if(suffix.length == 5) suffix = ".";
@@ -160,14 +152,37 @@ async function setupStepElements(restore) {
 	const p = state.popeye;
 	p.steps = [...el.querySelectorAll("span")];
 	if(p.steps.length == 0) return;
-	p.steps.forEach(s => s.onclick = stepClick);
-	p.index = 0;
-	p.steps[0].classList.add("active");
-	setFEN(p.steps[0].dataset.fen);
+	goTo(p.steps[0], true);
 	p.playing = true;
 	if(restore) await load();
 	drawTemplate([]);
 	nextTick(resize);
+}
+
+function goTo(step, init) {
+	setFEN(step.dataset.fen);
+	const p = state.popeye;
+	if(!init) p.steps[p.index].classList.remove("active");
+	p.index = p.steps.indexOf(step);
+	step.classList.add("active");
+
+	// This needs to be execute on next tick,
+	// as the rendering could change the scroll dimension temporarily
+	nextTick(() => scrollTo(step));
+}
+
+function scrollTo(step) {
+	// We cannot simply use scrollIntoView here, as that will also scroll the entire page,
+	// which is not the desired behavior.
+	const margin = 10;
+	const top = step.offsetTop - margin;
+	if(el.scrollTop > top) el.scrollTop = top;
+	const bottom = step.offsetTop + step.clientHeight - el.clientHeight + margin;
+	if(el.scrollTop < bottom) el.scrollTop = bottom;
+	const left = step.offsetLeft - margin;
+	if(el.scrollLeft > left) el.scrollLeft = left;
+	const right = step.offsetLeft + step.clientWidth - el.clientWidth + margin;
+	if(el.scrollLeft < right) el.scrollLeft = right;
 }
 
 export const Popeye = {
@@ -186,9 +201,17 @@ export const Popeye = {
 	},
 	play() {
 		const p = state.popeye;
+		el.scrollTop = el.scrollLeft = 0; // Reset
 		gtag("event", "fen_popeye_play");
 		p.output = formatSolution(p.intInput, p.initFEN, p.intOutput);
 		nextTick(setupStepElements);
+	},
+	step(e) {
+		const step = e.target;
+		if(step.dataset.fen) {
+			e.preventDefault();
+			goTo(step);
+		}
 	},
 	exit() {
 		const p = state.popeye;
@@ -208,22 +231,11 @@ export const Popeye = {
 	move(n) {
 		const p = state.popeye;
 		if(n == p.index) return;
-		p.steps[p.index].classList.remove("active");
-		p.index = n;
 		const step = p.steps[n];
-		step.classList.add("active");
-		setFEN(step.dataset.fen);
-
-		// We cannot simply use scrollIntoView here, as that will also scroll the entire page,
-		// which is not the desired behavior.
-		if(el.scrollTop > step.offsetTop) el.scrollTop = step.offsetTop;
-		const bottom = step.offsetTop + step.clientHeight - el.clientHeight;
-		if(el.scrollTop < bottom) el.scrollTop = bottom;
-		if(el.scrollLeft > step.offsetLeft) el.scrollLeft = step.offsetLeft;
-		const right = step.offsetLeft + step.clientWidth - el.clientWidth;
-		if(el.scrollLeft < right) el.scrollLeft = right;
+		goTo(step);
 	},
 	editMap() {
+		gtag("event", "fen_popeye_edit_map");
 		state.popeye.mapping = getMappingText(store.popeye.pieceMap);
 		state.popeye.editMap = true;
 	},

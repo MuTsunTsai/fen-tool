@@ -791,7 +791,7 @@
 							</div>
 						</div>
 						<div id="Output" v-show="state.popeye.output&&state.tab==7" class="form-control"
-							 v-html="state.popeye.output">
+							 v-html="state.popeye.output" @click="Popeye.step($event)">
 						</div>
 						<div class="mt-2">
 							<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">

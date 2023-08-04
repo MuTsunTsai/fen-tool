@@ -9,11 +9,12 @@ export function processStep(text, problem, state, factory) {
 	const { stack, ordering } = state;
 	const match = text.match(STEP);
 	const count = match.groups.count;
+	const initPosition = problem.pg ? INIT_FORSYTH : problem.fen;
 	if(count) {
 		const index = stack.findIndex(s => s.move == count || parseInt(s.move) > parseInt(count));
 		if(index >= 0) {
 			// Retract
-			const fen = index > 0 ? stack[index - 1].fen : problem.pg ? INIT_FORSYTH : problem.fen;
+			const fen = index > 0 ? stack[index - 1].fen : initPosition;
 			state.board = parseFEN(fen);
 			if(state.imitators) {
 				state.imitators = (index > 0 ? stack[index - 1].imitators : problem.imitators).concat();
@@ -45,10 +46,7 @@ export function processStep(text, problem, state, factory) {
 
 	const fen = makeForsyth(board);
 	if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() })
-	let result = "";
-	if(stack.length == 1 && count) result += factory("*", problem.pg ? INIT_FORSYTH : problem.fen) + " ";
-	result += factory(text, fen);
-	return result;
+	return (stack.length == 1 && count ? factory("*", initPosition) + " " : "") + factory(text, fen);
 }
 
 function makeMove(board, color, g, imitators) {
