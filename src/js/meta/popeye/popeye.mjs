@@ -83,7 +83,7 @@ export function parseSolution(input, initFEN, output, factory) {
 			return text;
 		}
 	});
-	return output.replace(/\n/g, "<br>");
+	return output.replace(/   <span init/g, "<span").replace(/\n/g, "<br>");
 }
 
 const STIP = new RegExp(String.raw`${createAbbrExp("stipulation")}\s+(\S*(?:\d|[^\d\s]\s+\d+(?:\.[05])?))`, "i");
@@ -158,10 +158,11 @@ function getDuplexSeparator(output) {
 }
 
 function makeStep(text, fen) {
+	const init = text == "*" ? "init " : "";
 	fen = fen
 		.replace(/-/g, "&#45;") 	// To prevent being processed again
 		.replace(/"/g, "&#34;");	// Just to be safe
-	return `<span class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
+	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
 const FEN_TOKEN = /[+\-=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;
