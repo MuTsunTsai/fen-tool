@@ -70,9 +70,10 @@ function mouseup(event) {
 		sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
-		if(path && path.length > 20) { // Touch rotation
+		if(path && path.length > 10) { // Touch rotation
 			const center = getCenter(path);
-			rotate(sq, windingNumber(center, path) > 0 ? 1 : 3);
+			const wn = windingNumber(center, path);
+			rotate(sq, wn > 0 ? 1 : 3);
 		}
 	} else {
 		pushState();
