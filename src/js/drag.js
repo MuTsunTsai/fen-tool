@@ -114,6 +114,8 @@ function isLeft(P0, P1, P2) {
 	return res;
 }
 
+let lastWheel = performance.now();
+
 function wheel(event) {
 	if(noEditing()) return;
 	const { w, h } = store.board;
@@ -124,6 +126,9 @@ function wheel(event) {
 		const sq = squares[y * w + x];
 		if(sq.value == "") return;
 		event.preventDefault();
+		const now = performance.now();
+		if(now - lastWheel < 50) return; // throttle
+		lastWheel = now;
 		rotate(sq, event.deltaY > 0 ? 1 : 3);
 	}
 }
