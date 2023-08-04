@@ -5,9 +5,11 @@ import { templateValues } from "./render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
 import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
+import { env } from "./meta/env";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
 let ghost, draggingValue, fromIndex;
+let path;
 
 export function initDrag() {
 	PV.onmousedown = mouseDown;
@@ -27,10 +29,15 @@ export function initDrag() {
 function mousemove(event) {
 	wrapEvent(event);
 	if(status.dragging == "pending" && getDisplacement(event) > 5) {
-		if(draggingValue) dragStart(event, true);
-		else status.dragging = false;
+		if(draggingValue) {
+			path = env.isTouch ? [] : null;
+			dragStart(event, true);
+		} else status.dragging = false;
 	}
-	if(status.dragging === true) dragMove(event);
+	if(status.dragging === true) {
+		if(path) path.push({ x: event.clientX, y: event.clientY });
+		dragMove(event);
+	}
 }
 
 function mouseup(event) {
@@ -63,9 +70,47 @@ function mouseup(event) {
 		sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
+		if(path && path.length > 20) { // Touch rotation
+			const center = getCenter(path);
+			rotate(sq, windingNumber(center, path) > 0 ? 1 : 3);
+		}
 	} else {
 		pushState();
 	}
+}
+
+function getCenter(points) {
+	let x = 0, y = 0;
+	for(const point of points) {
+		x += point.x;
+		y += point.y;
+	}
+	x /= points.length;
+	y /= points.length;
+	return { x, y };
+}
+
+function windingNumber(center, points) {
+	let wn = 0;
+	for(let i = 0, j = points.length - 1; i < points.length; j = i++) {
+		const pi = points[i], pj = points[j];
+		if(pj.y <= center.y) {
+			if(pi.y > center.y) {
+				if(isLeft(pj, pi, center) > 0) wn++;
+			}
+		} else {
+			if(pi.y <= center.y) {
+				if(isLeft(pj, pi, center) < 0) wn--;
+			}
+		}
+	}
+	return wn;
+};
+
+function isLeft(P0, P1, P2) {
+	let res = ((P1.x - P0.x) * (P2.y - P0.y)
+		- (P2.x - P0.x) * (P1.y - P0.y));
+	return res;
 }
 
 function wheel(event) {
@@ -78,13 +123,16 @@ function wheel(event) {
 		const sq = squares[y * w + x];
 		if(sq.value == "") return;
 		event.preventDefault();
-		sq.value = sq.value.replace(/(?<=^-?)(?:\*\d)?(?=[^-].*$)/, r => {
-			if(!r) return "*1";
-			if(r[1] == "3") return "";
-			return "*" + (Number(r[1]) + 1);
-		});
-		toFEN();
+		rotate(sq, event.deltaY > 0 ? 1 : 3);
 	}
+}
+
+function rotate(sq, by) {
+	sq.value = sq.value.replace(/(?<=^-?)(?:\*\d)?(?=[^-].*$)/, r => {
+		const rotation = ((r ? Number(r[1]) : 0) + by) % 4;
+		return rotation ? "*" + rotation : "";
+	});
+	toFEN();
 }
 
 function mouseDown(event) {
@@ -160,6 +208,7 @@ function dragMove(event) {
 	const left = ghost == TPG && coordinates && !status.hor ? r.left + LABEL_MARGIN : r.left;
 	const y = Math.floor((event.clientY - r.top - offset.y) / s);
 	const x = Math.floor((event.clientX - r.left - offset.x) / s);
+	if(x !== sqX || y !== sqY) path = null;
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(y > -1 && y < h && x > -1 && x < w) {
 		ghost.style.left = left + (x - sqX) * s + scrollLeft + "px";
