@@ -30,5 +30,3 @@ export const env = {
 	isTouch,
 	isTaiwan: navigator.languages.includes("zh-TW"),
 };
-
-if(!env.isTop) document.body.style.overflow = "hidden";

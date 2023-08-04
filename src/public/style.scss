@@ -16,10 +16,20 @@ html, .nav-container {
 html,
 body {
 	font-size: 10pt;
+	height: 100%;
 }
 
-body {
-	overflow-x: hidden;
+html {
+	overflow: hidden;
+}
+
+html.iframe {
+	height: unset;
+
+	body {
+		height: unset;
+		overflow: hidden;
+	}
 }
 
 [v-cloak] {
