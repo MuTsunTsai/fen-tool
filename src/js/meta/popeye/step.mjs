@@ -5,7 +5,7 @@ import { makeEffect } from "./effect.mjs";
 const MAIN = new RegExp(Main);
 const STEP = new RegExp(Step);
 
-export function processStep(text, problem, state) {
+export function processStep(text, problem, state, factory) {
 	const { stack, ordering } = state;
 	const match = text.match(STEP);
 	const count = match.groups.count;
@@ -45,7 +45,10 @@ export function processStep(text, problem, state) {
 
 	const fen = makeForsyth(board);
 	if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() })
-	return fen;
+	let result = "";
+	if(stack.length == 1 && count) result += factory("*", problem.pg ? INIT_FORSYTH : problem.fen) + " ";
+	result += factory(text, fen);
+	return result;
 }
 
 function makeMove(board, color, g, imitators) {

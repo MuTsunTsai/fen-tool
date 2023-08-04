@@ -80,7 +80,7 @@ describe("Popeye", function() {
 
 			it("Proof games", function() {
 				const input = "stip dia6.0";
-				const fen = "rnbqkbnr/pppp1p1p/8/4p1p1/1PQP4/8/P1PNPPPP/2KR1BNR";
+				const fen = "rsbqkbsr/pppp1p1p/8/4p1p1/1PQP4/8/P1PSPPPP/2KR1BSR";
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.d2-d4 e7-e5   2.Qd1-d3 Bf8-a3   3.b2-b4 Ba3*c1   4.Qd3-c4 Bc1-h6   5.Sb1-d2 g7-g5   6.0-0-0 Bh6-f8 dia<br><br>solution finished. Time = 0.199 s<br><br><br>";
 
 				const result = parse(input, fen, output);
@@ -97,7 +97,7 @@ describe("Popeye", function() {
 				const output1 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Bd8-f6 Ba3-b2   2.0-0 e5*f6   3.Kg8-h8 f6-f7 #<br><br>  1.Ke2-f3 Rh8-f8 +   2.Kf3-g4 Rf8-f4 +   3.Kg4-h5 Rf4-h4 #<br><br>solution finished. Time = 1.008 s<br><br><br>";
 
 				const result1 = parse(input1, fen1, output1);
-				expect(result1.length).to.equal(13);
+				expect(result1.length).to.equal(14);
 				expect(result1[3]).to.equal("5rk1/7p/5b2/4P3/8/8/1B2K3/8");
 
 				const input2 = "stip h#3\nopti duplex";
@@ -105,8 +105,8 @@ describe("Popeye", function() {
 				const output2 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Sa7-c8 Sa2-c3   2.Sc8-d6 Ra1-a3   3.Sd6-e4 Sc3-d5 #<br><br>  1.0-0-0 b5-b4   2.Kc1-b1 Sa7-b5   3.Rd1-c1 Sb5-a3 #<br><br>solution finished. Time = 1.140 s<br><br><br>";
 
 				const result2 = parse(input2, fen2, output2);
-				expect(result2.length).to.equal(13);
-				expect(result2[7]).to.equal("8/n7/8/1p6/3b4/4k3/N7/2KR4");
+				expect(result2.length).to.equal(14);
+				expect(result2[8]).to.equal("8/n7/8/1p6/3b4/4k3/N7/2KR4");
 			});
 
 		});
@@ -126,7 +126,7 @@ describe("Popeye", function() {
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.f2-f1=R f7-f8=Q   2.Rf1-b1 Qf8-a3 #<br><br>b) nPf2  <br><br>  1.nPf2-f1=nS f7-f8=Q   2.nSf1-d2 Qf8-a3 #<br>  1.nPf2-f1=nB f7-f8=Q   2.nBf1-d3 Qf8-a3 #<br><br>solution finished. Time = 0.068 s<br><br><br>";
 
 				const result = parse(input, fen, output);
-				expect(result.length).to.equal(14);
+				expect(result.length).to.equal(15);
 
 				expect(result[5]).to.equal("8/5P2/8/8/8/8/5-p2/k7");
 				expect(result[6]).to.equal("8/5P2/8/8/8/8/8/k4-n2");
@@ -135,7 +135,8 @@ describe("Popeye", function() {
 			it("All twin commands", function() {
 				/*
 				fors 8/8/8/8/1k6/8/1K2R3/8
-				stip =1
+				stip ~1
+				opti maxs 1
 				twin mir a1<-->h1
 				twin sub R S
 				twin rotate 90
@@ -144,20 +145,20 @@ describe("Popeye", function() {
 				twin mir a1<-->h8
 				twin move e2 e3
 				*/
-				const input = "stip =1\ntwin mir a1<-->h1\ntwin sub R S\ntwin rotate 90\ntwin cont shift a2 b2\ntwin rotate 180 shift e4 d4 polish\ntwin mir a1<-->h8\ntwin move e2 e3";
+				const input = "stip ~1\nopti maxs 1\ntwin mir a1<-->h1\ntwin sub R S\ntwin rotate 90\ntwin cont shift a2 b2\ntwin rotate 180 shift e4 d4 polish\ntwin mir a1<-->h8\ntwin move e2 e3";
 				const fen = "8/8/8/8/1k6/8/1K2R3/8";
-				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br><br>b) mirror a1&lt;--&gt;h1  <br><br><br>c) R ==&gt; S  <br><br><br>d) rotate 90  <br><br><br>+e) shift a2 ==&gt; b2  <br><br><br>f) rotate 180  shift e4 ==&gt; d4  PolishType  <br><br><br>g) mirror a1&lt;--&gt;h8  <br><br><br>h) wRe2--&gt;e3  <br><br><br>solution finished. Time = 1.124 s<br><br><br>";
+				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>   1.Kb2-a1 !<br><br><br>b) mirror a1&lt;--&gt;h1  <br><br>   1.Rd2-d1 !<br><br><br>c) R ==&gt; S  <br><br>   1.Kb2-a1 !<br><br><br>d) rotate 90  <br><br>   1.Kg2-h1 !<br><br><br>+e) shift a2 ==&gt; b2  <br><br>   1.Kh2-h1 !<br><br><br>f) rotate 180  shift e4 ==&gt; d4  PolishType  <br><br>   1.Kf5-e4 !<br><br><br>g) mirror a1&lt;--&gt;h8  <br><br>   1.Rg4-g1 !<br><br><br>h) wRe2--&gt;e3  <br><br>   1.Kb2-a1 !<br><br>Partial solution Time = 1.259 s<br><br><br>";
 
 				const result = parse(input, fen, output);
-				expect(result.length).to.equal(8);
+				expect(result.length).to.equal(16);
 
-				expect(result[1]).to.equal("8/8/8/8/6k1/8/3R2K1/8");
-				expect(result[2]).to.equal("8/8/8/8/1k6/8/1K2N3/8");
-				expect(result[3]).to.equal("8/8/8/6R1/8/8/4k1K1/8");
-				expect(result[4]).to.equal("8/8/8/7R/8/8/5k1K/8");
-				expect(result[5]).to.equal("8/2r2k2/8/5K2/8/8/8/8");
-				expect(result[6]).to.equal("8/8/8/1R6/8/8/1K1k4/8");
-				expect(result[7]).to.equal("8/8/8/8/1k6/4R3/1K6/8");
+				expect(result[2]).to.equal("8/8/8/8/6k1/8/3R2K1/8");
+				expect(result[4]).to.equal("8/8/8/8/1k6/8/1K2N3/8");
+				expect(result[6]).to.equal("8/8/8/6R1/8/8/4k1K1/8");
+				expect(result[8]).to.equal("8/8/8/7R/8/8/5k1K/8");
+				expect(result[10]).to.equal("8/2r2k2/8/5K2/8/8/8/8");
+				expect(result[12]).to.equal("8/8/8/1R6/8/8/1K1k4/8");
+				expect(result[14]).to.equal("8/8/8/8/1k6/4R3/1K6/8");
 			});
 
 			it("Twin stipulation", function() {
@@ -288,15 +289,15 @@ describe("Popeye", function() {
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Rb5-a5 Qd7-e6[d5=w][c6=w] +   2.Kg8-h8 Qe6*c6[bQc6-&gt;b7]   3.Rd5-d6 + Qb7-b8[d6=b] #<br>  1.Rb5-b7 Qd7-c8[c6=w][b7=b] +   2.c6*b7[wPb7-&gt;e8=Q] Qc8-c1   3.Qe8-e6[d5=w] + Qc1-c8[e6=b] #<br><br>solution finished. Time = 40.379 s<br><br><br>";
 
 				const result = parse(input, fen, output);
-				expect(result.length).to.equal(13);
+				expect(result.length).to.equal(14);
 
 				expect(result[2]).to.equal("6K1/8/2P1q2k/R2R4/8/8/8/8");
 				expect(result[4]).to.equal("7K/1q6/7k/R2R4/8/8/8/8");
 				expect(result[6]).to.equal("1q5K/8/3r3k/R7/8/8/8/8");
-				expect(result[8]).to.equal("2q3K1/1r6/2P4k/3r4/8/8/8/8");
-				expect(result[9]).to.equal("2q1Q1K1/8/7k/3r4/8/8/8/8");
-				expect(result[11]).to.equal("6K1/8/4Q2k/3R4/8/8/8/2q5");
-				expect(result[12]).to.equal("2q3K1/8/4q2k/3R4/8/8/8/8");
+				expect(result[9]).to.equal("2q3K1/1r6/2P4k/3r4/8/8/8/8");
+				expect(result[10]).to.equal("2q1Q1K1/8/7k/3r4/8/8/8/8");
+				expect(result[12]).to.equal("6K1/8/4Q2k/3R4/8/8/8/2q5");
+				expect(result[13]).to.equal("2q3K1/8/4q2k/3R4/8/8/8/8");
 			});
 
 			it("KobulKing, Sentinels", function() {
@@ -311,11 +312,11 @@ describe("Popeye", function() {
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Bb1-e4 Kd4-c5[+wPd4]   2.Be4-c6[+bPe4] Kc5*c6[c7=rB][+wPc5] +   3.rBc7-b8[+bPc7] Kc6-b7[+wPc6] #<br>  1.Sf2-e4[+bPf2] Kd4-e5[+wPd4]   2.Se4-f6[+bPe4] Ke5*f6[c7=rS][+wPe5]   3.rSc7-e8[+bPc7] + Kf6-e7[+wPf6] #<br><br>solution finished. Time = 1.633 s<br><br><br>";
 
 				const result = parse(input, fen, output);
-				expect(result.length).to.equal(13);
+				expect(result.length).to.equal(14);
 
 				expect(result[4]).to.equal("8/2b2p2/2K5/2P5/3Pp3/8/5n2/8");
 				expect(result[6]).to.equal("1b6/1Kp2p2/2P5/2P5/3Pp3/8/5n2/8");
-				expect(result[10]).to.equal("8/2n2p2/5K2/4P3/3Pp3/8/5p2/1b6");
+				expect(result[11]).to.equal("8/2n2p2/5K2/4P3/3Pp3/8/5p2/1b6");
 			});
 
 			it("Breton", function() {

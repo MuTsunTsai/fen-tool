@@ -7,7 +7,6 @@ import { drawTemplate, load } from "../render";
 import { makeForsyth, toSquare } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
 import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base.mjs";
-import { clone } from "../meta/clone.mjs";
 
 // Session
 state.popeye.running = false; // Do not restore this state
@@ -160,6 +159,7 @@ export function getPopeyeFEN() {
 async function setupStepElements(restore) {
 	const p = state.popeye;
 	p.steps = [...el.querySelectorAll("span")];
+	if(p.steps.length == 0) return;
 	p.steps.forEach(s => s.onclick = stepClick);
 	p.index = 0;
 	p.steps[0].classList.add("active");

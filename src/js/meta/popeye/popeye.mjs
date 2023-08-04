@@ -35,14 +35,9 @@ export function parseSolution(input, initFEN, output, factory) {
 	};
 	let error = false;
 
-	let hasTwin = false;
-	output = output
-		.replace(/<br>/g, "\n")
-		.replace(/a\) \n/, () => {
-			hasTwin = true;
-			return `${factory("a)", init)}\n`;
-		});
-	if(!hasTwin) output = output.replace(/^(Popeye.+?)$/m, `$1 ${factory("Beginning", init)}`);
+	console.log(initFEN, init);
+
+	output = output.replace(/<br>/g, "\n");
 
 	const duplexSeparator = options.duplex ? getDuplexSeparator(output) : "";
 	const duplexSeparatorReg = duplexSeparator ? duplexSeparator.replace(/\n/g, "\\n") + "|" : "";
@@ -51,7 +46,6 @@ export function parseSolution(input, initFEN, output, factory) {
 	// Main replacement
 	let solutionPrinted = false;
 	output = output.replace(TOKEN, text => {
-		// console.log(text);
 		if(error) return text;
 		try {
 			if(text == duplexSeparator) {
@@ -77,12 +71,11 @@ export function parseSolution(input, initFEN, output, factory) {
 				const { fen, board } = makeTwin(currentProblem.fen, twin[2]);
 				currentProblem.fen = fen;
 				state.board = currentProblem.pg ? parseFEN(INIT_FORSYTH) : board;
-				return factory(text, fen);
+				return text;
 			}
 
 			solutionPrinted = true;
-			const fen = processStep(text, currentProblem, state);
-			return factory(text, fen);
+			return processStep(text, currentProblem, state, factory);
 		} catch(e) {
 			// Something is not right. Give up.
 			console.log(e, text);
@@ -179,6 +172,7 @@ export function toNormalFEN(fen) {
 		if(t == "/" || t.match(/^\d+$/)) return t;
 		const prefix = t.match(/^[+\-=]/) ? t[0] : null;
 		if(prefix) t = t.substring(1);
+		if(t.startsWith(".")) t = t.substring(1);
 		t = toNormalPiece(t);
 		if(prefix == "+") t = t.toUpperCase();
 		if(prefix == "-") t = t.toLowerCase();
