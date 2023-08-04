@@ -17,6 +17,8 @@ html,
 body {
 	font-size: 10pt;
 	height: 100%;
+	width: 100%;
+	position: fixed;
 }
 
 html {
@@ -269,6 +271,10 @@ label[for] {
 }
 
 @media (prefers-color-scheme: dark) {
+	html {
+		color-scheme: dark;
+	}
+
 	body {
 		overflow-y: scroll;
 	}
