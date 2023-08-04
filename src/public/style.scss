@@ -2,7 +2,8 @@ $enable-negative-margins: true;
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
-html, .nav-container {
+html,
+.nav-container {
 	/*
 	Disable scroll bouncing for iOS 16+.
 	There isn't much we can do for iOS < 16. There are some examples
@@ -106,6 +107,7 @@ section {
 	font-family: Arial;
 	overflow: hidden;
 	background: none;
+	color: black;
 }
 
 #FEN {
@@ -171,7 +173,7 @@ section {
 
 .loader {
 	transition: opacity 0s 0s;
-	
+
 	&.show {
 		transition: opacity 0.25s 0.5s;
 		opacity: 1;
@@ -281,7 +283,7 @@ label[for] {
 
 	.form-control:disabled {
 		background-color: var(--bs-gray-800);
-		opacity: .5;
+		opacity: 0.5;
 	}
 
 	.form-control::placeholder {
