@@ -1,7 +1,7 @@
 import { clone } from "../clone.mjs";
 import { INIT_FORSYTH, makeForsyth, parseSquare, parseFEN } from "../fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../regex.mjs";
-import { SQ, P, Twin, Step, toNormalPiece } from "./base.mjs";
+import { SQ, Twin, Step, toNormalPiece } from "./base.mjs";
 import { processStep } from "./step.mjs";
 import { makeTwin } from "./twin.mjs";
 
@@ -42,7 +42,6 @@ export function parseSolution(input, initFEN, output, factory) {
 			hasTwin = true;
 			return `${factory("a)", init)}\n`;
 		});
-	console.log(init);
 	if(!hasTwin) output = output.replace(/^(Popeye.+?)$/m, `$1 ${factory("Beginning", init)}`);
 
 	const duplexSeparator = options.duplex ? getDuplexSeparator(output) : "";
@@ -82,7 +81,8 @@ export function parseSolution(input, initFEN, output, factory) {
 			}
 
 			solutionPrinted = true;
-			return processStep(text, currentProblem, state, factory);
+			const fen = processStep(text, currentProblem, state);
+			return factory(text, fen);
 		} catch(e) {
 			// Something is not right. Give up.
 			console.log(e, text);
@@ -165,11 +165,13 @@ function getDuplexSeparator(output) {
 }
 
 function makeStep(text, fen) {
-	fen = fen.replace(/-/g, "&#45;"); // To prevent being processed again
+	fen = fen
+		.replace(/-/g, "&#45;") 	// To prevent being processed again
+		.replace(/"/g, "&#34;");	// Just to be safe
 	return `<span class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
-const FEN_TOKEN = /\.[0-9A-Z][0-9A-Z]|[A-Z]|\d+|\//ig;
+const FEN_TOKEN = /[+\-=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;
 
 export function toNormalFEN(fen) {
 	const arr = fen.match(FEN_TOKEN);
