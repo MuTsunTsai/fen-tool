@@ -38,7 +38,8 @@ export function processStep(text, problem, state, factory) {
 		makeMove(board, color, m.groups, imitators);
 
 		// Handle effects
-		const effects = move.match(/(?<=\[)[^\[\]]+(?=\])/g);
+		// Lookbehind is not supported for Safari<16.4
+		const effects = move.match(/\[[^\[\]]+(?=\])/g)?.map(e => e.substring(1));
 		if(effects) {
 			effects.forEach(effect => makeEffect(board, effect, imitators));
 		}

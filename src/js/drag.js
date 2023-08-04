@@ -129,9 +129,10 @@ function wheel(event) {
 }
 
 function rotate(sq, by) {
-	sq.value = sq.value.replace(/(?<=^-?)(?:\*\d)?(?=[^-].*$)/, r => {
-		const rotation = ((r ? Number(r[1]) : 0) + by) % 4;
-		return rotation ? "*" + rotation : "";
+	// Lookbehind is not supported for Safari<16.4
+	sq.value = sq.value.replace(/(^-?)(?:\*(\d))?([^-].*$)/, (_, a, b, c) => {
+		const rotation = (Number(b || 0) + by) % 4;
+		return a + (rotation ? "*" + rotation : "") + c;
 	});
 	toFEN();
 }
