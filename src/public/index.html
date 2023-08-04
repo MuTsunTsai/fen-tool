@@ -726,10 +726,17 @@
 											:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
 										Play solution
 									</button>
-									<button v-if="!state.popeye.running" type="button" class="btn btn-primary m-0"
-											@click="Popeye.run" :disabled="state.play.playing||!state.popeye.input.trim()">
-										<i class="fa-solid fa-play"></i>&ensp;Run
-									</button>
+									<span v-if="!state.popeye.running">
+										<button type="button" class="btn btn-primary m-0 disabled"
+												v-if="state.play.playing||!state.popeye.input.trim()"
+												:title="state.play.playing?'Need to exit play mode first':'Input instructions first'">
+											<i class="fa-solid fa-play"></i>&ensp;Run
+										</button>
+										<button type="button" class="btn btn-primary m-0" @click="Popeye.run" v-else
+												title="Run Popeye on your device!">
+											<i class="fa-solid fa-play"></i>&ensp;Run
+										</button>
+									</span>
 									<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
 										<i class="fa-solid fa-stop"></i>&ensp;Cancel
 									</button>
@@ -743,6 +750,9 @@
 								<div class="col">
 									<button type="button" class="btn btn-primary m-0" @click="Popeye.saveMap">
 										Save setting
+									</button>
+									<button type="button" class="btn btn-secondary m-0" @click="state.popeye.editMap=false">
+										Cancel
 									</button>
 								</div>
 								<div class="col-auto text-end">

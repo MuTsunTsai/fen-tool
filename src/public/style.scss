@@ -70,6 +70,11 @@ section {
 	.input-group > & {
 		margin-bottom: 0;
 	}
+
+	&.disabled[title] {
+		// Workaround for displaying tooltip on disabled button
+		pointer-events: unset;
+	}
 }
 
 .w-passive-100 {

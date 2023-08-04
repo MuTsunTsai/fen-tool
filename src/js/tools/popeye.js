@@ -224,16 +224,11 @@ export const Popeye = {
 		if(el.scrollLeft < right) el.scrollLeft = right;
 	},
 	editMap() {
-		const map = [];
-		for(const key in store.popeye.pieceMap) {
-			map.push(`${key}=${store.popeye.pieceMap[key]}`);
-		}
-		state.popeye.mapping = map.join("\n");
+		state.popeye.mapping = getMappingText(store.popeye.pieceMap);
 		state.popeye.editMap = true;
 	},
 	resetMap() {
-		store.popeye.pieceMap = clone(defaultCustomMap);
-		Popeye.editMap();
+		state.popeye.mapping = getMappingText(defaultCustomMap);
 	},
 	saveMap() {
 		const lines = state.popeye.mapping.toUpperCase().split("\n");
@@ -246,6 +241,14 @@ export const Popeye = {
 		state.popeye.editMap = false;
 	}
 };
+
+function getMappingText(pieceMap) {
+	const map = [];
+	for(const key in pieceMap) {
+		map.push(`${key}=${pieceMap[key]}`);
+	}
+	return map.join("\n");
+}
 
 const KEY = /^(\*[1-3][KQBNRP]|(\*[1-3])?[CXSTAD]|''..|'.)$/;
 const VALUE = new RegExp(`^${P}$`);
