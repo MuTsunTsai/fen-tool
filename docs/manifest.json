@@ -7,7 +7,7 @@
 	"display": "standalone",
 	"theme_color": "#D18B47",
 	"background_color": "#D18B47",
-	"orientation": "any",
+	"orientation": "portrait",
 	"description": "Quick online tool for chess with features for composing problems and APIs.",
 	"icons": [
 		{

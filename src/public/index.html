@@ -716,7 +716,10 @@
 						<div v-show="!state.popeye.playing&&!state.popeye.editMap">
 							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
 									  :disabled="state.popeye.running"
-									  :placeholder="'For example:\n=============\nStipulation #2\nOption Variation'"></textarea>
+									  placeholder="For example:
+=============
+Stipulation #2
+Option Variation"></textarea>
 							<div class="mb-3 row">
 								<div class="col">
 									<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
