@@ -1,8 +1,8 @@
 /**
  * @param {string} text 
  */
-export function createAbbrReg(text, length = 4) {
-	return new RegExp(createAbbrExp(text, length), "i");
+export function createAbbrReg(text, prefix = "", suffix = "") {
+	return new RegExp(prefix + createAbbrExp(text) + suffix, "i");
 }
 
 /**
@@ -12,9 +12,14 @@ export function createAbbrReg(text, length = 4) {
  * will match, but not `remat`.
  * @param {string} text
  */
-export function createAbbrExp(text, length = 4) {
+export function createAbbrExp(text) {
+	let length = 4;
+	if(text.match(/^\d/)) {
+		length = Number(text[0]);
+		text = text.substring(1);
+	}
 	if(text.length <= length) return "\\b" + text + "\\b";
-	return "\\b" + text.substring(0, 4) + createAbbrExpRecursive(text.substring(4));
+	return "\\b" + text.substring(0, length) + createAbbrExpRecursive(text.substring(length));
 }
 
 /**

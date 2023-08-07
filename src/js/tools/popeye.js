@@ -98,14 +98,14 @@ function escapeHtml(text) {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-const Commands = ["remark", "author", "origin", "title"];
+const Commands = ["remark", "2author", "2origin", "3title"];
 const COMMANDS = new RegExp(String.raw`(?:${Commands.map(createAbbrExp).join("|")})\s.+$`, "igm");
-const PROTOCOL = new RegExp(String.raw`${createAbbrExp("protocol")}\s+\S+`, "i");
-const BEGIN = createAbbrReg("beginProblem");
-const END = createAbbrReg("endProblem");
+const PROTOCOL = new RegExp(String.raw`${createAbbrExp("5protocol")}\s+\S+`, "i");
+const BEGIN = createAbbrReg("3beginProblem");
+const END = createAbbrReg("3endProblem");
 const NEXT = /\bnext\s[\s\S]+$/i;
-const FORSYTH = createAbbrExp("forsyth");
-const PIECES = createAbbrExp("pieces");
+const FORSYTH = createAbbrExp("3forsyth");
+const PIECES = createAbbrExp("2pieces");
 
 function parseInput(text) {
 	text = text

@@ -91,7 +91,12 @@ describe("Popeye", function() {
 				expect(result[12]).to.equal("rnbqkbnr/pppp1p1p/8/4p1p1/1PQP4/8/P1PNPPPP/2KR1BNR");
 			});
 
-			it("Duplex castling", function() {
+			it("Duplex castling, abbreviation", function() {
+				/*
+				for 3bk2r/7p/8/4P3/8/B7/4K3/8
+				stip h#3
+				opti duplex
+				*/
 				const input1 = "stip h#3\nopti duplex";
 				const fen1 = "3bk2r/7p/8/4P3/8/B7/4K3/8";
 				const output1 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Bd8-f6 Ba3-b2   2.0-0 e5*f6   3.Kg8-h8 f6-f7 #<br><br>  1.Ke2-f3 Rh8-f8 +   2.Kf3-g4 Rf8-f4 +   3.Kg4-h5 Rf4-h4 #<br><br>solution finished. Time = 1.008 s<br><br><br>";
@@ -100,7 +105,12 @@ describe("Popeye", function() {
 				expect(result1.length).to.equal(14);
 				expect(result1[3]).to.equal("5rk1/7p/5b2/4P3/8/8/1B2K3/8");
 
-				const input2 = "stip h#3\nopti duplex";
+				/*
+				for 8/s7/8/1p6/3b4/4k3/S7/R3K3
+				sti h#3
+				op dup
+				*/
+				const input2 = "sti h#3\nop dup";
 				const fen2 = "8/s7/8/1p6/3b4/4k3/S7/R3K3";
 				const output2 = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Sa7-c8 Sa2-c3   2.Sc8-d6 Ra1-a3   3.Sd6-e4 Sc3-d5 #<br><br>  1.0-0-0 b5-b4   2.Kc1-b1 Sa7-b5   3.Rd1-c1 Sb5-a3 #<br><br>solution finished. Time = 1.140 s<br><br><br>";
 

@@ -89,13 +89,13 @@ export function parseSolution(input, initFEN, output, factory) {
 	return output.replace(/   <span init/g, "<span").replace(/\n/g, "<br>");
 }
 
-const STIP = new RegExp(String.raw`${createAbbrExp("stipulation")}\s+(\S*(?:\d|[^\d\s]\s+\d+(?:\.[05])?))`, "i");
+const STIP = new RegExp(String.raw`${createAbbrExp("3stipulation")}\s+(\S*(?:\d|[^\d\s]\s+\d+(?:\.[05])?))`, "i");
 
 /**
  * @param {string} input 
  */
 export function getStipulations(input) {
-	return input.split(/\btwin\b/i).map(sec => sec.match(STIP)?.[1].replace(/\s/g, ""));
+	return input.split(createAbbrReg("2twin", "\\b", "\\b")).map(sec => sec.match(STIP)?.[1].replace(/\s/g, ""));
 }
 
 /**
@@ -123,10 +123,10 @@ function addImitator(fen, imitators) {
 
 const IMITATOR = new RegExp(String.raw`\bimit\w*\s+(?:${SQ})+`, "ig");
 
-const Commands = ["condition", "option", "stipulation", "sstipulation", "forsyth", "pieces", "twin"];
+const Commands = ["condition", "2option", "3stipulation", "2sstipulation", "3forsyth", "2pieces", "2twin"];
 const COMMANDS = new RegExp(Commands.map(createAbbrExp).join("|"), "ig");
-const DUPLEX = createAbbrReg("duplex");
-const HALF_DUPLEX = createAbbrReg("halfDuplex");
+const DUPLEX = createAbbrReg("3duplex");
+const HALF_DUPLEX = createAbbrReg("3halfDuplex");
 
 /**
  * @param {string} input 
@@ -136,8 +136,8 @@ function parseInput(input) {
 		.replace(/\n/g, " ")
 		.replace(COMMANDS, "\n$&")
 		.split("\n");
-	const options = commands.filter(c => c.match(/^opti/i)).join(" ");
-	const conditions = commands.filter(c => c.match(/^cond/i)).join(" ");
+	const options = commands.filter(c => c.match(createAbbrReg("2option", "^"))).join(" ");
+	const conditions = commands.filter(c => c.match(createAbbrExp("condition", "^"))).join(" ");
 	return {
 		imitators: conditions.match(IMITATOR)?.join(" ").match(new RegExp(SQ, "g")),
 		duplex: DUPLEX.test(options),

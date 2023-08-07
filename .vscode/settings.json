@@ -1,7 +1,7 @@
 {
-	"files.exclude": {
-		"**/node_modules": true
-	},
+	"cSpell.ignorePaths": [
+		"keywords.md"
+	],
 	"cSpell.words": [
 		"fontawesome",
 		"janko",
@@ -19,5 +19,8 @@
 		"unpromote",
 		"YACPDB"
 	],
+	"files.exclude": {
+		"**/node_modules": true
+	},
 	"npm.packageManager": "pnpm"
 }
