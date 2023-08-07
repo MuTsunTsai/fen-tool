@@ -55,7 +55,7 @@ export function processStep(text, problem, state, factory) {
 	if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() });
 
 	// Imitator animation
-	if(oldImitators) {
+	if(oldImitators && animation) {
 		for(let i = 0; i < animation.length; i++) {
 			const [from, to] = animation[i].match(/[a-z]\d/g).map(c => parseXY(c));
 			const dx = to.x - from.x, dy = to.y - from.y;
