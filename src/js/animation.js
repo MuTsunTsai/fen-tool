@@ -2,6 +2,7 @@ import { getAsset } from "./asset";
 import { drawBoard, drawPiece } from "./draw";
 import { dpr } from "./layout";
 import { parseFEN, parseSquare, parseXY } from "./meta/fen.mjs";
+import { getDimensions } from "./meta/option";
 import { ctx } from "./render";
 import { setFEN } from "./squares";
 import { store } from "./store";
@@ -89,6 +90,9 @@ class Animation {
 		}
 
 		// Draw moving pieces
+		const dim = getDimensions(options);
+		ctx.save();
+		ctx.translate(dim.offset.x, dim.offset.y);
 		const assets = getAsset(options, dpr);
 		let offset = delta - Math.floor(delta);
 		if(this.reverse) offset = 1 - offset;
@@ -97,6 +101,8 @@ class Animation {
 			const y = move.from.y * (1 - offset) + move.to.y * offset;
 			drawPiece(ctx, assets, y, x, move.p, options, dpr);
 		}
+		ctx.restore();
+
 		this.request = requestAnimationFrame(this.callback);
 	}
 }
