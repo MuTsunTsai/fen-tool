@@ -86,7 +86,7 @@ export function parseSolution(input, initFEN, output, factory) {
 			return text;
 		}
 	});
-	return output.replace(/   <span init/g, "<span").replace(/\n/g, "<br>");
+	return output.replace(/   ?<span init/g, "<span").replace(/\n/g, "<br>");
 }
 
 const STIP = new RegExp(String.raw`${createAbbrExp("3stipulation")}\s+(\S*(?:\d|[^\d\s]\s+\d+(?:\.[05])?))`, "i");
@@ -160,12 +160,15 @@ function getDuplexSeparator(output) {
 	return "\n".repeat(Math.max(...counts));
 }
 
-function makeStep(text, fen) {
+function makeStep(text, fen, animation) {
 	const init = text == "*" ? "init " : "";
 	fen = fen
 		.replace(/-/g, "&#45;") 	// To prevent being processed again
 		.replace(/"/g, "&#34;");	// Just to be safe
-	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
+
+	let anime = "";
+	if(animation && animation.length) anime=` data-anime="${animation.join(",")}"`;
+	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}"${anime}>${text}</span>`
 }
 
 const FEN_TOKEN = /[-+=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;

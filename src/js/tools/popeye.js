@@ -7,11 +7,12 @@ import { drawTemplate, load } from "../render";
 import { makeForsyth, toSquare } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
 import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base.mjs";
+import { animate } from "../animation";
 
 // Session
 state.popeye.running = false; // Do not restore this state
 state.popeye.editMap = false;
-if(state.popeye.playing) nextTick(() => setupStepElements(true));
+if(state.popeye.playing) load().then(() => nextTick(() => setupStepElements(true)));
 
 let path = "modules/py.js";
 let worker;
@@ -159,17 +160,24 @@ async function setupStepElements(restore) {
 	nextTick(resize);
 }
 
-function goTo(index, init) {
+async function goTo(index, init) {
 	const p = state.popeye;
-	setFEN(p.steps[index].dataset.fen);
-	if(!init) p.steps[p.index].classList.remove("active");
+	const newStep = p.steps[index];
+	const oldStep = p.steps[p.index];
+	if(index == p.index + 1 && newStep.dataset.anime) {
+		await animate(oldStep.dataset.fen, newStep.dataset.fen, newStep.dataset.anime);
+	} else if(index == p.index - 1 && oldStep.dataset.anime) {
+		await animate(newStep.dataset.fen, oldStep.dataset.fen, oldStep.dataset.anime, true);
+	} else {
+		setFEN(newStep.dataset.fen);
+	}
+	if(!init) oldStep.classList.remove("active");
 	p.index = index;
-	const step = p.steps[index];
-	step.classList.add("active");
+	newStep.classList.add("active");
 
 	// This needs to be execute on next tick,
 	// as the rendering could change the scroll dimension temporarily
-	nextTick(() => scrollTo(step));
+	nextTick(() => scrollTo(newStep));
 }
 
 function scrollTo(step) {

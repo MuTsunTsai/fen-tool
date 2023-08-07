@@ -21,7 +21,8 @@ export function setPiece(board, sq, piece, color) {
 	board[parseSquare(sq)] = piece;
 }
 
-export function movePiece(board, from, to) {
+export function movePiece(board, from, to, animation) {
+	if(animation) animation.push(from + to);
 	from = parseSquare(from);
 	to = parseSquare(to);
 	board[to] = board[from];

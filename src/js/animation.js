@@ -33,12 +33,13 @@ class Animation {
 		const h = store.board.h;
 		for(const stage of stages) {
 			const moves = [];
-			const squares = stage.match(/[a-z]\d/g);
+			const squares = stage.match(/[a-z]\d(=(\*\d)?[A-Z])?/g);
 			for(let i = 0; i < squares.length; i += 2) {
 				let from = squares[i], to = squares[i + 1];
 				const sq = parseSquare(from);
 				const move = {
 					p: board[sq],
+					promo: to.match(/=(.+)$/)?.[1],
 					from: parseXY(from),
 					to: parseXY(to),
 				};
@@ -50,7 +51,7 @@ class Animation {
 				moves,
 			});
 			for(const move of moves) {
-				board[move.to.y * h + move.to.x] = move.p;
+				board[move.to.y * h + move.to.x] = move.promo || move.p;
 			}
 		}
 

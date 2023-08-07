@@ -68,7 +68,12 @@ describe("Popeye", function() {
 			})
 
 			it("En passant", function() {
-				const input = "stip #2";
+				/*
+				fors 3S1s2/K2b1Rs1/1Q6/p2k1q2/2p1pP2/2r1r3/3P4/3S4
+				stip #2
+				opti vari
+				*/
+				const input = "stip #2\nopti vari";
 				const fen = "3S1s2/K2b1Rs1/1Q6/p2k1q2/2p1pP2/2r1r3/3P4/3S4";
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>   1.d2-d4 ! threat:<br>          2.Qb6-c5 #<br>      1...c4*d3 ep.<br>          2.Sd1*e3 #<br>      1...e4*d3 ep.<br>          2.Sd1*c3 #<br>      1...Sg7-e6<br>          2.Rf7*f5 #<br>      1...Sf8-e6<br>          2.Rf7*d7 #<br><br><br>solution finished. Time = 0.060 s<br><br><br>";
 
@@ -79,6 +84,10 @@ describe("Popeye", function() {
 			});
 
 			it("Proof games", function() {
+				/*
+				fors rsbqkbsr/pppp1p1p/8/4p1p1/1PQP4/8/P1PSPPPP/2KR1BSR
+				stip dia6.0
+				*/
 				const input = "stip dia6.0";
 				const fen = "rsbqkbsr/pppp1p1p/8/4p1p1/1PQP4/8/P1PSPPPP/2KR1BSR";
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.d2-d4 e7-e5   2.Qd1-d3 Bf8-a3   3.b2-b4 Ba3*c1   4.Qd3-c4 Bc1-h6   5.Sb1-d2 g7-g5   6.0-0-0 Bh6-f8 dia<br><br>solution finished. Time = 0.199 s<br><br><br>";
@@ -228,8 +237,13 @@ describe("Popeye", function() {
 			});
 
 			it("Take&Make, Circe", function() {
+				/*
+				fors 8/8/8/8/8/1SK5/8/7k
+				stip ser-h=8
+				cond Take&Make Circe
+				*/
 				const input = "stip ser-h=8\ncond Take&Make Circe";
-				const fen = "8/8/8/8/8/1NK5/8/7k";
+				const fen = "8/8/8/8/8/1SK5/8/7k";
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Kh1-g2   2.Kg2-f3   3.Kf3-e4   4.Ke4-d5   5.Kd5-c6   6.Kc6-b5   7.Kb5-a4   8.Ka4*b3-a1[+wSb1] Kc3-b3 =<br><br>solution finished. Time = 0.092 s<br><br><br>";
 
 				const result = parse(input, fen, output);
@@ -239,6 +253,12 @@ describe("Popeye", function() {
 			});
 
 			it("CouscousCirce, Isardam", function() {
+				/*
+				fors 8/3b2p1/1p6/1pb2s2/R2kr3/pP6/Ks5p/6B1
+				stip h#2
+				cond CouscousCirce Isardam
+				twin move g7 g4
+				*/
 				const input = "stip h#2\ncond CouscousCirce Isardam\ntwin move g7 g4";
 				const fen = "8/3b2p1/1p6/1pb2s2/R2kr3/pP6/Ks5p/6B1";
 				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>a) <br><br>  1.h2*g1=Q[+wBd8] Ra4-c4   2.Bc5-f8 Bd8*b6[+bPc1=Q] #<br><br>b) bPg7--&gt;g4  <br><br>  1.Sb2*a4[+wRg8] Bg1-e3   2.Re4-e7 Rg8*g4[+bPh1=S] #<br><br>solution finished. Time = 2.097 s<br><br><br>";
