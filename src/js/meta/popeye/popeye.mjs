@@ -6,6 +6,7 @@ import { processStep } from "./step.mjs";
 import { makeTwin } from "./twin.mjs";
 
 const TWIN = new RegExp(Twin);
+const TOKEN = new RegExp(String.raw`\n\n+|(?:${Twin})|(?:${Step})`, "g");
 
 export function formatSolution(input, initFEN, output) {
 	return parseSolution(input, initFEN, output, makeStep);
@@ -40,16 +41,20 @@ export function parseSolution(input, initFEN, output, factory) {
 	output = output.replace(/<br>/g, "\n");
 
 	const duplexSeparator = options.duplex ? getDuplexSeparator(output) : "";
-	const duplexSeparatorReg = duplexSeparator ? duplexSeparator.replace(/\n/g, "\\n") + "|" : "";
-	const TOKEN = new RegExp(duplexSeparatorReg + `(?:${Twin})|(?:${Step})`, "g");
 
 	// Main replacement
 	let solutionPrinted = false;
 	output = output.replace(TOKEN, text => {
 		if(error) return text;
 		try {
-			if(text == duplexSeparator) {
-				if(solutionPrinted) {
+			if(text.match(/^\n+$/)) {
+				// Reset stack
+				state.stack.length = 0;
+				const initPosition = currentProblem.pg ? INIT_FORSYTH : currentProblem.fen;
+				state.board = parseFEN(initPosition);
+
+				// 
+				if(text == duplexSeparator && solutionPrinted) {
 					state.ordering = flipOrdering(state.ordering);
 				}
 				return text;

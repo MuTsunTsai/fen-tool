@@ -411,6 +411,24 @@ describe("Popeye", function() {
 				expect(result[13]).to.equal("k*1q6/8/1K6/8/8/8/8/8");
 			});
 
+			it("AntiMarsCirce", function() {
+				/*
+				fors 1S1S4/5R2/8/2k2P2/8/4Rp1b/8/K2s4
+				stip #2
+				opt set var try
+				cond antimarscirce
+				*/
+				const input = "stip #2\nopt set var try\ncond antimarscirce";
+				const fen = "1S1S4/5R2/8/2k2P2/8/4Rp1b/8/K2s4";
+				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>      1...Bh3*f5<br>          2.Rf7*f5 #<br>      1...Bh3-c8-a6<br>          2.Sb8*a6 #<br>      1...Bh3-c8-b7<br>          2.Sd8*b7 #<br>      1...Bh3-c8-e6<br>          2.Sd8*e6 #<br>      1...Bh3-c8-d7<br>          2.Sb8*d7 #<br><br>   1.Ka1-e1-d2 ? threat:<br>          2.Re3-a1-a5 #<br>          2.Re3-a1-c1 #<br>    but<br>      1...Sd1*e3 !<br><br>   1.Re3*f3 ! zugzwang.<br>      1...Sd1-g8-e7<br>          2.Rf3-h1-c1 #<br>      1...Sd1-g8-f6<br>          2.Rf3-h1-c1 #<br>      1...Sd1-g8-h6<br>          2.Rf3-h1-c1 #<br>      1...Bh3*f5<br>          2.Rf3*f5 #<br>      1...Bh3-c8-a6<br>          2.Sb8*a6 #<br>      1...Bh3-c8-b7<br>          2.Sd8*b7 #<br>      1...Bh3-c8-e6<br>          2.Sd8*e6 #<br>      1...Bh3-c8-d7<br>          2.Sb8*d7 #<br><br><br>solution finished. Time = 0.076 s<br><br><br>";
+
+				const result = parse(input, fen, output);
+				expect(result.length).to.equal(38);
+
+				expect(result[15]).to.equal("1N1N4/5R2/8/2k2P2/8/4Rp1b/8/K2n4");
+				expect(result[16]).to.equal("1N1N4/5R2/8/2k2P2/8/4Rp1b/3K4/3n4");
+			})
+
 		});
 
 	});
