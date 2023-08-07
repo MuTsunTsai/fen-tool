@@ -7,7 +7,7 @@ import { drawTemplate, load } from "../render";
 import { makeForsyth, toSquare } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
 import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base.mjs";
-import { animate } from "../animation";
+import { animate, stopAnimation } from "../animation";
 
 // Session
 state.popeye.running = false; // Do not restore this state
@@ -171,6 +171,7 @@ async function goTo(index, init) {
 		if(newStep.dataset.anime && before) {
 			await animate(before, newStep.dataset.fen, newStep.dataset.anime);
 		} else {
+			stopAnimation();
 			setFEN(newStep.dataset.fen);
 		}
 	}

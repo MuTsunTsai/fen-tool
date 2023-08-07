@@ -1,4 +1,4 @@
-import { animate } from "../animation";
+import { animate, stopAnimation } from "../animation";
 import { readText } from "../copy";
 import { types } from "../draw";
 import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen.mjs";
@@ -207,7 +207,10 @@ export const PLAY = {
 	},
 	goto(h, skipSet) {
 		const fen = chess.goto(h);
-		if(!skipSet) setFEN(fen);
+		if(!skipSet) {
+			stopAnimation();
+			setFEN(fen);
+		}
 		if(state.play.mode == RETRO) {
 			resetRetro();
 			drawRetroTemplate();

@@ -13,9 +13,13 @@ const speed = 150;
 let animation;
 
 export function animate(before, after, instruction, reverse) {
-	if(animation) animation.stop();
+	stopAnimation();
 	animation = new Animation(before, after, instruction, reverse);
 	return animation.promise;
+}
+
+export function stopAnimation() {
+	if(animation) animation.stop();
 }
 
 class Animation {
