@@ -10,14 +10,14 @@ export function processStep(text, problem, state, factory) {
 	const match = text.match(STEP);
 	const count = match.groups.count;
 	const initPosition = problem.pg ? INIT_FORSYTH : problem.fen;
-	let retract = false;
+	let before = null;
 	if(count) {
 		const index = stack.findIndex(s => s.move == count || parseInt(s.move) > parseInt(count));
 		if(index >= 0) {
 			// Retract
-			const fen = index > 0 ? stack[index - 1].fen : initPosition;
+			before = index > 0 ? stack[index - 1].fen : initPosition;
 			retract = true;
-			state.board = parseFEN(fen);
+			state.board = parseFEN(before);
 			if(state.imitators) {
 				state.imitators = (index > 0 ? stack[index - 1].imitators : problem.imitators).concat();
 			}
@@ -34,10 +34,8 @@ export function processStep(text, problem, state, factory) {
 		imitators.length = 0;
 	}
 
-	// For simplicity, we disable animation when retracting play
-	const animation = retract && stack.length > 0 ? null : [];
-
 	// Make main moves; could have more than one (e.g. Rokagogo)
+	const animation = [];
 	const moves = match.groups.main.split("/");
 	for(let move of moves) {
 		const m = move.match(MAIN);
@@ -55,7 +53,7 @@ export function processStep(text, problem, state, factory) {
 	if(count) stack.push({ move: count, color, fen, imitators: imitators?.concat() });
 
 	// Imitator animation
-	if(oldImitators && animation) {
+	if(oldImitators) {
 		for(let i = 0; i < animation.length; i++) {
 			const [from, to] = animation[i].match(/[a-z]\d/g).map(c => parseXY(c));
 			const dx = to.x - from.x, dy = to.y - from.y;
@@ -66,7 +64,7 @@ export function processStep(text, problem, state, factory) {
 		}
 	}
 
-	return (stack.length == 1 && count ? factory("*", initPosition) + " " : "") + factory(text, fen, animation);
+	return (stack.length == 1 && count ? factory("*", initPosition) + " " : "") + factory(text, fen, animation, before);
 }
 
 function makeMove(board, color, g, imitators, animation) {

@@ -164,12 +164,15 @@ async function goTo(index, init) {
 	const p = state.popeye;
 	const newStep = p.steps[index];
 	const oldStep = p.steps[p.index];
-	if(index == p.index + 1 && newStep.dataset.anime) {
-		await animate(oldStep.dataset.fen, newStep.dataset.fen, newStep.dataset.anime);
-	} else if(index == p.index - 1 && oldStep.dataset.anime) {
+	if(oldStep.dataset.anime && (index == p.index - 1 && !oldStep.dataset.before || newStep.dataset.fen == oldStep.dataset.before)) {
 		await animate(newStep.dataset.fen, oldStep.dataset.fen, oldStep.dataset.anime, true);
 	} else {
-		setFEN(newStep.dataset.fen);
+		const before = newStep.dataset.before || p.steps[index - 1]?.dataset.fen;
+		if(newStep.dataset.anime && before) {
+			await animate(before, newStep.dataset.fen, newStep.dataset.anime);
+		} else {
+			setFEN(newStep.dataset.fen);
+		}
 	}
 	if(!init) oldStep.classList.remove("active");
 	p.index = index;

@@ -160,15 +160,16 @@ function getDuplexSeparator(output) {
 	return "\n".repeat(Math.max(...counts));
 }
 
-function makeStep(text, fen, animation) {
+function makeStep(text, fen, animation, before) {
 	const init = text == "*" ? "init " : "";
 	fen = fen
 		.replace(/-/g, "&#45;") 	// To prevent being processed again
 		.replace(/"/g, "&#34;");	// Just to be safe
 
-	let anime = "";
-	if(animation && animation.length) anime=` data-anime="${animation.join(",")}"`;
-	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}"${anime}>${text}</span>`
+	let extra = "";
+	if(animation && animation.length) extra += ` data-anime="${animation.join(",")}"`;
+	if(before) extra += ` data-before="${before}"`;
+	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}"${extra}>${text}</span>`
 }
 
 const FEN_TOKEN = /[-+=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;

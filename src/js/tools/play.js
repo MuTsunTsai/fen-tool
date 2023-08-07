@@ -34,21 +34,24 @@ const wrMask = bMask.concat(15, 16, 18);
 const brMask = wMask.concat(15, 16, 19);
 
 export function moveHistory(v) {
-	const p = state.play, m = p.moveNumber;
-	let n = m;
+	const p = state.play;
+	let n = p.moveNumber;
 	n += v;
 	if(n < -1) n = -1;
 	if(n > p.history.length - 1) n = p.history.length - 1;
-	if(n != m) {
-		const back = n == m - 1
-		const animation = n == m + 1 || back;
-		PLAY.goto(p.history[n], animation);
-		if(animation) {
-			const move = p.history[back ? m : n];
-			let act = move.from + move.to;
-			if(move.flags == "k" || move.flags == "q") act += "," + castlingRookMove(move);
-			animate(move.before, move.after, act, back != (state.play.mode == RETRO));
-		}
+	if(n != p.moveNumber) goto(n);
+}
+
+function goto(n) {
+	const p = state.play;
+	const m = p.moveNumber;
+	PLAY.goto(p.history[n], n >= 0);
+	if(n >= 0) {
+		const back = n == m - 1;
+		const move = p.history[back ? m : n];
+		let act = move.from + move.to;
+		if(move.flags == "k" || move.flags == "q") act += "," + castlingRookMove(move);
+		animate(move.before, move.after, act, back != (state.play.mode == RETRO));
 	}
 }
 
@@ -212,7 +215,7 @@ export const PLAY = {
 	},
 	move(n) {
 		const p = state.play;
-		if(n != p.moveNumber) PLAY.goto(p.history[n]);
+		if(n != p.moveNumber) goto(n);
 	},
 	moveBy(v) {
 		moveHistory(v);
