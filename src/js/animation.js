@@ -8,11 +8,13 @@ import { store } from "./store";
 
 const speed = 150;
 
-let request;
+/** @type {Animation} */
+let animation;
 
 export function animate(before, after, instruction, reverse) {
-	if(request) cancelAnimationFrame(request);
-	new Animation(before, after, instruction, reverse);
+	if(animation) animation.stop();
+	animation = new Animation(before, after, instruction, reverse);
+	return animation.promise;
 }
 
 class Animation {
@@ -20,6 +22,9 @@ class Animation {
 	constructor(before, after, instruction, reverse) {
 		this.after = reverse ? before : after;
 		this.reverse = reverse;
+
+		/** @type {Promise<void>} */
+		this.promise = new Promise(resolve => this.resolve = resolve);
 
 		this.cursor = -1;
 		this.stages = [];
@@ -51,7 +56,13 @@ class Animation {
 
 		this.background = undefined;
 		this.callback = this.step.bind(this);
-		request = requestAnimationFrame(this.callback);
+		this.request = requestAnimationFrame(this.callback);
+	}
+
+	stop() {
+		cancelAnimationFrame(this.request);
+		animation = undefined;
+		this.resolve();
 	}
 
 	step(timestamp) {
@@ -62,7 +73,7 @@ class Animation {
 
 		if(cursor >= this.stages.length) {
 			setFEN(this.after);
-			request = undefined;
+			this.stop();
 			return;
 		}
 
@@ -85,6 +96,6 @@ class Animation {
 			const y = move.from.y * (1 - offset) + move.to.y * offset;
 			drawPiece(ctx, assets, y, x, move.p, options, dpr);
 		}
-		request = requestAnimationFrame(this.callback);
+		this.request = requestAnimationFrame(this.callback);
 	}
 }

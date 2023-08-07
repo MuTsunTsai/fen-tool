@@ -1,7 +1,8 @@
+import { animate } from "../animation";
 import { readText } from "../copy";
 import { types } from "../draw";
 import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen.mjs";
-import { drawTemplate } from "../render";
+import { drawTemplate, load } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly, resetEdwards } from "../squares";
 import { state, store } from "../store";
 
@@ -9,7 +10,7 @@ import { state, store } from "../store";
 if(state.play.playing) {
 	const p = state.play;
 	p.playing = false;
-	loadModule().then(() => {
+	Promise.all([load(), loadModule()]).then(() => {
 		p.playing = true;
 		PLAY.goto(p.history[p.moveNumber]);
 	});
@@ -33,12 +34,22 @@ const wrMask = bMask.concat(15, 16, 18);
 const brMask = wMask.concat(15, 16, 19);
 
 export function moveHistory(v) {
-	const p = state.play;
-	let n = p.moveNumber;
+	const p = state.play, m = p.moveNumber;
+	let n = m;
 	n += v;
-	if(n < -1) n == -1;
+	if(n < -1) n = -1;
 	if(n > p.history.length - 1) n = p.history.length - 1;
-	if(n != p.moveNumber) PLAY.goto(p.history[n]);
+	if(n != m) {
+		const back = n == m - 1
+		const animation = n == m + 1 || back;
+		PLAY.goto(p.history[n], animation);
+		if(animation) {
+			const move = p.history[back ? m : n];
+			let act = move.from + move.to;
+			if(move.flags == "k" || move.flags == "q") act += "," + castlingRookMove(move);
+			animate(move.before, move.after, act, back != (state.play.mode == RETRO));
+		}
+	}
 }
 
 export function move(from, to, promotion) {
@@ -62,15 +73,20 @@ export function move(from, to, promotion) {
 function generateCastlingAnimation(move) {
 	const board = parseFEN(move.before);
 	const isWhite = move.color == "w";
-	const isKing = move.flags == "k";
 	board[parseSquare(move.from)] = "";
 	board[parseSquare(move.to)] = isWhite ? "K" : "k";
-	const r = isWhite ? 1 : 8, f = isKing ? "h" : "a", t = isKing ? "f" : "d";
 	return {
 		before: makeForsyth(board),
 		after: move.after,
-		move: f + r + t + r,
+		move: castlingRookMove(move),
 	};
+}
+
+function castlingRookMove(move) {
+	const isWhite = move.color == "w";
+	const isKing = move.flags == "k";
+	const r = isWhite ? 1 : 8, f = isKing ? "h" : "a", t = isKing ? "f" : "d";
+	return f + r + t + r;
 }
 
 export function sync() {
@@ -186,8 +202,9 @@ export const PLAY = {
 		toggleReadOnly(false);
 		drawTemplate([]);
 	},
-	goto(h) {
-		setFEN(chess.goto(h));
+	goto(h, skipSet) {
+		const fen = chess.goto(h);
+		if(!skipSet) setFEN(fen);
 		if(state.play.mode == RETRO) {
 			resetRetro();
 			drawRetroTemplate();
