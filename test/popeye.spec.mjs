@@ -427,6 +427,25 @@ describe("Popeye", function() {
 
 				expect(result[15]).to.equal("1N1N4/5R2/8/2k2P2/8/4Rp1b/8/K2n4");
 				expect(result[16]).to.equal("1N1N4/5R2/8/2k2P2/8/4Rp1b/3K4/3n4");
+			});
+
+			it("MarsCirce", function() {
+				/*
+				fors 3Q4/4R3/8/K7/1b6/ks6/1r6/SR6
+				stip h#2
+				cond marscirce 
+				*/
+				const input = "stip h#2\ncond marscirce";
+				const fen = "3Q4/4R3/8/K7/1b6/ks6/1r6/SR6";
+				const output = "Popeye wasm-32Bit v4.87 (512 MB)<br><br>  1.Rb2-h8*d8 Rb1-b2   2.Sb3-g8*e7 Sa1-b3 #<br>  1.Sb3-g8*e7 Sa1-b3   2.Rb2-h8*d8 Rb1-b2 #<br><br>solution finished. Time = 1.658 s<br><br><br>";
+
+				const result = parse(input, fen, output);
+				expect(result.length).to.equal(10);
+
+				expect(result[1]).to.equal("3r4/4R3/8/K7/1b6/kn6/8/NR6");
+				expect(result[3]).to.equal("3r4/4n3/8/K7/1b6/k7/1R6/N7");
+				expect(result[6]).to.equal("3Q4/4n3/8/K7/1b6/k7/1r6/NR6");
+				expect(result[8]).to.equal("3r4/4n3/8/K7/1b6/kN6/8/1R6");
 			})
 
 		});

@@ -36,8 +36,6 @@ export function parseSolution(input, initFEN, output, factory) {
 	};
 	let error = false;
 
-	console.log(initFEN, init);
-
 	output = output.replace(/<br>/g, "\n");
 
 	const duplexSeparator = options.duplex ? getDuplexSeparator(output) : "";
@@ -170,13 +168,13 @@ function makeStep(text, fen) {
 	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}">${text}</span>`
 }
 
-const FEN_TOKEN = /[+\-=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;
+const FEN_TOKEN = /[-+=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;
 
 export function toNormalFEN(fen) {
 	const arr = fen.match(FEN_TOKEN);
 	return arr.map(t => {
 		if(t == "/" || t.match(/^\d+$/)) return t;
-		const prefix = t.match(/^[+\-=]/) ? t[0] : null;
+		const prefix = t.match(/^[-+=]/) ? t[0] : null;
 		if(prefix) t = t.substring(1);
 		if(t.startsWith(".")) t = t.substring(1);
 		t = toNormalPiece(t);

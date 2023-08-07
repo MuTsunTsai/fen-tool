@@ -60,7 +60,7 @@ function makeMove(board, color, g, imitators) {
 	} else {
 		p = movePiece(board, g.from, to = g.to);
 		if(g.ep) setPiece(board, getEpSquare(g.to), ""); // en passant
-		if(g.then) movePiece(board, g.to, to = g.then); // Take&Make
+		if(g.then) movePiece(board, g.to, to = g.then); // Take&Make, (Anti)MarsCirce
 	}
 	if(g.p == "I") {
 		imitators.push(to);
