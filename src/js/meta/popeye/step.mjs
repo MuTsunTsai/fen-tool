@@ -16,7 +16,6 @@ export function processStep(text, problem, state, factory) {
 		if(index >= 0) {
 			// Retract
 			before = index > 0 ? stack[index - 1].fen : initPosition;
-			retract = true;
 			state.board = parseFEN(before);
 			if(state.imitators) {
 				state.imitators = (index > 0 ? stack[index - 1].imitators : problem.imitators).concat();
