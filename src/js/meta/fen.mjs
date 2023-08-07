@@ -150,8 +150,8 @@ export function toSquare(i, j) {
 	return String.fromCharCode(97 + j) + (8 - i);
 }
 
-export function parseXY(sq) {
-	return { x: sq.charCodeAt(0) - 97, y: 8 - Number(sq[1]) };
+export function parseXY(sq, h = 8) {
+	return { x: sq.charCodeAt(0) - 97, y: h - Number(sq[1]) };
 }
 
 export function parseSquare(sq) {

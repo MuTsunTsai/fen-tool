@@ -6,6 +6,7 @@ import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroCli
 import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
 import { env } from "./meta/env";
+import { animate } from "./animation";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0;
 let ghost, draggingValue, fromIndex;
@@ -63,11 +64,13 @@ function mouseup(event) {
 	ghost.style.display = "none";
 	const inBoard = y > -1 && y < h && x > -1 && x < w;
 	if(state.play.playing) {
+		let result;
 		if(inBoard) {
 			if(checkPromotion(fromIndex, index)) return setSquare(squares[index], draggingValue);
-			else if(fromIndex != index) move(fromIndex, index);
+			else if(fromIndex != index) result = move(fromIndex, index);
 		}
-		sync();
+		if(typeof result == "object") animate(result.before, result.after, result.move);
+		else sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
 		if(path && path.length > 10) { // Touch rotation

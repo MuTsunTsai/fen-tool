@@ -23,7 +23,7 @@ let shouldScroll = false;
 
 const el = document.getElementById("Output");
 
-function animate() {
+function spinner() {
 	suffix += ".";
 	if(suffix.length == 5) suffix = ".";
 	state.popeye.output = state.popeye.intOutput + "<br>" + suffix;
@@ -89,7 +89,7 @@ function start() {
 	p.intOutput = "";
 	p.error = false;
 	p.running = true;
-	interval = setInterval(animate, 500);
+	interval = setInterval(spinner, 500);
 	startTime = performance.now();
 	worker.postMessage("Opti NoBoard\n" + p.intInput); // NoBoard is used in any case
 }
@@ -152,18 +152,19 @@ async function setupStepElements(restore) {
 	const p = state.popeye;
 	p.steps = [...el.querySelectorAll("span")];
 	if(p.steps.length == 0) return;
-	goTo(p.steps[0], true);
+	goTo(0, true);
 	p.playing = true;
 	if(restore) await load();
 	drawTemplate([]);
 	nextTick(resize);
 }
 
-function goTo(step, init) {
-	setFEN(step.dataset.fen);
+function goTo(index, init) {
 	const p = state.popeye;
+	setFEN(p.steps[index].dataset.fen);
 	if(!init) p.steps[p.index].classList.remove("active");
-	p.index = p.steps.indexOf(step);
+	p.index = index;
+	const step = p.steps[index];
 	step.classList.add("active");
 
 	// This needs to be execute on next tick,
@@ -207,10 +208,10 @@ export const Popeye = {
 		nextTick(setupStepElements);
 	},
 	step(e) {
-		const step = e.target;
-		if(step.dataset.fen) {
+		const index = state.popeye.steps.indexOf(e.target);
+		if(index >= 0) {
 			e.preventDefault();
-			goTo(step);
+			goTo(index);
 		}
 	},
 	exit() {
@@ -229,10 +230,7 @@ export const Popeye = {
 		Popeye.move(n);
 	},
 	move(n) {
-		const p = state.popeye;
-		if(n == p.index) return;
-		const step = p.steps[n];
-		goTo(step);
+		if(n != state.popeye.index) goTo(n);
 	},
 	editMap() {
 		gtag("event", "fen_popeye_edit_map");

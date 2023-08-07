@@ -140,6 +140,9 @@ export class Chess extends ChessBase {
 		return true;
 	}
 
+	/**
+	 * Make a move and return the move object.
+	 */
 	move(arg) {
 		const state = store.state;
 		const fen = this.fen();
@@ -160,11 +163,11 @@ export class Chess extends ChessBase {
 			state.over = this.overState();
 			state.history.push(move);
 			state.moveNumber++;
-			return true;
+			return move;
 		} catch {
 			state.history = cache;
 			this.load(fen);
-			return false;
+			return null;
 		}
 	}
 

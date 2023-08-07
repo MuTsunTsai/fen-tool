@@ -66,7 +66,7 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
 /**
  * The core drawing method.
  */
-function drawPiece(ctx, assets, i, j, value, options, dpr) {
+export function drawPiece(ctx, assets, i, j, value, options, dpr) {
 	if(value === undefined) value = "";
 	const { size } = options;
 	const neutral = value && value.startsWith("-");

@@ -23,7 +23,7 @@ export async function load() {
 	status.loading = false;
 }
 
-const ctx = CN.getContext("2d");
+export const ctx = CN.getContext("2d");
 const gCtx = CG.getContext("2d");
 const tCtx = TP.getContext("2d");
 const tgCtx = TPG.getContext("2d");

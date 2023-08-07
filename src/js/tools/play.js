@@ -1,9 +1,9 @@
 import { readText } from "../copy";
 import { types } from "../draw";
-import { toSquare } from "../meta/fen.mjs";
+import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen.mjs";
 import { drawTemplate } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly, resetEdwards } from "../squares";
-import { state, store } from "../store"
+import { state, store } from "../store";
 
 // Restore playing session
 if(state.play.playing) {
@@ -15,8 +15,13 @@ if(state.play.playing) {
 	});
 }
 
+/** @type {import("../modules/chess.mjs")} */
 let module;
+
+/** @type {import("../modules/chess.mjs").Chess} */
 let chess;
+
+/** @type {number} */
 let pendingTarget;
 
 const NORMAL = "normal", PASS = "pass", RETRO = "retro";
@@ -47,8 +52,25 @@ export function move(from, to, promotion) {
 		}
 		return result;
 	} else {
-		return chess.move({ from, to, promotion });
+		const move = chess.move({ from, to, promotion });
+		if(!move) return false;
+		if(move.flags == "k" || move.flags == "q") return generateCastlingAnimation(move);
+		return true;
 	}
+}
+
+function generateCastlingAnimation(move) {
+	const board = parseFEN(move.before);
+	const isWhite = move.color == "w";
+	const isKing = move.flags == "k";
+	board[parseSquare(move.from)] = "";
+	board[parseSquare(move.to)] = isWhite ? "K" : "k";
+	const r = isWhite ? 1 : 8, f = isKing ? "h" : "a", t = isKing ? "f" : "d";
+	return {
+		before: makeForsyth(board),
+		after: move.after,
+		move: f + r + t + r,
+	};
 }
 
 export function sync() {
