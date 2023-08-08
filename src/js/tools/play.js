@@ -45,8 +45,9 @@ export function moveHistory(v) {
 function goto(n) {
 	const p = state.play;
 	const m = p.moveNumber;
-	PLAY.goto(p.history[n], n >= 0);
-	if(n >= 0) {
+	const shouldAnimate = n >= 0 || m == 0;
+	PLAY.goto(p.history[n], shouldAnimate);
+	if(shouldAnimate) {
 		const back = n == m - 1;
 		const move = p.history[back ? m : n];
 		let act = move.from + move.to;
