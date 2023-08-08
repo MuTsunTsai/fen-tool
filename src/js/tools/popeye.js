@@ -221,7 +221,7 @@ export const Popeye = {
 	},
 	step(e) {
 		const index = state.popeye.steps.indexOf(e.target);
-		if(index >= 0) {
+		if(index >= 0 && index != state.popeye.index) {
 			e.preventDefault();
 			goTo(index);
 		}
