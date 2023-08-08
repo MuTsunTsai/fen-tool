@@ -1,4 +1,4 @@
-<!-- This is a list of known keywords in Popeye 4.87 -->
+# Keywords in Popeye 4.87
 
 actuatedrevolvingboard
 actuatedrevolvingcentre
@@ -219,3 +219,22 @@ whitevaultingking
 woozles
 wormholes
 writegrid
+
+## Keywords after pieces
+
+1Black
+1Chameleon
+2FrischAuf
+2Functionary
+2HalfNeutral
+2HurdleColourChanging
+1Jigger
+1Kamikaze
+1Magic
+1Neutral
+2Paralysing
+2Protean
+1Royal
+1Uncapturable
+1Volage
+1White

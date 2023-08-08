@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { getStipulations, inferMoveOrdering, parseSolution } from "../src/js/meta/popeye/popeye.mjs";
 import { INIT_FORSYTH } from "../src/js/meta/fen.mjs";
 import { toPopeyePiece, pieceMap } from "../src/js/meta/popeye/base.mjs";
+import { parsePieceCommand } from "../src/js/meta/popeye/piece.mjs";
 
 pieceMap.custom = () => ({
 	"*1B": "25",
@@ -22,6 +23,18 @@ describe("Popeye", function() {
 			expect(toPopeyePiece("*1B")).to.equal("+.25");
 			expect(toPopeyePiece("-*1B")).to.equal("=.25");
 		});
+
+	});
+
+	describe("Pieces list parsing", function() {
+
+		it("Parse piece list", function() {
+			const input = "pie wh kam rha5 bc4d4 pf4 kf1\npie bl kam ra1a8c8d8 bb8e8 sh4h7 pg5a2 kh5";
+			expect(parsePieceCommand(input)).to.equal("rbrrb3/7s/8/.RH5pk/2BB1P1s/8/p7/r4K2");
+
+
+			console.log(parsePieceCommand("pieces white kd7 qg5 rc4 bd5 sg1 pa2e4e7f6\n\tblack kd3 bf8h1 pd6e2g2g6"))
+		})
 
 	});
 

@@ -1,7 +1,7 @@
 import { clone } from "../clone.mjs";
 import { INIT_FORSYTH, makeForsyth, parseSquare, parseFEN } from "../fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../regex.mjs";
-import { SQ, Twin, Step, toNormalPiece } from "./base.mjs";
+import { SQ, Twin, Step, toNormalPiece, COMMANDS } from "./base.mjs";
 import { processStep } from "./step.mjs";
 import { makeTwin } from "./twin.mjs";
 
@@ -104,6 +104,7 @@ export function getStipulations(input) {
  * @param {boolean} halfDuplex 
  */
 export function inferMoveOrdering(stip, halfDuplex) {
+	if(!stip) return "wb"; // sstip not supported for the moment
 	// It is assumed there that spaces are removed in stip
 	const m = stip.match(/^(\d+-&gt;)?(?:exact-)?(?:(?:ser|pser|phser|semi|reci)-)?(hs|hr|h|s|r)?/i);
 	let result;
@@ -123,8 +124,6 @@ function addImitator(fen, imitators) {
 
 const IMITATOR = new RegExp(String.raw`\bimit\w*\s+(?:${SQ})+`, "ig");
 
-const Commands = ["condition", "2option", "3stipulation", "2sstipulation", "3forsyth", "2pieces", "2twin"];
-const COMMANDS = new RegExp(Commands.map(createAbbrExp).join("|"), "ig");
 const DUPLEX = createAbbrReg("3duplex");
 const HALF_DUPLEX = createAbbrReg("3halfDuplex");
 

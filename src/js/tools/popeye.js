@@ -8,6 +8,7 @@ import { makeForsyth, toSquare } from "../meta/fen.mjs";
 import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
 import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base.mjs";
 import { animate, stopAnimation } from "../animation";
+import { parsePieceCommand } from "../meta/popeye/piece.mjs";
 
 // Session
 state.popeye.running = false; // Do not restore this state
@@ -118,9 +119,8 @@ function parseInput(text) {
 
 	const p = state.popeye;
 	if(new RegExp(`${FORSYTH}|${PIECES}`, "i").test(text)) {
-		// If Forsyth command is used, get the board from it
-		// Pieces command is not supported for now
-		p.initFEN = text.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
+		// If Forsyth command or Pieces command is used, get the board from it
+		p.initFEN = parsePieceCommand(text) || text.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
 		if(p.initFEN) setFEN(toNormalFEN(p.initFEN));
 		return text; // board is assigned manually
 	} else {
