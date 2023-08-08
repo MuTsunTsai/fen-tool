@@ -228,6 +228,7 @@ export const Popeye = {
 	},
 	exit() {
 		const p = state.popeye;
+		setFEN(p.steps[0].dataset.fen);
 		p.output = p.intOutput;
 		p.playing = false;
 		drawTemplate([]);
