@@ -535,20 +535,20 @@
 							<div class="mb-3">
 								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.move(-1)"
 										:disabled="state.play.moveNumber<0">
-									<i class="fa-solid fa-angles-left"></i>
+									<i class="fa-solid fa-angles-left fa-fw"></i>
 								</button>
 								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.moveBy(-1)"
 										:disabled="state.play.moveNumber<0">
-									<i class="fa-solid fa-angle-left"></i>
+									<i class="fa-solid fa-angle-left fa-fw"></i>
 								</button>
 								<button type="button" class="py-0 btn btn-secondary" @click="PLAY.moveBy(1)"
 										:disabled="state.play.moveNumber>=state.play.history.length-1">
-									<i class="fa-solid fa-angle-right"></i>
+									<i class="fa-solid fa-angle-right fa-fw"></i>
 								</button>
 								<button type="button" class="py-0 btn btn-secondary"
 										@click="PLAY.move(state.play.history.length-1)"
 										:disabled="state.play.moveNumber>=state.play.history.length-1">
-									<i class="fa-solid fa-angles-right"></i>
+									<i class="fa-solid fa-angles-right fa-fw"></i>
 								</button>
 								<span>
 									<span class="btn step px-1 py-0 ms-3" @click="PLAY.goto()"
@@ -772,19 +772,19 @@ Option Variation"></textarea>
 							<div class="col">
 								<button type="button" class="btn btn-secondary" @click="Popeye.move(0)"
 										:disabled="state.popeye.index<=0">
-									<i class="fa-solid fa-angles-left"></i>
+									<i class="fa-solid fa-angles-left fa-fw"></i>
 								</button>
 								<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(-1)"
 										:disabled="state.popeye.index<=0">
-									<i class="fa-solid fa-angle-left"></i>
+									<i class="fa-solid fa-angle-left fa-fw"></i>
 								</button>
 								<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(1)"
 										:disabled="state.popeye.index>=state.popeye.steps.length-1">
-									<i class="fa-solid fa-angle-right"></i>
+									<i class="fa-solid fa-angle-right fa-fw"></i>
 								</button>
 								<button type="button" class="btn btn-secondary" @click="Popeye.move(state.popeye.steps.length-1)"
 										:disabled="state.popeye.index>=state.popeye.steps.length-1">
-									<i class="fa-solid fa-angles-right"></i>
+									<i class="fa-solid fa-angles-right fa-fw"></i>
 								</button>
 							</div>
 							<div class="col-auto text-end">
