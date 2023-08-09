@@ -3,10 +3,8 @@ import { getRenderSize, search, state, store, status } from "./store";
 import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { getDimensions, sanitizeBorder } from "./meta/option";
-import { env } from "./meta/env";
+import { dpr, env } from "./meta/env";
 import { nextTick } from "petite-vue";
-
-export const dpr = Math.min(2, Math.floor(devicePixelRatio));
 
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");

@@ -1,11 +1,14 @@
 import { CN, CG, TP, TPG, PV } from "./meta/el";
-import { dpr, setOption } from "./layout";
+import { setOption } from "./layout";
 import { store, state, noEditing, status } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
 import { getDimensions } from "./meta/option";
 import { deepAssign } from "./meta/clone.mjs";
+import { dpr } from "./meta/env";
+import { animeSettings } from "./animation";
+import { emptyBoard } from "./meta/fen.mjs";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -35,6 +38,8 @@ const cache = {
 	except: undefined,
 	data: undefined,
 };
+
+animeSettings.ctx = ctx;
 
 addEventListener("storage", e => {
 	if(e.storageArea == localStorage && e.key == "settings") {
@@ -178,7 +183,7 @@ function updatePieceCount(data) {
 
 export function drawEmpty(ctx) {
 	const { w, h } = store.board;
-	drawBoard(ctx, Array.from({ length: w * h }, _ => ""), store.board, dpr);
+	drawBoard(ctx, emptyBoard(w * h), store.board, dpr);
 }
 
 export function getBlob() {

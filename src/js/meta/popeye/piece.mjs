@@ -1,4 +1,4 @@
-import { makeForsyth, parseSquare } from "../fen.mjs";
+import { emptyBoard, makeForsyth, parseSquare } from "../fen.mjs";
 import { createAbbrExp } from "../regex.mjs";
 import { Commands, P, SQ } from "./base.mjs";
 
@@ -19,7 +19,7 @@ const pieceCommand = String.raw`${createAbbrExp("2pieces")}(?:${oneColor})+(?=\s
 export function parsePieceCommand(input) {
 	const commands = input.match(new RegExp(pieceCommand, "ig"));
 	if(!commands) return null;
-	const board = Array.from({ length: 64 }, _ => "");
+	const board = emptyBoard(64);
 	for(const command of commands) {
 		const colorLists = command.match(new RegExp(oneColor, "ig"));
 		for(const colorList of colorLists) {

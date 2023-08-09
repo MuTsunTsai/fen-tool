@@ -1,6 +1,6 @@
 import { squares, setFEN } from "../squares";
 import { store } from "../store";
-import { makeForsyth, toYACPDB, toSquare, convertSN } from "../meta/fen.mjs";
+import { makeForsyth, toYACPDB, toSquare, convertSN, emptyBoard } from "../meta/fen.mjs";
 import { DB } from "../meta/el";
 
 export const YACPDB = {
@@ -21,7 +21,7 @@ export const YACPDB = {
 			if(json.success) {
 				const { w, h } = store.board;
 				const list = json.result.entries[0].algebraic;
-				const values = Array.from({ length: h * w }, () => "");
+				const values = emptyBoard(w * h);
 				function add(v) {
 					const x = v.charCodeAt(1) - 97, y = Number(v[2]);
 					values[(h - y) * w + x] = v[0];

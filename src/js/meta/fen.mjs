@@ -142,37 +142,45 @@ export function convertSN(value, useSN, convert) {
  * @param {number} i
  * @param {number|undefined} j
  */
-export function toSquare(i, j) {
+export function toSquare(i, j, h = 8) {
 	if(j === undefined) {
-		j = i % 8;
-		i = i >>> 3;
+		j = i % h;
+		i = (i - j) / h;
 	}
-	return String.fromCharCode(97 + j) + (8 - i);
+	return String.fromCharCode(97 + j) + (h - i);
 }
 
 export function parseXY(sq, h = 8) {
 	return { x: sq.charCodeAt(0) - 97, y: h - Number(sq[1]) };
 }
 
-export function parseSquare(sq) {
+export function parseSquare(sq, h = 8) {
 	const { x, y } = parseXY(sq);
-	return y * 8 + x;
+	return y * h + x;
+}
+
+export function emptyBoard(n) {
+	return Array.from({ length: n }, _ => "");
 }
 
 export function shift(array, dx, dy, w = 8, h = 8) {
-	const result = [];
+	const result = emptyBoard(w * h);
+	result.anime = "";
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
-			const x = j - dx, y = i - dy;
+			const x = j + dx, y = i + dy;
 			const inBoard = 0 <= x && x < w && 0 <= y && y < h;
-			result[i * w + j] = inBoard ? array[y * w + x] : "";
+			if(!array[i * w + j]) continue;
+			result[y * w + x] = inBoard ? array[i * w + j] : "";
+			result.anime += toSquare(i, j, h) + toSquare(y, x, h);
 		}
 	}
 	return result;
 }
 
 export function mirror(array, d, w = 8, h = 8) {
-	const result = [];
+	const result = emptyBoard(w * h);
+	result.anime = "";
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
 			let x = j, y = i;
@@ -185,6 +193,7 @@ export function mirror(array, d, w = 8, h = 8) {
 			}
 			if(d == "/") y = h - 1 - y;
 			result[i * w + j] = array[y * w + x];
+			result.anime += toSquare(y, x, h) + toSquare(i, j, h);
 		}
 	}
 	return result;
@@ -195,11 +204,14 @@ export function mirror(array, d, w = 8, h = 8) {
  * @param {number} d direction, -1 for counterclockwise, 1 for clockwise, 2 for 180-degree.
  */
 export function rotate(array, d, w = 8, h = 8) {
-	const result = [];
+	const result = emptyBoard(w * h);
+	result.anime = "";
 	for(let i = 0; i < w; i++) {
 		for(let j = 0; j < h; j++) {
-			const target = d == 1 ? (h - 1 - j) * w + i : d == 2 ? (w - 1 - i) * h + (h - 1 - j) : j * w + (w - 1 - i);
-			result[i * h + j] = array[target];
+			const x = d == 1 ? i : d == 2 ? h - 1 - j : w - 1 - i;
+			const y = d == 1 ? h - 1 - j : d == 2 ? w - 1 - i : j;
+			result[i * h + j] = array[y * w + x];
+			result.anime += toSquare(y, x, h) + toSquare(i, j, h);
 		}
 	}
 	return result;

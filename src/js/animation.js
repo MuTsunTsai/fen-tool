@@ -1,13 +1,13 @@
 import { getAsset } from "./asset";
 import { drawBoard, drawPiece } from "./draw";
-import { dpr } from "./layout";
+import { dpr } from "./meta/env";
 import { parseFEN, parseSquare, parseXY } from "./meta/fen.mjs";
 import { getDimensions } from "./meta/option";
-import { ctx } from "./render";
-import { setFEN } from "./squares";
-import { store } from "./store";
 
 const speed = 150;
+
+/** For injecting dependencies. */
+export const animeSettings = {};
 
 /** @type {Animation} */
 let animation;
@@ -18,8 +18,8 @@ export function animate(before, after, instruction, reverse) {
 	return animation.promise;
 }
 
-export function stopAnimation() {
-	if(animation) animation.stop();
+export function stopAnimation(useCallBack) {
+	if(animation) animation.stop(useCallBack ? animeSettings.callback : undefined);
 }
 
 class Animation {
@@ -35,18 +35,18 @@ class Animation {
 		this.stages = [];
 		const stages = instruction.split(",");
 		const board = parseFEN(before);
-		const h = store.board.h;
+		const { h } = animeSettings.options;
 		for(const stage of stages) {
 			const moves = [];
-			const squares = stage.match(/[a-z]\d(=(\*\d)?[A-Z])?/g);
+			const squares = stage.match(/[`a-z]\d(=(\*\d)?[A-Z])?/g);
 			for(let i = 0; i < squares.length; i += 2) {
 				let from = squares[i], to = squares[i + 1];
-				const sq = parseSquare(from);
+				const sq = parseSquare(from, h);
 				const move = {
 					p: board[sq],
 					promo: to.match(/=(.+)$/)?.[1],
-					from: parseXY(from),
-					to: parseXY(to),
+					from: parseXY(from, h),
+					to: parseXY(to, h),
 				};
 				board[sq] = "";
 				moves.push(move);
@@ -61,27 +61,25 @@ class Animation {
 		}
 
 		this.background = undefined;
-		this.callback = this.step.bind(this);
-		this.request = requestAnimationFrame(this.callback);
+		this.anime = this.step.bind(this);
+		this.request = requestAnimationFrame(this.anime);
 	}
 
-	stop() {
+	stop(callback) {
 		cancelAnimationFrame(this.request);
 		animation = undefined;
+		if(callback) callback(this.after);
 		this.resolve();
 	}
 
 	step(timestamp) {
+		const { ctx, options, callback } = animeSettings;
+
 		if(!this.startTime) this.startTime = timestamp
-		const options = store.board;
 		const delta = (timestamp - this.startTime) / speed;
 		const cursor = Math.floor(delta);
 
-		if(cursor >= this.stages.length) {
-			setFEN(this.after);
-			this.stop();
-			return;
-		}
+		if(cursor >= this.stages.length) return this.stop(callback);
 
 		// Draw background
 		const stageIndex = this.reverse ? this.stages.length - 1 - cursor : cursor;
@@ -107,6 +105,6 @@ class Animation {
 		}
 		ctx.restore();
 
-		this.request = requestAnimationFrame(this.callback);
+		this.request = requestAnimationFrame(this.anime);
 	}
 }

@@ -1,7 +1,7 @@
 import { getRenderSize, noEditing, state, status, store } from "./store";
-import { squares, toFEN, setSquare, pushState } from "./squares";
+import { squares, toFEN, setSquare, pushState, setFEN } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
-import { templateValues } from "./render";
+import { ctx, templateValues } from "./render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
 import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
@@ -69,7 +69,7 @@ function mouseup(event) {
 			if(checkPromotion(fromIndex, index)) return setSquare(squares[index], draggingValue);
 			else if(fromIndex != index) result = move(fromIndex, index);
 		}
-		if(typeof result == "object") animate(result.before, result.after, result.move);
+		if(typeof result == "object") animate(ctx, result.before, result.after, setFEN, result.move);
 		else sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);

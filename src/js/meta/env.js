@@ -2,6 +2,8 @@ const cb = navigator.clipboard;
 
 const canShare = "canShare" in navigator;
 
+export const dpr = Math.min(2, Math.floor(devicePixelRatio));
+
 /**
  * It is not enough to check if `navigator.share` exists.
  * For example, Firefox Android do support sharing URLs, but not images.

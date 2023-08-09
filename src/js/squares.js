@@ -3,10 +3,14 @@ import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, 
 import { setOption } from "./layout";
 import { state, status, store } from "./store";
 import { readText } from "./copy";
+import { animate, animeSettings, stopAnimation } from "./animation";
 
 export const squares = new Array(64);
 export const container = document.getElementById("Squares");
 export const callback = {};
+
+animeSettings.options = store.board;
+animeSettings.callback = setFEN;
 
 function draw(data) {
 	callback.draw?.(data);
@@ -262,8 +266,13 @@ export function toggleReadOnly(readOnly) {
 }
 
 function replace(board) {
-	board.forEach((v, i) => squares[i].value = v);
-	toFEN();
+	if(board.anime) {
+		const fen = makeForsyth(board, store.board.w, store.board.h);
+		animate(FEN.value, fen, board.anime);
+	} else {
+		board.forEach((v, i) => squares[i].value = v);
+		toFEN();
+	}
 }
 
 export function resetEdwards() {
@@ -300,6 +309,7 @@ window.FEN = {
 		setFEN(await readText(), true);
 	},
 	rotate(d) {
+		stopAnimation(true);
 		const { w, h } = store.board;
 		if(w !== h) setOption({ w: h, h: w });
 		replace(rotate(snapshot(), d, w, h));
@@ -320,10 +330,12 @@ window.FEN = {
 		replace(invert(snapshot(), l));
 	},
 	shift(dx, dy) {
+		stopAnimation(true);
 		const { w, h } = store.board;
 		replace(shift(snapshot(), dx, dy, w, h));
 	},
 	mirror(d) {
+		stopAnimation(true);
 		const { w, h } = store.board;
 		replace(mirror(snapshot(), d, w, h));
 	},
