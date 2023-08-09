@@ -35,13 +35,14 @@ class Animation {
 		this.stages = [];
 		const stages = instruction.split(",");
 		const board = parseFEN(before);
-		const { h } = animeSettings.options;
+		const { h, w } = animeSettings.options;
+		console.log(h);
 		for(const stage of stages) {
 			const moves = [];
 			const squares = stage.match(/[`a-z]\d(=(\*\d)?[A-Z])?/g);
 			for(let i = 0; i < squares.length; i += 2) {
 				let from = squares[i], to = squares[i + 1];
-				const sq = parseSquare(from, h);
+				const sq = parseSquare(from, w, h);
 				const move = {
 					p: board[sq],
 					promo: to.match(/=(.+)$/)?.[1],
@@ -56,7 +57,7 @@ class Animation {
 				moves,
 			});
 			for(const move of moves) {
-				board[move.to.y * h + move.to.x] = move.promo || move.p;
+				board[move.to.y * w + move.to.x] = move.promo || move.p;
 			}
 		}
 

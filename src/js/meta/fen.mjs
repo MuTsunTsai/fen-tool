@@ -144,8 +144,8 @@ export function convertSN(value, useSN, convert) {
  */
 export function toSquare(i, j, h = 8) {
 	if(j === undefined) {
-		j = i % h;
-		i = (i - j) / h;
+		j = i % 8;
+		i = (i - j) / 8;
 	}
 	return String.fromCharCode(97 + j) + (h - i);
 }
@@ -154,9 +154,9 @@ export function parseXY(sq, h = 8) {
 	return { x: sq.charCodeAt(0) - 97, y: h - Number(sq[1]) };
 }
 
-export function parseSquare(sq, h = 8) {
-	const { x, y } = parseXY(sq);
-	return y * h + x;
+export function parseSquare(sq, w = 8, h = 8) {
+	const { x, y } = parseXY(sq, h);
+	return y * w + x;
 }
 
 export function emptyBoard(n) {
@@ -192,6 +192,7 @@ export function mirror(array, d, w = 8, h = 8) {
 				y -= d;
 			}
 			if(d == "/") y = h - 1 - y;
+			if(!array[y * w + x]) continue;
 			result[i * w + j] = array[y * w + x];
 			result.anime += toSquare(y, x, h) + toSquare(i, j, h);
 		}
@@ -205,13 +206,14 @@ export function mirror(array, d, w = 8, h = 8) {
  */
 export function rotate(array, d, w = 8, h = 8) {
 	const result = emptyBoard(w * h);
-	result.anime = "";
+	if(w == h) result.anime = "";
 	for(let i = 0; i < w; i++) {
 		for(let j = 0; j < h; j++) {
 			const x = d == 1 ? i : d == 2 ? h - 1 - j : w - 1 - i;
 			const y = d == 1 ? h - 1 - j : d == 2 ? w - 1 - i : j;
+			if(!array[y * w + x]) continue;
 			result[i * h + j] = array[y * w + x];
-			result.anime += toSquare(y, x, h) + toSquare(i, j, h);
+			if(w == h) result.anime += toSquare(y, x, h) + toSquare(i, j, h);
 		}
 	}
 	return result;
