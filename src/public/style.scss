@@ -25,6 +25,12 @@ html {
 	overflow: hidden;
 }
 
+body {
+	// This is required explicitly, or the scrolling may not work
+	// for some Android devices when in landscape orientation.
+	overflow-y: scroll;
+}
+
 html.iframe {
 	height: unset;
 
