@@ -15,8 +15,9 @@
 		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
 		gtag('config', 'G-4GYC00FPRR');
-		if(location.protocol == "https:" && 'serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js', { scope: "/fen-tool/" });
+		if('serviceWorker' in navigator) {
+			const scope = location.protocol == "https:" ? "/fen-tool/" : "/";
+			navigator.serviceWorker.register('sw.js', { scope });
 		}
 
 		// This needs to be added as quickly as possible to prevent glitches
@@ -715,8 +716,7 @@
 					<section :class="{show:state.tab==7}">
 						<div v-show="!state.popeye.playing&&!state.popeye.editMap">
 							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
-									  :disabled="state.popeye.running"
-									  placeholder="For example:
+									  :disabled="state.popeye.running" placeholder="For example:
 =============
 Stipulation #2
 Option Variation"></textarea>

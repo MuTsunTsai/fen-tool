@@ -3,15 +3,36 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
+// COOP-COEP headers
+// https://github.com/GoogleChrome/workbox/issues/2963
+const headersPlugin = {
+	handlerWillRespond: async ({ response }) => {
+		const headers = new Headers(response.headers);
+		headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+		headers.set("Cross-Origin-Opener-Policy", "same-origin");
+		
+		return new Response(response.body, {
+			headers,
+			status: response.status,
+			statusText: response.statusText,
+		});
+	},
+};
+
 // Activate Workbox GA
 googleAnalytics.initialize();
 
+const options = {
+	cacheName: "assets",
+	plugins: [headersPlugin],
+};
+
 // Default resources use StaleWhileRevalidate strategy
-const defaultHandler = new strategies.StaleWhileRevalidate({ cacheName: "assets" });
+const defaultHandler = new strategies.StaleWhileRevalidate(options);
 routing.setDefaultHandler(defaultHandler);
 
 // Activates workbox-precaching
-const precacheController = new precaching.PrecacheController({ cacheName: "assets" });
+const precacheController = new precaching.PrecacheController(options);
 precacheController.addToCacheList(self.__WB_MANIFEST);
 const precacheRoute = new precaching.PrecacheRoute(precacheController, {
 	ignoreURLParametersMatching: [/.*/],

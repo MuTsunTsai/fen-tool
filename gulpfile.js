@@ -105,7 +105,7 @@ gulp.task("sw", () =>
 			],
 			globIgnores: [
 				"sw.js",
-				"py.asm.js",
+				"**/py.asm.js",
 			],
 		}))
 		.pipe($.terser())
