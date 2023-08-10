@@ -15,20 +15,22 @@ state.popeye.running = false; // Do not restore this state
 state.popeye.editMap = false;
 if(state.popeye.playing) load().then(() => nextTick(() => setupStepElements(true)));
 
-let path = "modules/py.js";
+/** @type {Worker} */
 let worker;
+
+let path = "modules/py.js";
 let startTime;
-let suffix;
+let spinner;
 let interval;
 let outputCount;
 let shouldScroll = false;
 
 const el = document.getElementById("Output");
 
-function spinner() {
-	suffix += ".";
-	if(suffix.length == 5) suffix = ".";
-	state.popeye.output = state.popeye.intOutput + "<br>" + suffix;
+function flush() {
+	spinner += ".";
+	if(spinner.length == 5) spinner = ".";
+	state.popeye.output = state.popeye.intOutput + "<br>" + spinner;
 	tryScroll();
 }
 
@@ -57,12 +59,26 @@ function stop(restart) {
 function createWorker() {
 	if(worker) return;
 	worker = new Worker(path);
+	worker.onerror = event => {
+		event.preventDefault();
+		clearInterval(interval);
+		state.popeye.running = false;
+		let msg;
+		if(!event.filename) {
+			msg = "Unable to load the Popeye module; please check your network connection.";
+		} else {
+			worker.terminate();
+			msg = "An error occur in the Popeye module. Please submit an issue about this.\n" + e.message;
+		}
+		state.popeye.output = error(msg);
+		worker = undefined;
+	};
 	worker.onmessage = event => {
 		const data = event.data;
 		if(++outputCount > 3000) {
 			// Restrict the output to 3000 lines.
 			// Too much output is bad for user experience, and is not what this app is meant for.
-			state.popeye.intOutput += `<br><span class="text-danger">Too much output. Please modify the input to prevent excessive output.</span><br>`
+			state.popeye.intOutput += `<br>${error("Too much output. Please modify the input to prevent excessive output.")}<br>`
 			stop();
 		} else if(data === -1) {
 			gtag("event", "fen_popeye_fallback");
@@ -76,7 +92,7 @@ function createWorker() {
 			if(typeof data.text == "string") state.popeye.intOutput += escapeHtml(data.text) + "<br>";
 			if(typeof data.err == "string") {
 				state.popeye.error = true;
-				state.popeye.intOutput += `<span class="text-danger">${escapeHtml(data.err)}</span><br>`;
+				state.popeye.intOutput += error(escapeHtml(data.err));
 			}
 		}
 	};
@@ -85,15 +101,19 @@ function createWorker() {
 function start() {
 	createWorker();
 
-	suffix = ".";
+	spinner = ".";
 	const p = state.popeye;
 	outputCount = 0;
 	p.intOutput = "";
 	p.error = false;
 	p.running = true;
-	interval = setInterval(spinner, 500);
+	interval = setInterval(flush, 500);
 	startTime = performance.now();
 	worker.postMessage("Opti NoBoard\n" + p.intInput); // NoBoard is used in any case
+}
+
+function error(text) {
+	return `<span class="text-danger">${text}</span>`;
 }
 
 function escapeHtml(text) {

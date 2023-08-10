@@ -66,7 +66,8 @@ export const status = reactive({
 // Session data, will be restored on tab reloading/restoring/duplicating
 // (only for top window).
 const savedState = env.isTop ? sessionStorage.getItem("state") : null;
-export const state = reactive(savedState ? JSON.parse(savedState) : {
+
+const defaultState = {
 	split: false,
 	tab: 0,
 	play: {
@@ -99,14 +100,25 @@ export const state = reactive(savedState ? JSON.parse(savedState) : {
 		playing: false,
 		error: false,
 		running: false,
-		input: "",
-		output: "",
-		intInput: null,
-		intOutput: null,
-		mapping: "",
 		editMap: false,
+		mapping: "",
+
+		/** The actual user input. */
+		input: "",
+
+		/** The actual output displayed on UI. */
+		output: "",
+		
+		/** The internal input to Popeye. */
+		intInput: null,
+
+		/** The internal output from Popeye. */
+		intOutput: null,
 	},
-});
+};
+
+/** @type {typeof defaultState} */
+export const state = reactive(savedState ? JSON.parse(savedState) : defaultState);
 
 export function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));

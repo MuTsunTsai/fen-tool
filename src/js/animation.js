@@ -36,7 +36,6 @@ class Animation {
 		const stages = instruction.split(",");
 		const board = parseFEN(before);
 		const { h, w } = animeSettings.options;
-		console.log(h);
 		for(const stage of stages) {
 			const moves = [];
 			const squares = stage.match(/[`a-z]\d(=(\*\d)?[A-Z])?/g);
