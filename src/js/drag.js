@@ -80,8 +80,9 @@ function mouseup(event) {
 			console.log(x, y);
 			if(status.hor) [x, y] = [y, x];
 			if(x > -1 && x < 3 && y > -1 && y < 8) {
-				const index = y * 3 + x;
-				status.selection = templateValues[index];
+				const v = templateValues[y * 3 + x];
+				if(status.selection == v) status.selection = null;
+				else status.selection = v;
 				drawTemplate([]);
 			}
 			return;
