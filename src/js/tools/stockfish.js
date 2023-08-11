@@ -73,6 +73,8 @@ function init() {
 }
 
 function parseInfo(info) {
+	if(status.stockfish.running != 2) return; // Prevent displaying weird results.
+
 	const multi = info.match(/multipv (\d+)/);
 	if(!multi) return;
 	const index = Number(multi[1]) - 1;
