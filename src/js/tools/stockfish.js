@@ -42,7 +42,7 @@ const files = [
 	`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm,worker`,
 	`${path}stockfish-nnue-16${suffix}.wasm`,
 	`${path}nn-5af11540bbfe.nnue`,
-]
+];
 
 function init() {
 	if(stockfish) return;
@@ -115,13 +115,14 @@ export const Stockfish = {
 		gtag("event", "fen_stockfish_download");
 		status.stockfish.status = 1;
 		for(const file of files) await fetch(file);
-		await new Promise(resolve => {
-			async function waitStockfish() {
-				if(await checkStockfishModel()) resolve();
-				else setTimeout(waitStockfish, 50);
-			}
-			waitStockfish();
-		});
+		for(const file of files) await fetch(file);
+		// await new Promise(resolve => {
+		// 	async function waitStockfish() {
+		// 		if(await checkStockfishModel()) resolve();
+		// 		else setTimeout(waitStockfish, 50);
+		// 	}
+		// 	waitStockfish();
+		// });
 		status.stockfish.status = 2;
 	},
 	async analyze() {
