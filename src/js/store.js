@@ -34,7 +34,6 @@ const settings = {
 	},
 	feature: {
 		janko: false,
-		stockfish: false,
 	},
 	popeye: {
 		pieceMap: defaultCustomMap,
@@ -52,7 +51,6 @@ if(savedSettings.popeye) {
 }
 
 if(search.has("janko")) settings.feature.janko = true;
-if(search.has("stockfish")) settings.feature.stockfish = true;
 
 /** @type {typeof settings} */
 export const store = reactive(settings);
