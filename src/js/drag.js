@@ -185,7 +185,6 @@ function mouseDown(event) {
 	if(state.popeye.playing) return;
 	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
-	event.preventDefault();
 
 	if(document.activeElement) document.activeElement.blur();
 	const isCN = this != TP;
@@ -201,6 +200,7 @@ function mouseDown(event) {
 
 	const v = status.selection;
 	if(isCN && v) {
+		event.preventDefault();
 		if(inRange(sqX, sqY, w, h)) {
 			const sq = squares[index];
 			if(sq.value == v) sq.value = "";
