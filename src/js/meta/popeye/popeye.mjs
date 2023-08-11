@@ -168,7 +168,7 @@ function makeStep(text, fen, animation, before) {
 	let extra = "";
 	if(animation && animation.length) extra += ` data-anime="${animation.join(",")}"`;
 	if(before) extra += ` data-before="${before}"`;
-	return `<span ${init}class="step btn btn-secondary px-1 py-0" data-fen="${fen}"${extra}>${text}</span>`
+	return `<span ${init}class="step btn px-1 py-0" data-fen="${fen}"${extra}>${text}</span>`
 }
 
 const FEN_TOKEN = /[-+=]?(\.[0-9A-Z][0-9A-Z]|[A-Z])|\d+|\//ig;

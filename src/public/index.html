@@ -556,7 +556,7 @@
 								</button>
 								<span>
 									<span class="btn step px-1 py-0 ms-3" @click="PLAY.goto()"
-										  :class="[{active:-1==state.play.moveNumber}, status.isDark?'btn-secondary':'btn-light']">*</span>
+										  :class="{active:-1==state.play.moveNumber}">*</span>
 								</span>
 								<span v-for="(h,i) in state.play.history">
 									<span v-if="state.play.history[i-1]&&state.play.history[i-1].color==h.color">
@@ -566,7 +566,7 @@
 									<span v-if="h.color=='b'&&i==0" class="ms-2">{{PLAY.number(h)}}...</span>
 									<span v-if="h.color=='w'" class="ms-2">{{PLAY.number(h)}}.</span>
 									<span class="btn step px-1 py-0" @click="PLAY.move(i)"
-										  :class="[{active:i==state.play.moveNumber}, status.isDark?'btn-secondary':'btn-light']">{{PLAY.format(h)}}</span>
+										  :class="{active:i==state.play.moveNumber}">{{PLAY.format(h)}}</span>
 								</span>
 								<span v-if="state.play.mode!='retro'&&state.play.over==1">Checkmate.</span>
 								<span v-if="state.play.mode!='retro'&&state.play.over==2">Draw.</span>

@@ -115,9 +115,11 @@ export const Stockfish = {
 	async download() {
 		gtag("event", "fen_stockfish_download");
 		status.stockfish.status = 1;
-		// First we wait for service worker to finish installing.
-		// Otherwise caching won't work.
-		if("serviceWorker" in navigator) await navigator.serviceWorker.ready;
+		if("serviceWorker" in navigator) {
+			// First we wait for service worker to finish installing.
+			// Otherwise caching won't work.
+			await navigator.serviceWorker.ready;
+		}
 		for(const file of files) {
 			const response = await fetch(file);
 			if(response.status != 200) {
