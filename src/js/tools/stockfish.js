@@ -86,7 +86,7 @@ function parseInfo(info) {
 
 	const mate = info.match(/mate (-?)(\d+)/);
 	const score = info.match(/score cp (-?\d+)/);
-	const cp = Number(score && score[1] || 0) / 100;
+	let cp = Number(score && score[1] || 0) / 100;
 
 	if(index == 0) {
 		const depth = info.match(/depth (\d+)/);
@@ -109,7 +109,11 @@ function parseInfo(info) {
 		}
 		for(const match of matches) {
 			const move = chess.move({ from: match[1], to: match[2], promotion: match[3] })
-			if(move.san.endsWith("=")) break; // Stockfish keeps going
+			if(move.san.endsWith("=")) {
+ 				// Stockfish doesn't stop here for some reason
+				cp = 0;
+				break;
+			}
 		}
 		const line = {
 			rawScore: mate ? (mate[1] ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY) : cp,
