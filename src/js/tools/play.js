@@ -132,13 +132,13 @@ export function checkDragPrecondition(index) {
 	return true;
 }
 
-async function loadModule() {
+export async function loadModule() {
 	if(!module) {
 		module = await import("./modules/chess.js");
-		module.store.state = state.play;
-		module.store.options = store.PLAY;
-		chess = new module.Chess();
+		module.Chess.options = store.PLAY;
+		chess = new module.Chess(state.play);
 	}
+	return module;
 }
 
 function start() {
@@ -178,6 +178,14 @@ export function retroClick(x, y) {
 		if(retro.uncapture == "p" || retro.uncapture == "c") retro.uncapture = null;
 	}
 	drawRetroTemplate();
+}
+
+export async function importGame(text) {
+	await loadModule();
+	if(chess.loadGame(text)) {
+		sync();
+		start();
+	}
 }
 
 export const PLAY = {
@@ -234,10 +242,10 @@ export const PLAY = {
 		return chess.copyPGN();
 	},
 	number(h) {
-		return module.number(h);
+		return module.number(h, state.play.mode);
 	},
 	format(h) {
-		return module.format(h);
+		return module.format(h, state.play.mode);
 	},
 	async pasteMoves() {
 		const text = await readText();
@@ -246,10 +254,6 @@ export const PLAY = {
 	},
 	async pasteGame() {
 		const text = await readText();
-		await loadModule();
-		if(chess.loadGame(text)) {
-			sync();
-			start();
-		}
+		await importGame(text);
 	}
 }

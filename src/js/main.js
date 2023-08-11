@@ -17,6 +17,7 @@ import { API, normalForsyth } from "./tools/api";
 import { PLAY, moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 import { openFile } from "./tools/scan";
+import { Stockfish } from "./tools/stockfish";
 
 initLayout();
 initDrag();
@@ -126,6 +127,7 @@ createApp({
 	BBS,
 	API,
 	PLAY,
+	Stockfish,
 	store,
 	state,
 	status,

@@ -1,11 +1,7 @@
 import { expect } from "chai";
-import { Chess, store } from "../src/js/modules/chess.mjs";
+import { Chess } from "../src/js/modules/chess.mjs";
 
 describe("Retro mode", function() {
-
-	beforeEach(function() {
-		store.state = { history: [] };
-	});
 
 	it("Cannot make capturing", function() {
 		const chess = new Chess();

@@ -69,7 +69,7 @@ function mouseup(event) {
 			if(checkPromotion(fromIndex, index)) return setSquare(squares[index], draggingValue);
 			else if(fromIndex != index) result = move(fromIndex, index);
 		}
-		if(typeof result == "object") animate(ctx, result.before, result.after, setFEN, result.move);
+		if(typeof result == "object") animate(result.before, result.after, result.move);
 		else sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);

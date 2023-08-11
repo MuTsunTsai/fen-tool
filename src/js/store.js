@@ -27,8 +27,13 @@ const settings = {
 		negative: false,
 		zero: false,
 	},
+	Stockfish: {
+		depth: 50,
+		lines: 3,
+	},
 	feature: {
 		janko: false,
+		stockfish: false,
 	},
 	popeye: {
 		pieceMap: defaultCustomMap,
@@ -46,7 +51,9 @@ if(savedSettings.popeye) {
 }
 
 if(search.has("janko")) settings.feature.janko = true;
+if(search.has("stockfish")) settings.feature.stockfish = true;
 
+/** @type {typeof settings} */
 export const store = reactive(settings);
 pieceMap.custom = () => store.popeye.pieceMap;
 
@@ -61,12 +68,33 @@ export const status = reactive({
 	hor: false,
 	collapse: false,
 	dragging: false,
+	stockfish: {
+		// -1=undetermined, 0=not downloaded, 1=downloading, 2=need reload, 3=ready
+		status: -1,
+		// 0=stop, 1=starting, 2=running, 3=stopping
+		running: 0,
+	},
 });
+
+async function checkStockfishModel() {
+	const assets = await caches.open("modules");
+	const keys = await assets.keys();
+	const match = keys.find(r => r.url.endsWith(".nnue"));
+	return Boolean(match);
+}
+checkStockfishModel().then(v => status.stockfish.status = v ? 3 : 0);
 
 // Session data, will be restored on tab reloading/restoring/duplicating
 // (only for top window).
 const savedState = env.isTop ? sessionStorage.getItem("state") : null;
 
+export const STOCKFISH = {
+	bestMove: "",
+	depth: 0,
+	score: null,
+	mate: null,
+	lines: [],
+};
 const defaultState = {
 	split: false,
 	tab: 0,
@@ -108,13 +136,14 @@ const defaultState = {
 
 		/** The actual output displayed on UI. */
 		output: "",
-		
+
 		/** The internal input to Popeye. */
 		intInput: null,
 
 		/** The internal output from Popeye. */
 		intOutput: null,
 	},
+	stockfish: STOCKFISH,
 };
 
 /** @type {typeof defaultState} */

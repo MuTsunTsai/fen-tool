@@ -3,14 +3,14 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
-// COOP-COEP headers
+// COOP-COEP headers, for multi-thread wasm
 // https://github.com/GoogleChrome/workbox/issues/2963
 const headersPlugin = {
 	handlerWillRespond: async ({ response }) => {
 		const headers = new Headers(response.headers);
 		headers.set("Cross-Origin-Embedder-Policy", "require-corp");
 		headers.set("Cross-Origin-Opener-Policy", "same-origin");
-		
+
 		return new Response(response.body, {
 			headers,
 			status: response.status,
@@ -22,17 +22,13 @@ const headersPlugin = {
 // Activate Workbox GA
 googleAnalytics.initialize();
 
-const options = {
-	cacheName: "assets",
-	plugins: [headersPlugin],
-};
-
 // Default resources use StaleWhileRevalidate strategy
-const defaultHandler = new strategies.StaleWhileRevalidate(options);
+// Need to store in a different cache, as precache could get cleaned-up on update
+const defaultHandler = new strategies.StaleWhileRevalidate({ cacheName: "modules", plugins: [headersPlugin] });
 routing.setDefaultHandler(defaultHandler);
 
 // Activates workbox-precaching
-const precacheController = new precaching.PrecacheController(options);
+const precacheController = new precaching.PrecacheController({ cacheName: "assets", plugins: [headersPlugin] });
 precacheController.addToCacheList(self.__WB_MANIFEST);
 const precacheRoute = new precaching.PrecacheRoute(precacheController, {
 	ignoreURLParametersMatching: [/.*/],
@@ -83,7 +79,7 @@ const netOnly = new strategies.NetworkOnly({
 });
 
 // Third-party requests
-routing.registerRoute(({ url }) => url.host != "mutsuntsai.github.io", netOnly);
+routing.registerRoute(({ url }) => url.host != "mutsuntsai.github.io" && !url.host.startsWith("localhost"), netOnly);
 
 self.addEventListener("install", event => {
 	self.skipWaiting();

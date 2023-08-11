@@ -234,6 +234,9 @@
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:state.tab==6}" @click="state.tab=6">Play</div>
 						</li>
+						<li class="nav-item" v-if="store.feature.stockfish">
+							<div class="nav-link" :class="{active:state.tab==8}" @click="state.tab=8">Analyze</div>
+						</li>
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:state.tab==2}" @click="state.tab=2">DB</div>
 						</li>
@@ -710,6 +713,89 @@
 								</div>
 							</div>
 						</template>
+					</section>
+
+					<!-- Analyze -->
+					<section :class="{show:state.tab==8}">
+						<div v-if="status.stockfish.status==-1"></div>
+						<div v-else-if="status.stockfish.status<2">
+							<div class="mb-3">To use this feature, we need to download Stockfish modules first.</div>
+							<button v-if="status.stockfish.status==0" type="button" class="btn btn-primary"
+									@click="Stockfish.download">
+								<i class="fa-solid fa-download"></i>&ensp;Download now! (38.9MB)
+							</button>
+							<button v-else type="button" class="btn btn-primary" disabled>
+								<i class="fa-solid fa-download"></i>&ensp;Downloading...&ensp;<i
+								   class="fa-solid fa-spinner fa-spin"></i>
+							</button>
+						</div>
+						<div v-else-if="status.stockfish.status==2">
+							<div class="mb-3">Download complete. Please restart FEN Tool.</div>
+							<button v-else type="button" class="btn btn-primary" onclick="location.reload()">
+								<i class="fa-solid fa-rotate-right"></i>&ensp;Restart FEN Tool now
+							</button>
+						</div>
+						<div v-else>
+							<div class="row">
+								<div class="col" style="flex-basis: 13rem;">
+									<div class="row gx-3 mb-2">
+										<label class="col-auto col-form-label">Search depth:</label>
+										<div class="col">
+											<input type="number" class="form-control" v-model.number="store.Stockfish.depth"
+												   min="1">
+										</div>
+									</div>
+								</div>
+								<div class="col" style="flex-basis: 7rem;">
+									<div class="row gx-3 mb-2">
+										<label class="col-auto col-form-label">Lines:</label>
+										<div class="col">
+											<input type="number" class="form-control" v-model.number="store.Stockfish.lines"
+												   min="1">
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Start button -->
+							<div>
+								<button v-if="!status.stockfish.running" type="button" class="btn btn-primary"
+										@click="Stockfish.analyze">
+									<i class="fa-solid fa-play"></i>&ensp;Analyze with Stockfish 16
+								</button>
+								<button v-else-if="status.stockfish.running==1" disabled class="btn btn-primary">
+									<i class="fa-solid fa-play"></i>&ensp;Initializing...
+								</button>
+								<button v-else-if="status.stockfish.running==2" type="button" class="btn btn-secondary"
+										@click="Stockfish.stop">
+									<i class="fa-solid fa-stop"></i>&ensp;Stop
+								</button>
+								<button v-else disabled class="btn btn-secondary">
+									<i class="fa-solid fa-stop"></i>&ensp;Stopping...
+								</button>
+							</div>
+							<!-- Output -->
+							<div class="mt-3">
+								<div v-if="state.stockfish.depth">Depth: {{state.stockfish.depth}}</div>
+								<div v-if="state.stockfish.mate">{{(state.stockfish.mate||"")[0]}} has mate in
+									{{(state.stockfish.mate||"")[1]}}</div>
+								<div v-else-if="state.stockfish.score">Score: {{state.stockfish.score}}</div>
+								<div v-if="state.stockfish.bestMove">Best move: {{state.stockfish.bestMove}}</div>
+								<table class="table">
+									<tr v-for="line in state.stockfish.lines.filter(l=>l&&l.moves.length)">
+										<td class="align-top">
+											<div>{{line.score}}</div>
+											<div class="mt-2">
+												<button type="button" class="btn btn-primary px-2 py-0" title="Play this line"
+														@click="Stockfish.play(line)">
+													<i class="fa-solid fa-play"></i>
+												</button>
+											</div>
+										</td>
+										<td class="align-top" v-text="Stockfish.format(line.moves)"></td>
+									</tr>
+								</table>
+							</div>
+						</div>
 					</section>
 
 					<!-- Popeye -->

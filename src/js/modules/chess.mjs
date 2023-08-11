@@ -1,9 +1,13 @@
 import { Chess as ChessBase, DEFAULT_POSITION } from "chess.js";
 import { parseMoves } from "./pgn.mjs";
 
-export const store = {};
-
 export class Chess extends ChessBase {
+
+	constructor(state) {
+		super();
+		this.state = state || {};
+		this.state.history = this.state.history || [];
+	}
 
 	checkPromotion(from, to) {
 		const moves = this.moves({ verbose: true });
@@ -15,9 +19,9 @@ export class Chess extends ChessBase {
 	}
 
 	init(fen) {
-		store.state.initFEN = fen;
-		store.state.history.length = 0;
-		store.state.moveNumber = -1;
+		this.state.initFEN = fen;
+		this.state.history.length = 0;
+		this.state.moveNumber = -1;
 		this.load(fen);
 
 		// legal checks not covered in chess.js
@@ -31,8 +35,8 @@ export class Chess extends ChessBase {
 		if(test.isCheck()) {
 			if(this.isCheck()) throw new Error("both kings are under checks");
 			// automatically switch turn regardless of assignment
-			store.state.initFEN = test.fen();
-			this.load(store.state.initFEN);
+			this.state.initFEN = test.fen();
+			this.load(this.state.initFEN);
 		}
 	}
 
@@ -50,7 +54,7 @@ export class Chess extends ChessBase {
 		if(!type) return false;
 		if(ep && type != "p") return false;
 		if(unpromote && (type == "p" || type == "k")) return false;
-		const last = store.state.history[store.state.moveNumber];
+		const last = this.state.history[this.state.moveNumber];
 
 		// If the last retraction is en passant, the only legal retraction is the 2-step pawn
 		if(last && last.flags == "e") {
@@ -68,7 +72,7 @@ export class Chess extends ChessBase {
 
 		// Move the piece
 		const fen = manipulateFEN(this.fen(), switchSide);
-		const temp = new Chess(fen);
+		const temp = new ChessBase(fen);
 		const piece = temp.remove(from);
 		const rank = from[1];
 		if(unpromote) piece.type = "p";
@@ -103,11 +107,11 @@ export class Chess extends ChessBase {
 		if(piece.type == "k" && (isWhite && to == "e1" || !isWhite && to == "e8")) {
 			const rank = to[1];
 			if(from == "g" + rank) {
-				if(!temp._tryRetract("f" + rank, "h" + rank)) return false;
+				if(!tryRetract(temp, "f" + rank, "h" + rank)) return false;
 				temp.setCastlingRights(piece.color, { k: true });
 			}
 			if(from == "c" + rank) {
-				if(!temp._tryRetract("d" + rank, "a" + rank)) return false;
+				if(!tryRetract(temp, "d" + rank, "a" + rank)) return false;
 				temp.setCastlingRights(piece.color, { q: true });
 			}
 		}
@@ -123,20 +127,12 @@ export class Chess extends ChessBase {
 		}
 
 		// Update state of self
-		if(store.state.moveNumber >= 0) move.before = manipulateFEN(move.before, bumpMove);
+		if(this.state.moveNumber >= 0) move.before = manipulateFEN(move.before, bumpMove);
 		this.load(move.before);
-		const state = store.state;
+		const state = this.state;
 		state.history.length = state.moveNumber + 1;
 		state.history.push(move);
 		state.moveNumber++;
-		return true;
-	}
-
-	_tryRetract(from, to) {
-		if(this.get(to)) return false;
-		const piece = this.remove(from);
-		if(!piece) return false;
-		this.put(piece, to);
 		return true;
 	}
 
@@ -144,7 +140,7 @@ export class Chess extends ChessBase {
 	 * Make a move and return the move object.
 	 */
 	move(arg) {
-		const state = store.state;
+		const state = this.state;
 		const fen = this.fen();
 		const cache = state.history.concat();
 
@@ -173,7 +169,7 @@ export class Chess extends ChessBase {
 
 	addMoves(moves) {
 		if(!moves || moves.length == 0) return;
-		if(store.state.mode == "retro") {
+		if(this.state.mode == "retro") {
 			for(const move of moves) {
 				if(move == "...") continue;
 				const retract = parseRetroMove(move);
@@ -186,11 +182,11 @@ export class Chess extends ChessBase {
 			let sideDetermined = false; // Whether we're on the right track
 			for(const move of moves) {
 				if(move == "...") {
-					if(store.state.pass) this.switchSide();
+					if(this.state.pass) this.switchSide();
 				} else if(this.move(move)) {
 					sideDetermined = true;
 				} else {
-					if(!sideDetermined && store.state.pass) {
+					if(!sideDetermined && this.state.pass) {
 						this.switchSide(); // try switch
 						if(this.move(move)) continue;
 					}
@@ -207,28 +203,16 @@ export class Chess extends ChessBase {
 		return 0;
 	}
 
-	copyGame() {
-		const history = store.state.history;
-		if(history.length == 0) return "";
-		let result = "";
-		if(history[0].color == "b") result += "1... ";
-		for(const [i, h] of history.entries()) {
-			if(history[i - 1] && history[i - 1].color == h.color) {
-				if(h.color == "w") result += "... ";
-				else result += number(h) + "... ";
-			}
-			if(h.color == "w") result += number(h) + ". ";
-			result += format(h) + " ";
-		}
-		return result.trimEnd();
+	copyGame(options) {
+		return formatGame(this.state.history, options);
 	}
 
 	copyPGN() {
 		let result = "";
-		if(store.state.mode == "retro") {
-			const history = store.state.history;
+		if(this.state.mode == "retro") {
+			const history = this.state.history;
 			const last = history.length - 1;
-			const rawFEN = history.length > 0 ? history[last].before : store.state.initFEN;
+			const rawFEN = history.length > 0 ? history[last].before : this.state.initFEN;
 			const fen = manipulateFEN(rawFEN, resetMove);
 			if(fen != DEFAULT_POSITION) {
 				result += `[SetUp "1"]\n[FEN "${fen}"]\n\n`;
@@ -242,10 +226,10 @@ export class Chess extends ChessBase {
 				result += history[i].san + " ";
 			}
 		} else {
-			if(store.state.initFEN != DEFAULT_POSITION) {
-				result += `[SetUp "1"]\n[FEN "${store.state.initFEN}"]\n\n`;
+			if(this.state.initFEN != DEFAULT_POSITION) {
+				result += `[SetUp "1"]\n[FEN "${this.state.initFEN}"]\n\n`;
 			}
-			result += this.copyGame();
+			result += this.copyGame({});
 		}
 		return result;
 	}
@@ -257,9 +241,9 @@ export class Chess extends ChessBase {
 			this.init(fen);
 			text = text.replace(/\[[^\]]+\]/g, "").trim();
 			const moves = parseMoves(text);
-			store.state.pass = moves.includes("...");
+			this.state.pass = moves.includes("...");
 			this.addMoves(moves);
-			store.state.over = this.overState();
+			this.state.over = this.overState();
 			this.goto();
 			return true;
 		} catch {
@@ -268,27 +252,52 @@ export class Chess extends ChessBase {
 	}
 
 	goto(h) {
-		const fen = !h ? store.state.initFEN : store.state.mode == "retro" ? h.before : h.after;
+		const fen = !h ? this.state.initFEN : this.state.mode == "retro" ? h.before : h.after;
 		this.load(fen);
-		store.state.moveNumber = store.state.history.indexOf(h);
+		this.state.moveNumber = this.state.history.indexOf(h);
 		return fen;
 	}
+}
+
+function tryRetract(c, from, to) {
+	if(c.get(to)) return false;
+	const piece = c.remove(from);
+	if(!piece) return false;
+	c.put(piece, to);
+	return true;
 }
 
 export function testOtherSideCheck(fen) {
 	return new ChessBase(manipulateFEN(fen, switchSide))
 }
 
-export function number(h) {
+export function formatGame(history, options) {
+	if(history.length == 0) return "";
+	let result = "";
+	if(history[0].color == "b") result += "1... ";
+	for(const [i, h] of history.entries()) {
+		if(history[i - 1] && history[i - 1].color == h.color) {
+			if(h.color == "w") result += "... ";
+			else result += number(h) + "... ";
+		}
+		if(h.color == "w") result += number(h) + ". ";
+		result += format(h, null, options) + " ";
+	}
+	return result.trimEnd();
+}
+
+export function number(h, mode, options = Chess.options) {
+	if(!h) return "";
 	const num = h.before.match(/\d+$/)[0];
-	const prefix = store.state.mode == "retro" && store.options.negative ? "-" : "";
+	const prefix = mode == "retro" && options.negative ? "-" : "";
 	return prefix + num;
 }
 
-export function format(h) {
-	const isRetro = store.state.mode == "retro";
+export function format(h, mode, options = Chess.options) {
+	if(!h) return "";
+	const isRetro = mode == "retro";
 	let move = isRetro ? getFullNotation(h) : h.san;
-	const sym = store.options.symbol;
+	const sym = options.symbol;
 	const symbol = sym == "unicode" ? unicode :
 		sym == "german" ? german : null;
 	if(symbol) {
@@ -296,12 +305,12 @@ export function format(h) {
 			move = move.replace(k, s);
 		}
 	}
-	if((isRetro || store.options.ep) && h.flags.includes("e")) {
+	if((isRetro || options.ep) && h.flags.includes("e")) {
 		// In retro mode, "ep" is mandatory, otherwise it would be ambiguous in general.
 		// It could be inferred if the next retraction is also given, but we cannot expect that.
 		move = move.replace(/([+#=]?)$/, "ep$1");
 	}
-	if(store.options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0")
+	if(options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0")
 	return move;
 }
 
