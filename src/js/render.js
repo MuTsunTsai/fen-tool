@@ -58,10 +58,21 @@ export function drawTemplate(except) {
 	const options = Object.assign({}, store.board, status.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
 	const squares = getTemplate();
 	drawBoard(tCtx, squares, options, dpr, false, status.hor);
+	const { size } = store.board;
 	if(!noEditing()) {
 		drawBoard(tgCtx, squares, options, dpr, true, status.hor);
+		if(status.selection) {
+			tCtx.save();
+			const { offset } = getDimensions(store.board, status.hor);
+			tCtx.lineWidth = size / 12;
+			tCtx.strokeStyle = "#0d6efd";
+			tCtx.translate(offset.x, offset.y);
+			const index = squares.indexOf(status.selection);
+			const x = index % options.w, y = (index - x) / options.w;
+			drawSelection(x, y);
+			tCtx.restore();
+		}
 	} else {
-		const { size } = store.board;
 		const isRetro = state.play.mode == "retro";
 		tCtx.save();
 		const { offset } = getDimensions(store.board, status.hor);

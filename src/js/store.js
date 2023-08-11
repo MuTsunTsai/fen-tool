@@ -68,6 +68,7 @@ export const status = reactive({
 	hor: false,
 	collapse: false,
 	dragging: false,
+	selection: null,
 	stockfish: {
 		// 0=not downloaded, 1=downloading, 2=need reload, 3=ready
 		status: store.Stockfish.downloaded ? 3 : 0,

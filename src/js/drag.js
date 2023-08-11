@@ -1,14 +1,14 @@
 import { getRenderSize, noEditing, state, status, store } from "./store";
 import { squares, toFEN, setSquare, pushState, setFEN } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
-import { ctx, templateValues } from "./render";
+import { drawTemplate, templateValues } from "./render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
 import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
 import { env } from "./meta/env";
 import { animate } from "./animation";
 
-let startX, startY, sqX, sqY, sq, lastTap = 0;
+let startX, startY, sqX, sqY, sq, lastTap = 0, lastDown;
 let ghost, draggingValue, fromIndex;
 let path;
 
@@ -20,6 +20,9 @@ export function initDrag() {
 	TP.onmousedown = mouseDown;
 	TP.ontouchstart = mouseDown;
 
+	document.body.onmousedown = event => {
+		if(event.target != TP && event.target != PV) cancelSelection();
+	};
 	document.body.onmousemove = mousemove;
 	document.body.ontouchmove = mousemove;
 	document.body.onmouseleave = mouseup;
@@ -30,6 +33,7 @@ export function initDrag() {
 function mousemove(event) {
 	wrapEvent(event);
 	if(status.dragging == "pending" && getDisplacement(event) > 5) {
+		lastDown = NaN;
 		if(draggingValue) {
 			path = env.isTouch ? [] : null;
 			dragStart(event, true);
@@ -39,6 +43,19 @@ function mousemove(event) {
 		if(path) path.push({ x: event.clientX, y: event.clientY });
 		dragMove(event);
 	}
+}
+
+function getXY(event, canvas) {
+	const { s, offset } = getRenderSize();
+	const r = canvas.getBoundingClientRect();
+	const y = Math.floor((event.clientY - r.top - offset.y) / s);
+	const x = Math.floor((event.clientX - r.left - offset.x) / s);
+	return { x, y };
+}
+
+function cancelSelection() {
+	status.selection = null;
+	drawTemplate([]);
 }
 
 function mouseup(event) {
@@ -53,15 +70,27 @@ function mouseup(event) {
 
 	if(!status.dragging) return;
 	status.dragging = false;
+	ghost.style.display = "none";
+
+	if(event.target == TP && !noEditing()) {
+		const now = performance.now();
+		if(now - lastDown < 150) {
+			let { x, y } = getXY(event, TP);
+			if(status.hor) [x, y] = [y, x];
+			if(x > -1 && x < 3 && y > -1 && y < 8) {
+				const index = y * 3 + x;
+				status.selection = templateValues[index];
+				drawTemplate([]);
+			}
+			return;
+		}
+	}
+
 	if(!draggingValue) return;
 	wrapEvent(event);
 	const { w, h } = store.board;
-	const { s, offset } = getRenderSize();
-	const r = CN.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - offset.y) / s);
-	const x = Math.floor((event.clientX - r.left - offset.x) / s);
+	const { x, y } = getXY(event, CN);
 	const index = y * w + x;
-	ghost.style.display = "none";
 	const inBoard = y > -1 && y < h && x > -1 && x < w;
 	if(state.play.playing) {
 		let result;
@@ -146,6 +175,7 @@ function rotate(sq, by) {
 }
 
 function mouseDown(event) {
+	lastDown = performance.now();
 	if(state.popeye.playing) return;
 	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
@@ -161,6 +191,12 @@ function mouseDown(event) {
 	sqY = Math.floor((startY - oy) / s);
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = isCN ? CG : TPG;
+
+	if(isCN && status.selection) {
+		squares[index].value = status.selection;
+		toFEN();
+		return;
+	}
 
 	if(state.play.playing) {
 		if(!isCN && state.play.pendingPromotion) {
@@ -195,6 +231,7 @@ function mouseDown(event) {
 }
 
 function dragStart(event, isCN) {
+	cancelSelection();
 	ghost.style.display = "block";
 	if(isCN) {
 		sq.value = "";
