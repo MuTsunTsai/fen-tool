@@ -36,7 +36,7 @@ function mousemove(event) {
 		lastDown = NaN;
 		if(draggingValue) {
 			path = env.isTouch ? [] : null;
-			dragStart(event, true);
+			dragStart(event, Boolean(sq));
 		} else status.dragging = false;
 	}
 	if(status.dragging === true) {
@@ -60,7 +60,7 @@ function cancelSelection() {
 
 function mouseup(event) {
 	if(state.popeye.playing) return;
-	if(status.dragging == "pending" && !state.play.playing) {
+	if(status.dragging == "pending" && !state.play.playing && event.target == PV) {
 		const now = performance.now();
 		if(now - lastTap < 300) sq.focus();
 		lastTap = now;
@@ -68,8 +68,6 @@ function mouseup(event) {
 		status.dragging = false;
 	}
 
-	if(!status.dragging) return;
-	status.dragging = false;
 	ghost.style.display = "none";
 	wrapEvent(event);
 
@@ -79,21 +77,27 @@ function mouseup(event) {
 			let { x, y } = getXY(event, TP);
 			console.log(x, y);
 			if(status.hor) [x, y] = [y, x];
-			if(x > -1 && x < 3 && y > -1 && y < 8) {
+			if(inRange(x, y, 3, 8)) {
 				const v = templateValues[y * 3 + x];
 				if(status.selection == v) status.selection = null;
 				else status.selection = v;
 				drawTemplate([]);
+			} else {
+				cancelSelection();
 			}
+			status.dragging = false;
 			return;
 		}
 	}
+
+	if(!status.dragging) return;
+	status.dragging = false;
 
 	if(!draggingValue) return;
 	const { w, h } = store.board;
 	const { x, y } = getXY(event, CN);
 	const index = y * w + x;
-	const inBoard = y > -1 && y < h && x > -1 && x < w;
+	const inBoard = inRange(x, y, w, h);
 	if(state.play.playing) {
 		let result;
 		if(inBoard) {
@@ -156,7 +160,7 @@ function wheel(event) {
 	const { offset, s } = getRenderSize();
 	const x = Math.floor((event.offsetX - offset.x) / s);
 	const y = Math.floor((event.offsetY - offset.y) / s);
-	if(y > -1 && y < h && x > -1 && x < w) {
+	if(inRange(x, y, w, h)) {
 		const sq = squares[y * w + x];
 		if(sq.value == "") return;
 		event.preventDefault();
@@ -185,7 +189,7 @@ function mouseDown(event) {
 	if(document.activeElement) document.activeElement.blur();
 	const isCN = this != TP;
 	const { offset, s } = isCN ? getRenderSize() : getRenderSize(TP, status.hor);
-	const { w } = store.board;
+	const { w, h } = store.board;
 	startX = event.offsetX;
 	startY = event.offsetY;
 	const [ox, oy] = [offset.x, offset.y];
@@ -195,8 +199,12 @@ function mouseDown(event) {
 	ghost = isCN ? CG : TPG;
 
 	if(isCN && status.selection) {
-		squares[index].value = status.selection;
-		toFEN();
+		if(inRange(sqX, sqY, w, h)) {
+			squares[index].value = status.selection;
+			toFEN();
+		} else {
+			cancelSelection();
+		}
 		return;
 	}
 
@@ -219,6 +227,8 @@ function mouseDown(event) {
 		sq = squares[index];
 		status.dragging = "pending";
 		draggingValue = undefined;
+	} else {
+		sq = undefined;
 	}
 	if(!isCN || sq.value != "") {
 		event.preventDefault();
@@ -227,7 +237,7 @@ function mouseDown(event) {
 			draggingValue = sq.value;
 		} else {
 			draggingValue = status.hor ? templateValues[sqX * 3 + sqY] : templateValues[index];
-			dragStart(event)
+			status.dragging = "pending";
 		}
 	}
 }
@@ -259,13 +269,17 @@ function dragMove(event) {
 	const x = Math.floor((event.clientX - r.left - offset.x) / s);
 	if(x !== sqX || y !== sqY) path = null;
 	const { scrollLeft, scrollTop } = document.documentElement;
-	if(y > -1 && y < h && x > -1 && x < w) {
+	if(inRange(x, y, w, h)) {
 		ghost.style.left = left + (x - sqX) * s + scrollLeft + "px";
 		ghost.style.top = r.top + (y - sqY) * s + scrollTop + "px";
 	} else {
 		ghost.style.left = event.clientX + scrollLeft + 1 - startX + "px";
 		ghost.style.top = event.clientY + scrollTop - startY + "px";
 	}
+}
+
+function inRange(x, y, w, h) {
+	return y > -1 && y < h && x > -1 && x < w;
 }
 
 function wrapEvent(event) {
