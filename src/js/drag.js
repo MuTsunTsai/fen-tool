@@ -68,7 +68,7 @@ function mouseup(event) {
 		status.dragging = false;
 	}
 
-	ghost.style.display = "none";
+	if(ghost) ghost.style.display = "none";
 	wrapEvent(event);
 
 	if(event.target == TP && !noEditing()) {

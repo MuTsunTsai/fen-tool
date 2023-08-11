@@ -218,6 +218,15 @@ export const Stockfish = {
 	stop() {
 		status.stockfish.running = 3;
 		cmd("stop");
+		setTimeout(() => {
+			if(status.stockfish.running != 3) return;
+			cmd("quit");
+			setTimeout(() => {
+				stockfish.terminate();
+				stockfish = undefined;
+				status.stockfish.running = 0;
+			}, 1000);
+		}, 2000);
 	},
 	format(moves) {
 		return module.formatGame(moves);
