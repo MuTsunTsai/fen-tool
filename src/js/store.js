@@ -28,6 +28,7 @@ const settings = {
 		zero: false,
 	},
 	Stockfish: {
+		downloaded: false,
 		depth: 50,
 		lines: 3,
 	},
@@ -69,20 +70,12 @@ export const status = reactive({
 	collapse: false,
 	dragging: false,
 	stockfish: {
-		// -1=undetermined, 0=not downloaded, 1=downloading, 2=need reload, 3=ready
-		status: -1,
+		// 0=not downloaded, 1=downloading, 2=need reload, 3=ready
+		status: store.Stockfish.downloaded ? 3 : 0,
 		// 0=stop, 1=starting, 2=running, 3=stopping
 		running: 0,
 	},
 });
-
-export async function checkStockfishModel() {
-	const assets = await caches.open("modules");
-	const keys = await assets.keys();
-	const match = keys.find(r => r.url.endsWith(".nnue"));
-	return Boolean(match);
-}
-checkStockfishModel().then(v => status.stockfish.status = v ? 3 : 0);
 
 // Session data, will be restored on tab reloading/restoring/duplicating
 // (only for top window).

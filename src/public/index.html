@@ -717,8 +717,7 @@
 
 					<!-- Analyze -->
 					<section :class="{show:state.tab==8}">
-						<div v-if="status.stockfish.status==-1"></div>
-						<div v-else-if="status.stockfish.status<2">
+						<div v-if="status.stockfish.status<2">
 							<div class="mb-3">To use this feature, we need to download Stockfish modules first.</div>
 							<button v-if="status.stockfish.status==0" type="button" class="btn btn-primary"
 									@click="Stockfish.download">

@@ -2,7 +2,7 @@ import { clone } from "../meta/clone.mjs";
 import { env } from "../meta/env";
 import { SQ } from "../meta/popeye/base.mjs";
 import { orthodoxFEN } from "../squares";
-import { STOCKFISH, checkStockfishModel, state, status, store } from "../store";
+import { STOCKFISH, state, status, store } from "../store";
 import { importGame, loadModule } from "./play";
 
 // Session
@@ -62,7 +62,7 @@ function init() {
 		cmd("setoption Hash 512");
 		if(env.thread) {
 			cmd("setoption name Threads value " + Math.max(2, navigator.hardwareConcurrency - 4));
-		}	
+		}
 		cmd("isready");
 	});
 }
@@ -114,15 +114,15 @@ export const Stockfish = {
 	async download() {
 		gtag("event", "fen_stockfish_download");
 		status.stockfish.status = 1;
-		for(const file of files) await fetch(file);
-		for(const file of files) await fetch(file);
-		// await new Promise(resolve => {
-		// 	async function waitStockfish() {
-		// 		if(await checkStockfishModel()) resolve();
-		// 		else setTimeout(waitStockfish, 50);
-		// 	}
-		// 	waitStockfish();
-		// });
+		for(const file of files) {
+			const response = await fetch(file);
+			if(response.status != 200) {
+				alert("Download failed. Please check your network connection.");
+				status.stockfish.status = 0;
+				return;
+			}
+		}
+		store.Stockfish.downloaded = true;
 		status.stockfish.status = 2;
 	},
 	async analyze() {
