@@ -48,7 +48,7 @@ const files = [
 function init() {
 	if(stockfish) return;
 	ready = new Promise(resolve => {
-		stockfish = new Worker(``);
+		stockfish = new Worker(worker);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.log(msg);
