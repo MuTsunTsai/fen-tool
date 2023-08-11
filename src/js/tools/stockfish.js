@@ -38,17 +38,21 @@ const move = `(${SQ})(${SQ})([qrbn]?)`;
 
 const path = "modules/stockfish/";
 const suffix = env.thread ? "" : "-single";
-const worker = `${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`;
+
+// We can't really tell if SharedArrayBuffer is enabled on first launch,
+// so we download all files anyway.
 const files = [
-	`${worker},worker`,
-	`${path}stockfish-nnue-16${suffix}.wasm`,
+	`${path}stockfish-nnue-16.js#stockfish-nnue-16.wasm,worker`,
+	`${path}stockfish-nnue-16.wasm`,
+	`${path}stockfish-nnue-16-single.js#stockfish-nnue-16-single.wasm,worker`,
+	`${path}stockfish-nnue-16-single.wasm`,
 	`${path}nn-5af11540bbfe.nnue`,
 ];
 
 function init() {
 	if(stockfish) return;
 	ready = new Promise(resolve => {
-		stockfish = new Worker(worker);
+		stockfish = new Worker(`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.log(msg);
