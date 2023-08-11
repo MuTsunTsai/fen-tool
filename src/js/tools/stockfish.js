@@ -38,8 +38,9 @@ const move = `(${SQ})(${SQ})([qrbn]?)`;
 
 const path = "modules/stockfish/";
 const suffix = env.thread ? "" : "-single";
+const worker = `${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`;
 const files = [
-	`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm,worker`,
+	`${worker},worker`,
 	`${path}stockfish-nnue-16${suffix}.wasm`,
 	`${path}nn-5af11540bbfe.nnue`,
 ];
@@ -47,7 +48,7 @@ const files = [
 function init() {
 	if(stockfish) return;
 	ready = new Promise(resolve => {
-		stockfish = new Worker(files[0]);
+		stockfish = new Worker(``);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.log(msg);
