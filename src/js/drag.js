@@ -71,11 +71,13 @@ function mouseup(event) {
 	if(!status.dragging) return;
 	status.dragging = false;
 	ghost.style.display = "none";
+	wrapEvent(event);
 
 	if(event.target == TP && !noEditing()) {
 		const now = performance.now();
 		if(now - lastDown < 150) {
 			let { x, y } = getXY(event, TP);
+			console.log(x, y);
 			if(status.hor) [x, y] = [y, x];
 			if(x > -1 && x < 3 && y > -1 && y < 8) {
 				const index = y * 3 + x;
@@ -87,7 +89,6 @@ function mouseup(event) {
 	}
 
 	if(!draggingValue) return;
-	wrapEvent(event);
 	const { w, h } = store.board;
 	const { x, y } = getXY(event, CN);
 	const index = y * w + x;

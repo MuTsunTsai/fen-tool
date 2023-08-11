@@ -67,8 +67,9 @@ export function drawTemplate(except) {
 			tCtx.lineWidth = size / 12;
 			tCtx.strokeStyle = "#0d6efd";
 			tCtx.translate(offset.x, offset.y);
-			const index = squares.indexOf(status.selection);
-			const x = index % options.w, y = (index - x) / options.w;
+			const index = templateValues.indexOf(status.selection);
+			const x = index % 3, y = (index - x) / 3;
+			console.log(x, y);
 			drawSelection(x, y);
 			tCtx.restore();
 		}
