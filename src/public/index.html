@@ -779,8 +779,8 @@
 							<!-- Output -->
 							<div class="mt-3">
 								<div v-if="state.stockfish.depth">
-									<span>Depth: {{state.stockfish.depth}}</span>
-									<span v-if="status.stockfish.running">/{{store.Stockfish.depth}}</span>
+									<span>Depth: {{state.stockfish.depth}}</span><span
+										  v-if="status.stockfish.running">/{{store.Stockfish.depth}}</span>
 								</div>
 								<div v-if="state.stockfish.header.length">
 									Solution is unique against best defense up to {{state.stockfish.header.length/2}}
