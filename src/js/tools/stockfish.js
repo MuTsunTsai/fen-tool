@@ -8,10 +8,13 @@ import { importGame, loadModule } from "./play";
 // Session
 if(state.stockfish.lines.length) {
 	const lines = state.stockfish.lines;
+	const header = state.stockfish.header;
 	state.stockfish.lines = [];
+	state.stockfish.header = [];
 	loadModule().then(m => {
 		module = m;
 		state.stockfish.lines = lines;
+		state.stockfish.header = header;
 	});
 }
 
