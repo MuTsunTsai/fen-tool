@@ -185,6 +185,7 @@ function mouseDown(event) {
 	if(state.popeye.playing) return;
 	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
+	event.preventDefault();
 
 	if(document.activeElement) document.activeElement.blur();
 	const isCN = this != TP;
@@ -198,9 +199,12 @@ function mouseDown(event) {
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = isCN ? CG : TPG;
 
-	if(isCN && status.selection) {
+	const v = status.selection;
+	if(isCN && v) {
 		if(inRange(sqX, sqY, w, h)) {
-			squares[index].value = status.selection;
+			const sq = squares[index];
+			if(sq.value == v) sq.value = "";
+			else sq.value = v;
 			toFEN();
 		} else {
 			cancelSelection();
