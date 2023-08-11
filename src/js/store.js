@@ -76,7 +76,7 @@ export const status = reactive({
 	},
 });
 
-async function checkStockfishModel() {
+export async function checkStockfishModel() {
 	const assets = await caches.open("modules");
 	const keys = await assets.keys();
 	const match = keys.find(r => r.url.endsWith(".nnue"));

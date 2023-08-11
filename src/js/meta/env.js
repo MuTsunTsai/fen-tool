@@ -24,6 +24,7 @@ const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
 
 export const env = {
 	isTop: top == self,
+	thread: typeof SharedArrayBuffer != "undefined",
 	canShare,
 	canSharePng: testPngShare(),
 	canCopy: cb && "writeText" in cb,

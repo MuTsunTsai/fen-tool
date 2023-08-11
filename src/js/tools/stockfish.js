@@ -1,7 +1,8 @@
 import { clone } from "../meta/clone.mjs";
+import { env } from "../meta/env";
 import { SQ } from "../meta/popeye/base.mjs";
 import { orthodoxFEN } from "../squares";
-import { STOCKFISH, state, status, store } from "../store";
+import { STOCKFISH, checkStockfishModel, state, status, store } from "../store";
 import { importGame, loadModule } from "./play";
 
 // Session
@@ -35,10 +36,18 @@ function cmd(text) {
 
 const move = `(${SQ})(${SQ})([qrbn]?)`;
 
+const path = "modules/stockfish/";
+const suffix = env.thread ? "" : "-single";
+const files = [
+	`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm,worker`,
+	`${path}stockfish-nnue-16${suffix}.wasm`,
+	`${path}nn-5af11540bbfe.nnue`,
+]
+
 function init() {
 	if(stockfish) return;
 	ready = new Promise(resolve => {
-		stockfish = new Worker("modules/stockfish/stockfish.js#stockfish.wasm");
+		stockfish = new Worker(files[0]);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.log(msg);
@@ -51,7 +60,9 @@ function init() {
 		cmd("uci");
 		cmd("setoption name Use NNUE value true");
 		cmd("setoption Hash 512");
-		cmd("setoption name Threads value " + Math.max(2, navigator.hardwareConcurrency - 4));
+		if(env.thread) {
+			cmd("setoption name Threads value " + Math.max(2, navigator.hardwareConcurrency - 4));
+		}	
 		cmd("isready");
 	});
 }
@@ -103,9 +114,14 @@ export const Stockfish = {
 	async download() {
 		gtag("event", "fen_stockfish_download");
 		status.stockfish.status = 1;
-		await fetch("modules/stockfish/stockfish.js#stockfish.wasm,worker");
-		await fetch("modules/stockfish/stockfish.wasm");
-		await fetch("modules/stockfish/nn-5af11540bbfe.nnue");
+		for(const file of files) await fetch(file);
+		await new Promise(resolve => {
+			async function waitStockfish() {
+				if(await checkStockfishModel()) resolve();
+				else setTimeout(waitStockfish, 50);
+			}
+			waitStockfish();
+		});
 		status.stockfish.status = 2;
 	},
 	async analyze() {
