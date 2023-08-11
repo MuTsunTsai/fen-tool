@@ -33,11 +33,14 @@ let ready;
 function cmd(text) {
 	stockfish.postMessage(text);
 }
+window.cmd = cmd; // For dev purpose
 
 const move = `(${SQ})(${SQ})([qrbn]?)`;
 
 const path = "modules/stockfish/";
 const suffix = env.thread ? "" : "-single";
+
+const DRAW_THRESHOlD = 1;
 
 // We can't really tell if SharedArrayBuffer is enabled on first launch,
 // so we download all files anyway.
@@ -58,8 +61,7 @@ function init() {
 			console.log(msg);
 			if(msg == "readyok") resolve();
 			if(msg.startsWith("info ")) parseInfo(msg.substring(5));
-			const best = msg.match(new RegExp(`^bestmove (${move})`));
-			if(best) findBest(best[1]);
+			if(msg.match(new RegExp(`^bestmove ${move}`))) findBest();
 		};
 
 		cmd("uci");
@@ -81,7 +83,7 @@ function parseInfo(info) {
 
 	const mate = info.match(/mate (-?)(\d+)/);
 	const score = info.match(/score cp (-?\d+)/);
-	const cp = score ? (Number(score[1]) / 100).toFixed(2) : "";
+	const cp = Number(score && score[1] || 0) / 100;
 
 	if(index == 0) {
 		const depth = info.match(/depth (\d+)/);
@@ -98,23 +100,64 @@ function parseInfo(info) {
 		const matches = moves[1].split(" ").map(m => m.match(new RegExp(move)));
 		state.stockfish.moves = [];
 		chess.init(fen);
+		for(const move of state.stockfish.header) {
+			const m = chess.move(move);
+			m.annotation = move.annotation;
+		}
 		for(const match of matches) {
 			const move = chess.move({ from: match[1], to: match[2], promotion: match[3] })
 			if(move.san.endsWith("=")) break; // Stockfish keeps going
 		}
 		const line = {
-			score: mate ? mate[1] + "#" + mate[2] : cp,
+			rawScore: mate ? (mate[1] ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY) : cp,
+			score: mate ? mate[1] + "#" + mate[2] : cp.toFixed(2),
 			raw: moves[1],
 			moves: chess.state.history.concat(),
 			pgn: chess.copyPGN(),
 		};
 		state.stockfish.lines[index] = line;
 	}
+	if(store.Stockfish.study) annotate();
 }
 
-function findBest(best) {
-	state.stockfish.bestMove = module.format(state.stockfish.lines[0][0]);
-	status.stockfish.running = 0;
+function annotate() {
+	const lines = state.stockfish.lines.filter(l => l && l.moves.length);
+	if(lines.length <= 1) return false;
+	const at = state.stockfish.header.length;
+	lines.forEach(l => l.moves[at] && (l.moves[at].annotation = undefined));
+	const win = lines.filter(l => l.rawScore > DRAW_THRESHOlD);
+	if(win.length > 1) return false;
+	if(win.length == 1) {
+		win[0].moves[at].annotation = "!";
+		return true;
+	}
+	const draw = lines.filter(l => l.rawScore > -DRAW_THRESHOlD);
+	if(draw.length == 1) {
+		draw[0].moves[at].annotation = "!";
+		return true;
+	}
+	return false;
+}
+
+function findBest() {
+	const depth = store.Stockfish.depth;
+	if(!store.Stockfish.study || depth < 4 || !annotate()) {
+		status.stockfish.running = 0;
+	} else {
+		state.stockfish.header = state.stockfish.lines[0].moves.slice(0, state.stockfish.header.length + 2);
+		const fen = state.stockfish.header[state.stockfish.header.length - 1].after;
+		cmd("position fen " + fen);
+		cmd("go depth " + depth);
+	}
+}
+
+function getThen() {
+	const lines = state.stockfish.lines;
+	const at = state.stockfish.header.length;
+	const win = lines.filter(l => l.rawScore > DRAW_THRESHOlD);
+	if(win.length > 1) return win.map(l => l.moves[at]);
+	const draw = lines.filter(l => l.rawScore > -DRAW_THRESHOlD);
+	return draw.map(l => l.moves[at]);
 }
 
 export const Stockfish = {
@@ -176,4 +219,10 @@ export const Stockfish = {
 	format(moves) {
 		return module.formatGame(moves);
 	},
+	then() {
+		const moves = getThen();
+		let result = module.format(moves.shift());
+		if(moves.length) result += ` (or ${moves.map(m => module.format(m)).join(", ")})`;
+		return result;
+	}
 };

@@ -735,8 +735,8 @@
 							</button>
 						</div>
 						<div v-else>
-							<div class="row">
-								<div class="col" style="flex-basis: 13rem;">
+							<div class="row align-items-baseline">
+								<div class="col" style="flex-basis: 12rem;">
 									<div class="row gx-3 mb-2">
 										<label class="col-auto col-form-label">Search depth:</label>
 										<div class="col">
@@ -745,7 +745,7 @@
 										</div>
 									</div>
 								</div>
-								<div class="col" style="flex-basis: 7rem;">
+								<div class="col" style="flex-basis: 8rem;">
 									<div class="row gx-3 mb-2">
 										<label class="col-auto col-form-label">Lines:</label>
 										<div class="col">
@@ -753,6 +753,9 @@
 												   min="1">
 										</div>
 									</div>
+								</div>
+								<div class="col mb-2" style="flex-basis: 10rem;">
+									<div v-scope="Checkbox('Stockfish.study', 'Study mode', null, ()=>store.Stockfish.lines<=1)"></div>
 								</div>
 							</div>
 							<!-- Start button -->
@@ -775,10 +778,12 @@
 							<!-- Output -->
 							<div class="mt-3">
 								<div v-if="state.stockfish.depth">Depth: {{state.stockfish.depth}}</div>
+								<div v-if="state.stockfish.header.length">
+									Solution is unique against best defense up to {{state.stockfish.header.length/2}} moves, and then {{Stockfish.then()}}.
+								</div>
 								<div v-if="state.stockfish.mate">{{(state.stockfish.mate||"")[0]}} has mate in
 									{{(state.stockfish.mate||"")[1]}}</div>
 								<div v-else-if="state.stockfish.score">Score: {{state.stockfish.score}}</div>
-								<div v-if="state.stockfish.bestMove">Best move: {{state.stockfish.bestMove}}</div>
 								<table class="table">
 									<tr v-for="line in state.stockfish.lines.filter(l=>l&&l.moves.length)">
 										<td class="align-top">

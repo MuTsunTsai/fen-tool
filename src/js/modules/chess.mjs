@@ -310,7 +310,8 @@ export function format(h, mode, options = Chess.options) {
 		// It could be inferred if the next retraction is also given, but we cannot expect that.
 		move = move.replace(/([+#=]?)$/, "ep$1");
 	}
-	if(options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0")
+	if(options.zero) move = move.replace("O-O-O", "0-0-0").replace("O-O", "0-0");
+	if(h.annotation) move += h.annotation;
 	return move;
 }
 

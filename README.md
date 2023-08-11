@@ -68,6 +68,17 @@ There are three different modes:
 2. Allow passing moves: can be used in for example series helpmate problems.
 3. Retro: playing backwards, used in retrograde analysis problems.
 
+### Analyzer
+
+This tool integrates [Stockfish.js](https://github.com/nmrugg/stockfish.js)
+based on the latest version (v16) of [Stockfish](https://github.com/official-stockfish/Stockfish),
+one of the strongest orthodox chess engines. Due to its model size,
+Stockfish modules are not pre-downloaded upon first visit,
+but once it's downloaded it will be cached for good.
+
+When "Study mode" is enabled, it will treat the position as a study problem,
+and try to find the longest unique solution sequence against best defenses.
+
 ### PDB
 
 You can fetch a PDB problem by using its ID number,

@@ -28,6 +28,7 @@ const settings = {
 		zero: false,
 	},
 	Stockfish: {
+		study: false,
 		downloaded: false,
 		depth: 50,
 		lines: 3,
@@ -80,11 +81,11 @@ export const status = reactive({
 const savedState = env.isTop ? sessionStorage.getItem("state") : null;
 
 export const STOCKFISH = {
-	bestMove: "",
 	depth: 0,
 	score: null,
 	mate: null,
 	lines: [],
+	header: [],
 };
 const defaultState = {
 	split: false,
