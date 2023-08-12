@@ -18,6 +18,9 @@ if(state.popeye.playing) load().then(() => nextTick(() => setupStepElements(true
 /** @type {Worker} */
 let worker;
 
+/** Current memory setting. */
+let memory;
+
 let path = "modules/py.js";
 let startTime;
 let spinner;
@@ -85,6 +88,9 @@ function createWorker() {
 			path = "modules/py.asm.js"; // fallback to asm.js
 			stop(true);
 			state.popeye.intOutput = "Fallback to JS mode.<br>";
+		} else if(data === -2) {
+			memory /= 2;
+			stop(memory >= 4);
 		} else if(data === null) {
 			stop();
 		} else {
@@ -109,7 +115,10 @@ function start() {
 	p.running = true;
 	interval = setInterval(flush, 500);
 	startTime = performance.now();
-	worker.postMessage("Opti NoBoard\n" + p.intInput); // NoBoard is used in any case
+	worker.postMessage({
+		mem: memory,
+		input: "Opti NoBoard\n" + p.intInput,
+	}); // NoBoard is used in any case
 }
 
 function error(text) {
@@ -221,6 +230,7 @@ function scrollTo(step) {
 export const Popeye = {
 	run() {
 		gtag("event", "fen_popeye_run");
+		memory = 512; // Initial settings
 		try {
 			const p = state.popeye;
 			p.intInput = parseInput(p.input);

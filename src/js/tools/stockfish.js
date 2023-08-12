@@ -30,9 +30,6 @@ let chess;
 /** @type {string} */
 let fen;
 
-/** @type {Promise<void>} */
-let ready;
-
 function cmd(text) {
 	stockfish.postMessage(text);
 }
@@ -55,24 +52,33 @@ const files = [
 	`${path}nn-5af11540bbfe.nnue`,
 ];
 
-function init() {
-	if(stockfish) return;
-	ready = new Promise(resolve => {
+function init(memory) {
+	if(stockfish) return Promise.resolve();
+	return new Promise((resolve, reject) => {
+		status.stockfish.running = 1;
 		stockfish = new Worker(`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.log(msg);
-			if(msg == "readyok") resolve();
+			if(msg == "readyok") {
+				status.stockfish.running = 2;
+				resolve();
+			}
 			if(msg.startsWith("info ")) parseInfo(msg.substring(5));
 			if(msg.match(new RegExp(`^bestmove ${move}`))) findBest();
+		};
+		stockfish.onerror = e => {
+			if(e.message.includes("RangeError")) reject(-1);
+			else if(e.message.includes("memory")) reject("Not enough memory.")
+			else reject("Unknown error has occurred.");
 		};
 
 		cmd("uci");
 		cmd("setoption name Use NNUE value true");
-		cmd("setoption Hash 512");
 		if(env.thread) {
 			cmd("setoption name Threads value " + Math.max(2, navigator.hardwareConcurrency - 4));
 		}
+		cmd("setoption name Hash value " + memory);
 		cmd("isready");
 	});
 }
@@ -190,8 +196,8 @@ export const Stockfish = {
 	async analyze() {
 		try {
 			gtag("event", "fen_stockfish_run");
-			status.stockfish.running = 1;
-			init();
+			let memory = 128; // Default memory
+			let ready = init(memory);
 			fen = orthodoxFEN();
 			if(!fen) throw "Only orthodox chess is supported.";
 			if(!module) module = await loadModule();
@@ -201,15 +207,27 @@ export const Stockfish = {
 			} catch(e) {
 				throw "This board is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&.");
 			}
-			await ready;
+			while(true) {
+				try {
+					await ready;
+					break;
+				} catch(e) {
+					if(e !== -1) throw e;
+					// Reduce memory and try again
+					Stockfish.stop();
+					memory /= 2
+					if(memory < 4) throw "Not enough memory.";
+					ready = init(memory);
+				}
+			}
 
 			state.stockfish = clone(STOCKFISH);
-			status.stockfish.running = 2;
 			cmd("setoption name MultiPV value " + store.Stockfish.lines);
 			cmd("ucinewgame");
 			cmd("position fen " + fen);
 			cmd("go depth " + store.Stockfish.depth);
 		} catch(e) {
+			Stockfish.stop();
 			alert(e instanceof Error ? e.message : e);
 			status.stockfish.running = 0;
 		}
@@ -222,7 +240,7 @@ export const Stockfish = {
 	},
 	stop() {
 		// Stop all Stockfish workers and release memory
-		stockfish.terminate();
+		if(stockfish) stockfish.terminate();
 		stockfish = undefined;
 		status.stockfish.running = 0;
 	},

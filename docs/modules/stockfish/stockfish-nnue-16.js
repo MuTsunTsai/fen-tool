@@ -1,3 +1,4 @@
+addEventListener("unhandledrejection", e=>{throw new Error(e.reason)});
 /*!
  * Stockfish.js 16 (c) 2023, Chess.com, LLC
  * https://github.com/nmrugg/stockfish.js
