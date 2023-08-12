@@ -13,10 +13,14 @@
 	<script>
 		window.dataLayer = window.dataLayer || [];
 		function gtag() { dataLayer.push(arguments); }
-		gtag('js', new Date());
-		gtag('config', 'G-4GYC00FPRR');
+		var isHttps = location.protocol == "https:";
+		if(isHttps) {
+			gtag('js', new Date());
+			gtag('config', 'G-4GYC00FPRR');
+			gtag('config', 'G-NCH5HC15TN');
+		}
 		if('serviceWorker' in navigator) {
-			const scope = location.protocol == "https:" ? "/fen-tool/" : "/";
+			const scope = isHttps ? "/fen-tool/" : "/";
 			navigator.serviceWorker.register('sw.js', { scope });
 		}
 
