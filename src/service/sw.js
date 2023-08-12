@@ -3,6 +3,8 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
+self.__WB_DISABLE_DEV_LOGS = true;
+
 // COOP-COEP headers, for multi-thread wasm
 // https://github.com/GoogleChrome/workbox/issues/2963
 const headersPlugin = {
