@@ -149,7 +149,7 @@ function annotate() {
 function findBest() {
 	const depth = store.Stockfish.depth;
 	if(!store.Stockfish.study || depth < 4 || !annotate()) {
-		status.stockfish.running = 0;
+		Stockfish.stop();
 	} else {
 		state.stockfish.header = state.stockfish.lines[0].moves.slice(0, state.stockfish.header.length + 2);
 		const fen = state.stockfish.header[state.stockfish.header.length - 1].after;
@@ -221,17 +221,10 @@ export const Stockfish = {
 		importGame(line.pgn);
 	},
 	stop() {
-		status.stockfish.running = 3;
-		cmd("stop");
-		setTimeout(() => {
-			if(status.stockfish.running != 3) return;
-			cmd("quit");
-			setTimeout(() => {
-				stockfish.terminate();
-				stockfish = undefined;
-				status.stockfish.running = 0;
-			}, 1000);
-		}, 2000);
+		// Stop all Stockfish workers and release memory
+		stockfish.terminate();
+		stockfish = undefined;
+		status.stockfish.running = 0;
 	},
 	format(moves) {
 		return module.formatGame(moves);

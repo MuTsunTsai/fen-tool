@@ -768,12 +768,9 @@
 								<button v-else-if="status.stockfish.running==1" disabled class="btn btn-primary">
 									<i class="fa-solid fa-play"></i>&ensp;Initializing...
 								</button>
-								<button v-else-if="status.stockfish.running==2" type="button" class="btn btn-secondary"
+								<button v-else type="button" class="btn btn-secondary"
 										@click="Stockfish.stop">
 									<i class="fa-solid fa-stop"></i>&ensp;Stop
-								</button>
-								<button v-else disabled class="btn btn-secondary">
-									<i class="fa-solid fa-stop"></i>&ensp;Stopping...
 								</button>
 							</div>
 							<!-- Output -->
