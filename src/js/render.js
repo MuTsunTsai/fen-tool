@@ -69,7 +69,6 @@ export function drawTemplate(except) {
 			tCtx.translate(offset.x, offset.y);
 			const index = templateValues.indexOf(status.selection);
 			const x = index % 3, y = (index - x) / 3;
-			console.log(x, y);
 			drawSelection(x, y);
 			tCtx.restore();
 		}

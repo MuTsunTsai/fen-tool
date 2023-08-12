@@ -59,7 +59,7 @@ function init(memory) {
 		stockfish = new Worker(`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`);
 		stockfish.onmessage = e => {
 			const msg = e.data;
-			console.log(msg);
+			console.info(msg);
 			if(msg == "readyok") {
 				status.stockfish.running = 2;
 				resolve();

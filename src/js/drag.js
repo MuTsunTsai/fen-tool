@@ -73,9 +73,10 @@ function mouseup(event) {
 
 	if(event.target == TP && !noEditing()) {
 		const now = performance.now();
-		if(now - lastDown < 150) {
+		// In some touch device, a tap will be converted to a delayed up-down
+		// with time difference up to about 220ms
+		if(now - lastDown < 250) {
 			let { x, y } = getXY(event, TP);
-			console.log(x, y);
 			if(status.hor) [x, y] = [y, x];
 			if(inRange(x, y, 3, 8)) {
 				const v = templateValues[y * 3 + x];
