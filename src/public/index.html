@@ -734,7 +734,7 @@
 								<i class="fa-solid fa-rotate-right"></i>&ensp;Restart FEN Tool now
 							</button>
 						</div>
-						<div v-else>
+						<div v-else v-show="state.tab==8">
 							<div class="row align-items-baseline" v-if="status.stockfish.running<2">
 								<div class="col" style="flex-basis: 12rem;">
 									<div class="row gx-3 mb-2">
