@@ -72,7 +72,7 @@ export const status = reactive({
 	stockfish: {
 		// 0=not downloaded, 1=downloading, 2=need reload, 3=ready
 		status: store.Stockfish.downloaded ? 3 : 0,
-		// 0=stop, 1=starting, 2=running, 3=stopping
+		// 0=stop, 1=starting, 2=running
 		running: 0,
 	},
 });

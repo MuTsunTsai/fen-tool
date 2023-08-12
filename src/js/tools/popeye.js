@@ -23,7 +23,6 @@ let memory;
 
 let path = "modules/py.js";
 let startTime;
-let spinner;
 let interval;
 let outputCount;
 let shouldScroll = false;
@@ -31,9 +30,7 @@ let shouldScroll = false;
 const el = document.getElementById("Output");
 
 function flush() {
-	spinner += ".";
-	if(spinner.length == 5) spinner = ".";
-	state.popeye.output = state.popeye.intOutput + "<br>" + spinner;
+	state.popeye.output = state.popeye.intOutput + `<br><i class="fa-solid fa-spinner fa-spin"></i>`;
 	tryScroll();
 }
 
