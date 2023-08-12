@@ -110,7 +110,7 @@ function parseInfo(info) {
 		for(const match of matches) {
 			const move = chess.move({ from: match[1], to: match[2], promotion: match[3] })
 			if(move.san.endsWith("=")) {
- 				// Stockfish doesn't stop here for some reason
+				// Stockfish doesn't stop here for some reason
 				cp = 0;
 				break;
 			}
@@ -188,30 +188,31 @@ export const Stockfish = {
 		status.stockfish.status = 2;
 	},
 	async analyze() {
-		gtag("event", "fen_stockfish_run");
-		status.stockfish.running = 1;
-		init();
-		fen = orthodoxFEN();
-		if(!fen) {
-			alert("Only orthodox chess is supported.");
-			return;
-		}
-		if(!module) module = await loadModule();
-		chess = new module.Chess();
 		try {
-			chess.init(fen);
-		} catch(e) {
-			alert("This board is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&."));
-			return;
-		}
-		await ready;
+			gtag("event", "fen_stockfish_run");
+			status.stockfish.running = 1;
+			init();
+			fen = orthodoxFEN();
+			if(!fen) throw "Only orthodox chess is supported.";
+			if(!module) module = await loadModule();
+			chess = new module.Chess();
+			try {
+				chess.init(fen);
+			} catch(e) {
+				throw "This board is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&.");
+			}
+			await ready;
 
-		state.stockfish = clone(STOCKFISH);
-		status.stockfish.running = 2;
-		cmd("setoption name MultiPV value " + store.Stockfish.lines);
-		cmd("ucinewgame");
-		cmd("position fen " + fen);
-		cmd("go depth " + store.Stockfish.depth);
+			state.stockfish = clone(STOCKFISH);
+			status.stockfish.running = 2;
+			cmd("setoption name MultiPV value " + store.Stockfish.lines);
+			cmd("ucinewgame");
+			cmd("position fen " + fen);
+			cmd("go depth " + store.Stockfish.depth);
+		} catch(e) {
+			alert(e instanceof Error ? e.message : e);
+			status.stockfish.running = 0;
+		}
 	},
 	play(line) {
 		gtag("event", "fen_stockfish_play");
