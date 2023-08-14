@@ -60,7 +60,6 @@ function cancelSelection() {
 }
 
 function mouseup(event) {
-	if(state.popeye.playing) return;
 	if(status.dragging == "pending" && !state.play.playing && event.target == PV) {
 		const now = performance.now();
 		if(now - lastTap < 300) sq.focus();
@@ -72,11 +71,11 @@ function mouseup(event) {
 	if(ghost) ghost.style.display = "none";
 	wrapEvent(event);
 
-	if(event.target == TP && !noEditing()) {
-		const now = performance.now();
-		// In some touch device, a tap will be converted to a delayed up-down
-		// with time difference up to about 220ms
-		if(now - lastDown < 250) {
+	const now = performance.now();
+	// In some touch device, a tap will be converted to a delayed up-down
+	// with time difference up to about 220ms
+	if(now - lastDown < 250) {
+		if(event.target == TP && !noEditing()) {
 			let { x, y } = getXY(event, TP);
 			if(status.hor) [x, y] = [y, x];
 			if(inRange(x, y, 3, 8)) {
@@ -89,10 +88,15 @@ function mouseup(event) {
 			}
 			status.dragging = false;
 			return;
+		} else if(event.target == PV && state.popeye.playing) {
+			const { x } = getXY(event, PV);
+			if(x < 3) Popeye.moveBy(-1);
+			if(x > 4) Popeye.moveBy(1);
+			return;
 		}
 	}
 
-	if(!status.dragging) return;
+	if(state.popeye.playing || !status.dragging) return;
 	status.dragging = false;
 
 	if(!draggingValue) return;
@@ -184,6 +188,7 @@ function rotate(sq, by) {
 
 function mouseDown(event) {
 	lastDown = performance.now();
+	if(state.popeye.playing) return;
 	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
 
@@ -196,15 +201,6 @@ function mouseDown(event) {
 	const [ox, oy] = [offset.x, offset.y];
 	sqX = Math.floor((startX - ox) / s);
 	sqY = Math.floor((startY - oy) / s);
-
-	if(state.popeye.playing) {
-		if(isCN) {
-			if(sqX < 3) Popeye.moveBy(-1);
-			if(sqX > 4) Popeye.moveBy(1);
-		}
-		return;
-	}
-
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = isCN ? CG : TPG;
 
