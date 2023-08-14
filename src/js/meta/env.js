@@ -17,7 +17,7 @@ function testPngShare() {
 	for(let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
 	const blob = new Blob([array]);
 	const file = new File([blob], "1.png", { type: "image/png" });
-	return navigator.canShare({ files: [file] })
+	return navigator.canShare({ files: [file] });
 }
 
 const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;

@@ -1,5 +1,5 @@
 import { getRenderSize, noEditing, state, status, store } from "./store";
-import { squares, toFEN, setSquare, pushState, setFEN } from "./squares";
+import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
 import { drawTemplate, templateValues } from "./render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
@@ -7,6 +7,7 @@ import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
 import { env } from "./meta/env";
 import { animate } from "./animation";
+import { Popeye } from "./tools/popeye";
 
 let startX, startY, sqX, sqY, sq, lastTap = 0, lastDown;
 let ghost, draggingValue, fromIndex;
@@ -183,7 +184,6 @@ function rotate(sq, by) {
 
 function mouseDown(event) {
 	lastDown = performance.now();
-	if(state.popeye.playing) return;
 	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
 
@@ -196,6 +196,15 @@ function mouseDown(event) {
 	const [ox, oy] = [offset.x, offset.y];
 	sqX = Math.floor((startX - ox) / s);
 	sqY = Math.floor((startY - oy) / s);
+
+	if(state.popeye.playing) {
+		if(isCN) {
+			if(sqX < 3) Popeye.moveBy(-1);
+			if(sqX > 4) Popeye.moveBy(1);
+		}
+		return;
+	}
+
 	const index = sqY * (isCN ? w : 3) + sqX;
 	ghost = isCN ? CG : TPG;
 
