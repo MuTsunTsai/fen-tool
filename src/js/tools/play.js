@@ -215,6 +215,10 @@ export const PLAY = {
 		drawTemplate([]);
 	},
 	goto(h, skipSet) {
+		if(state.play.pendingPromotion) {
+			state.play.pendingPromotion = false;
+			drawTemplate([]);
+		}
 		const fen = chess.goto(h);
 		if(!skipSet) {
 			stopAnimation();

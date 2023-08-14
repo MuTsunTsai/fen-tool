@@ -22,7 +22,7 @@ export function initDrag() {
 	TP.ontouchstart = mouseDown;
 
 	document.body.onmousedown = event => {
-		if(event.target != TP && event.target != PV) cancelSelection();
+		if(!noEditing() && event.target != TP && event.target != PV) cancelSelection();
 	};
 	document.body.onmousemove = mousemove;
 	document.body.ontouchmove = mousemove;
