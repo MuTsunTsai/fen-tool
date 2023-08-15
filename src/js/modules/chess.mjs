@@ -203,11 +203,11 @@ export class Chess extends ChessBase {
 		return 0;
 	}
 
-	copyGame(options) {
-		return formatGame(this.state.history, options);
+	copyGame(options, header) {
+		return (header ? formatGame(header, options) + " " : "") + formatGame(this.state.history, options);
 	}
 
-	copyPGN() {
+	copyPGN(header) {
 		let result = "";
 		if(this.state.mode == "retro") {
 			const history = this.state.history;
@@ -226,10 +226,11 @@ export class Chess extends ChessBase {
 				result += history[i].san + " ";
 			}
 		} else {
-			if(this.state.initFEN != DEFAULT_POSITION) {
-				result += `[SetUp "1"]\n[FEN "${this.state.initFEN}"]\n\n`;
+			const fen = header && header.length ? header[0].before : this.state.initFEN;
+			if(fen != DEFAULT_POSITION) {
+				result += `[SetUp "1"]\n[FEN "${fen}"]\n\n`;
 			}
-			result += this.copyGame({});
+			result += this.copyGame({}, header);
 		}
 		return result;
 	}

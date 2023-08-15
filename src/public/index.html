@@ -783,14 +783,14 @@
 										  v-if="status.stockfish.running==2">/{{store.Stockfish.depth}} <i
 										   class="fa-solid fa-spinner fa-spin ms-2"></i></span>
 								</div>
-								<div v-if="state.stockfish.header.length">
-									Solution is unique against best defense up to {{state.stockfish.header.length/2}}
-									move{{state.stockfish.header.length>2?"s":""}}<span v-if="status.stockfish.running==0">, and
-										then {{Stockfish.then()}}.</span><span v-else>...</span>
-								</div>
 								<div v-if="state.stockfish.mate">{{(state.stockfish.mate||"")[0]}} has mate in
-									{{(state.stockfish.mate||"")[1]}}</div>
+									{{(state.stockfish.mate||"")[1]}}.</div>
 								<div v-else-if="state.stockfish.score">Score: {{state.stockfish.score}}</div>
+								<div v-if="state.stockfish.header.length">
+									Solution is unique against best defense up to:<br>
+									{{Stockfish.format(state.stockfish.header)}}<br>
+									And then:
+								</div>
 								<table class="table">
 									<tr v-for="line in state.stockfish.lines.filter(l=>l&&l.moves.length)">
 										<td class="align-top">
