@@ -93,14 +93,16 @@ function parseInfo(info) {
 	const mate = info.match(/mate (-?)(\d+)/);
 	const score = info.match(/score cp (-?\d+)/);
 	let cp = Number(score && score[1] || 0) / 100;
+	let mateNum;
 
+	if(mate) {
+		const side = (fen.split(" ")[1] == "w") == Boolean(mate[1]) ? "Black" : "White";
+		mateNum = Number(mate[2]) + state.stockfish.header.length / 2;
+		if(index == 0) state.stockfish.mate = [side, mateNum];
+	}
 	if(index == 0) {
 		const depth = info.match(/depth (\d+)/);
 		if(depth) state.stockfish.depth = depth[1];
-		if(mate) {
-			const side = (fen.split(" ")[1] == "w") == Boolean(mate[1]) ? "Black" : "White";
-			state.stockfish.mate = [side, mate[2]];
-		}
 		if(score) state.stockfish.score = cp;
 	}
 	const moves = info.match(new RegExp(`pv (${move}(?: ${move})*)`));
@@ -123,7 +125,7 @@ function parseInfo(info) {
 		}
 		const line = {
 			rawScore: mate ? (mate[1] ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY) : cp,
-			score: mate ? mate[1] + "#" + mate[2] : cp.toFixed(2),
+			score: mate ? mate[1] + "#" + mateNum : cp.toFixed(2),
 			raw: moves[1],
 			moves: chess.state.history.concat(),
 			pgn: chess.copyPGN(),
