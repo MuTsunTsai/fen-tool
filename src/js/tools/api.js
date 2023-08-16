@@ -33,6 +33,7 @@ function getEmbedUrl() {
 }
 
 export const API = {
+	/** This is a hidden feature that is activated by code. */
 	copyJanko() {
 		gtag("event", "fen_copy_janko");
 		return "https://www.janko.at/Retros/d.php?ff=" + normalForsyth();
@@ -45,13 +46,16 @@ export const API = {
 		gtag("event", "fen_link_copy64img");
 		return `<img fen="${CE.toDataURL()}">`;
 	},
+	/**
+	 * This feature uses imgBB API. Tried a few other providers before:
+	 * 1. freeImage.host:\
+	 *    Doesn't have CORS headers as of Aug. 2023, and blocks corsproxy soon after I used it.
+	 * 2. thumbSnap.com:\
+	 *    Image URL redirects to webpage when putting into browsers.\
+	 *    Still works fine in most use cases, but the image won't display on desktop Discord directly.
+	 */
 	async copyUrl() {
 		gtag("event", "fen_gen_link");
-		/**
-		 * This feature uses imgBB API. Tried a few other providers before:
-		 * 1. freeImage.host: doesn't have CORS headers as of Aug. 2023, and blocks corsproxy.
-		 * 2. thumbSnap.com: works fine in most cases, but the image won't display on Discord directly.
-		 */
 		const data = new FormData();
 		const blob = await new Promise(resolve => CE.toBlob(resolve));
 		data.append("key", "7802c5da1788f2315222d44bfba20519");
@@ -63,7 +67,7 @@ export const API = {
 			});
 			const json = await response.json();
 			if(!json.success) throw json.error.message;
-			return json.data.url + "?=" + normalForsyth();
+			return json.data.url + "?=" + normalForsyth(); // Adding fen to the URL is desirable in most use cases
 		} catch(e) {
 			alert(typeof e == "string" ? e : "Internet connection failed. Please try again later.");
 			throw e;

@@ -327,6 +327,7 @@ window.FEN = {
 		toFEN();
 	},
 	fixSN() {
+		gtag("event", "fen_fix_sn");
 		for(const sq of squares) {
 			let s = sq.value;
 			if(s.startsWith("'") || s == "") continue;
