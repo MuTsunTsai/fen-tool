@@ -59,7 +59,7 @@ export const API = {
 			});
 			const json = await response.json();
 			if(!json.success) throw json.error.message;
-			return json.data.media;
+			return json.data.media + "?fen=" + normalForsyth();
 		} catch(e) {
 			alert(typeof e == "string" ? e : "Internet connection failed. Please try again later.");
 			throw e;
