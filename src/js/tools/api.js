@@ -47,19 +47,19 @@ export const API = {
 	},
 	async copyUrl() {
 		gtag("event", "fen_gen_link");
-		// This feature uses https://thumbsnap.com/ API
+		// This feature uses imgBB API
 		const data = new FormData();
 		const blob = await new Promise(resolve => CE.toBlob(resolve));
-		data.append("key", "00044426a0332194443a7f44d62b1c71");
-		data.append("media", blob, "board.png");
+		data.append("key", "7802c5da1788f2315222d44bfba20519");
+		data.append("image", blob, "fen");
 		try {
-			const response = await fetch("https://thumbsnap.com/api/upload", {
+			const response = await fetch("https://api.imgbb.com/1/upload", {
 				method: "post",
 				body: data,
 			});
 			const json = await response.json();
 			if(!json.success) throw json.error.message;
-			return json.data.media + "?fen=" + normalForsyth();
+			return json.data.url + "?=" + normalForsyth();
 		} catch(e) {
 			alert(typeof e == "string" ? e : "Internet connection failed. Please try again later.");
 			throw e;
