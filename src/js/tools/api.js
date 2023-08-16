@@ -47,7 +47,11 @@ export const API = {
 	},
 	async copyUrl() {
 		gtag("event", "fen_gen_link");
-		// This feature uses imgBB API
+		/**
+		 * This feature uses imgBB API. Tried a few other providers before:
+		 * 1. freeImage.host: doesn't have CORS headers as of Aug. 2023, and blocks corsproxy.
+		 * 2. thumbSnap.com: works fine in most cases, but the image won't display on Discord directly.
+		 */
 		const data = new FormData();
 		const blob = await new Promise(resolve => CE.toBlob(resolve));
 		data.append("key", "7802c5da1788f2315222d44bfba20519");

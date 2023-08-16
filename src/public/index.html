@@ -317,6 +317,11 @@
 								<input type="button" class="btn btn-secondary" value="Switch case" title="Texts are converted"
 									   onclick="FEN.invert(true)" :disabled="noEditing">
 							</span>
+							<span>
+								<input v-if="!store.board.SN" type="button" class="btn btn-secondary" value="Fix S/N"
+									   title="Change all S to N when 'Use S for knight' mode is off" onclick="FEN.fixSN()"
+									   :disabled="noEditing">
+							</span>
 						</div>
 						<div class="text-end">
 							<span class="d-inline-block">

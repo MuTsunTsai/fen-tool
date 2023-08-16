@@ -326,6 +326,14 @@ window.FEN = {
 		}
 		toFEN();
 	},
+	fixSN() {
+		for(const sq of squares) {
+			let s = sq.value;
+			if(s.startsWith("'") || s == "") continue;
+			sq.value = s.replace("s", "n").replace("S", "N");
+		}
+		toFEN();
+	},
 	invert(l) {
 		replace(invert(snapshot(), l));
 	},
