@@ -1,7 +1,6 @@
 
 export function NumInput(title, obj, prop, min, max) {
 	const get = () => obj[prop];
-	console.log("number");
 	return {
 		$template: "#number",
 		title,

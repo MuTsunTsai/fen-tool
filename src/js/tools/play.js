@@ -10,7 +10,7 @@ import { state, store } from "../store";
 if(state.play.playing) {
 	const p = state.play;
 	p.playing = false;
-	Promise.all([load(), loadModule()]).then(() => {
+	Promise.all([load(), loadChessModule()]).then(() => {
 		p.playing = true;
 		PLAY.goto(p.history[p.moveNumber]);
 	});
@@ -132,7 +132,7 @@ export function checkDragPrecondition(index) {
 	return true;
 }
 
-export async function loadModule() {
+export async function loadChessModule() {
 	if(!module) {
 		module = await import("./modules/chess.js");
 		module.Chess.options = store.PLAY;
@@ -181,7 +181,7 @@ export function retroClick(x, y) {
 }
 
 export async function importGame(text) {
-	await loadModule();
+	await loadChessModule();
 	if(chess.loadGame(text)) {
 		sync();
 		start();
@@ -191,20 +191,16 @@ export async function importGame(text) {
 export const PLAY = {
 	async start() {
 		gtag("event", "fen_play_" + state.play.mode);
-
-		const fen = orthodoxFEN();
-		if(!fen) {
-			alert("Only orthodox chess is supported.");
-			return;
-		}
-
 		try {
-			await loadModule();
+			const fen = orthodoxFEN();
+			if(!fen) throw "Only orthodox chess is supported.";
+
+			await loadChessModule();
 			chess.init(fen);
 			state.play.over = chess.overState();
 			start();
 		} catch(e) {
-			alert("This board is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&."));
+			alert(e instanceof Error ? e.message : e);
 		}
 	},
 	exit() {

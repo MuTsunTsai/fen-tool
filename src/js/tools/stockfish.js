@@ -3,7 +3,7 @@ import { env } from "../meta/env";
 import { SQ } from "../meta/popeye/base.mjs";
 import { orthodoxFEN } from "../squares";
 import { STOCKFISH, state, status, store } from "../store";
-import { importGame, loadModule } from "./play";
+import { importGame, loadChessModule } from "./play";
 
 // Session
 if(state.stockfish.lines.length) {
@@ -11,7 +11,7 @@ if(state.stockfish.lines.length) {
 	const header = state.stockfish.header;
 	state.stockfish.lines = [];
 	state.stockfish.header = [];
-	loadModule().then(m => {
+	loadChessModule().then(m => {
 		module = m;
 		state.stockfish.lines = lines;
 		state.stockfish.header = header;
@@ -197,13 +197,9 @@ export const Stockfish = {
 			let ready = init(memory);
 			fen = orthodoxFEN();
 			if(!fen) throw "Only orthodox chess is supported.";
-			if(!module) module = await loadModule();
+			if(!module) module = await loadChessModule();
 			chess = new module.Chess();
-			try {
-				chess.init(fen);
-			} catch(e) {
-				throw "This board is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&.");
-			}
+			chess.init(fen);
 			while(true) {
 				try {
 					await ready;

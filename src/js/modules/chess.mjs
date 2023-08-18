@@ -19,24 +19,28 @@ export class Chess extends ChessBase {
 	}
 
 	init(fen) {
-		this.state.initFEN = fen;
-		this.state.history.length = 0;
-		this.state.moveNumber = -1;
-		this.load(fen);
+		try {
+			this.state.initFEN = fen;
+			this.state.history.length = 0;
+			this.state.moveNumber = -1;
+			this.load(fen);
 
-		// legal checks not covered in chess.js
-		const board = this.board();
-		const hasPawn = r => r.some(p => p && p.type == "p");
-		if(hasPawn(board[0]) || hasPawn(board[7])) {
-			throw new Error("pawns cannot be on the 1st or the 8th rank");
-		}
+			// legal checks not covered in chess.js
+			const board = this.board();
+			const hasPawn = r => r.some(p => p && p.type == "p");
+			if(hasPawn(board[0]) || hasPawn(board[7])) {
+				throw new Error("pawns cannot be on the 1st or the 8th rank");
+			}
 
-		const test = testOtherSideCheck(fen);
-		if(test.isCheck()) {
-			if(this.isCheck()) throw new Error("both kings are under checks");
-			// automatically switch turn regardless of assignment
-			this.state.initFEN = test.fen();
-			this.load(this.state.initFEN);
+			const test = testOtherSideCheck(fen);
+			if(test.isCheck()) {
+				if(this.isCheck()) throw new Error("both kings are under checks");
+				// automatically switch turn regardless of assignment
+				this.state.initFEN = test.fen();
+				this.load(this.state.initFEN);
+			}
+		} catch(e) {
+			throw "The position is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&.");
 		}
 	}
 
@@ -204,7 +208,8 @@ export class Chess extends ChessBase {
 	}
 
 	copyGame(options, header) {
-		return (header ? formatGame(header, options) + " " : "") + formatGame(this.state.history, options);
+		const game = header ? header.concat(this.state.history) : this.state.history;
+		return formatGame(game, options);
 	}
 
 	copyPGN(header) {
@@ -275,7 +280,7 @@ export function testOtherSideCheck(fen) {
 export function formatGame(history, options) {
 	if(history.length == 0) return "";
 	let result = "";
-	if(history[0].color == "b") result += "1... ";
+	if(history[0].color == "b") result += history[0].before.split(" ")[5] + "... ";
 	for(const [i, h] of history.entries()) {
 		if(history[i - 1] && history[i - 1].color == h.color) {
 			if(h.color == "w") result += "... ";

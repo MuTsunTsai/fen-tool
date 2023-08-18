@@ -58,17 +58,7 @@ In that case it will automatically fallback to run Popeye in asm.js
 
 Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
 
-### Play mode
-
-This tool allows you to play on the setup board and record moves.
-Only orthodox chess is supported.
-There are three different modes:
-
-1. Normal: can be used in direct mates and helpmate problems.
-2. Allow passing moves: can be used in for example series helpmate problems.
-3. Retro: playing backwards, used in retrograde analysis problems.
-
-### Analyzer
+### Stockfish
 
 This tool integrates [Stockfish.js](https://github.com/nmrugg/stockfish.js)
 based on the latest version (v16) of [Stockfish](https://github.com/official-stockfish/Stockfish),
@@ -78,6 +68,23 @@ but once it's downloaded it will be cached for good.
 
 When "Study mode" is enabled, it will treat the position as a study problem,
 and try to find the longest unique solution sequence against best defenses.
+
+### Syzygy
+
+Utilizing [Syzygy API](https://github.com/lichess-org/lila-tablebase),
+FEN Tool is able to completely determine all studies with up to 7 pieces.
+Like the Stockfish study mode, it will also continue to search for White's unique
+responses against Black's "best" defenses.
+
+### Play mode
+
+This tool allows you to play on the setup board and record moves.
+Only orthodox chess is supported.
+There are three different modes:
+
+1. Normal: can be used in direct mates and helpmate problems.
+2. Allow passing moves: can be used in for example series helpmate problems.
+3. Retro: playing backwards, used in retrograde analysis problems.
 
 ### PDB
 

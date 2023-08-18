@@ -75,6 +75,9 @@ export const status = reactive({
 		// 0=stop, 1=starting, 2=running
 		running: 0,
 	},
+	syzygy: {
+		running: false,
+	},
 });
 
 // Session data, will be restored on tab reloading/restoring/duplicating
@@ -138,6 +141,10 @@ const defaultState = {
 		intOutput: null,
 	},
 	stockfish: STOCKFISH,
+	syzygy: {
+		header: null,
+		lines: null,
+	},
 };
 
 /** @type {typeof defaultState} */
