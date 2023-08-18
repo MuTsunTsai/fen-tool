@@ -174,7 +174,6 @@ function opposite(outcome) {
 export const Syzygy = {
 	async run() {
 		const ctx = {
-			fen,
 			positions: new Set(),
 			running: true,
 			ready: Promise.resolve(),
@@ -185,9 +184,9 @@ export const Syzygy = {
 			status.syzygy.running = true;
 			state.syzygy.header = null;
 			state.syzygy.lines = null;
-			const fen = orthodoxFEN();
-			if(!fen) throw "Only orthodox chess is supported.";
-			const count = fen.split(" ")[0].match(/[a-z]/ig)?.length;
+			ctx.fen = orthodoxFEN();
+			if(!ctx.fen) throw "Only orthodox chess is supported.";
+			const count = ctx.fen.split(" ")[0].match(/[a-z]/ig)?.length;
 			if(count > 7) throw "Only supports position with up to 7 pieces.";
 			await run(ctx);
 		} catch(e) {
