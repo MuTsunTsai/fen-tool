@@ -36,7 +36,7 @@ async function api(fen, ctx) {
 		ctx.ready = ready.then(() => sleep(1)); // Restrict to 1 request per second
 		await ready;
 		if(!ctx.running) return null;
-		const response = await fetch("http://tablebase.lichess.ovh/standard?fen=" + fen);
+		const response = await fetch("https://corsproxy.io/?" + encodeURIComponent("http://tablebase.lichess.ovh/standard?fen=" + fen));
 		if(response.status == 429) {
 			// Too many requests. Wait for one minute.
 			await sleep(61);
