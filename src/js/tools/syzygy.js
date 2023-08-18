@@ -173,6 +173,13 @@ function opposite(outcome) {
 
 export const Syzygy = {
 	async run() {
+		const ctx = {
+			fen,
+			positions: new Set(),
+			running: true,
+			ready: Promise.resolve(),
+		};
+		context = ctx;
 		try {
 			gtag("event", "fen_syzygy_run");
 			status.syzygy.running = true;
@@ -182,18 +189,11 @@ export const Syzygy = {
 			if(!fen) throw "Only orthodox chess is supported.";
 			const count = fen.split(" ")[0].match(/[a-z]/ig)?.length;
 			if(count > 7) throw "Only supports position with up to 7 pieces.";
-
-			context = {
-				fen,
-				positions: new Set(),
-				running: true,
-				ready: Promise.resolve(),
-			};
-			await run(context);
+			await run(ctx);
 		} catch(e) {
 			alert(e instanceof Error ? e.message : e);
 		} finally {
-			Syzygy.stop();
+			if(ctx.running) Syzygy.stop();
 		}
 	},
 	play(line) {
