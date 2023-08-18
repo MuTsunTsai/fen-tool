@@ -60,28 +60,31 @@ async function run(ctx) {
 	if(outcome == "unknown" || outcome.includes("loss") || !ctx.running) return;
 	state.syzygy.lines = [];
 
+	ctx.outcome = outcome;
 	ctx.op = opposite(outcome);
 	const moves = json.moves.filter(m => m.category == ctx.op);
 	for(const ply of moves) {
 		chess.init(ctx.fen);
 		const [from, to, promotion] = ply.uci.match(/..|./g);
 		chess.move({ from, to, promotion });
+		const fen = chess.fen();
+		ctx.positions.add(toPosition(fen));
 		const line = {
-			fen: chess.fen(),
+			fen,
 			dtm: ply.dtm,
 			moves: chess.state.history.concat(),
 			pgn: chess.copyPGN(),
-			searching: false,
+			transpose: false,
+			searching: !chess.isGameOver(),
 		};
 		state.syzygy.lines.push(line);
 	}
 	if(!ctx.running) return;
 
-	let lines = state.syzygy.lines.concat();
+	let lines = state.syzygy.lines.filter(l => l.searching);
 	if(lines.length > 1) return;
 
 	const line = lines[0];
-	line.searching = true;
 	line.moves[0].annotation = "!";
 	while(lines.length) {
 		const tasks = lines.map(l => search(l, ctx));
@@ -89,6 +92,10 @@ async function run(ctx) {
 		lines = state.syzygy.lines.filter(l => l.searching);
 		if(!ctx.running) return;
 	}
+}
+
+function toPosition(fen) {
+	return fen.replace(/ \d+ \d+$/, "");
 }
 
 async function search(line, ctx) {
@@ -109,7 +116,7 @@ async function search(line, ctx) {
 	}));
 	const history = line.moves;
 
-	let results = (await Promise.all(tasks))
+	const results = (await Promise.all(tasks))
 		.filter(r => r)
 		.sort((a, b) => b.score - a.score)
 		.filter((r, _, a) => r.score == a[0].score);
@@ -118,19 +125,24 @@ async function search(line, ctx) {
 
 	let defense;
 	const continuations = results
-		.filter(r => hasDtm && r.moves.length > 0 || r.moves.length == 1)
+		.filter(r => ctx.op != "draw" && r.moves.length > 0 || r.moves.length == 1)
 		.map(r => {
 			chess.init(line.fen);
 			defense = chess.move(r.defense);
 			const [from, to, promotion] = r.moves[0].uci.match(/..|./g);
 			const move = chess.move({ from, to, promotion });
 			if(r.moves.length == 1) move.annotation = "!";
+			const fen = chess.fen();
+			const pos = toPosition(fen);
+			const transpose = ctx.positions.has(pos);
+			if(!transpose) ctx.positions.add(pos);
 			return {
 				dtm: typeof r.dtm == "number" ? 1 - r.dtm : null,
-				fen: chess.fen(),
+				fen,
+				transpose,
 				moves: history.concat(chess.state.history),
 				pgn: chess.copyPGN(history),
-				searching: true,
+				searching: !chess.isGameOver() && !transpose,
 			};
 		});
 	if(continuations.length == 0) return;
@@ -163,6 +175,7 @@ export const Syzygy = {
 
 			context = {
 				fen,
+				positions: new Set(),
 				running: true,
 				ready: Promise.resolve(),
 			};
@@ -170,7 +183,7 @@ export const Syzygy = {
 		} catch(e) {
 			alert(e instanceof Error ? e.message : e);
 		} finally {
-			status.syzygy.running = false;
+			Syzygy.stop();
 		}
 	},
 	play(line) {
@@ -187,6 +200,6 @@ export const Syzygy = {
 		status.syzygy.running = false;
 	},
 	format(line) {
-		return module.formatGame(line.moves) + (line.searching ? " ..." : "");
+		return module.formatGame(line.moves) + (line.searching ? " ..." : line.transpose ? " (transpose)" : "");
 	},
 };
