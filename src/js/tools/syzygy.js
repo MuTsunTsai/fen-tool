@@ -17,8 +17,16 @@ let module;
 
 let context;
 
+let sleeping = new Set();
+
 function sleep(s) {
-	return new Promise(resolve => setTimeout(resolve, s * 1000));
+	return new Promise(resolve => {
+		sleeping.add(resolve);
+		setTimeout(() => {
+			sleeping.delete(resolve);
+			resolve();
+		}, s * 1000);
+	});
 }
 
 async function api(fen, ctx) {
@@ -129,7 +137,6 @@ async function search(line, ctx) {
 	if(continuations.length == 1) defense.annotation = "!";
 	const lines = state.syzygy.lines.concat();
 	const index = lines.indexOf(line);
-	// console.log(lines, line, index, continuations);
 	lines.splice(index, 1, ...continuations);
 	state.syzygy.lines = lines;
 }
@@ -170,11 +177,12 @@ export const Syzygy = {
 		gtag("event", "fen_syzygy_play");
 		state.play.mode = "normal";
 		state.tab = 6;
-		console.log(line.pgn);
 		importGame(line.pgn);
 	},
 	stop() {
 		if(context) context.running = false;
+		for(const res of sleeping) res();
+		sleeping.clear();
 		state.syzygy.lines?.forEach(l => l.searching = false);
 		status.syzygy.running = false;
 	},
