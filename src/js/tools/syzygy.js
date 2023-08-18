@@ -72,6 +72,9 @@ async function run(ctx) {
 		const line = {
 			fen,
 			dtm: ply.dtm,
+			indent: 0,
+			history: chess.state.history.concat(),
+			leaf: true,
 			moves: chess.state.history.concat(),
 			pgn: chess.copyPGN(),
 			transpose: false,
@@ -114,7 +117,6 @@ async function search(line, ctx) {
 			moves,
 		};
 	}));
-	const history = line.moves;
 
 	const results = (await Promise.all(tasks))
 		.filter(r => r)
@@ -123,12 +125,14 @@ async function search(line, ctx) {
 	line.searching = false;
 	if(!ctx.running) return;
 
-	let defense;
-	const continuations = results
-		.filter(r => ctx.op != "draw" && r.moves.length > 0 || r.moves.length == 1)
+	const continuations = results.filter(r => ctx.op != "draw" && r.moves.length > 0 || r.moves.length == 1);
+	if(continuations.length == 0) return;
+	const unique = continuations.length == 1;
+	const branches = continuations
 		.map(r => {
 			chess.init(line.fen);
-			defense = chess.move(r.defense);
+			const defense = chess.move(r.defense);
+			if(unique) defense.annotation = "!";
 			const [from, to, promotion] = r.moves[0].uci.match(/..|./g);
 			const move = chess.move({ from, to, promotion });
 			if(r.moves.length == 1) move.annotation = "!";
@@ -136,20 +140,26 @@ async function search(line, ctx) {
 			const pos = toPosition(fen);
 			const transpose = ctx.positions.has(pos);
 			if(!transpose) ctx.positions.add(pos);
+			const selfHistory = chess.state.history.concat();
 			return {
 				dtm: typeof r.dtm == "number" ? 1 - r.dtm : null,
 				fen,
 				transpose,
-				moves: history.concat(chess.state.history),
-				pgn: chess.copyPGN(history),
+				leaf: true,
+				indent: line.indent + (unique ? 0 : 1),
+				history: line.history.concat(selfHistory),
+				moves: unique ? line.moves.concat(selfHistory) : selfHistory,
+				pgn: chess.copyPGN(line.history),
 				searching: !chess.isGameOver() && !transpose,
 			};
 		});
-	if(continuations.length == 0) return;
-	if(continuations.length == 1) defense.annotation = "!";
 	const lines = state.syzygy.lines.concat();
 	const index = lines.indexOf(line);
-	lines.splice(index, 1, ...continuations);
+	if(unique) lines.splice(index, 1, ...branches);
+	else {
+		line.leaf = false;
+		lines.splice(index + 1, 0, ...branches);
+	}
 	state.syzygy.lines = lines;
 }
 
