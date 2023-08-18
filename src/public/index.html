@@ -156,16 +156,38 @@
 <body class="m-0" v-scope :class="{split:state.split}">
 
 	<!-- #region Templates -->
+	<template id="number">
+		<div class="input-group">
+			<button class="btn btn-secondary px-2" :disabled="isMin()" type="button" @click="setBy(-1)">
+				<i class="fa-solid fa-minus"></i>
+			</button>
+			<input type="number" class="form-control text-center px-0" min="1" :title="title" :value="get()" @change="set($event)"
+				   onfocus="this.select()">
+			<button class="btn btn-secondary px-2" :disabled="isMax()" type="button" @click="setBy(1)">
+				<i class="fa-solid fa-plus"></i>
+			</button>
+		</div>
+	</template>
+
 	<template id="copyBtn">
 		<button type="button" class="btn nowrap" :class="cls" @click="copy" :disabled="dis||state==1">
-			<i :class="['fa-solid fa-clipboard', 'fa-spin fa-solid fa-spinner', 'fa-solid fa-check'][state]"></i>&ensp;{{ label }}
+			<i :class="['fa-solid fa-clipboard', 'fa-spin fa-solid fa-spinner', 'fa-solid fa-check'][state]"></i>&ensp;{{label}}
 		</button>
 	</template>
 
 	<template id="checkbox">
 		<div class="form-check">
 			<input type="checkbox" class="form-check-input" :id="id" :checked="checked()" @change="change" :disabled="disabled()">
-			<label class="form-check-label" :for="id">{{ label }}</label>
+			<label class="form-check-label" :for="id">{{label}}</label>
+		</div>
+	</template>
+
+	<template id="radio">
+		<span class="me-3">{{label}}</span>
+		<div v-for="(t, i) in text" class="form-check d-inline-block me-3">
+			<input class="form-check-input" type="radio" :checked="checked(i)" :disabled="disabled()" @change="set(i)" :name="id"
+				   :id="id+'_'+i">
+			<label class="form-check-label" :for="id+'_'+i" v-text="t"></label>
 		</div>
 	</template>
 	<!-- #endregion -->
@@ -233,13 +255,10 @@
 							<div class="nav-link" :class="{active:state.tab==1}" @click="state.tab=1">Options</div>
 						</li>
 						<li class="nav-item">
-							<div class="nav-link" :class="{active:state.tab==7}" @click="state.tab=7">Popeye</div>
+							<div class="nav-link" :class="{active:state.tab==7}" @click="state.tab=7">Compute</div>
 						</li>
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:state.tab==6}" @click="state.tab=6">Play</div>
-						</li>
-						<li class="nav-item">
-							<div class="nav-link" :class="{active:state.tab==8}" @click="state.tab=8">Analyze</div>
 						</li>
 						<li class="nav-item">
 							<div class="nav-link" :class="{active:state.tab==2}" @click="state.tab=2">DB</div>
@@ -410,35 +429,11 @@
 									<div class="col mb-2" style="flex-basis: 14rem; flex-grow: 10000;">
 										<div class="row gx-3">
 											<div class="col">
-												<div class="input-group">
-													<button class="btn btn-secondary px-2" :disabled="store.board.w==1"
-															type="button" onclick="Layout.setWidth(-1)">
-														<i class="fa-solid fa-minus"></i>
-													</button>
-													<input type="number" class="form-control text-center px-0" min="1"
-														   title="Files" :value="store.board.w" onchange="Layout.setWidth(this)"
-														   onfocus="this.select()">
-													<button class="btn btn-secondary px-2" type="button"
-															onclick="Layout.setWidth(1)">
-														<i class="fa-solid fa-plus"></i>
-													</button>
-												</div>
+												<span v-scope="NumInput('Files', Layout, 'width', 1)"></span>
 											</div>
 											<label class="col-auto col-form-label">x</label>
 											<div class="col">
-												<div class="input-group">
-													<button class="btn btn-secondary px-2" :disabled="store.board.h==1"
-															type="button" onclick="Layout.setHeight(-1)">
-														<i class="fa-solid fa-minus"></i>
-													</button>
-													<input type="number" class="form-control text-center px-0" min="1"
-														   title="Rows" :value="store.board.h" onchange="Layout.setHeight(this)"
-														   onfocus="this.select()">
-													<button class="btn btn-secondary px-2" type="button"
-															onclick="Layout.setHeight(1)">
-														<i class="fa-solid fa-plus"></i>
-													</button>
-												</div>
+												<span v-scope="NumInput('Ranks', Layout, 'height', 1)"></span>
 											</div>
 										</div>
 									</div>
@@ -639,23 +634,8 @@
 								<div class="col flex-grow-1" style="flex-basis: 22rem;">
 									<div class="d-flex align-items-center flex-wrap-reverse mb-2">
 										<div class="flex-grow-1 col-form-label" style="flex-basis: max-content;">
-											<span class="me-3">Turn:</span>
-											<div class="form-check d-inline-block me-3">
-												<input class="form-check-input" type="radio" :checked="state.play.turn=='w'"
-													   :disabled="state.play.mode=='pass'" @change="state.play.turn='w'"
-													   name="TURN" id="wTurn">
-												<label class="form-check-label" for="wTurn">
-													White
-												</label>
-											</div>
-											<div class="form-check d-inline-block me-3">
-												<input class="form-check-input" type="radio" :checked="state.play.turn=='b'"
-													   :disabled="state.play.mode=='pass'" @change="state.play.turn='b'"
-													   name="TURN" id="bTurn">
-												<label class="form-check-label" for="bTurn">
-													Black
-												</label>
-											</div>
+											<span
+												  v-scope="Radio('Turn:', state.play, 'turn', ['White','Black'], ['w','b'], ()=>state.play.mode=='pass')"></span>
 										</div>
 										<div class="flex-grow-1" style="flex-basis: max-content;">
 											<div class="row gx-3">
@@ -724,184 +704,194 @@
 						</template>
 					</section>
 
-					<!-- Analyze -->
-					<section :class="{show:state.tab==8}">
-						<div v-if="status.stockfish.status<2">
-							<div class="mb-3">To use this feature, we need to download Stockfish modules first.</div>
-							<button v-if="status.stockfish.status==0" type="button" class="btn btn-primary"
-									@click="Stockfish.download">
-								<i class="fa-solid fa-download"></i>&ensp;Download now! (39.5MB)
-							</button>
-							<button v-else type="button" class="btn btn-primary" disabled>
-								<i class="fa-solid fa-download"></i>&ensp;Downloading...&ensp;<i
-								   class="fa-solid fa-spinner fa-spin"></i>
-							</button>
-						</div>
-						<div v-else-if="status.stockfish.status==2">
-							<div class="mb-3">Download complete. Please restart FEN Tool.</div>
-							<button v-else type="button" class="btn btn-primary" onclick="location.reload()">
-								<i class="fa-solid fa-rotate-right"></i>&ensp;Restart FEN Tool now
-							</button>
-						</div>
-						<div v-else v-show="state.tab==8">
-							<div class="row align-items-baseline" v-if="status.stockfish.running<2">
-								<div class="col" style="flex-basis: 12rem;">
-									<div class="row gx-3 mb-2">
-										<label class="col-auto col-form-label">Search depth:</label>
-										<div class="col">
-											<input type="number" class="form-control" v-model.number="store.Stockfish.depth"
-												   min="1">
-										</div>
-									</div>
-								</div>
-								<div class="col" style="flex-basis: 8rem;">
-									<div class="row gx-3 mb-2">
-										<label class="col-auto col-form-label">Lines:</label>
-										<div class="col">
-											<input type="number" class="form-control" v-model.number="store.Stockfish.lines"
-												   min="1">
-										</div>
-									</div>
-								</div>
-								<div class="col mb-2" style="flex-basis: 10rem;">
-									<div v-scope="Checkbox('Stockfish.study', 'Study mode', null, ()=>store.Stockfish.lines<=1)">
-									</div>
-								</div>
-							</div>
-							<!-- Start button -->
-							<div>
-								<button v-if="!status.stockfish.running" type="button" class="btn btn-primary"
-										@click="Stockfish.analyze">
-									<i class="fa-solid fa-play"></i>&ensp;Analyze with Stockfish 16
-								</button>
-								<button v-else-if="status.stockfish.running==1" disabled class="btn btn-primary">
-									<i class="fa-solid fa-play"></i>&ensp;Initializing...
-								</button>
-								<button v-else type="button" class="btn btn-secondary" @click="Stockfish.stop">
-									<i class="fa-solid fa-stop"></i>&ensp;Stop
-								</button>
-							</div>
-							<!-- Output -->
-							<div class="mt-3">
-								<div v-if="state.stockfish.depth">
-									<span>Depth: {{state.stockfish.depth}}</span><span
-										  v-if="status.stockfish.running==2">/{{store.Stockfish.depth}} <i
-										   class="fa-solid fa-spinner fa-spin ms-2"></i></span>
-								</div>
-								<div v-if="state.stockfish.mate">{{(state.stockfish.mate||"")[0]}} has mate in
-									{{(state.stockfish.mate||"")[1]}}.</div>
-								<div v-else-if="state.stockfish.score">Score: {{state.stockfish.score}}</div>
-								<div v-if="state.stockfish.header.length">
-									Solution is unique against best defense up to:<br>
-									{{Stockfish.format(state.stockfish.header)}}<br>
-									And then:
-								</div>
-								<table class="table">
-									<tr v-for="line in state.stockfish.lines.filter(l=>l&&l.moves.length)">
-										<td class="align-top">
-											<div class="nowrap">{{line.score}}</div>
-											<div class="mt-2">
-												<button type="button" class="btn btn-primary px-2 py-0" title="Play this line"
-														@click="Stockfish.play(line)">
-													<i class="fa-solid fa-play"></i>
-												</button>
-											</div>
-										</td>
-										<td class="align-top" v-text="Stockfish.format(line.moves)"></td>
-									</tr>
-								</table>
-							</div>
-						</div>
-					</section>
-
-					<!-- Popeye -->
+					<!-- Compute -->
 					<section :class="{show:state.tab==7}">
-						<div v-show="!state.popeye.playing&&!state.popeye.editMap">
-							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
-									  :disabled="state.popeye.running" placeholder="For example:
-=============
-Stipulation #2
-Option Variation"></textarea>
-							<div class="mb-3 row">
+						<div class="mb-3"
+							 v-scope="Radio('Tool:',state,'compute',['Popeye','Stockfish','Syzygy'],['py','sf','sy'])">
+						</div>
+						<!-- Popeye -->
+						<div v-show="state.compute=='py'">
+							<div v-show="!state.popeye.playing&&!state.popeye.editMap">
+								<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input"
+										  :disabled="state.popeye.running" placeholder="For example:
+	=============
+	Stipulation #2
+	Option Variation"></textarea>
+								<div class="mb-3 row">
+									<div class="col">
+										<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
+												:disabled="state.popeye.running">
+											Edit fairy piece mapping
+										</button>
+									</div>
+									<div class="col-auto text-end">
+										<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
+												:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
+											Play solution
+										</button>
+										<span v-if="!state.popeye.running">
+											<button type="button" class="btn btn-primary m-0 disabled"
+													v-if="state.play.playing||!state.popeye.input.trim()"
+													:title="state.play.playing?'Need to exit play mode first':'Input instructions first'">
+												<i class="fa-solid fa-play"></i>&ensp;Run
+											</button>
+											<button type="button" class="btn btn-primary m-0" @click="Popeye.run" v-else
+													title="Run Popeye on your device!">
+												<i class="fa-solid fa-play"></i>&ensp;Run
+											</button>
+										</span>
+										<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
+											<i class="fa-solid fa-stop"></i>&ensp;Cancel
+										</button>
+									</div>
+								</div>
+							</div>
+							<div v-if="!state.popeye.playing&&state.popeye.editMap">
+								<textarea class="form-control mb-2" rows="5" v-model="state.popeye.mapping"
+										  placeholder="Use the format like *2Q=G for each line."></textarea>
+								<div class="mb-3 row">
+									<div class="col">
+										<button type="button" class="btn btn-primary m-0" @click="Popeye.saveMap">
+											Save setting
+										</button>
+										<button type="button" class="btn btn-secondary m-0" @click="state.popeye.editMap=false">
+											Cancel
+										</button>
+									</div>
+									<div class="col-auto text-end">
+										<button type="button" class="btn btn-secondary m-0" @click="Popeye.resetMap">
+											Reset
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="mb-3 row" v-if="state.popeye.playing">
 								<div class="col">
-									<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
-											:disabled="state.popeye.running">
-										Edit fairy piece mapping
+									<button type="button" class="btn btn-secondary" @click="Popeye.move(0)"
+											:disabled="state.popeye.index<=0">
+										<i class="fa-solid fa-angles-left fa-fw"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(-1)"
+											:disabled="state.popeye.index<=0">
+										<i class="fa-solid fa-angle-left fa-fw"></i>
+									</button>
+									<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(1)"
+											:disabled="state.popeye.index>=state.popeye.steps.length-1">
+										<i class="fa-solid fa-angle-right fa-fw"></i>
+									</button>
+									<button type="button" class="btn btn-secondary"
+											@click="Popeye.move(state.popeye.steps.length-1)"
+											:disabled="state.popeye.index>=state.popeye.steps.length-1">
+										<i class="fa-solid fa-angles-right fa-fw"></i>
 									</button>
 								</div>
 								<div class="col-auto text-end">
-									<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
-											:disabled="state.popeye.error" v-if="!state.popeye.running&&state.popeye.output">
-										Play solution
-									</button>
-									<span v-if="!state.popeye.running">
-										<button type="button" class="btn btn-primary m-0 disabled"
-												v-if="state.play.playing||!state.popeye.input.trim()"
-												:title="state.play.playing?'Need to exit play mode first':'Input instructions first'">
-											<i class="fa-solid fa-play"></i>&ensp;Run
-										</button>
-										<button type="button" class="btn btn-primary m-0" @click="Popeye.run" v-else
-												title="Run Popeye on your device!">
-											<i class="fa-solid fa-play"></i>&ensp;Run
-										</button>
-									</span>
-									<button v-else type="button" class="btn btn-secondary m-0" @click="Popeye.cancel">
-										<i class="fa-solid fa-stop"></i>&ensp;Cancel
+									<button type="button" class="btn btn-secondary" @click="Popeye.exit">
+										Exit playing
 									</button>
 								</div>
 							</div>
+							<div id="Output" v-show="state.popeye.output&&state.tab==7" class="form-control"
+								 v-html="state.popeye.output" @click="Popeye.step($event)">
+							</div>
+							<div class="mt-2">
+								<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
+									Popeye documentation
+								</a>
+							</div>
 						</div>
-						<div v-if="!state.popeye.playing&&state.popeye.editMap">
-							<textarea class="form-control mb-2" rows="5" v-model="state.popeye.mapping"
-									  placeholder="Use the format like *2Q=G for each line."></textarea>
-							<div class="mb-3 row">
-								<div class="col">
-									<button type="button" class="btn btn-primary m-0" @click="Popeye.saveMap">
-										Save setting
+						<!-- Stockfish -->
+						<div v-show="state.compute=='sf'">
+							<div v-if="status.stockfish.status<2">
+								<div class="mb-3">To use this feature, we need to download Stockfish modules first.</div>
+								<button v-if="status.stockfish.status==0" type="button" class="btn btn-primary"
+										@click="Stockfish.download">
+									<i class="fa-solid fa-download"></i>&ensp;Download now! (39.5MB)
+								</button>
+								<button v-else type="button" class="btn btn-primary" disabled>
+									<i class="fa-solid fa-download"></i>&ensp;Downloading...&ensp;<i
+									   class="fa-solid fa-spinner fa-spin"></i>
+								</button>
+							</div>
+							<div v-else-if="status.stockfish.status==2">
+								<div class="mb-3">Download complete. Please restart FEN Tool.</div>
+								<button v-else type="button" class="btn btn-primary" onclick="location.reload()">
+									<i class="fa-solid fa-rotate-right"></i>&ensp;Restart FEN Tool now
+								</button>
+							</div>
+							<div v-else>
+								<div class="row align-items-baseline" v-if="status.stockfish.running<2">
+									<div class="col" style="flex-basis: 12rem;">
+										<div class="row gx-3 mb-2">
+											<label class="col-auto col-form-label">Depth:</label>
+											<div class="col">
+												<span v-scope="NumInput('Search depth', store.Stockfish, 'depth', 1)"></span>
+											</div>
+										</div>
+									</div>
+									<div class="col" style="flex-basis: 11rem;">
+										<div class="row gx-3 mb-2">
+											<label class="col-auto col-form-label">Lines:</label>
+											<div class="col">
+												<span
+													  v-scope="NumInput('Number of lines to search', store.Stockfish, 'lines', 1)"></span>
+											</div>
+										</div>
+									</div>
+									<div class="col mb-2" style="flex-basis: 10rem;">
+										<div
+											 v-scope="Checkbox('Stockfish.study', 'Study mode', null, ()=>store.Stockfish.lines<=1)">
+										</div>
+									</div>
+								</div>
+								<!-- Start button -->
+								<div>
+									<button v-if="!status.stockfish.running" type="button" class="btn btn-primary"
+											@click="Stockfish.analyze">
+										<i class="fa-solid fa-play"></i>&ensp;Analyze with Stockfish 16
 									</button>
-									<button type="button" class="btn btn-secondary m-0" @click="state.popeye.editMap=false">
-										Cancel
+									<button v-else-if="status.stockfish.running==1" disabled class="btn btn-primary">
+										<i class="fa-solid fa-play"></i>&ensp;Initializing...
+									</button>
+									<button v-else type="button" class="btn btn-secondary" @click="Stockfish.stop">
+										<i class="fa-solid fa-stop"></i>&ensp;Stop
 									</button>
 								</div>
-								<div class="col-auto text-end">
-									<button type="button" class="btn btn-secondary m-0" @click="Popeye.resetMap">
-										Reset
-									</button>
+								<!-- Output -->
+								<div class="mt-3">
+									<div v-if="state.stockfish.depth">
+										<span>Depth: {{state.stockfish.depth}}</span><span
+											  v-if="status.stockfish.running==2">/{{store.Stockfish.depth}} <i
+											   class="fa-solid fa-spinner fa-spin ms-2"></i></span>
+									</div>
+									<div v-if="state.stockfish.mate">{{(state.stockfish.mate||"")[0]}} has mate in
+										{{(state.stockfish.mate||"")[1]}}.</div>
+									<div v-else-if="state.stockfish.score">Score: {{state.stockfish.score}}</div>
+									<div v-if="state.stockfish.header.length">
+										Solution is unique against best defense up to:<br>
+										{{Stockfish.format(state.stockfish.header)}}<br>
+										And then:
+									</div>
+									<table class="table">
+										<tr v-for="line in state.stockfish.lines.filter(l=>l&&l.moves.length)">
+											<td class="align-top">
+												<div class="nowrap">{{line.score}}</div>
+												<div class="mt-2">
+													<button type="button" class="btn btn-primary px-2 py-0" title="Play this line"
+															@click="Stockfish.play(line)">
+														<i class="fa-solid fa-play"></i>
+													</button>
+												</div>
+											</td>
+											<td class="align-top" v-text="Stockfish.format(line.moves)"></td>
+										</tr>
+									</table>
 								</div>
 							</div>
 						</div>
-						<div class="mb-3 row" v-if="state.popeye.playing">
-							<div class="col">
-								<button type="button" class="btn btn-secondary" @click="Popeye.move(0)"
-										:disabled="state.popeye.index<=0">
-									<i class="fa-solid fa-angles-left fa-fw"></i>
-								</button>
-								<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(-1)"
-										:disabled="state.popeye.index<=0">
-									<i class="fa-solid fa-angle-left fa-fw"></i>
-								</button>
-								<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(1)"
-										:disabled="state.popeye.index>=state.popeye.steps.length-1">
-									<i class="fa-solid fa-angle-right fa-fw"></i>
-								</button>
-								<button type="button" class="btn btn-secondary" @click="Popeye.move(state.popeye.steps.length-1)"
-										:disabled="state.popeye.index>=state.popeye.steps.length-1">
-									<i class="fa-solid fa-angles-right fa-fw"></i>
-								</button>
-							</div>
-							<div class="col-auto text-end">
-								<button type="button" class="btn btn-secondary" @click="Popeye.exit">
-									Exit playing
-								</button>
-							</div>
-						</div>
-						<div id="Output" v-show="state.popeye.output&&state.tab==7" class="form-control"
-							 v-html="state.popeye.output" @click="Popeye.step($event)">
-						</div>
-						<div class="mt-2">
-							<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
-								Popeye documentation
-							</a>
+						<!-- Syzygy -->
+						<div v-show="state.compute=='sy'">
+
 						</div>
 					</section>
 

@@ -91,6 +91,7 @@ export const STOCKFISH = {
 const defaultState = {
 	split: false,
 	tab: 0,
+	compute: "py",
 	play: {
 		initFEN: null,
 		playing: false,

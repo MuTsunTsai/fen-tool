@@ -1,4 +1,4 @@
-import { state, store } from "./store";
+import { state, store } from "../store";
 
 let checkboxId = 0;
 

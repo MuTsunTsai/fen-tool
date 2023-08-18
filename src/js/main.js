@@ -1,11 +1,14 @@
 import { createApp } from "petite-vue";
-import { Checkbox, CheckboxBase, CheckboxR } from "./checkbox";
-import { CopyButton, copyImage } from "./copy";
+import { Checkbox, CheckboxBase, CheckboxR } from "./components/checkbox";
+import { CopyButton } from "./components/copyBtn";
+import { Radio } from "./components/radio";
+import { NumInput } from "./components/number";
 
 import { store, state, status, saveSettings, saveSession, noEditing } from "./store";
 import { updateSN, toFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
-import { initLayout, setOption } from "./layout";
+import { initLayout, setOption, Layout } from "./layout";
+import { copyImage } from "./copy";
 import { initDrag } from "./drag";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
@@ -18,6 +21,7 @@ import { PLAY, moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 import { openFile } from "./tools/scan";
 import { Stockfish } from "./tools/stockfish";
+import { Syzygy } from "./tools/syzygy";
 
 initLayout();
 initDrag();
@@ -104,6 +108,9 @@ createApp({
 	Checkbox,
 	CheckboxR,
 	CopyButton,
+	Radio,
+	NumInput,
+	Layout,
 	redraw,
 	updateBG,
 	updateSN,
@@ -128,6 +135,7 @@ createApp({
 	API,
 	PLAY,
 	Stockfish,
+	Syzygy,
 	store,
 	state,
 	status,

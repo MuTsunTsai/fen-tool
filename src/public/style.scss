@@ -67,9 +67,13 @@ iframe {
 	overflow: hidden;
 }
 
-input[type="number"] {
+input[type=number] {
 	/* hide spinner in Firefox */
 	appearance: textfield;
+}
+
+input[type=checkbox], input[type=radio] {
+	cursor: pointer;
 }
 
 section {

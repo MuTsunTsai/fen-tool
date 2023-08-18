@@ -166,7 +166,7 @@ if(!env.isTop) {
 	}
 }
 
-window.Layout = {
+export const Layout = {
 	setOption,
 	setDimension,
 	setBorder(el) {
@@ -178,28 +178,10 @@ window.Layout = {
 			setOption({ border });
 		}
 	},
-	setHeight(el) {
-		if(typeof el == "number") {
-			setDimension({ h: store.board.h + el });
-		} else {
-			const v = Math.floor(Number(el.value));
-			if(isNaN(v) || v <= 0) {
-				el.value = store.board.h;
-			} else {
-				setDimension({ h: v });
-			}
-		}
-	},
-	setWidth(el) {
-		if(typeof el == "number") {
-			setDimension({ w: store.board.w + el });
-		} else {
-			const v = Math.floor(Number(el.value));
-			if(isNaN(v) || v <= 0) {
-				el.value = store.board.w;
-			} else {
-				setDimension({ w: v });
-			}
-		}
-	},
+	get height() { return store.board.h; },
+	set height(v) { setDimension({ h: v }); },
+	get width() { return store.board.w; },
+	set width(v) { setDimension({ w: v }); },
 };
+
+window.Layout = Layout;
