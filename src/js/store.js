@@ -149,6 +149,9 @@ const defaultState = {
 
 /** @type {typeof defaultState} */
 export const state = reactive(savedState ? JSON.parse(savedState) : defaultState);
+for(const key in defaultState) {
+	if(!(key in state)) state[key] = defaultState[key];
+}
 
 export function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));
