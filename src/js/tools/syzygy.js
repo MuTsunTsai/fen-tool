@@ -107,20 +107,10 @@ async function search(line, ctx) {
 	const hasDtm = typeof line.dtm == "number";
 	const moves = chess.moves({ verbose: true });
 	const json = await api(line.fen, ctx);
-	const defenses = new Set(json.moves.filter(m => m.category == ctx.op).map(d => d.uci));
+	const defenses = new Set(json.moves.filter(m => m.category == ctx.outcome).map(m => m.uci));
 	const tasks = moves
 		.filter(m => defenses.has(m.from + m.to + (m.promotion || "")))
-		.map(move => api(move.after, ctx).then(json => {
-			if(!ctx.running || json.category != ctx.outcome) return null;
-			const moves = json.moves.filter(m => m.category == ctx.op);
-			return {
-				score: (hasDtm ? json.dtm : 0) - moves.length,
-				json,
-				dtm: json.dtm,
-				defense: move,
-				moves,
-			};
-		}));
+		.map(m => queryDefense(m, ctx, hasDtm));
 
 	const results = (await Promise.all(tasks))
 		.filter(r => r)
@@ -132,31 +122,7 @@ async function search(line, ctx) {
 	const continuations = results.filter(r => ctx.op != "draw" && r.moves.length > 0 || r.moves.length == 1);
 	if(continuations.length == 0) return;
 	const unique = continuations.length == 1;
-	const branches = continuations
-		.map(r => {
-			chess.init(line.fen);
-			const defense = chess.move(r.defense);
-			if(unique) defense.annotation = "!";
-			const [from, to, promotion] = r.moves[0].uci.match(/..|./g);
-			const move = chess.move({ from, to, promotion });
-			if(r.moves.length == 1) move.annotation = "!";
-			const fen = chess.fen();
-			const pos = toPosition(fen);
-			const transpose = ctx.positions.has(pos);
-			if(!transpose) ctx.positions.add(pos);
-			const selfHistory = chess.state.history.concat();
-			return {
-				dtm: typeof r.dtm == "number" ? 1 - r.dtm : null,
-				fen,
-				transpose,
-				leaf: true,
-				indent: line.indent + (unique ? 0 : 1),
-				history: line.history.concat(selfHistory),
-				moves: unique ? line.moves.concat(selfHistory) : selfHistory,
-				pgn: chess.copyPGN(line.history),
-				searching: !chess.isGameOver() && !transpose,
-			};
-		});
+	const branches = continuations.map(r => createBranch(r, line, unique, chess, ctx));
 	const lines = state.syzygy.lines.concat();
 	const index = lines.indexOf(line);
 	if(unique) lines.splice(index, 1, ...branches);
@@ -165,6 +131,44 @@ async function search(line, ctx) {
 		lines.splice(index + 1, 0, ...branches);
 	}
 	state.syzygy.lines = lines;
+}
+
+async function queryDefense(move, ctx, hasDtm) {
+	const json = await api(move.after, ctx);
+	if(!ctx.running) return null;
+	const moves = json.moves.filter(m => m.category == ctx.op);
+	return {
+		score: (hasDtm ? json.dtm : 0) - moves.length,
+		json,
+		dtm: json.dtm,
+		defense: move,
+		moves,
+	};
+}
+
+function createBranch(r, line, unique, chess, ctx) {
+	chess.init(line.fen);
+	const defense = chess.move(r.defense);
+	if(unique) defense.annotation = "!";
+	const [from, to, promotion] = r.moves[0].uci.match(/..|./g);
+	const move = chess.move({ from, to, promotion });
+	if(r.moves.length == 1) move.annotation = "!";
+	const fen = chess.fen();
+	const pos = toPosition(fen);
+	const transpose = ctx.positions.has(pos);
+	if(!transpose) ctx.positions.add(pos);
+	const selfHistory = chess.state.history.concat();
+	return {
+		dtm: typeof r.dtm == "number" ? 1 - r.dtm : null,
+		fen,
+		transpose,
+		leaf: true,
+		indent: line.indent + (unique ? 0 : 1),
+		history: line.history.concat(selfHistory),
+		moves: unique ? line.moves.concat(selfHistory) : selfHistory,
+		pgn: chess.copyPGN(line.history),
+		searching: !chess.isGameOver() && !transpose,
+	};
 }
 
 const WIN = ["win", "maybe-win", "cursed-win"]
