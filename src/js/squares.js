@@ -243,6 +243,7 @@ export function parseFullFEN(fen) {
 	const s = state.play;
 	const arr = fen.split(" ");
 	if(arr.length == 1) return;
+	setFEN(arr[0]);
 	if(arr[1] == "w" || arr[1] == "b") s.turn = arr[1];
 	if(arr[2]) {
 		const keys = ["K", "Q", "k", "q"];
