@@ -121,8 +121,9 @@ export function toYACPDB(value) {
 	value = convertSN(value, false, true);
 	const match = value.match(/^(-?)(?:\*(\d))?([kqbnrp])$/i);
 	if(!match) return "";
-	if(!match[1] && !match[2]) return match[3];
-	return "(" + (match[1] ? "!" : "") + match[3] + (match[2] || "") + ")";
+	const v = convertSN(match[3], true); // YACPDB use S for knight
+	if(!match[1] && !match[2]) return v;
+	return "(" + (match[1] ? "!" : "") + v + (match[2] || "") + ")";
 }
 
 export function convertSN(value, useSN, convert) {
