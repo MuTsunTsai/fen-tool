@@ -206,6 +206,7 @@ export const PLAY = {
 	exit() {
 		state.play.playing = false;
 		state.play.game = "";
+		setFEN(state.play.initFEN);
 		parseFullFEN(state.play.initFEN);
 		toggleReadOnly(false);
 		drawTemplate([]);

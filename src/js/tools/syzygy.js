@@ -106,17 +106,21 @@ async function search(line, ctx) {
 	chess.init(line.fen);
 	const hasDtm = typeof line.dtm == "number";
 	const moves = chess.moves({ verbose: true });
-	const tasks = moves.map(move => api(move.after, ctx).then(json => {
-		if(!ctx.running) return null;
-		const moves = json.moves.filter(m => m.category == ctx.op);
-		return {
-			score: (hasDtm ? json.dtm : 0) - moves.length,
-			json,
-			dtm: json.dtm,
-			defense: move,
-			moves,
-		};
-	}));
+	const json = await api(line.fen, ctx);
+	const defenses = new Set(json.moves.filter(m => m.category == ctx.op).map(d => d.uci));
+	const tasks = moves
+		.filter(m => defenses.has(m.from + m.to + (m.promotion || "")))
+		.map(move => api(move.after, ctx).then(json => {
+			if(!ctx.running || json.category != ctx.outcome) return null;
+			const moves = json.moves.filter(m => m.category == ctx.op);
+			return {
+				score: (hasDtm ? json.dtm : 0) - moves.length,
+				json,
+				dtm: json.dtm,
+				defense: move,
+				moves,
+			};
+		}));
 
 	const results = (await Promise.all(tasks))
 		.filter(r => r)
