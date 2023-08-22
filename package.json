@@ -30,8 +30,8 @@
 		"gulp-terser": "^2.1.0",
 		"gulp-workbox": "^1.0.6",
 		"mocha": "^10.2.0",
-		"sass": "^1.64.2",
-		"serve": "^14.2.0",
+		"sass": "^1.66.1",
+		"serve": "^14.2.1",
 		"vinyl-sourcemaps-apply": "^0.2.1",
 		"workbox-build": "^7.0.0"
 	},

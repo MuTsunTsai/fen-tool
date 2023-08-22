@@ -157,26 +157,28 @@ gulp.task("chess", () =>
 		.pipe(gulp.dest("docs/modules"))
 );
 
+const popeyeVersion = "489";
+
 gulp.task("popeye", () =>
-	gulp.src(["src/js/modules/popeye.js", "src/js/modules/py.js"])
+	gulp.src(["src/js/modules/popeye.js", `src/js/modules/py${popeyeVersion}.js`])
 		.pipe($.newer({
-			dest: "docs/modules/py.js",
+			dest: `docs/modules/py${popeyeVersion}.js`,
 			extra: [__filename]
 		}))
 		.pipe($.if(file => file.stem == "popeye", $.terser()))
-		.pipe($.concat("py.js"))
+		.pipe($.concat(`py${popeyeVersion}.js`))
 		.pipe($.terser({ toplevel: true }))
 		.pipe(gulp.dest("docs/modules"))
 );
 
 gulp.task("pyasm", () =>
-	gulp.src(["src/js/modules/popeye.js", "src/js/modules/py.asm.js"])
+	gulp.src(["src/js/modules/popeye.js", `src/js/modules/py${popeyeVersion}.asm.js`])
 		.pipe($.newer({
-			dest: "docs/modules/py.asm.js",
+			dest: `docs/modules/py${popeyeVersion}.asm.js`,
 			extra: [__filename]
 		}))
 		.pipe($.if(file => file.stem == "popeye", $.terser()))
-		.pipe($.concat("py.asm.js"))
+		.pipe($.concat(`py${popeyeVersion}.asm.js`))
 		.pipe($.terser()) // cannot drop top-level variables for some reason
 		.pipe(gulp.dest("docs/modules"))
 );

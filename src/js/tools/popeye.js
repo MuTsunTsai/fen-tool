@@ -21,7 +21,7 @@ let worker;
 /** Current memory setting. */
 let memory;
 
-let path = "modules/py.js";
+let path = "modules/py489.js";
 let startTime;
 let interval;
 let outputCount;
@@ -82,7 +82,7 @@ function createWorker() {
 			stop();
 		} else if(data === -1) {
 			gtag("event", "fen_popeye_fallback");
-			path = "modules/py.asm.js"; // fallback to asm.js
+			path = "modules/py489.asm.js"; // fallback to asm.js
 			stop(true);
 			state.popeye.intOutput = "Fallback to JS mode.<br>";
 		} else if(data === -2) {
