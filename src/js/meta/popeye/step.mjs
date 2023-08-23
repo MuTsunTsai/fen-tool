@@ -1,5 +1,5 @@
 import { INIT_FORSYTH, makeForsyth, parseFEN, parseXY, toSquare } from "../fen.mjs";
-import { Main, Step, setPiece, movePiece } from "./base.mjs";
+import { Main, Step, setPiece, movePiece, SQ } from "./base.mjs";
 import { makeEffect } from "./effect.mjs";
 
 const MAIN = new RegExp(Main);
@@ -76,7 +76,15 @@ function makeMove(board, color, g, imitators, animation) {
 	} else {
 		p = movePiece(board, g.from, to = g.to, animation);
 		if(g.ep) setPiece(board, getEpSquare(g.to), ""); // en passant
-		if(g.then) movePiece(board, g.to, to = g.then, animation); // Take&Make, (Anti)MarsCirce
+		if(g.then) {
+			let from = g.to;
+			let sqs = g.then.match(new RegExp(SQ, "g"));
+			for(const to of sqs) {
+				movePiece(board, from, to, animation);
+				from = to;
+			}
+			console.log(g.then, sqs, animation);
+		}
 	}
 	if(g.p == "I") {
 		imitators.push(to);
