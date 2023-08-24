@@ -1,3 +1,4 @@
+import { env } from "../meta/env";
 
 function copyText(text) {
 	if(env.canCopy) navigator.clipboard.writeText(text);
