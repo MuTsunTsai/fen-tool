@@ -83,7 +83,6 @@ function makeMove(board, color, g, imitators, animation) {
 				movePiece(board, from, to, animation);
 				from = to;
 			}
-			console.log(g.then, sqs, animation);
 		}
 	}
 	if(g.p == "I") {
