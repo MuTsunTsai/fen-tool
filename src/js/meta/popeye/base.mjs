@@ -5,7 +5,7 @@ export const SQ = `[a-h][1-8]`;
 export const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
 const Effect = String.raw`\[[^\]]+\]`;
 export const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
-const Normal = `(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?<then>([-*]${SQ})*)`;
+const Normal = `(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?<ep> ep\.)?(?<then>([-*]${SQ})*)`;
 const Promotion = `=(?<pc>[nwb])?(?<p>${P})`;
 
 export const Commands = ["condition", "2option", "3stipulation", "2sstipulation", "3forsyth", "2pieces", "2twin"].map(createAbbrExp).join("|");
@@ -13,7 +13,7 @@ export const COMMANDS = new RegExp(Commands, "ig");
 
 // Note that effect could occur before or after promotion notation.
 // This is one thing that is somewhat inconsistent in Popeye output.
-export const Main = String.raw`(?:(?<move>0-0(?:-0)?|${Normal})(?:${Effect})*(?:${Promotion})?(?:=(?<cc>[nwb]))?(?<ep> ep\.)?)(?:${Effect})*`;
+export const Main = String.raw`(?:(?<move>0-0(?:-0)?|${Normal})(?:${Effect})*(?:${Promotion})?(?:=(?<cc>[nwb]))?)(?:${Effect})*`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
 export const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?: [+#=])?`;
 

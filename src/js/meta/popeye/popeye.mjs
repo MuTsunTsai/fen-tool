@@ -109,7 +109,7 @@ export function inferMoveOrdering(stip, halfDuplex) {
 	const m = stip.match(/^(\d+-&gt;)?(?:exact-)?(?:(?:ser|pser|phser|semi|reci)-)?(hs|hr|h|s|r)?/i);
 	let result;
 	if(!m || m[1]) result = "wb";
-	else result = m[2].toLowerCase() == "h" ? "bw" : "wb";
+	else result = m[2]?.toLowerCase() == "h" ? "bw" : "wb";
 	return halfDuplex ? flipOrdering(result) : result;
 }
 
