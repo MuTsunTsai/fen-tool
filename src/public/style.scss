@@ -1,4 +1,5 @@
 $enable-negative-margins: true;
+$enable-shadows: true;
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
@@ -67,12 +68,13 @@ iframe {
 	overflow: hidden;
 }
 
-input[type=number] {
+input[type="number"] {
 	/* hide spinner in Firefox */
 	appearance: textfield;
 }
 
-input[type=checkbox], input[type=radio] {
+input[type="checkbox"],
+input[type="radio"] {
 	cursor: pointer;
 }
 
@@ -240,21 +242,6 @@ label[for] {
 .step {
 	vertical-align: unset;
 	user-select: unset;
-
-	/* same as btn-light */
-	--bs-btn-color: #000;
-	--bs-btn-bg: #f8f9fa;
-	--bs-btn-border-color: #f8f9fa;
-	--bs-btn-hover-color: #000;
-	--bs-btn-hover-bg: #d3d4d5;
-	--bs-btn-hover-border-color: #c6c7c8;
-	--bs-btn-focus-shadow-rgb: 211, 212, 213;
-	--bs-btn-active-color: #000;
-	--bs-btn-active-bg: #c6c7c8;
-	--bs-btn-active-border-color: #babbbc;
-	--bs-btn-disabled-color: #000;
-	--bs-btn-disabled-bg: #f8f9fa;
-	--bs-btn-disabled-border-color: #f8f9fa;
 }
 
 #Output {
@@ -265,21 +252,20 @@ label[for] {
 	white-space: pre;
 }
 
+@mixin button($color) {
+	@include button-variant(
+		$color,
+		$color,
+		$hover-background: shade-color($color, $btn-hover-bg-shade-amount),
+		$hover-border: shade-color($color, $btn-hover-border-shade-amount),
+		$active-background: shade-color($color, $btn-active-bg-shade-amount),
+		$active-border: shade-color($color, $btn-active-border-shade-amount)
+	);
+}
+
 @media (prefers-color-scheme: light) {
 	.btn-secondary {
-		--bs-btn-color: #000;
-		--bs-btn-bg: #ccc;
-		--bs-btn-border-color: #ccc;
-		--bs-btn-hover-color: #000;
-		--bs-btn-hover-bg: #d4d4d4;
-		--bs-btn-hover-border-color: #d1d1d1;
-		--bs-btn-focus-shadow-rgb: 173, 173, 173;
-		--bs-btn-active-color: #000;
-		--bs-btn-active-bg: #d6d6d6;
-		--bs-btn-active-border-color: #d1d1d1;
-		--bs-btn-disabled-color: #000;
-		--bs-btn-disabled-bg: #ccc;
-		--bs-btn-disabled-border-color: #ccc;
+		@include button(#ccc);
 	}
 
 	.btn-light.active {
@@ -290,6 +276,10 @@ label[for] {
 	.btn-light:hover {
 		border-color: #eee;
 		background: #eee;
+	}
+
+	.step {
+		@include button($light);
 	}
 }
 
@@ -335,20 +325,7 @@ label[for] {
 	}
 
 	.step {
-		/* Same as btn-secondary */
-		--bs-btn-color: #fff;
-		--bs-btn-bg: #6c757d;
-		--bs-btn-border-color: #6c757d;
-		--bs-btn-hover-color: #fff;
-		--bs-btn-hover-bg: #5c636a;
-		--bs-btn-hover-border-color: #565e64;
-		--bs-btn-focus-shadow-rgb: 130, 138, 145;
-		--bs-btn-active-color: #fff;
-		--bs-btn-active-bg: #565e64;
-		--bs-btn-active-border-color: #51585e;
-		--bs-btn-disabled-color: #fff;
-		--bs-btn-disabled-bg: #6c757d;
-		--bs-btn-disabled-border-color: #6c757d;
+		@include button($secondary);
 
 		&.active {
 			color: yellow;
