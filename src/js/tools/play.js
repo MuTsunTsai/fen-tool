@@ -11,7 +11,7 @@ if(state.play.playing) {
 	const p = state.play;
 	p.playing = false;
 	Promise.all([load(), loadChessModule()]).then(() => {
-		p.playing = true;
+		start();
 		PLAY.goto(p.history[p.moveNumber]);
 	});
 }

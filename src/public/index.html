@@ -716,12 +716,15 @@
 =============
 Stipulation #2
 Option Variation"></textarea>
-								<div class="mb-3 row">
+								<div class="mb-3 row gx-1">
 									<div class="col">
-										<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
-												:disabled="state.popeye.running">
-											Edit fairy piece mapping
-										</button>
+										<div class="w-passive-100">
+											<button type="button" class="btn btn-secondary m-0" @click="Popeye.editMap"
+													:disabled="state.popeye.running"
+													style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%;">
+												<i class="fa-solid fa-pen-to-square"></i>&ensp;Fairy piece mapping
+											</button>
+										</div>
 									</div>
 									<div class="col-auto text-end">
 										<button type="button" class="btn btn-secondary m-0" @click="Popeye.play"
