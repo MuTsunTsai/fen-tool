@@ -505,6 +505,22 @@ describe("Popeye", function() {
 				expect(result.length).to.equal(4);
 
 				expect(result[1]).to.equal("8/8/8/8/8/8/p1K5/k7");
+			});
+
+			it("Series capture with promotion", function() {
+				/*
+				fors k3b3/b1K2p2/6p1/7p/6p1/5p2/4P3/8
+				stip #1
+				cond seriescapture
+				*/
+				const input = "stip #1\ncond seriescapture";
+				const fen = "k3b3/b1K2p2/6p1/7p/6p1/5p2/4P3/8 w KQkq - 0 1";
+				const output = "Popeye wasm-32Bit v4.89 (512 MB)<br><br>   1.e2*f3*g4*h5*g6*f7*e8=B-c6 # !<br><br><br>solution finished. Time = 0.044 s<br><br><br>";
+
+				const result = parse(input, fen, output);
+				expect(result.length).to.equal(2);
+
+				expect(result[1]).to.equal("k7/b1K5/2B5/8/8/8/8/8");
 			})
 
 		});

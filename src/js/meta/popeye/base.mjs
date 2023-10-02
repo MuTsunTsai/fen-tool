@@ -5,8 +5,8 @@ export const SQ = `[a-h][1-8]`;
 export const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
 const Effect = String.raw`\[[^\]]+\]`;
 export const Twin = String.raw`(\+)?[a-z]\) (\S[ \S]+\S)`;
-const Normal = `(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?<ep> ep\.)?(?<then>([-*]${SQ})*)`;
-const Promotion = `=(?<pc>[nwb])?(?<p>${P})`;
+const Normal = `(?:[nwb])?r?${P}?(?<from>${SQ})[-*](?<to>${SQ})(?<ep> ep\.)?(?<then>([-*]${SQ}(=[nwb]?${P})?)*)`;
+export const Promotion = `=(?<pc>[nwb])?(?<p>${P})`;
 
 export const Commands = ["condition", "2option", "3stipulation", "2sstipulation", "3forsyth", "2pieces", "2twin"].map(createAbbrExp).join("|");
 export const COMMANDS = new RegExp(Commands, "ig");
@@ -23,6 +23,7 @@ export function setPiece(board, sq, piece, color) {
 	if(color == "b") piece = piece.toLowerCase();
 	if(color == "n") piece = "-" + piece.toLowerCase();
 	board[parseSquare(sq)] = piece;
+	return piece;
 }
 
 export function movePiece(board, from, to, animation) {

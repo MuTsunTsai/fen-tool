@@ -247,8 +247,10 @@ export const Popeye = {
 		nextTick(setupStepElements);
 	},
 	step(e) {
-		const index = state.popeye.steps.indexOf(e.target);
-		if(index >= 0 && index != state.popeye.index) {
+		const p = state.popeye;
+		if(!p.playing) return;
+		const index = p.steps.indexOf(e.target);
+		if(index >= 0 && index != p.index) {
 			e.preventDefault();
 			goTo(index);
 		}
