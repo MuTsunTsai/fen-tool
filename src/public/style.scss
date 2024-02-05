@@ -252,6 +252,14 @@ label[for] {
 	white-space: pre;
 }
 
+.shadow-black {
+	text-shadow: 0 0 3px black;
+}
+
+.shadow-white {
+	text-shadow: 0 0 3px white;
+}
+
 @mixin button($color) {
 	@include button-variant(
 		$color,
@@ -281,6 +289,10 @@ label[for] {
 	.step {
 		@include button($light);
 	}
+
+	.shadow-neutral {
+		text-shadow: 0 0 3px white;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -299,6 +311,10 @@ label[for] {
 
 	.form-control::placeholder {
 		color: #777 !important;
+	}
+
+	.shadow-neutral {
+		text-shadow: 0 0 3px black;
 	}
 
 	:root {
