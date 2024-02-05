@@ -40,14 +40,15 @@ const settings = {
 		pieceMap: defaultCustomMap,
 	},
 	board: defaultOption,
-	message: {
-		touchTip: true,
-		textShortcut: true,
-	}
+	project: [],
 };
 deepAssign(settings, savedSettings, true);
+
+// These are the exceptions
+if(savedSettings.project) {
+	settings.project = savedSettings.project;
+}
 if(savedSettings.popeye) {
-	// This one is the exception
 	settings.popeye.pieceMap = savedSettings.popeye.pieceMap;
 }
 

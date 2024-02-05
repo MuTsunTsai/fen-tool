@@ -5,13 +5,15 @@ import { Radio } from "./components/radio";
 import { NumInput } from "./components/number";
 
 import { store, state, status, saveSettings, saveSession, noEditing } from "./store";
-import { updateSN, toFEN, updateEdwards } from "./squares";
+import { updateSN, toFEN, setFEN, updateEdwards } from "./squares";
 import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
 import { initLayout, setOption, Layout } from "./layout";
 import { copyImage } from "./copy";
 import { initDrag } from "./drag";
 import { env } from "./meta/env";
 import { SN } from "./meta/el";
+import { init as initSDK } from "./api/sdk-base";
+import { Project } from "./project";
 
 import { YACPDB } from "./tools/yacpdb";
 import { PDB } from "./tools/pdb";
@@ -25,6 +27,10 @@ import { Syzygy } from "./tools/syzygy";
 
 initLayout();
 initDrag();
+initSDK({
+	getDefault: () => store.board,
+	getTitle: fen => fen,
+});
 
 // https://stackoverflow.com/a/43321596/9953396
 document.addEventListener('mousedown', function(event) {
@@ -118,6 +124,7 @@ createApp({
 	Popeye,
 	updateEdwards,
 	toFEN,
+	setFEN,
 	toggleCoordinates() {
 		setOption({}, true);
 	},
@@ -136,6 +143,7 @@ createApp({
 	PLAY,
 	Stockfish,
 	Syzygy,
+	Project,
 	store,
 	state,
 	status,

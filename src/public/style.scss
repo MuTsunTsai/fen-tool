@@ -260,6 +260,47 @@ label[for] {
 	text-shadow: 0 0 3px white;
 }
 
+.thumbnail-container {
+	display: flex;
+	flex-wrap: wrap;
+	margin: -0.5rem;
+}
+
+.thumbnail-wrapper {
+	position: relative;
+
+	> i {
+		position: absolute;
+		top: .75rem;
+		right: .75rem;
+		opacity: 0;
+		font-size: 1.5rem;
+		transition: opacity 0.2s;
+		background: white;
+		border-radius: 50%;
+		cursor: pointer;
+	}
+
+	&:hover > i {
+		opacity: 0.75;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	&.touch > i {
+		opacity: 1 !important;
+	}
+}
+
+.thumbnail {
+	width: 100px;
+	height: 100px;
+	margin: 0.5rem;
+	cursor: pointer;
+}
+
 @mixin button($color) {
 	@include button-variant(
 		$color,
