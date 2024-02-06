@@ -1,16 +1,18 @@
 import { orthodoxFEN } from "../squares";
-import { state, status } from "../store";
+import { onSession, state, status } from "../store";
 import { importGame, loadChessModule } from "./play";
 
-if(state.syzygy.lines) {
-	const lines = state.syzygy.lines;
-	lines.forEach(l => l.searching = false);
-	state.syzygy.lines = [];
-	loadChessModule().then(m => {
-		module = m;
-		state.syzygy.lines = lines;
-	});
-}
+onSession(() => {
+	if(state.syzygy.lines) {
+		const lines = state.syzygy.lines;
+		lines.forEach(l => l.searching = false);
+		state.syzygy.lines = [];
+		loadChessModule().then(m => {
+			module = m;
+			state.syzygy.lines = lines;
+		});
+	}
+});
 
 /** @type {import("../modules/chess.mjs")} */
 let module;

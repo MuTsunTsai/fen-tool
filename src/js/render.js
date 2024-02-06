@@ -200,3 +200,18 @@ export function drawEmpty(ctx) {
 export function getBlob() {
 	return new Promise(resolve => CE.toBlob(resolve));
 }
+
+export function updateBG() {
+	drawEmpty(SN.getContext("2d"));
+	redraw();
+}
+
+export function redraw() {
+	draw();
+	drawTemplate();
+}
+
+export async function drawExport() {
+	await load();
+	draw();
+}

@@ -1,32 +1,21 @@
-import { createApp } from "petite-vue";
-import { Checkbox, CheckboxBase, CheckboxR } from "./components/checkbox";
-import { CopyButton } from "./components/copyBtn";
-import { Radio } from "./components/radio";
-import { NumInput } from "./components/number";
+import { createSSRApp, watchEffect } from "vue";
 
-import { store, state, status, saveSettings, saveSession, noEditing } from "./store";
-import { updateSN, toFEN, setFEN, updateEdwards } from "./squares";
-import { drawTemplate, draw, getBlob, drawEmpty, load } from "./render";
-import { initLayout, setOption, Layout } from "./layout";
-import { copyImage } from "./copy";
+import { store, state, status, initSession } from "./store";
+import { updateEdwards } from "./squares";
+import { getBlob } from "./render";
+import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { env } from "./meta/env";
-import { SN } from "./meta/el";
 import { init as initSDK } from "./api/sdk-base";
-import { Project } from "./project";
 
-import { YACPDB } from "./tools/yacpdb";
-import { PDB } from "./tools/pdb";
-import { BBS } from "./tools/bbs";
 import { API, normalForsyth } from "./tools/api";
-import { PLAY, moveHistory } from "./tools/play";
+import { moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
-import { openFile } from "./tools/scan";
-import { Stockfish } from "./tools/stockfish";
-import { Syzygy } from "./tools/syzygy";
+import "./tools/stockfish";
+import "./tools/syzygy";
 
-initLayout();
-initDrag();
+import App from "../vue/app.vue";
+
 initSDK({
 	getDefault: () => store.board,
 	getTitle: fen => fen,
@@ -89,69 +78,18 @@ window.share = async function(bt) {
 }
 
 //===========================================================
-// petite-vue
+// startup
 //===========================================================
 
-function updateBG() {
-	drawEmpty(SN.getContext("2d"));
-	redraw();
-}
+createSSRApp(App).mount("#app");
+status.envReady = true;
 
-function redraw() {
-	draw();
-	drawTemplate();
-}
+initSession();
+initLayout();
+initDrag();
 
-async function drawExport() {
-	await load();
-	draw();
-}
-
-createApp({
-	env,
-	copyImage,
-	CheckboxBase,
-	Checkbox,
-	CheckboxR,
-	CopyButton,
-	Radio,
-	NumInput,
-	Layout,
-	redraw,
-	updateBG,
-	updateSN,
-	openFile,
-	Popeye,
-	updateEdwards,
-	toFEN,
-	setFEN,
-	toggleCoordinates() {
-		setOption({}, true);
-	},
-	get DB() {
-		return store.DB.use == "PDB" ? PDB : YACPDB;
-	},
-	get noEditing() {
-		return noEditing();
-	},
-	get hideTemplate() {
-		return status.hor && state.popeye.playing;
-	},
-	YACPDB,
-	BBS,
-	API,
-	PLAY,
-	Stockfish,
-	Syzygy,
-	Project,
-	store,
-	state,
-	status,
-	drawExport,
-	resize() {
-		state.split;
-		Promise.resolve().then(() => setOption({}));
-	},
-	saveSettings,
-	saveSession,
-}).mount();
+watchEffect(function() {
+	document.body.classList.toggle("split", state.split);
+	Promise.resolve().then(() => setOption({}));
+});
+watchEffect(updateEdwards);

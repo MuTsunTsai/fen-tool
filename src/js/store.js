@@ -1,4 +1,4 @@
-import { reactive } from "petite-vue";
+import { reactive, watchEffect } from "vue";
 import { defaultOption, getDimensions } from "./meta/option";
 import { CN } from "./meta/el";
 import { env } from "./meta/env";
@@ -8,7 +8,7 @@ import { defaultCustomMap, pieceMap } from "./meta/popeye/base.mjs";
 export const search = new URL(location.href).searchParams;
 
 // Persistent settings, and is synchronized across instances
-const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
+
 const settings = {
 	BBS: {
 		Id: true,
@@ -42,17 +42,6 @@ const settings = {
 	board: defaultOption,
 	project: [],
 };
-deepAssign(settings, savedSettings, true);
-
-// These are the exceptions
-if(savedSettings.project) {
-	settings.project = savedSettings.project;
-}
-if(savedSettings.popeye) {
-	settings.popeye.pieceMap = savedSettings.popeye.pieceMap;
-}
-
-if(search.has("janko")) settings.feature.janko = true;
 
 /** @type {typeof settings} */
 export const store = reactive(settings);
@@ -63,6 +52,10 @@ mm.onchange = () => status.isDark = mm.matches;
 
 // States that are not saved into session
 export const status = reactive({
+	module: {
+		chess: false,
+	},
+	envReady: false,
 	loading: true,
 	isDark: mm.matches,
 	pieceCount: "(0+0)",
@@ -72,7 +65,7 @@ export const status = reactive({
 	selection: null,
 	stockfish: {
 		// 0=not downloaded, 1=downloading, 2=need reload, 3=ready
-		status: store.Stockfish.downloaded ? 3 : 0,
+		status: 0,
 		// 0=stop, 1=starting, 2=running
 		running: 0,
 	},
@@ -83,8 +76,6 @@ export const status = reactive({
 
 // Session data, will be restored on tab reloading/restoring/duplicating
 // (only for top window).
-const savedState = env.isTop ? sessionStorage.getItem("state") : null;
-
 export const STOCKFISH = {
 	depth: 0,
 	score: null,
@@ -149,16 +140,47 @@ const defaultState = {
 };
 
 /** @type {typeof defaultState} */
-export const state = reactive(savedState ? JSON.parse(savedState) : defaultState);
-for(const key in defaultState) {
-	if(!(key in state)) state[key] = defaultState[key];
+export const state = reactive(defaultState);
+
+/** Callbacks for registering session loading actions. */
+const onSessionLoad = [];
+
+export function onSession(callback) {
+	onSessionLoad.push(callback);
 }
 
-export function saveSettings() {
+export function initSession() {
+	const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
+	deepAssign(settings, savedSettings, true);
+
+	// These are the exceptions
+	if(savedSettings.project) {
+		settings.project = savedSettings.project;
+	}
+	if(savedSettings.popeye) {
+		settings.popeye.pieceMap = savedSettings.popeye.pieceMap;
+	}
+
+	if(search.has("janko")) settings.feature.janko = true;
+
+	const savedState = env.isTop ? JSON.parse(sessionStorage.getItem("state")) : null;
+	if(savedState) {
+		deepAssign(state, savedState);
+	}
+
+	status.stockfish.status = store.Stockfish.downloaded ? 3 : 0;
+
+	for(const action of onSessionLoad) action();
+
+	watchEffect(saveSettings);
+	watchEffect(saveSession);
+}
+
+function saveSettings() {
 	localStorage.setItem("settings", JSON.stringify(store));
 }
 
-export function saveSession() {
+function saveSession() {
 	// Save session only for top
 	if(env.isTop) sessionStorage.setItem("state", JSON.stringify(state));
 }

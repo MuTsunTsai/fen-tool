@@ -11,7 +11,8 @@ export const BBS = {
 			throw true;
 		}
 		gtag("event", "fen_bbs_copy");
-		const ptt = await import("./modules/ptt.js");
+		const path = "./modules/ptt.js";
+		const ptt = await import(path);
 		return ptt.generate(normalSnapshot(), normalForsyth(), DB.value, store.BBS, store.board, env.isTouch);
 	}
 }

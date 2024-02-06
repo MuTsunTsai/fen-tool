@@ -4,7 +4,7 @@ import { drawTemplate, draw, load, drawEmpty } from "./render";
 import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
 import { getDimensions, sanitizeBorder } from "./meta/option";
 import { dpr, env } from "./meta/env";
-import { nextTick } from "petite-vue";
+import { nextTick } from "vue";
 
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");

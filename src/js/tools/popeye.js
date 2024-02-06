@@ -1,6 +1,6 @@
-import { nextTick } from "petite-vue";
+import { nextTick } from "vue";
 import { setFEN, snapshot } from "../squares";
-import { state, store } from "../store";
+import { onSession, state, store } from "../store";
 import { formatSolution, toNormalFEN } from "../meta/popeye/popeye.mjs";
 import { resize } from "../layout";
 import { drawTemplate, load } from "../render";
@@ -11,9 +11,13 @@ import { animate, stopAnimation } from "../animation";
 import { parsePieceCommand } from "../meta/popeye/piece.mjs";
 
 // Session
-state.popeye.running = false; // Do not restore this state
-state.popeye.editMap = false;
-if(state.popeye.playing) load().then(() => nextTick(() => setupStepElements(true)));
+onSession(() => {
+	state.popeye.running = false; // Do not restore this state
+	state.popeye.editMap = false;
+	if(state.popeye.playing) {
+		load().then(() => nextTick(() => setupStepElements(true)));
+	}
+});
 
 /** @type {Worker} */
 let worker;

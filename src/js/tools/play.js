@@ -4,17 +4,19 @@ import { types } from "../draw";
 import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen.mjs";
 import { drawTemplate, load } from "../render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly, resetEdwards } from "../squares";
-import { state, store } from "../store";
+import { state, store, status, onSession } from "../store";
 
-// Restore playing session
-if(state.play.playing) {
-	const p = state.play;
-	p.playing = false;
-	Promise.all([load(), loadChessModule()]).then(() => {
-		start();
-		PLAY.goto(p.history[p.moveNumber]);
-	});
-}
+onSession(() => {
+	// Restore playing session
+	if(state.play.playing) {
+		const p = state.play;
+		p.playing = false;
+		Promise.all([load(), loadChessModule()]).then(() => {
+			start();
+			PLAY.goto(p.history[p.moveNumber]);
+		});
+	}
+});
 
 /** @type {import("../modules/chess.mjs")} */
 let module;
@@ -134,9 +136,12 @@ export function checkDragPrecondition(index) {
 
 export async function loadChessModule() {
 	if(!module) {
-		module = await import("./modules/chess.js");
+		// break into 2 lines to prevent SSG trying to resolve this path.
+		const path = "./modules/chess.js";
+		module = await import(path);
 		module.Chess.options = store.PLAY;
 		chess = new module.Chess(state.play);
+		status.module.chess = true;
 	}
 	return module;
 }
@@ -243,6 +248,7 @@ export const PLAY = {
 		return chess.copyPGN();
 	},
 	number(h) {
+		console.log(h);
 		return module.number(h, state.play.mode);
 	},
 	format(h) {

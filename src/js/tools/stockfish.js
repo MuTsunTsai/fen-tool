@@ -2,21 +2,22 @@ import { clone } from "../meta/clone.mjs";
 import { env } from "../meta/env";
 import { SQ } from "../meta/popeye/base.mjs";
 import { orthodoxFEN } from "../squares";
-import { STOCKFISH, state, status, store } from "../store";
+import { STOCKFISH, onSession, state, status, store } from "../store";
 import { importGame, loadChessModule } from "./play";
 
-// Session
-if(state.stockfish.lines.length) {
-	const lines = state.stockfish.lines;
-	const header = state.stockfish.header;
-	state.stockfish.lines = [];
-	state.stockfish.header = [];
-	loadChessModule().then(m => {
-		module = m;
-		state.stockfish.lines = lines;
-		state.stockfish.header = header;
-	});
-}
+onSession(() => {
+	if(state.stockfish.lines.length) {
+		const lines = state.stockfish.lines;
+		const header = state.stockfish.header;
+		state.stockfish.lines = [];
+		state.stockfish.header = [];
+		loadChessModule().then(m => {
+			module = m;
+			state.stockfish.lines = lines;
+			state.stockfish.header = header;
+		});
+	}
+});
 
 /** @type {Worker} */
 let stockfish;

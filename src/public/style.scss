@@ -102,6 +102,14 @@ section {
 	}
 }
 
+.btn-gap {
+	margin: -0.15rem;
+
+	.btn {
+		margin: 0.15rem;
+	}
+}
+
 .w-passive-100 {
 	width: 0;
 	min-width: 100%;
@@ -271,8 +279,8 @@ label[for] {
 
 	> i {
 		position: absolute;
-		top: .75rem;
-		right: .75rem;
+		top: 0.75rem;
+		right: 0.75rem;
 		opacity: 0;
 		font-size: 1.5rem;
 		transition: opacity 0.2s;
@@ -299,6 +307,7 @@ label[for] {
 	height: 100px;
 	margin: 0.5rem;
 	cursor: pointer;
+	object-fit: contain;
 }
 
 @mixin button($color) {
@@ -363,6 +372,10 @@ label[for] {
 		--bs-body-color: #eee;
 		--bs-light-rgb: 70, 70, 70;
 		--bs-border-color: #666;
+	}
+
+	.table {
+		--bs-table-color: white;
 	}
 
 	.nav-tabs {

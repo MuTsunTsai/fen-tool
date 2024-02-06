@@ -262,3 +262,4 @@ function drawText(ctx, text, size) {
 
 	ctx.restore();
 }
+

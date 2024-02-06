@@ -1,0 +1,6 @@
+{
+	// This file is required to avoid ts 1261 error in VS Code
+	"compilerOptions": {
+		"allowJs": true
+	}
+}

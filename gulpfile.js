@@ -1,11 +1,20 @@
 const $ = require("gulp-load-plugins")();
 const gulp = require("gulp");
 const sass = require("sass");
+const esVue = require("@mutsuntsai/esbuild-plugin-vue");
+
+globalThis.process.env.NODE_ENV = "production";
+
+require("global-jsdom/register");
+globalThis.matchMedia = () => ({ matches: false });
+globalThis.HTMLCanvasElement.prototype.getContext = () => ({});
+globalThis.addEventListener = globalThis.window.addEventListener.bind(globalThis.window);
 
 const htmlSource = "src/public/index.html";
+const vueSource = "src/vue/**/*.vue";
 
 const purgeOption = {
-	content: [htmlSource],
+	content: [htmlSource, vueSource],
 	safelist: {
 		variables: [
 			"--bs-primary",
@@ -28,18 +37,36 @@ const htmlOption = {
 	}
 };
 
+const vueOption = {
+	templateOptions: {
+		compilerOptions: {
+			comments: false,
+		},
+	},
+};
+
+function esb(options) {
+	return $.esbuild(Object.assign({}, esbuildOption, options));
+}
+
 const esbuildOption = {
 	target: ["chrome66", "edge79", "firefox78", "opera53", "safari11.1", "ios11.3"],
 	bundle: true,
 	treeShaking: true,
-	pure: ["RegExp"]
+	legalComments: "none",
+	pure: ["RegExp"],
+	define: {
+		"__VUE_OPTIONS_API__": "false",
+		"__VUE_PROD_DEVTOOLS__": "false",
+		"__VUE_PROD_HYDRATION_MISMATCH_DETAILS__": "false",
+	},
 };
 
 gulp.task("css", () =>
 	gulp.src("src/public/style.scss")
 		.pipe($.newer({
 			dest: "docs/style.css",
-			extra: [__filename, htmlSource]
+			extra: [__filename, htmlSource, vueSource]
 		}))
 		.pipe($.sass(sass)({
 			outputStyle: "compressed",
@@ -52,12 +79,13 @@ gulp.task("js", () =>
 	gulp.src("src/js/main.js")
 		.pipe($.newer({
 			dest: "docs/main.js",
-			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, vueSource, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, {
+		.pipe(esb({
 			outfile: "main.js",
 			external: ["./modules/*"], // Everything in here are loaded on demand
-		})))
+			plugins: [esVue(vueOption)]
+		}))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );
@@ -66,11 +94,15 @@ gulp.task("html", () =>
 	gulp.src("src/public/**/*.html")
 		.pipe($.newer({
 			dest: "docs",
-			extra: [__filename]
+			extra: [__filename, vueSource]
 		}))
-		.pipe($.replace(/<\/span>\s+<span/gm, "</span>&#32;<span"))
 		.pipe($.htmlMinifierTerser(htmlOption))
-		.pipe($.replace(/&#32;/g, " "))
+		.pipe($.vueSsg({
+			appRoot: "src/vue/app.vue",
+			esbuildOptions: Object.assign({}, esbuildOption, {
+				plugins: [esVue(vueOption)],
+			}),
+		}))
 		// Avoid VS Code Linter warnings
 		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
 		.pipe(gulp.dest("docs"))
@@ -82,14 +114,14 @@ gulp.task("gen", () =>
 			dest: "docs/gen/gen.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "gen.js" })))
+		.pipe(esb({ outfile: "gen.js" }))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs/gen"))
 );
 
 gulp.task("sw", () =>
 	gulp.src("src/service/sw.js")
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "sw.js" })))
+		.pipe(esb({ outfile: "sw.js" }))
 		.pipe($.workbox({
 			globDirectory: "docs",
 			globPatterns: [
@@ -119,7 +151,7 @@ gulp.task("sdk", () =>
 			dest: "docs/sdk.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "sdk.js" })))
+		.pipe(esb({ outfile: "sdk.js" }))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );
@@ -130,7 +162,7 @@ gulp.task("api", () =>
 			dest: "docs/api/api.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "api.js" })))
+		.pipe(esb({ outfile: "api.js" }))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs/api"))
 );
@@ -141,7 +173,7 @@ gulp.task("ptt", () =>
 			dest: "docs/modules/ptt.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "ptt.js", format: "esm" })))
+		.pipe(esb({ outfile: "ptt.js", format: "esm" }))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs/modules"))
 );
@@ -152,7 +184,7 @@ gulp.task("chess", () =>
 			dest: "docs/modules/chess.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
 		}))
-		.pipe($.esbuild(Object.assign({}, esbuildOption, { outfile: "chess.js", format: "esm" })))
+		.pipe(esb({ outfile: "chess.js", format: "esm" }))
 		.pipe($.terser())
 		.pipe(gulp.dest("docs/modules"))
 );
@@ -184,7 +216,7 @@ gulp.task("pyasm", () =>
 );
 
 gulp.task("fa", () =>
-	gulp.src(htmlSource)
+	gulp.src("src/vue/**/*.vue")
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
