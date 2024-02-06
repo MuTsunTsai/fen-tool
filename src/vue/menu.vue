@@ -15,13 +15,13 @@
 			</li>
 			<li class="nav-item">
 				<div class="nav-link" :class="{ active: state.tab == 1 }" @click="state.tab = 1" title="Options">
-					<span class="d-sm-none"><i class="fa-solid fa-calculator"></i></span>
+					<span class="d-sm-none"><i class="fa-solid fa-gear"></i></span>
 					<span class="d-none d-sm-inline">Options</span>
 				</div>
 			</li>
 			<li class="nav-item">
 				<div class="nav-link" :class="{ active: state.tab == 7 }" @click="state.tab = 7" title="Compute">
-					<span class="d-sm-none"><i class="fa-solid fa-gear"></i></span>
+					<span class="d-sm-none"><i class="fa-solid fa-calculator"></i></span>
 					<span class="d-none d-sm-inline">Compute</span>
 				</div>
 			</li>
