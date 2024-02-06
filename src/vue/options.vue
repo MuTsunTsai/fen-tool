@@ -84,7 +84,9 @@
 							   v-model.number="store.board.knightOffset" @input="redraw">
 					</div>
 				</div>
-				<Checkbox v-model="store.board.collapse" @change="resize">Always collapse boards</Checkbox>
+				<div class="d-none d-md-block">
+					<Checkbox v-model="store.board.collapse" @change="resize">Always collapse boards</Checkbox>
+				</div>
 				<Checkbox v-model="store.board.coordinates" @change="toggleCoordinates">Show coordinate labels</Checkbox>
 				<Checkbox v-model="store.board.fullFEN" @change="toFEN">Show full FEN</Checkbox>
 			</div>
