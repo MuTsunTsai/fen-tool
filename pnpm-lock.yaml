@@ -17,6 +17,9 @@ dependencies:
   vue:
     specifier: ^3.4.15
     version: 3.4.15
+  vue-slicksort:
+    specifier: ^2.0.5
+    version: 2.0.5(vue@3.4.15)
   workbox-google-analytics:
     specifier: ^7.0.0
     version: 7.0.0
@@ -6740,6 +6743,14 @@ packages:
       replace-ext: 2.0.0
       teex: 1.0.1
     dev: true
+
+  /vue-slicksort@2.0.5(vue@3.4.15):
+    resolution: {integrity: sha512-fXz1YrNjhUbJK7o0tMk27mIr4pMAZYLSYvtmLazCtfpvz+zafPCn34ILDL8B7hT7WLVZKreYs6JVe5VWymqmzA==}
+    peerDependencies:
+      vue: '>=3.0.0'
+    dependencies:
+      vue: 3.4.15
+    dev: false
 
   /vue@3.4.15:
     resolution: {integrity: sha512-jC0GH4KkWLWJOEQjOpkqU1bQsBwf4R1rsFtw5GQJbjHVKWDzO6P0nWWBTmjp1xSemAioDFj1jdaK1qa3DnMQoQ==}

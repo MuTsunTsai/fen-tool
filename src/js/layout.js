@@ -5,6 +5,7 @@ import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushS
 import { getDimensions, sanitizeBorder } from "./meta/option";
 import { dpr, env } from "./meta/env";
 import { nextTick } from "vue";
+import { redrawSDK } from "./api/sdk-base";
 
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
@@ -69,7 +70,10 @@ export async function setOption(o, force) {
 	resize();
 
 	// Async parts
-	if(shouldUpdateAsset) await load();
+	if(shouldUpdateAsset) {
+		await load();
+		if(store.project.length) redrawSDK();
+	}
 	if(shouldDrawBoard) draw();
 	if(shouldDrawTemplate) drawTemplate();
 

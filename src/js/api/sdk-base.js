@@ -2,7 +2,6 @@ import { inferDimension } from "../meta/fen.mjs";
 import { getDimensions, makeOption } from "../meta/option";
 
 const script = document.currentScript;
-const apiURL = new URL("api/", script.src);
 const selector = "img[fen]";
 
 const frame = document.createElement("iframe");
@@ -34,6 +33,7 @@ function check(node) {
 }
 
 export async function init(config) {
+	const apiURL = new URL("api/", script.src);
 	currentConfig = config;
 	document.head.appendChild(frame); // sounds funny but works
 	await new Promise(resolve => {
@@ -52,7 +52,7 @@ export async function init(config) {
 			if(record.type == "attributes") {
 				const name = record.attributeName.toLowerCase();
 				const isData = name.startsWith("data")
-				if(record.target == script && isData) check(document);
+				if(record.target == script && isData) check(document.body);
 				if(record.target.nodeName == "IMG" && (name == "fen" || isData)) setup(record.target);
 			} else {
 				for(const node of record.addedNodes) check(node);
@@ -65,4 +65,8 @@ export async function init(config) {
 	});
 
 	check(doc);
+}
+
+export function redrawSDK() {
+	check(document.body);
 }

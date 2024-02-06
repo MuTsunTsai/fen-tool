@@ -9,6 +9,7 @@ import { deepAssign } from "./meta/clone.mjs";
 import { dpr } from "./meta/env";
 import { animeSettings } from "./animation";
 import { emptyBoard } from "./meta/fen.mjs";
+import { redrawSDK } from "./api/sdk-base";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -209,6 +210,7 @@ export function updateBG() {
 export function redraw() {
 	draw();
 	drawTemplate();
+	if(store.project.length) redrawSDK();
 }
 
 export async function drawExport() {

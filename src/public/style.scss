@@ -272,6 +272,10 @@ label[for] {
 	display: flex;
 	flex-wrap: wrap;
 	margin: -0.5rem;
+
+	&.sorting .thumbnail-wrapper i {
+		display: none;
+	}
 }
 
 .thumbnail-wrapper {
@@ -302,12 +306,34 @@ label[for] {
 	}
 }
 
+.thumbnail-ghost {
+	.thumbnail {
+		height: 110px;
+		width: 110px;
+		top: -5px;
+		left: -5px;
+		transition: all 0.2s;
+	}
+
+	i {
+		display: none;
+	}
+}
+
 .thumbnail {
 	width: 100px;
 	height: 100px;
 	margin: 0.5rem;
 	cursor: pointer;
 	object-fit: contain;
+	position: relative;
+	top: 0;
+	left: 0;
+
+	&.disabled {
+		cursor: unset;
+		filter: brightness(0.5);
+	}
 }
 
 @mixin button($color) {
