@@ -19,7 +19,7 @@ export const defaultOption = {
 const BORDER = /^\d+(,\d+)*$/;
 
 const sizes = [26, 32, 38, 44];
-const sets = ["1echecs", "alpha", "goodCompanion", "merida", "skak"];
+const sets = ["1echecs", "alpha", "goodCompanion", "kilfiger", "merida", "mpchess", "skak"];
 
 /**
  * @param {string} border 
