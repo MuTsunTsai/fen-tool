@@ -129,7 +129,9 @@ export function pushState() {
 }
 
 export function snapshot() {
-	return squares.map(s => s.value);
+	const { w, h } = store.board;
+	const total = w * h;
+	return squares.slice(0, total).map(s => s.value);
 }
 
 export function normalSnapshot() {
