@@ -3,53 +3,52 @@
 		<div class="mb-3 btn-gap">
 			<span class="d-inline-block">
 				<button type="button" class="btn btn-secondary" onclick="FEN.empty()" :disabled="noEditing()" title="Empty board">
-					<i class="fa-solid fa-trash-can"></i><span class="d-none d-sm-inline">&ensp;Empty board</span>
+					<i class="fa-solid fa-trash-can"></i>
+					<span>&ensp;Empty board</span>
 				</button>
 				<button type="button" class="btn btn-secondary" onclick="FEN.reset()" :disabled="noEditing()"
 						title="Starting position">
-					<i class="fa-solid fa-flag-checkered"></i><span class="d-none d-sm-inline">&ensp;Starting
-						position</span>
+					<i class="fa-solid fa-flag-checkered"></i>
+					<span>&ensp;Starting position</span>
 				</button>
 			</span>
-			<span class="d-inline-block">
-				<span class="d-inline-block">
-					<button type="button" class="btn btn-secondary" title="Shift leftwards" onclick="FEN.shift(-1,0)"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-arrow-left"></i>
-					</button>
-					<button type="button" class="btn btn-secondary" title="Shift rightwards" onclick="FEN.shift(1,0)"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-arrow-right"></i>
-					</button>
-					<button type="button" class="btn btn-secondary" title="Shift upwards" onclick="FEN.shift(0,-1)"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-arrow-up"></i>
-					</button>
-					<button type="button" class="btn btn-secondary" title="Shift downwards" onclick="FEN.shift(0,1)"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-arrow-down"></i>
-					</button>
-				</span>
-				<span class="d-inline-block">
-					<button type="button" class="btn btn-secondary" title="Rotate counterclockwise" onclick="FEN.rotate(-1)"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-rotate-left"></i>
-					</button>
-					<button type="button" class="btn btn-secondary" title="Rotate clockwise" onclick="FEN.rotate(1)"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-rotate-right"></i>
-					</button>
-					<button type="button" class="btn btn-secondary" title="Mirror horizontally" onclick="FEN.mirror('-')"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-arrows-left-right"></i>
-					</button>
-					<button type="button" class="btn btn-secondary" title="Mirror vertically" onclick="FEN.mirror('|')"
-							:disabled="noEditing()">
-						<i class="fa-solid fa-arrows-up-down"></i>
-					</button>
-				</span>
+			<span class="btn-group">
+				<button type="button" class="btn btn-secondary" title="Shift leftwards" onclick="FEN.shift(-1,0)"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-left"></i>
+				</button>
+				<button type="button" class="btn btn-secondary" title="Shift rightwards" onclick="FEN.shift(1,0)"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-right"></i>
+				</button>
+				<button type="button" class="btn btn-secondary" title="Shift upwards" onclick="FEN.shift(0,-1)"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-up"></i>
+				</button>
+				<button type="button" class="btn btn-secondary" title="Shift downwards" onclick="FEN.shift(0,1)"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-down"></i>
+				</button>
 			</span>
-			<span class="d-inline-block">
+			<span class="btn-group">
+				<button type="button" class="btn btn-secondary" title="Rotate counterclockwise" onclick="FEN.rotate(-1)"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-rotate-left"></i>
+				</button>
+				<button type="button" class="btn btn-secondary" title="Rotate clockwise" onclick="FEN.rotate(1)"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-rotate-right"></i>
+				</button>
+				<button type="button" class="btn btn-secondary" title="Mirror horizontally" onclick="FEN.mirror('-')"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-arrows-left-right"></i>
+				</button>
+				<button type="button" class="btn btn-secondary" title="Mirror vertically" onclick="FEN.mirror('|')"
+						:disabled="noEditing()">
+					<i class="fa-solid fa-arrows-up-down"></i>
+				</button>
+			</span>
+			<span class="btn-group">
 				<button type="button" class="btn btn-secondary px-2" title="All Black" onclick="FEN.color(-1)"
 						:disabled="noEditing()">
 					<i class="fa-solid fa-chess-king fa-fw text-black shadow-white"></i>
@@ -63,19 +62,18 @@
 						   style="margin-left:-1.25em; clip-path: polygon(51.5% 0, 100% 0, 100% 100%, 51.5% 100%);"></i>
 					</template>
 				</button>
-				<button type="button" class="btn btn-secondary px-2" title="All White" onclick="FEN.color(1)"
-						:disabled="noEditing()">
+				<button type="button" class="btn btn-secondary px-2" title="All White" onclick="FEN.color(1)" :disabled="noEditing()">
 					<i class="fa-solid fa-chess-king fa-fw text-white shadow-black"></i>
 				</button>
 			</span>
-			<span class="d-inline-block">
+			<span class="btn-group">
 				<button type="button" class="btn btn-secondary" title="Switch side" onclick="FEN.invert(false)"
 						:disabled="noEditing()">
 					<i class="fa-solid fa-chess-king text-black shadow-white"></i>&ensp;<i
 					   class="fa-solid fa-arrows-left-right"></i>&ensp;<i class="fa-solid fa-chess-king text-white shadow-black"></i>
 				</button>
-				<button type="button" class="btn btn-secondary" title="Switch case (including text)"
-						onclick="FEN.invert(true)" :disabled="noEditing()">
+				<button type="button" class="btn btn-secondary" title="Switch case (including text)" onclick="FEN.invert(true)"
+						:disabled="noEditing()">
 					A&ensp;<i class="fa-solid fa-arrows-left-right"></i>&ensp;a
 				</button>
 				<button v-if="!store.board.SN" type="button" class="btn btn-secondary"

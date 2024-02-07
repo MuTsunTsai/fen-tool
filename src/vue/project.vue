@@ -2,19 +2,31 @@
 	<section :class="{ show: state.tab == 8 }">
 		<input type="file" class="d-none" id="project_file" @change="open($event.target)" accept=".fentool">
 		<div class="btn-gap">
-			<button class="btn btn-primary" @click="Project.add()">
-				Add to project
+			<button class="btn btn-primary" @click="Project.add()" title="Add current position">
+				<i class="fa-solid fa-plus"></i>&ensp;Add
 			</button>
-			<label for="project_file" class="btn btn-secondary">Open project</label>
-			<a :href="status.envReady ? Project.link.value : undefined" download="project.fentool" class="btn btn-secondary">
-				Save project
+			<label for="project_file" class="btn btn-secondary" title="Open a project file">
+				<i class="fa-regular fa-folder-open"></i>&ensp;Open
+			</label>
+			<a :href="status.envReady ? Project.link.value : undefined" download="project.fentool" class="btn btn-secondary"
+			   title="Save project file">
+				<i class="fa-solid fa-download"></i>&ensp;Save
 			</a>
-			<button class="btn btn-secondary" @click="Project.reset()">
-				New project
+			<button class="btn btn-secondary" @click="Project.reset()" title="Clear all positions in the project">
+				<i class="fa-regular fa-file"></i>&ensp;Clear
 			</button>
 		</div>
 		<div @mousedown.stop v-if="status.envReady" class="mt-3">
-			<div v-if="!store.project.length" class="p-1">No positions in the project yet.</div>
+			<div v-if="!store.project.length" class="p-1">
+				<div class="d-flex flex-wrap">
+					<div style="flex-basis: max-content;">
+						No positions in the project yet.&nbsp;
+					</div>
+					<div style="flex-basis: max-content;">
+						Click "Add" to add position.
+					</div>
+				</div>
+			</div>
 			<SlickList axis="xy" v-model:list="store.project" :distance="env.isTouch ? 0 : 10" class="thumbnail-container"
 					   :class="{ sorting: sorting }" @sort-start="sorting = true" @sort-end="sorting = false"
 					   :press-delay="env.isTouch ? 200 : 0" helper-class="thumbnail-ghost">

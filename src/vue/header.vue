@@ -6,7 +6,7 @@
 			</div>
 			<div v-cloak class="col ps-0 mb-2 text-end" style="white-space:nowrap; flex-basis:max-content;">
 				<label class="col-form-label pe-2" v-text="status.pieceCount"></label>
-				<div v-if="status.envReady && env.canCopy" class="btn-gap d-inline-block">
+				<div v-if="status.envReady && env.canCopy" class="btn-group">
 					<button class="btn btn-secondary" title="Copy" onclick="FEN.copy()">
 						<i class="fa-solid fa-clipboard"></i>
 					</button>
