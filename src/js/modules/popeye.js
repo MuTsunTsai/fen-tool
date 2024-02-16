@@ -1,4 +1,8 @@
+/* eslint-disable no-var */
+/* eslint-disable no-undef */
 // This file is appended before py.js or py.asm.js
+
+const INSUFFICIENT_MEMORY = -2;
 
 const popeyeInputFile = "/test.inp";
 
@@ -11,15 +15,19 @@ const ready = new Promise(resolve => Module.postRun = resolve);
 Module.print = text => {
 	if(text.includes("Couldn't allocate")) {
 		// Need to reduce memory setting.
-		postMessage(-2);
-	} else postMessage({ text });
-}
+		postMessage(INSUFFICIENT_MEMORY);
+	} else {
+		postMessage({ text });
+	}
+};
 Module.printErr = err => {
 	if(err.includes("Maximum call stack size exceeded")) {
 		// Some versions of Safari and iOS has a bug that could result in this error
 		// when running wasm in worker. In that case we fallback to use asm.js instead.
 		postMessage(-1);
-	} else postMessage({ err });
+	} else {
+		postMessage({ err });
+	}
 };
 
 addEventListener("message", async event => {

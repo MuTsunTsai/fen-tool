@@ -30,7 +30,7 @@ html {
 body {
 	// This is required explicitly, or the scrolling may not work
 	// for some Android devices when in landscape orientation.
-	overflow-y: scroll;
+	overflow-y: scroll !important;
 }
 
 html.iframe {
@@ -398,10 +398,6 @@ label[for] {
 @media (prefers-color-scheme: dark) {
 	html {
 		color-scheme: dark;
-	}
-
-	body {
-		overflow-y: scroll;
 	}
 
 	.form-control:disabled {

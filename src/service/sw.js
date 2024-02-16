@@ -3,21 +3,23 @@ import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
 
+const HTTP_SEE_OTHER = 303;
+
 self.__WB_DISABLE_DEV_LOGS = true;
 
 // COOP-COEP headers, for multi-thread wasm
 // https://github.com/GoogleChrome/workbox/issues/2963
 const headersPlugin = {
-	handlerWillRespond: async ({ response }) => {
+	handlerWillRespond: ({ response }) => {
 		const headers = new Headers(response.headers);
 		headers.set("Cross-Origin-Embedder-Policy", "require-corp");
 		headers.set("Cross-Origin-Opener-Policy", "same-origin");
 
-		return new Response(response.body, {
+		return Promise.resolve(new Response(response.body, {
 			headers,
 			status: response.status,
 			statusText: response.statusText,
-		});
+		}));
 	},
 };
 
@@ -54,11 +56,11 @@ routing.registerRoute(
 		const params = [];
 		if(fen) params.push("fen=" + encodeURIComponent(fen));
 		if(image) {
-			imageStore.set(++imageIndex, image)
+			imageStore.set(++imageIndex, image);
 			params.push("image=" + imageIndex);
 		}
 		const url = "/fen-tool" + (params.length > 0 ? "?" + params.join("&") : "");
-		return Response.redirect(url, 303);
+		return Response.redirect(url, HTTP_SEE_OTHER);
 	},
 	"POST"
 );
@@ -73,7 +75,7 @@ routing.registerRoute(
 
 		// it's OK to use File object (which is a Blob) here
 		return new Response(image);
-	},
+	}
 );
 
 const netOnly = new strategies.NetworkOnly({

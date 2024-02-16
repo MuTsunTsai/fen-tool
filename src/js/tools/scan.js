@@ -1,4 +1,5 @@
 import { search } from "../store";
+import { alert } from "../meta/dialogs";
 
 const supportedTypes = ["image/png", "image/jpeg", "image/bmp", "image/webp"];
 
@@ -20,8 +21,8 @@ async function loadImage() {
 loadImage();
 
 /**
- * 
- * @param {Blob} blob 
+ *
+ * @param {Blob} blob
  */
 function scan(blob) {
 	if(!supportedTypes.includes(blob.type)) {
@@ -35,7 +36,7 @@ function scan(blob) {
 
 /**
  * Open an image file from input element.
- * @param {HTMLInputElement} input 
+ * @param {HTMLInputElement} input
  */
 export function openFile(input) {
 	const file = input.files[0];

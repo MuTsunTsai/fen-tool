@@ -7,7 +7,7 @@ export const CN = document.getElementById("CN") || stub;
 export const SN = document.getElementById("SN") || stub;
 
 /** @type {HTMLCanvasElement} */
-export const TP = document.getElementById('TP') || stub;
+export const TP = document.getElementById("TP") || stub;
 
 /** @type {HTMLCanvasElement} */
 export const CG = document.getElementById("CanvasGhost") || stub;

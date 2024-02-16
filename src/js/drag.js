@@ -2,14 +2,21 @@ import { getRenderSize, noEditing, state, status, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
 import { drawTemplate, templateValues } from "./render";
-import { checkDragPrecondition, checkPromotion, confirmPromotion, move, retroClick, sync } from "./tools/play";
+import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "./tools/play";
 import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
 import { env } from "./meta/env";
 import { animate } from "./animation";
 import { Popeye } from "./tools/popeye";
+import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
 
-let startX, startY, sqX, sqY, sq, lastTap = 0, lastDown;
+const DRAG_THRESHOLD = 5;
+const ROTATE_THRESHOLD = 10;
+const TAP_THRESHOLD = 300;
+const CLICK_THRESHOLD = 250;
+const WHEEL_THRESHOLD = 50;
+
+let startX, startY, sqX, sqY, currentSq, lastTap = 0, lastDown;
 let ghost, draggingValue, fromIndex;
 let path;
 
@@ -33,12 +40,12 @@ export function initDrag() {
 
 function mousemove(event) {
 	wrapEvent(event);
-	if(status.dragging == "pending" && getDisplacement(event) > 5) {
+	if(status.dragging == "pending" && getDisplacement(event) > DRAG_THRESHOLD) {
 		lastDown = NaN;
 		if(draggingValue) {
 			path = env.isTouch ? [] : null;
-			dragStart(event, Boolean(sq));
-		} else status.dragging = false;
+			dragStart(event, Boolean(currentSq));
+		} else { status.dragging = false; }
 	}
 	if(status.dragging === true) {
 		if(path) path.push({ x: event.clientX, y: event.clientY });
@@ -59,10 +66,11 @@ function cancelSelection() {
 	drawTemplate([]);
 }
 
+// eslint-disable-next-line max-lines-per-function, complexity
 function mouseup(event) {
 	if(status.dragging == "pending" && !state.play.playing && event.target == PV) {
 		const now = performance.now();
-		if(now - lastTap < 300) sq.focus();
+		if(now - lastTap < TAP_THRESHOLD) currentSq.focus();
 		lastTap = now;
 		event.preventDefault(); // Prevent touchend triggering mouseup
 		status.dragging = false;
@@ -74,12 +82,12 @@ function mouseup(event) {
 	const now = performance.now();
 	// In some touch device, a tap will be converted to a delayed up-down
 	// with time difference up to about 220ms
-	if(now - lastDown < 250) {
+	if(now - lastDown < CLICK_THRESHOLD) {
 		if(event.target == TP && !noEditing()) {
 			let { x, y } = getXY(event, TP);
 			if(status.hor) [x, y] = [y, x];
-			if(inRange(x, y, 3, 8)) {
-				const v = templateValues[y * 3 + x];
+			if(inRange(x, y, TEMPLATE_SIZE, BOARD_SIZE)) {
+				const v = templateValues[y * TEMPLATE_SIZE + x];
 				if(status.selection == v) status.selection = null;
 				else status.selection = v;
 				drawTemplate([]);
@@ -108,16 +116,16 @@ function mouseup(event) {
 		let result;
 		if(inBoard) {
 			if(checkPromotion(fromIndex, index)) return setSquare(squares[index], draggingValue);
-			else if(fromIndex != index) result = move(fromIndex, index);
+			else if(fromIndex != index) result = makeMove(fromIndex, index);
 		}
 		if(typeof result == "object") animate(result.before, result.after, result.move);
 		else sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
-		if(path && path.length > 10) { // Touch rotation
+		if(path && path.length > ROTATE_THRESHOLD) { // Touch rotation
 			const center = getCenter(path);
 			const wn = windingNumber(center, path);
-			rotate(sq, wn > 0 ? 1 : 3);
+			rotate(currentSq, wn > 0 ? 1 : 3);
 		}
 	} else {
 		pushState();
@@ -150,11 +158,11 @@ function windingNumber(center, points) {
 		}
 	}
 	return wn;
-};
+}
 
 function isLeft(P0, P1, P2) {
-	let res = ((P1.x - P0.x) * (P2.y - P0.y)
-		- (P2.x - P0.x) * (P1.y - P0.y));
+	const res = (P1.x - P0.x) * (P2.y - P0.y) -
+		(P2.x - P0.x) * (P1.y - P0.y);
 	return res;
 }
 
@@ -171,7 +179,7 @@ function wheel(event) {
 		if(sq.value == "") return;
 		event.preventDefault();
 		const now = performance.now();
-		if(now - lastWheel < 50) return; // throttle
+		if(now - lastWheel < WHEEL_THRESHOLD) return; // throttle
 		lastWheel = now;
 		rotate(sq, event.deltaY > 0 ? 1 : 3);
 	}
@@ -189,7 +197,9 @@ function rotate(sq, by) {
 function mouseDown(event) {
 	lastDown = performance.now();
 	if(state.popeye.playing) return;
-	if(status.loading || event.button != 0 && !event.targetTouches || event.targetTouches && event.targetTouches.length > 1) return;
+	if(status.loading ||
+		event.button != 0 && !event.targetTouches ||
+		event.targetTouches && event.targetTouches.length > 1) return;
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
@@ -201,54 +211,66 @@ function mouseDown(event) {
 	const [ox, oy] = [offset.x, offset.y];
 	sqX = Math.floor((startX - ox) / s);
 	sqY = Math.floor((startY - oy) / s);
-	const index = sqY * (isCN ? w : 3) + sqX;
+	const index = sqY * (isCN ? w : TEMPLATE_SIZE) + sqX;
 	ghost = isCN ? CG : TPG;
 
 	const v = status.selection;
-	if(isCN && v) {
-		event.preventDefault();
-		if(inRange(sqX, sqY, w, h)) {
-			const sq = squares[index];
-			if(sq.value == v) sq.value = "";
-			else sq.value = v;
-			toFEN();
-		} else {
-			cancelSelection();
-		}
-		return;
-	}
+	if(isCN && v) return quickEdit(event, w, h, v, index);
 
 	if(state.play.playing) {
-		if(!isCN && state.play.pendingPromotion) {
-			if(status.hor) [sqX, sqY] = [sqY, sqX];
-			const x = draggingValue == "p" ? 0 : 1;
-			if(sqY > 0 && sqY < 5 && sqX == x) confirmPromotion(fromIndex, types[sqY]);
-		}
-		if(!isCN && state.play.mode == "retro") {
-			event.preventDefault(); // Prevent touchstart triggering mousedown
-			if(status.hor) [sqX, sqY] = [sqY, sqX];
-			retroClick(sqX, sqY);
-		}
+		if(!isCN) handleMouseDownInPlayMode(event);
 		if(!isCN || !checkDragPrecondition(index)) return;
 	}
 
 	if(isCN) {
 		fromIndex = index;
-		sq = squares[index];
+		currentSq = squares[index];
 		status.dragging = "pending";
 		draggingValue = undefined;
 	} else {
-		sq = undefined;
+		currentSq = undefined;
 	}
-	if(!isCN || sq.value != "") {
-		event.preventDefault();
-		ghost.style.clip = `rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`;
-		if(isCN) {
-			draggingValue = sq.value;
-		} else {
-			draggingValue = status.hor ? templateValues[sqX * 3 + sqY] : templateValues[index];
-			status.dragging = "pending";
+	if(!isCN || currentSq.value != "") {
+		handleGhost(event, { isCN, s, ox, oy, index });
+	}
+}
+
+function quickEdit(event, w, h, v, index) {
+	event.preventDefault();
+	if(inRange(sqX, sqY, w, h)) {
+		const sq = squares[index];
+		if(sq.value == v) sq.value = "";
+		else sq.value = v;
+		toFEN();
+	} else {
+		cancelSelection();
+	}
+}
+
+function handleMouseDownInPlayMode(event) {
+	if(state.play.pendingPromotion) {
+		if(status.hor) [sqX, sqY] = [sqY, sqX];
+		const x = draggingValue == "p" ? 0 : 1;
+		if(sqY > 0 && sqY < 5 && sqX == x) {
+			confirmPromotion(fromIndex, types[sqY]);
 		}
+	}
+	if(state.play.mode == "retro") {
+		event.preventDefault(); // Prevent touchstart triggering mousedown
+		if(status.hor) [sqX, sqY] = [sqY, sqX];
+		retroClick(sqX, sqY);
+	}
+}
+
+function handleGhost(event, context) {
+	const { isCN, s, ox, oy, index } = context;
+	event.preventDefault();
+	ghost.style.clip = `rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`;
+	if(isCN) {
+		draggingValue = currentSq.value;
+	} else {
+		draggingValue = status.hor ? templateValues[sqX * TEMPLATE_SIZE + sqY] : templateValues[index];
+		status.dragging = "pending";
 	}
 }
 
@@ -256,7 +278,7 @@ function dragStart(event, isCN) {
 	cancelSelection();
 	ghost.style.display = "block";
 	if(isCN) {
-		sq.value = "";
+		currentSq.value = "";
 		toFEN();
 	}
 	status.dragging = true;

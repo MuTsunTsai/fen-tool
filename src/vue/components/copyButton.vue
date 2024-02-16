@@ -4,36 +4,38 @@
 	</button>
 </template>
 
-<script setup>
-	import { shallowRef } from 'vue';
-	import { env } from '../../js/meta/env';
+<script setup lang="ts">
+	import { shallowRef } from "vue";
 
-	const props = defineProps({
-		class: String,
-		factory: [Function, String],
-		disabled: Boolean,
-	});
+	import { env } from "js/meta/env";
+	import { ONE_SECOND } from "js/meta/constants";
+
+	const props = defineProps<{
+		class: string;
+		factory: unknown | (() => string | Promise<unknown>);
+		disabled?: boolean;
+	}>();
 
 	const state = shallowRef(0);
 
-	async function copy() {
+	async function copy(): Promise<void> {
 		state.value = 1;
 		try {
 			let result = props.factory;
 			while(typeof result == "function") {
+				// eslint-disable-next-line no-await-in-loop
 				result = await result();
 			}
 			if(typeof result == "string") copyText(result);
 			state.value = 2;
-			setTimeout(() => state.value = 0, 1000);
+			setTimeout(() => state.value = 0, ONE_SECOND);
 		} catch(e) {
 			state.value = 0;
 		}
 	}
 
-	function copyText(text) {
-		if(env.canCopy) navigator.clipboard.writeText(text);
-		else {
+	function copyText(text: string): void {
+		if(env.canCopy) { navigator.clipboard.writeText(text); } else {
 			// polyfill
 			const input = document.createElement("input");
 			document.body.appendChild(input);

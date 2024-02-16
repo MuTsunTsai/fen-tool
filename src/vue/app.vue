@@ -6,39 +6,25 @@
 				<Zone />
 				<div v-cloak class="w-passive-100">
 					<Menu />
-					<div class="d-flex mb-4">
-						<Edit />
-						<Project />
-						<Options />
-						<Api />
-						<Database />
-						<Play />
-						<Compute />
-						<BBS />
-					</div>
+					<Sections />
 				</div>
-
 				<hr>
 				<AppFooter />
 			</div>
 		</main>
+		<Alert />
+		<Confirm />
 		<iframe v-if="state.split" src="."></iframe>
 	</div>
 </template>
 
-<script setup>
-	import { state } from '../js/store';
-
+<script setup lang="ts">
+	import { state } from "js/store";
+	import Alert from "./dialogs/alert.vue";
+	import Confirm from "./dialogs/confirm.vue";
 	import Menu from "./menu.vue";
-	import Edit from "./edit.vue";
+	import Sections from "./pages/sections.vue";
 	import FenHeader from "./header.vue";
 	import Zone from "./zone.vue";
 	import AppFooter from "./footer.vue";
-	import Options from "./options.vue";
-	import Play from "./play.vue";
-	import Database from "./database.vue";
-	import Project from "./project.vue";
-	import BBS from "./bbs.vue";
-	import Compute from "./compute/compute.vue";
-	import Api from "./api.vue";
 </script>

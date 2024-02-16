@@ -1,13 +1,15 @@
-import { FEN } from "./meta/el";
-import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, mirror, normalize, parseFEN, rotate, shift } from "./meta/fen.mjs";
-import { setOption } from "./layout";
+import { FEN, CN } from "./meta/el";
+import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, parseFEN } from "./meta/fen";
 import { state, status, store } from "./store";
 import { readText } from "./copy";
-import { animate, animeSettings, stopAnimation } from "./animation";
+import { animate, animeSettings } from "./animation";
+import { BOARD_SIZE, INIT_SQ_COUNT } from "./meta/constants";
 
-export const squares = new Array(64);
+export const squares = new Array(INIT_SQ_COUNT);
 export const container = document.getElementById("Squares");
 export const callback = {};
+
+const FONT_MARGIN = 10;
 
 animeSettings.options = store.board;
 animeSettings.callback = setFEN;
@@ -20,8 +22,8 @@ export function setSquareSize(size) {
 	container.style.width = CN.clientWidth + "px";
 	container.style.height = CN.clientHeight + "px";
 	for(const sq of squares) {
-		sq.style.fontSize = (size - 10) + "px";
-		sq.style.lineHeight = (size - 10) + "px";
+		sq.style.fontSize = size - FONT_MARGIN + "px";
+		sq.style.lineHeight = size - FONT_MARGIN + "px";
 	}
 }
 
@@ -78,7 +80,7 @@ function onInput() {
 }
 
 function checkInputCore(s, convert) {
-	let v = normalize(s.value, store.board.SN, convert);
+	const v = normalize(s.value, store.board.SN, convert);
 	const changed = v !== s.value;
 	s.value = v;
 	return changed;
@@ -93,7 +95,7 @@ export function setSquare(sq, value) {
 
 export function setFEN(v, check) {
 	const arr = parseEdwards(v);
-	FEN.value = arr[0] + (store.board.fullFEN ? Edwards() : "");;
+	FEN.value = arr[0] + (store.board.fullFEN ? edwards() : "");
 	toSquares(check);
 }
 
@@ -111,7 +113,7 @@ function parseEdwards(v) {
 	return arr;
 }
 
-async function loadState() {
+function loadState() {
 	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
@@ -158,31 +160,31 @@ export function toFEN() {
 export function updateEdwards() {
 	const { w, h, fullFEN } = store.board;
 	const data = snapshot();
-	FEN.value = makeForsyth(data, w, h) + (fullFEN ? Edwards() : "");
+	FEN.value = makeForsyth(data, w, h) + (fullFEN ? edwards() : "");
 	return data;
 }
 
 function orthodoxForsyth() {
 	const { w, h } = store.board;
-	if(w != 8 || h != 8) return null;
+	if(w != BOARD_SIZE || h != BOARD_SIZE) return null;
 	const ss = normalSnapshot();
 	for(const s of ss) {
 		if(s != "" && !s.match(/^[kqbsnrp]$/i)) return null;
 	}
-	return makeForsyth(ss, 8, 8);
+	return makeForsyth(ss);
 }
 
 export function orthodoxFEN() {
 	const forsyth = orthodoxForsyth();
 	if(!forsyth) return null;
-	return forsyth + Edwards(true);
+	return forsyth + edwards(true);
 }
 
-function Edwards(check) {
+function edwards(check) {
 	const p = state.play;
 
 	if(!p.enPassant.match(/^[a-h][36]$/)) p.enPassant = ""; // Ignore invalid squares
-	if(check && p.pass && p.enPassant && (p.enPassant[1] == "3") != (p.turn == "b")) {
+	if(check && p.mode == "pass" && p.enPassant && p.enPassant[1] == "3" != (p.turn == "b")) {
 		// In passing mode, auto-correct the turn if ep is given
 		p.turn = p.turn == "b" ? "w" : "b";
 	}
@@ -228,7 +230,7 @@ function toSquares(check) {
 	const infer = inferDimension(FEN.value);
 	const { w, h } = infer || store.board;
 	const values = parseFEN(FEN.value, w, h);
-	setOption({ w, h });
+	callback.setOption?.({ w, h });
 	let changed = false;
 	for(let i = 0; i < w * h; i++) {
 		squares[i].value = values[i];
@@ -239,7 +241,7 @@ function toSquares(check) {
 }
 
 /**
- * @param {string} fen 
+ * @param {string} fen
  */
 export function parseFullFEN(fen) {
 	const s = state.play;
@@ -267,7 +269,7 @@ export function toggleReadOnly(readOnly) {
 	for(const s of squares) s.readOnly = readOnly;
 }
 
-function replace(board) {
+export function replace(board) {
 	if(board.anime) {
 		const fen = makeForsyth(board, store.board.w, store.board.h);
 		animate(FEN.value, fen, board.anime);
@@ -298,7 +300,7 @@ window.FEN = {
 		toFEN();
 	},
 	reset() {
-		setOption({ w: 8, h: 8 });
+		callback.setOption?.({ w: 8, h: 8 });
 		if(store.board.fullFEN) resetEdwards();
 		setFEN(INIT_FORSYTH);
 	},
@@ -309,12 +311,6 @@ window.FEN = {
 	async paste() {
 		gtag("event", "fen_paste");
 		setFEN(await readText(), true);
-	},
-	rotate(d) {
-		stopAnimation(true);
-		const { w, h } = store.board;
-		if(w !== h) setOption({ w: h, h: w });
-		replace(rotate(snapshot(), d, w, h));
 	},
 	color(c) {
 		for(const sq of squares) {
@@ -331,7 +327,7 @@ window.FEN = {
 	fixSN() {
 		gtag("event", "fen_fix_sn");
 		for(const sq of squares) {
-			let s = sq.value;
+			const s = sq.value;
 			if(s.startsWith("'") || s == "") continue;
 			sq.value = s.replace("s", "n").replace("S", "N");
 		}
@@ -340,14 +336,4 @@ window.FEN = {
 	invert(l) {
 		replace(invert(snapshot(), l));
 	},
-	shift(dx, dy) {
-		stopAnimation(true);
-		const { w, h } = store.board;
-		replace(shift(snapshot(), dx, dy, w, h));
-	},
-	mirror(d) {
-		stopAnimation(true);
-		const { w, h } = store.board;
-		replace(mirror(snapshot(), d, w, h));
-	},
-}
+};

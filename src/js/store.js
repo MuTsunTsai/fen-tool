@@ -1,9 +1,12 @@
 import { reactive, watchEffect } from "vue";
+
 import { defaultOption, getDimensions } from "./meta/option";
 import { CN } from "./meta/el";
 import { env } from "./meta/env";
-import { deepAssign } from "./meta/clone.mjs";
-import { defaultCustomMap, pieceMap } from "./meta/popeye/base.mjs";
+import { deepAssign } from "./meta/clone";
+import { defaultCustomMap, pieceMap } from "./meta/popeye/base";
+import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
+import { stockfishRunning, stockfishStatus } from "./meta/enum";
 
 export const search = new URL(location.href).searchParams;
 
@@ -64,10 +67,8 @@ export const status = reactive({
 	dragging: false,
 	selection: null,
 	stockfish: {
-		// 0=not downloaded, 1=downloading, 2=need reload, 3=ready
-		status: 0,
-		// 0=stop, 1=starting, 2=running
-		running: 0,
+		status: stockfishStatus.notDownloaded,
+		running: stockfishRunning.stop,
 	},
 	syzygy: {
 		running: false,
@@ -168,7 +169,7 @@ export function initSession() {
 		deepAssign(state, savedState);
 	}
 
-	status.stockfish.status = store.Stockfish.downloaded ? 3 : 0;
+	status.stockfish.status = store.Stockfish.downloaded ? stockfishStatus.ready : stockfishStatus.notDownloaded;
 
 	for(const action of onSessionLoad) action();
 
@@ -189,7 +190,8 @@ export function getRenderSize(tp, horTemplate, requestWidth) {
 	const { size, w } = store.board;
 	const { border, margin } = getDimensions(store.board, horTemplate);
 	const bSize = border.size;
-	const files = tp ? (horTemplate ? 8 : 3) : w;
+	const tSize = horTemplate ? BOARD_SIZE : TEMPLATE_SIZE;
+	const files = tp ? tSize : w;
 	const factor = (tp || CN).clientWidth / (size * files + bSize * 2 + margin.x);
 	const s = size * factor;
 	const offset = {
@@ -204,4 +206,8 @@ export function getRenderSize(tp, horTemplate, requestWidth) {
 
 export function noEditing() {
 	return state.play.playing || state.popeye.playing;
+}
+
+export function hideTemplate() {
+	return status.hor && state.popeye.playing;
 }

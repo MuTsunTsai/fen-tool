@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-	import { getCurrentInstance } from 'vue';
+	import { getCurrentInstance } from "vue";
 
 	defineProps<{
 		modelValue: boolean;

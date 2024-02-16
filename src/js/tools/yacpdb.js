@@ -1,7 +1,9 @@
 import { squares, setFEN } from "../squares";
 import { store } from "../store";
-import { makeForsyth, toYACPDB, toSquare, convertSN, emptyBoard } from "../meta/fen.mjs";
+import { makeForsyth, toYACPDB, toSquare, convertSN, emptyBoard } from "../meta/fen";
 import { DB } from "../meta/el";
+import { alert } from "../meta/dialogs";
+import { CHAR_A_OFFSET } from "../meta/constants";
 
 export const YACPDB = {
 	copyFEN() {
@@ -23,11 +25,11 @@ export const YACPDB = {
 				const list = json.result.entries[0].algebraic;
 				const values = emptyBoard(w * h);
 				function add(v) {
-					const x = v.charCodeAt(1) - 97, y = Number(v[2]);
+					const x = v.charCodeAt(1) - CHAR_A_OFFSET, y = Number(v[2]);
 					values[(h - y) * w + x] = v[0];
 				}
-				for(const b of list.black) add(b.toLowerCase());
-				for(const w of list.white) add(w);
+				for(const black of list.black) add(black.toLowerCase());
+				for(const white of list.white) add(white);
 				setFEN(makeForsyth(values), w, h);
 			}
 		} catch {
@@ -48,11 +50,11 @@ export const YACPDB = {
 	copyEdit() {
 		gtag("event", "fen_yacpdb_copyEdit");
 		return createEdit();
-	}
+	},
 };
 
 function createQuery() {
-	let pieces = [];
+	const pieces = [];
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
@@ -60,7 +62,7 @@ function createQuery() {
 			if(!v) continue;
 			if(v.match(/\d/)) continue; // rotation not supported;
 			if(v.startsWith("!")) v = "n" + v.toUpperCase();
-			else v = (v == v.toLowerCase() ? "b" : "w") + v.toUpperCase();
+			else v = getColor(v) + v.toUpperCase();
 			pieces.push(v + toSquare(i, j));
 		}
 	}
@@ -78,13 +80,17 @@ function createEdit() {
 			const match = v.match(/^(-?)([kqbsnrp])$/i);
 			if(!match) continue;
 			const type = convertSN(match[2], false, true).toUpperCase();
-			const color = match[1] ? "n" : v == v.toLowerCase() ? "b" : "w";
+			const color = match[1] ? "n" : getColor(v);
 			groups[color].push(type + toSquare(i, j));
 		}
 	}
-	let result = [];
+	const result = [];
 	if(groups.w.length) result.push(`    white: [${groups.w.join(", ")}]`);
 	if(groups.b.length) result.push(`    black: [${groups.b.join(", ")}]`);
 	if(groups.n.length) result.push(`    neutral: [${groups.n.join(", ")}]`);
 	return result.join("\n");
+}
+
+function getColor(v) {
+	return v == v.toLowerCase() ? "b" : "w";
 }

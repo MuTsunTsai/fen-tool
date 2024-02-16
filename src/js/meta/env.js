@@ -13,7 +13,7 @@ function testPngShare() {
 	if(!canShare) return false;
 	// Generated using png-pixel.com
 	const binary = atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII");
-	const array = new Uint8Array(binary.length)
+	const array = new Uint8Array(binary.length);
 	for(let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
 	const blob = new Blob([array]);
 	const file = new File([blob], "1.png", { type: "image/png" });

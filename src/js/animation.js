@@ -1,7 +1,7 @@
 import { getAsset } from "./asset";
 import { drawBoard, drawPiece } from "./draw";
 import { dpr } from "./meta/env";
-import { parseFEN, parseSquare, parseXY } from "./meta/fen.mjs";
+import { parseFEN, parseSquare, parseXY } from "./meta/fen";
 import { getDimensions } from "./meta/option";
 
 const speed = 150;
@@ -40,11 +40,11 @@ class Animation {
 			const moves = [];
 			const squares = stage.match(/[`a-z]\d(=(\*\d)?[A-Z])?/g);
 			for(let i = 0; i < squares.length; i += 2) {
-				let from = squares[i], to = squares[i + 1];
+				const from = squares[i], to = squares[i + 1];
 				const sq = parseSquare(from, w, h);
 				const move = {
 					p: board[sq],
-					promo: to.match(/=(.+)$/)?.[1],
+					promo: to.match(/[=](.+)$/)?.[1],
 					from: parseXY(from, h),
 					to: parseXY(to, h),
 				};
@@ -75,7 +75,7 @@ class Animation {
 	step(timestamp) {
 		const { ctx, options, callback } = animeSettings;
 
-		if(!this.startTime) this.startTime = timestamp
+		if(!this.startTime) this.startTime = timestamp;
 		const delta = (timestamp - this.startTime) / speed;
 		const cursor = Math.floor(delta);
 
@@ -101,7 +101,7 @@ class Animation {
 		for(const move of this.stages[stageIndex].moves) {
 			const x = move.from.x * (1 - offset) + move.to.x * offset;
 			const y = move.from.y * (1 - offset) + move.to.y * offset;
-			drawPiece(ctx, assets, y, x, move.p, options, dpr);
+			drawPiece(ctx, y, x, move.p, { assets, options, dpr });
 		}
 		ctx.restore();
 

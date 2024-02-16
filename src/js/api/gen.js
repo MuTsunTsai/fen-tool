@@ -1,5 +1,5 @@
 import { makeOption } from "../meta/option";
-import { inferDimension, parseFEN } from "../meta/fen.mjs";
+import { inferDimension, parseFEN } from "../meta/fen";
 import { dpr, draw } from "./draw";
 import { loadAsset } from "../asset";
 

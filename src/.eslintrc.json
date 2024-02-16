@@ -1,0 +1,71 @@
+{
+	"extends": [
+		"plugin:import/typescript"
+	],
+	"plugins": [
+		"import"
+	],
+	"parserOptions": {
+		"sourceType": "module"
+	},
+	"env": {
+		"browser": true
+	},
+	"globals": {
+		"gtag": "readonly"
+	},
+	"rules": {
+		"@typescript-eslint/consistent-type-imports": [
+			"warn",
+			{
+				"prefer": "type-imports"
+			}
+		],
+		"@typescript-eslint/no-unsafe-declaration-merging": "off",
+		"import/consistent-type-specifier-style": [
+			"warn",
+			"prefer-top-level"
+		],
+		"import/newline-after-import": "warn",
+		"import/no-cycle": [
+			"warn",
+			{
+				"ignoreExternal": true
+			}
+		],
+		"import/no-duplicates": "warn",
+		"import/no-unresolved": "error",
+		"import/order": [
+			"warn",
+			{
+				"groups": [
+					[
+						"builtin",
+						"external"
+					],
+					[
+						"internal",
+						"parent",
+						"sibling",
+						"index",
+						"object"
+					],
+					"type"
+				],
+				"newlines-between": "always"
+			}
+		],
+		"no-duplicate-imports": "off",
+		"sort-imports": "off"
+	},
+	"settings": {
+		"import/resolver": {
+			"typescript": {
+				"project": [
+					"src/vue",
+					"src/js"
+				]
+			}
+		}
+	}
+}

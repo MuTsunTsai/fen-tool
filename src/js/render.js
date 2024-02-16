@@ -1,15 +1,14 @@
-import { CN, CG, TP, TPG, PV } from "./meta/el";
-import { setOption } from "./layout";
+import { CN, CG, TP, TPG, PV, SN } from "./meta/el";
 import { store, state, noEditing, status } from "./store";
 import { pushState, snapshot } from "./squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
 import { getDimensions } from "./meta/option";
-import { deepAssign } from "./meta/clone.mjs";
 import { dpr } from "./meta/env";
 import { animeSettings } from "./animation";
-import { emptyBoard } from "./meta/fen.mjs";
+import { emptyBoard } from "./meta/fen";
 import { redrawSDK } from "./api/sdk-base";
+import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -42,21 +41,19 @@ const cache = {
 
 animeSettings.ctx = ctx;
 
-addEventListener("storage", e => {
-	if(e.storageArea == localStorage && e.key == "settings") {
-		const settings = JSON.parse(localStorage.getItem("settings"));
-		deepAssign(store, settings, true);
-		setOption({}, true);
-	}
-});
-
 /**
- * @param {number[]} except 
+ * @param {number[]} except
  */
 export function drawTemplate(except) {
 	if(except) cache.except = except;
 	else except = cache.except;
-	const options = Object.assign({}, store.board, status.hor ? { w: 8, h: 3 } : { w: 3, h: 8 });
+	const options = Object.assign(
+		{},
+		store.board,
+		status.hor ?
+			{ w: BOARD_SIZE, h: TEMPLATE_SIZE } :
+			{ w: TEMPLATE_SIZE, h: BOARD_SIZE }
+	);
 	const squares = getTemplate();
 	drawBoard(tCtx, squares, options, dpr, false, status.hor);
 	const { size } = store.board;
@@ -69,8 +66,9 @@ export function drawTemplate(except) {
 			tCtx.strokeStyle = "#0d6efd";
 			tCtx.translate(offset.x, offset.y);
 			const index = templateValues.indexOf(status.selection);
-			const x = index % 3, y = (index - x) / 3;
-			drawSelection(x, y);
+			const x = index % TEMPLATE_SIZE;
+			const y = (index - x) / TEMPLATE_SIZE;
+			drawSelectionCore(x, y);
 			tCtx.restore();
 		}
 	} else {
@@ -79,45 +77,48 @@ export function drawTemplate(except) {
 		const { offset } = getDimensions(store.board, status.hor);
 		tCtx.translate(offset.x, offset.y);
 
-		// draw "ep"
-		if(isRetro) {
-			tCtx.save();
-			tCtx.font = `${size / 2}px sans-serif`;
-			tCtx.strokeStyle = "black";
-			tCtx.lineWidth = size / 12;
-			tCtx.fillStyle = "white";
-			tCtx.lineJoin = "round";
-			drawEp(1, 7);
-			drawEp(2, 7);
-			tCtx.restore();
-		}
-
-		// draw mask
-		tCtx.save();
-		tCtx.globalAlpha = status.isDark ? 0.5 : 0.4;
-		tCtx.fillStyle = "black";
-		for(let i = 0; i < 3; i++) {
-			for(let j = 0; j < 8; j++) {
-				if(except?.includes(j * 3 + i)) continue;
-				const [x, y] = status.hor ? [j, i] : [i, j];
-				tCtx.fillRect(x * size, y * size, size, size);
-			}
-		}
-		tCtx.restore();
-
-		// draw selection
-		if(isRetro) {
-			tCtx.save();
-			const retro = state.play.retro;
-			const x = except[0] == 3 ? 0 : 1;
-			tCtx.lineWidth = size / 12;
-			tCtx.strokeStyle = "#0d6efd";
-			if(retro.uncapture) drawSelection(x, types.indexOf(retro.uncapture));
-			if(retro.unpromote) drawSelection(1 - x, 5);
-			tCtx.restore();
-		}
+		if(isRetro) drawEp(size);
+		drawMask(except, size);
+		if(isRetro) drawSelection(except, size);
 		tCtx.restore();
 	}
+}
+
+function drawEp(size) {
+	tCtx.save();
+	tCtx.font = `${size / 2}px sans-serif`;
+	tCtx.strokeStyle = "black";
+	tCtx.lineWidth = size / 12;
+	tCtx.fillStyle = "white";
+	tCtx.lineJoin = "round";
+	drawEpCore(1, 7);
+	drawEpCore(2, 7);
+	tCtx.restore();
+}
+
+function drawMask(except, size) {
+	tCtx.save();
+	tCtx.globalAlpha = status.isDark ? 0.5 : 0.4;
+	tCtx.fillStyle = "black";
+	for(let i = 0; i < TEMPLATE_SIZE; i++) {
+		for(let j = 0; j < BOARD_SIZE; j++) {
+			if(except?.includes(j * TEMPLATE_SIZE + i)) continue;
+			const [x, y] = status.hor ? [j, i] : [i, j];
+			tCtx.fillRect(x * size, y * size, size, size);
+		}
+	}
+	tCtx.restore();
+}
+
+function drawSelection(except, size) {
+	tCtx.save();
+	const retro = state.play.retro;
+	const x = except[0] == 3 ? 0 : 1;
+	tCtx.lineWidth = size / 12;
+	tCtx.strokeStyle = "#0d6efd";
+	if(retro.uncapture) drawSelectionCore(x, types.indexOf(retro.uncapture));
+	if(retro.unpromote) drawSelectionCore(1 - x, 5);
+	tCtx.restore();
 }
 
 function getTemplate() {
@@ -135,7 +136,7 @@ function getTemplate() {
 	return result;
 }
 
-function drawEp(x, y) {
+function drawEpCore(x, y) {
 	const { size } = store.board;
 	const offset = size / 15;
 	if(status.hor) [x, y] = [y, x];
@@ -146,20 +147,22 @@ function drawEp(x, y) {
 	tCtx.fillText("ep", x * size - width - offset, y * size - descent - offset);
 }
 
-function drawSelection(x, y) {
+function drawSelectionCore(x, y) {
 	const { size } = store.board;
 	const unit = size / 8;
 	if(status.hor) [x, y] = [y, x];
-	const offset = .5;
-	const draw = (...pt) => {
+	const offset = 0.5;
+	const drawLines = (...pt) => {
 		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
-		for(let i = 1; i < pt.length; i++)tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
+		for(let i = 1; i < pt.length; i++) {
+			tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
+		}
 	};
 	tCtx.beginPath();
-	draw([0, 2], [0, 0], [2, 0]);
-	draw([5, 0], [7, 0], [7, 2]);
-	draw([7, 5], [7, 7], [5, 7]);
-	draw([0, 5], [0, 7], [2, 7]);
+	drawLines([0, 2], [0, 0], [2, 0]);
+	drawLines([5, 0], [7, 0], [7, 2]);
+	drawLines([7, 5], [7, 7], [5, 7]);
+	drawLines([0, 5], [0, 7], [2, 7]);
 	tCtx.stroke();
 }
 
@@ -193,9 +196,9 @@ function updatePieceCount(data) {
 	status.pieceCount = `(${w}+${b}${n > 0 ? "+" + n : ""}${t > 0 ? "+" + t : ""})`;
 }
 
-export function drawEmpty(ctx) {
+export function drawEmpty(context) {
 	const { w, h } = store.board;
-	drawBoard(ctx, emptyBoard(w * h), store.board, dpr);
+	drawBoard(context, emptyBoard(w * h), store.board, dpr);
 }
 
 export function getBlob() {

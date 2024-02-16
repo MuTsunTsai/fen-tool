@@ -1,10 +1,15 @@
 import { animate, stopAnimation } from "../animation";
 import { readText } from "../copy";
 import { types } from "../draw";
-import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen.mjs";
+import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen";
 import { drawTemplate, load } from "../render";
-import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly, resetEdwards } from "../squares";
-import { state, store, status, onSession } from "../store";
+import { orthodoxFEN, parseFullFEN, resetEdwards, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
+import { onSession, state, status, store } from "../store";
+import { alert } from "../meta/dialogs";
+import { playMode } from "../meta/enum";
+
+const RANK_1ST = 1;
+const RANK_8TH = 8;
 
 onSession(() => {
 	// Restore playing session
@@ -18,22 +23,20 @@ onSession(() => {
 	}
 });
 
-/** @type {import("../modules/chess.mjs")} */
+/** @type {import("../modules/chess.js")} */
 let module;
 
-/** @type {import("../modules/chess.mjs").Chess} */
+/** @type {import("../modules/chess.js").Chess} */
 let chess;
 
 /** @type {number} */
 let pendingTarget;
 
-const NORMAL = "normal", PASS = "pass", RETRO = "retro";
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+const wMask = [4, 7, 10, 13], bMask = [3, 6, 9, 12];
 
-const wMask = [4, 7, 10, 13];
-const bMask = [3, 6, 9, 12];
-
-const wrMask = bMask.concat(15, 16, 18);
-const brMask = wMask.concat(15, 16, 19);
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+const wrMask = bMask.concat(15, 16, 18), brMask = wMask.concat(15, 16, 19);
 
 export function moveHistory(v) {
 	const p = state.play;
@@ -54,14 +57,14 @@ function goto(n) {
 		const move = p.history[back ? m : n];
 		let act = move.from + move.to;
 		if(move.flags == "k" || move.flags == "q") act += "," + castlingRookMove(move);
-		animate(move.before, move.after, act, back != (state.play.mode == RETRO));
+		animate(move.before, move.after, act, back != (state.play.mode == playMode.retro));
 	}
 }
 
-export function move(from, to, promotion) {
+export function makeMove(from, to, promotion) {
 	from = toSquare(from);
 	to = toSquare(to);
-	if(state.play.mode == RETRO) {
+	if(state.play.mode == playMode.retro) {
 		const result = chess.retract({ from, to, ...state.play.retro });
 		if(result) {
 			resetRetro();
@@ -91,8 +94,10 @@ function generateCastlingAnimation(move) {
 function castlingRookMove(move) {
 	const isWhite = move.color == "w";
 	const isKing = move.flags == "k";
-	const r = isWhite ? 1 : 8, f = isKing ? "h" : "a", t = isKing ? "f" : "d";
-	return f + r + t + r;
+	const rank = isWhite ? RANK_1ST : RANK_8TH;
+	const fromFile = isKing ? "h" : "a";
+	const toFile = isKing ? "f" : "d";
+	return fromFile + rank + toFile + rank;
 }
 
 export function sync() {
@@ -100,8 +105,8 @@ export function sync() {
 }
 
 export function confirmPromotion(from, to) {
-	if(move(from, pendingTarget, to)) {
-		if((pendingTarget >>> 3) == 0) to = to.toUpperCase();
+	if(makeMove(from, pendingTarget, to)) {
+		if(pendingTarget >>> 3 == 0) to = to.toUpperCase();
 		setSquare(squares[pendingTarget], to);
 	} else {
 		sync();
@@ -112,12 +117,12 @@ export function confirmPromotion(from, to) {
 
 export function checkPromotion(from, to) {
 	const mode = state.play.mode;
-	if(mode == RETRO) return false;
-	if(mode == PASS && getSquareColor(from) != chess.turn()) chess.switchSide();
+	if(mode == playMode.retro) return false;
+	if(mode == playMode.pass && getSquareColor(from) != chess.turn()) chess.switchSide();
 	if(!chess.checkPromotion(toSquare(from), toSquare(to))) return false;
 	pendingTarget = to;
 	state.play.pendingPromotion = true;
-	drawTemplate(chess.turn() == "b" ? bMask : wMask)
+	drawTemplate(chess.turn() == "b" ? bMask : wMask);
 	return true;
 }
 
@@ -128,9 +133,9 @@ function getSquareColor(index) {
 export function checkDragPrecondition(index) {
 	const mode = state.play.mode;
 	if(state.play.pendingPromotion) return false;
-	if(mode != RETRO && chess.isGameOver()) return false;
+	if(mode != playMode.retro && chess.isGameOver()) return false;
 	const colorMatchTurn = getSquareColor(index) == chess.turn();
-	if(mode != PASS && colorMatchTurn != (mode == NORMAL)) return false;
+	if(mode != playMode.pass && colorMatchTurn != (mode == playMode.normal)) return false;
 	return true;
 }
 
@@ -138,10 +143,13 @@ export async function loadChessModule() {
 	if(!module) {
 		// break into 2 lines to prevent SSG trying to resolve this path.
 		const path = "./modules/chess.js";
-		module = await import(path);
-		module.Chess.options = store.PLAY;
-		chess = new module.Chess(state.play);
-		status.module.chess = true;
+		const m = await import(path);
+		if(!module) {
+			module = m;
+			module.Chess.options = store.PLAY;
+			chess = new module.Chess(state.play);
+			status.module.chess = true;
+		}
 	}
 	return module;
 }
@@ -152,10 +160,10 @@ function start() {
 		pendingPromotion: false,
 	});
 	toggleReadOnly(true);
-	if(state.play.mode == RETRO) {
+	if(state.play.mode == playMode.retro) {
 		resetRetro();
 		drawRetroTemplate();
-	} else drawTemplate([]);
+	} else { drawTemplate([]); }
 }
 
 function resetRetro() {
@@ -173,7 +181,7 @@ function drawRetroTemplate() {
 export function retroClick(x, y) {
 	if(x == 2) return;
 	const retro = state.play.retro;
-	const matchTurn = (x == 0) == (chess.turn() == "b")
+	const matchTurn = x == 0 == (chess.turn() == "b");
 	const toggle = p => retro.uncapture = retro.uncapture == p ? null : p;
 	if(matchTurn) {
 		if(0 < y && y < 7) toggle(types[y]);
@@ -187,18 +195,20 @@ export function retroClick(x, y) {
 
 export async function importGame(text) {
 	await loadChessModule();
-	if(chess.loadGame(text)) {
+	try {
+		chess.loadGame(text);
 		sync();
 		start();
+	} catch(e) {
+		if(e instanceof Error) alert(e.message);
 	}
 }
 
 export const PLAY = {
 	async start() {
-		gtag("event", "fen_play_" + state.play.mode);
 		try {
 			const fen = orthodoxFEN();
-			if(!fen) throw "Only orthodox chess is supported.";
+			if(!fen) throw new Error("Only orthodox chess is supported.");
 
 			await loadChessModule();
 			chess.init(fen);
@@ -207,6 +217,7 @@ export const PLAY = {
 		} catch(e) {
 			alert(e instanceof Error ? e.message : e);
 		}
+		gtag("event", "fen_play_" + state.play.mode);
 	},
 	exit() {
 		state.play.playing = false;
@@ -226,7 +237,7 @@ export const PLAY = {
 			stopAnimation();
 			setFEN(fen);
 		}
-		if(state.play.mode == RETRO) {
+		if(state.play.mode == playMode.retro) {
 			resetRetro();
 			drawRetroTemplate();
 		}
@@ -248,7 +259,6 @@ export const PLAY = {
 		return chess.copyPGN();
 	},
 	number(h) {
-		console.log(h);
 		return module.number(h, state.play.mode);
 	},
 	format(h) {
@@ -256,11 +266,15 @@ export const PLAY = {
 	},
 	async pasteMoves() {
 		const text = await readText();
-		chess.addMoves(module.parseMoves(text));
+		try {
+			chess.addMoves(module.parseMoves(text));
+		} catch(e) {
+			if(e instanceof Error) alert(e.message);
+		}
 		sync();
 	},
 	async pasteGame() {
 		const text = await readText();
 		await importGame(text);
-	}
-}
+	},
+};

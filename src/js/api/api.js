@@ -1,4 +1,4 @@
-import { inferDimension, parseFEN } from "../meta/fen.mjs";
+import { inferDimension, parseFEN } from "../meta/fen";
 import { makeOption } from "../meta/option";
 import { dpr, draw } from "./draw.js";
 import { loadAsset } from "../asset";
@@ -7,7 +7,7 @@ parent.postMessage(null, "*"); // Signal ready
 
 onmessage = async event => {
 	if(event.source != parent || !event.ports[0]) return;
-	gtag("event", "fen_sdk_gen")
+	gtag("event", "fen_sdk_gen");
 
 	const options = makeOption(event.data.options);
 	const fen = event.data.fen || "8/8/8/8/8/8/8/8";
@@ -18,4 +18,4 @@ onmessage = async event => {
 	await loadAsset("../assets", options, dpr);
 	const CN = draw(squares, options);
 	event.ports[0].postMessage(CN.toDataURL());
-}
+};

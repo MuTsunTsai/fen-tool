@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"baseUrl": "../src/",
+		"allowJs": true,
+		"isolatedModules": true,
+		"moduleResolution": "node",
+		"noEmit": true,
+		"strict": true,
+		"target": "ESNext",
+		"types": [
+			"mocha",
+			"node"
+		]
+	},
+	"include": [
+		"./**/*.mjs",
+		"./**/*.ts"
+	],
+	"ts-node": {
+		"files": true,
+		"swc": true
+	}
+}

@@ -1,17 +1,18 @@
-import { isInUAO } from "./uao.mjs";
+import { BOARD_SIZE } from "../meta/constants";
+import { isInUAO } from "./uao";
 
 const DIGITS = "０１２３４５６７８９".split("");
 
 const fullWidthMap = (function() {
 	const map = new Map();
-	const FW1 = ("abcdefghijklmnopqrstuvwxyz"
-		+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		+ ",./<>?;':\"[]\\{}|!@#$%^&*()_+-=`~").split("");
-	const FW2 = ("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
-		+ "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ"
-		+ "，．／＜＞？；’：”〔〕＼｛｝｜！＠＃＄％︿＆＊（）ˍ＋－＝‘～").split("");
+	const FW1 = ("abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		",./<>?;':\"[]\\{}|!@#$%^&*()_+-=`~").split("");
+	const FW2 = ("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ" +
+		"ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ" +
+		"，．／＜＞？；’：”〔〕＼｛｝｜！＠＃＄％︿＆＊（）ˍ＋－＝‘～").split("");
 	for(let i = 0; i < FW1.length; i++) map.set(FW1[i], FW2[i]);
-	for(let i = 0; i < 10; i++) map.set(i.toString(), DIGITS[i]);
+	for(let i = 0; i < DIGITS.length; i++) map.set(i.toString(), DIGITS[i]);
 	return map;
 })();
 
@@ -31,46 +32,56 @@ function fullWidth(value, useMarkers) {
 export function generate(squares, fen, id, bbs, options, isTouch) {
 	const us = (isTouch ? "*" : unescape("%1B")) + "[";
 	let result = "";
-	for(let i = 0; i < 8; i++) {
-		if(bbs.coordinates) result += us + "m" + DIGITS[8 - i] + "　";
-		for(let j = 0; j < 8; j++) {
+	for(let i = 0; i < BOARD_SIZE; i++) {
+		if(bbs.coordinates) result += us + "m" + DIGITS[BOARD_SIZE - i] + "　";
+		for(let j = 0; j < BOARD_SIZE; j++) {
 			const bg = backgroundColor(i, j, options);
-			let value = squares[i * 8 + j];
+			let value = squares[i * BOARD_SIZE + j];
 			value = value.replace(/^(-?)\*\d/, "$1"); // ignore rotation
-			if(value.startsWith("-")) {
-				value = value.substring(1);
-				result += us + ";37;" + bg + fullWidth(value, true);
-			} else if(value.startsWith("'")) {
-				if(value.startsWith("''")) value = value.substring(2);
-				else {
-					value = value.substring(1);
-					value = fullWidth(value) || (isInUAO(value) ? value : "　");
-				}
-				result += us + ";30;" + bg + value;
-			} else if(value == "") {
-				result += us + ";30;" + bg + "　";
-			} else {
-				result += us;
-				if(bbs.redBlue) {
-					if(value == value.toUpperCase()) result += "1;31;";
-					else result += "1;34;";
-					result += bg + fullWidth(value.toLowerCase(), true);
-				} else {
-					if(value == value.toUpperCase()) result += "1;37;";
-					else result += ";30;";
-					result += bg + fullWidth(value, true);
-				}
-			}
+			result += square(bbs, value, us, bg);
 		}
 		if(bbs.notes) result += us + "m　　" + (bbs.uncoloredNotes ? UNCOLORED_NOTES[i] : NOTES[i]);
-		if(i < 7) result += "\n";
+		if(i < BOARD_SIZE - 1) result += "\n";
 	}
 	result += us + "m\n";
 	if(bbs.Id) result += us + ";30;40m" + (id || "") + us + "m";
-	if(bbs.coordinates) result += "\n　　ａｂｃｄｅｆｇｈ\n"
+	if(bbs.coordinates) result += "\n　　ａｂｃｄｅｆｇｈ\n";
 	result += us + ";30;40m" + fen + us + "m\n";
 	return result;
-};
+}
+
+function square(bbs, value, us, bg) {
+	let result = "";
+	if(value.startsWith("-")) {
+		value = value.substring(1);
+		result += us + ";37;" + bg + fullWidth(value, true);
+	} else if(value.startsWith("'")) {
+		if(value.startsWith("''")) { value = value.substring(2); } else {
+			value = value.substring(1);
+			value = fullWidth(value) || (isInUAO(value) ? value : "　");
+		}
+		result += us + ";30;" + bg + value;
+	} else if(value == "") {
+		result += us + ";30;" + bg + "　";
+	} else {
+		result += us + piece(bbs, bg, value);
+	}
+	return result;
+}
+
+function piece(bbs, bg, value) {
+	let result = "";
+	if(bbs.redBlue) {
+		if(value == value.toUpperCase()) result += "1;31;";
+		else result += "1;34;";
+		result += bg + fullWidth(value.toLowerCase(), true);
+	} else {
+		if(value == value.toUpperCase()) result += "1;37;";
+		else result += ";30;";
+		result += bg + fullWidth(value, true);
+	}
+	return result;
+}
 
 function backgroundColor(i, j, options) {
 	if(options.pattern == "mono") return "43m";

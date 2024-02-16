@@ -1,6 +1,6 @@
 <template>
 	<span class="me-3">{{ label }}</span>
-	<div v-for="(t, i) in text" class="form-check d-inline-block me-3">
+	<div v-for="(t, i) in text" class="form-check d-inline-block me-3" :key="i">
 		<input class="form-check-input" type="radio" :checked="checked(i)" :disabled="disabled" @change="set(i)" :name="id"
 			   :id="id + '_' + i">
 		<label class="form-check-label" :for="id + '_' + i" v-text="t"></label>
@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-	import { getCurrentInstance } from 'vue';
+	import { getCurrentInstance } from "vue";
 
 	const props = defineProps<{
 		label: string;

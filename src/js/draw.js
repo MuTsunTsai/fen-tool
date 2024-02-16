@@ -1,6 +1,12 @@
-import { ONE_EMOJI, convertSN } from "./meta/fen.mjs";
+import { ONE_EMOJI, convertSN } from "./meta/fen";
 import { getAsset } from "./asset";
 import { LABEL_MARGIN, getDimensions } from "./meta/option";
+import { CHAR_A_OFFSET } from "./meta/constants";
+
+const DEFAULT_KNIGHT_OFFSET = 0.5;
+const MAX_ALPHABET = 26;
+const TEXT_PADDING = 4;
+const CLASSIC_STEPS = 7.5;
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
@@ -33,7 +39,7 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
 	for(let i = 0; i < options.h; i++) {
 		for(let j = 0; j < options.w; j++) {
 			if(!transparent) drawBlank(ctx, i, j, options);
-			drawPiece(ctx, assets, i, j, squares[i * options.w + j], options, dpr);
+			drawPiece(ctx, i, j, squares[i * options.w + j], { assets, options, dpr });
 		}
 	}
 	ctx.restore();
@@ -65,10 +71,44 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
 
 /**
  * The core drawing method.
+ * @param {CanvasRenderingContext2D} ctx
  */
-export function drawPiece(ctx, assets, i, j, value, options, dpr) {
-	if(value === undefined) value = "";
+export function drawPiece(ctx, i, j, raw, { assets, options, dpr }) {
+	const context = parsePiece(raw, options);
+	if(!context) return;
+	const { neutral, rotate, isText, value, lower, typeIndex } = context;
+
+	ctx.save();
+	const bw = options.blackWhite;
+	const sx = getShiftX(context, bw);
+	const f = getFraction(neutral, lower, bw, options);
+	const [rx, ry] = [rotate + 1 & 2 ? 1 : 0, rotate & 2 ? 1 : 0];
 	const { size } = options;
+	ctx.translate((j + rx) * size, (i + ry) * size);
+	if(rotate !== 0) ctx.rotate(Math.PI / 2 * rotate);
+	if(isText) {
+		const text = value.substring(value.startsWith("''") ? 2 : 1);
+		drawText(ctx, text, size);
+	} else {
+		ctx.drawImage(
+			assets,
+			sx * size * dpr, typeIndex * size * dpr, size * f * dpr, size * dpr,
+			0, 0, size * f, size
+		);
+		if(neutral && bw) {
+			ctx.drawImage(
+				assets,
+				(1 + f) * size * dpr, typeIndex * size * dpr, size * (1 - f) * dpr, size * dpr,
+				size * f, 0, size * (1 - f), size
+			);
+		}
+	}
+	ctx.restore();
+}
+
+function parsePiece(value, options) {
+	if(value === undefined) value = "";
+
 	const neutral = value && value.startsWith("-");
 	if(neutral) value = value.substring(1);
 
@@ -81,25 +121,20 @@ export function drawPiece(ctx, assets, i, j, value, options, dpr) {
 	const lower = value.toLowerCase();
 	const typeIndex = types.indexOf(lower);
 	const isText = value.startsWith("'");
-	if(typeIndex < 0 && !isText) return;
+	if(typeIndex < 0 && !isText) return null;
 
-	ctx.save();
-	const bw = options.blackWhite;
-	const sx = neutral ? (bw ? 0 : 2) : value == lower ? 0 : 1;
-	const f = neutral && bw ? (lower == "n" ? options.knightOffset : .5) : 1;
-	const [rx, ry] = [(rotate + 1 & 2) ? 1 : 0, rotate & 2 ? 1 : 0];
-	ctx.translate((j + rx) * size, (i + ry) * size);
-	if(rotate !== 0) ctx.rotate(Math.PI / 2 * rotate);
-	if(isText) {
-		const text = value.substring(value.startsWith("''") ? 2 : 1);
-		drawText(ctx, text, size);
-	} else {
-		ctx.drawImage(assets, sx * size * dpr, typeIndex * size * dpr, size * f * dpr, size * dpr, 0, 0, size * f, size);
-		if(neutral && bw) {
-			ctx.drawImage(assets, (1 + f) * size * dpr, typeIndex * size * dpr, size * (1 - f) * dpr, size * dpr, size * f, 0, size * (1 - f), size);
-		}
-	}
-	ctx.restore();
+	return { neutral, rotate, isText, value, lower, typeIndex };
+}
+
+function getShiftX(context, bw) {
+	const { neutral, value, lower } = context;
+	if(neutral) return bw ? 0 : 2;
+	else return value == lower ? 0 : 1;
+}
+
+function getFraction(neutral, lower, bw, options) {
+	if(!neutral || !bw) return 1;
+	return lower == "n" ? options.knightOffset : DEFAULT_KNIGHT_OFFSET;
 }
 
 function background(pattern, i, j) {
@@ -129,7 +164,7 @@ function drawBorder(ctx, border, w, h, margin) {
 
 function drawCoordinates(ctx, options, bSize) {
 	const { size, w, h } = options;
-	ctx.font = '15px sans-serif';
+	ctx.font = "15px sans-serif";
 	ctx.strokeStyle = "black";
 	ctx.lineWidth = 2;
 	ctx.fillStyle = "white";
@@ -142,8 +177,8 @@ function drawCoordinates(ctx, options, bSize) {
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);
 	}
-	for(let i = 0; i < w && i < 26; i++) {
-		const text = String.fromCharCode(97 + i);
+	for(let i = 0; i < w && i < MAX_ALPHABET; i++) {
+		const text = String.fromCharCode(CHAR_A_OFFSET + i);
 		const measure = ctx.measureText(text);
 		const y = size * h + LABEL_MARGIN + bSize - 5;
 		const x = size * i + (size - measure.width) / 2;
@@ -200,24 +235,26 @@ function drawBlank(ctx, i, j, options) {
 		ctx.lineWidth = size / 60;
 		ctx.fillStyle = "#fff";
 		ctx.fillRect(0, 0, size, size);
-		if(!light) {
-			ctx.beginPath();
-			const step = size / 7.5;
-			for(let i = 0; i < size; i += step) {
-				ctx.moveTo(size - i, 0);
-				ctx.lineTo(0, size - i);
-				if(i > 0) {
-					ctx.moveTo(i, size);
-					ctx.lineTo(size, i);
-				}
-			}
-			ctx.stroke();
-		}
+		if(!light) drawClassic(ctx, size);
 	} else {
 		ctx.fillStyle = getBgColor(light, options.bg);
 		ctx.fillRect(0, 0, size, size);
 	}
 	ctx.restore();
+}
+
+function drawClassic(ctx, size) {
+	ctx.beginPath();
+	const step = size / CLASSIC_STEPS;
+	for(let i = 0; i < size; i += step) {
+		ctx.moveTo(size - i, 0);
+		ctx.lineTo(0, size - i);
+		if(i > 0) {
+			ctx.moveTo(i, size);
+			ctx.lineTo(size, i);
+		}
+	}
+	ctx.stroke();
 }
 
 function getBgColor(light, bg) {
@@ -239,7 +276,7 @@ function getHeight(measure) {
 function drawText(ctx, text, size) {
 	ctx.save();
 	const isEmoji = ONE_EMOJI.test(text);
-	const font = size - 4;
+	const font = size - TEXT_PADDING;
 	ctx.font = `${font}px sans-serif`;
 
 	const max = size - 2;

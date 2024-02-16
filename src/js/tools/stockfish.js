@@ -1,9 +1,19 @@
-import { clone } from "../meta/clone.mjs";
+import { clone } from "../meta/clone";
 import { env } from "../meta/env";
-import { SQ } from "../meta/popeye/base.mjs";
+import { SQ } from "../meta/popeye/base";
 import { orthodoxFEN } from "../squares";
 import { STOCKFISH, onSession, state, status, store } from "../store";
 import { importGame, loadChessModule } from "./play";
+import { alert } from "../meta/dialogs";
+import { stockfishRunning, stockfishStatus } from "../meta/enum";
+import { MIN_MEMORY } from "../meta/constants";
+
+const DEPTH_THRESHOLD = 4;
+const PERCENTAGE = 100;
+const HTTP_SUCCESS = 200;
+const INFO_OFFSET = 5;
+const CONCURRENCY_SAVING = 4;
+const DRAW_THRESHOLD = 1;
 
 onSession(() => {
 	if(state.stockfish.lines.length) {
@@ -22,10 +32,10 @@ onSession(() => {
 /** @type {Worker} */
 let stockfish;
 
-/** @type {import("../modules/chess.mjs")} */
+/** @type {import("../modules/chess")} */
 let module;
 
-/** @type {import("../modules/chess.mjs").Chess} */
+/** @type {import("../modules/chess").Chess} */
 let chess;
 
 /** @type {string} */
@@ -36,12 +46,10 @@ function cmd(text) {
 }
 window.cmd = cmd; // For dev purpose
 
-const move = `(${SQ})(${SQ})([qrbn]?)`;
+const regMove = `(${SQ})(${SQ})([qrbn]?)`;
 
 const path = "modules/stockfish/";
 const suffix = env.thread ? "" : "-single";
-
-const DRAW_THRESHOLD = 1;
 
 // We can't really tell if SharedArrayBuffer is enabled on first launch,
 // so we download all files anyway.
@@ -56,28 +64,28 @@ const files = [
 function init(memory) {
 	if(stockfish) return Promise.resolve();
 	return new Promise((resolve, reject) => {
-		status.stockfish.running = 1;
+		status.stockfish.running = stockfishRunning.starting;
 		stockfish = new Worker(`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.info(msg);
 			if(msg == "readyok") {
-				status.stockfish.running = 2;
+				status.stockfish.running = stockfishRunning.running;
 				resolve();
 			}
-			if(msg.startsWith("info ")) parseInfo(msg.substring(5));
-			if(msg.match(new RegExp(`^bestmove ${move}`))) findBest();
+			if(msg.startsWith("info ")) parseInfo(msg.substring(INFO_OFFSET));
+			if(msg.match(new RegExp(`^bestmove ${regMove}`))) findBest();
 		};
 		stockfish.onerror = e => {
 			if(e.message.includes("RangeError")) reject(-1);
-			else if(e.message.includes("memory")) reject("Not enough memory.")
+			else if(e.message.includes("memory")) reject("Not enough memory.");
 			else reject("Unknown error has occurred.");
 		};
 
 		cmd("uci");
 		cmd("setoption name Use NNUE value true");
 		if(env.thread) {
-			cmd("setoption name Threads value " + Math.max(2, navigator.hardwareConcurrency - 4));
+			cmd("setoption name Threads value " + Math.max(2, navigator.hardwareConcurrency - CONCURRENCY_SAVING));
 		}
 		cmd("setoption name Hash value " + memory);
 		cmd("isready");
@@ -85,7 +93,7 @@ function init(memory) {
 }
 
 function parseInfo(info) {
-	if(status.stockfish.running != 2) return; // Prevent displaying weird results.
+	if(status.stockfish.running != stockfishRunning.running) return; // Prevent displaying weird results.
 
 	const multi = info.match(/multipv (\d+)/);
 	if(!multi) return;
@@ -93,11 +101,11 @@ function parseInfo(info) {
 
 	const mate = info.match(/mate (-?)(\d+)/);
 	const score = info.match(/score cp (-?\d+)/);
-	let cp = Number(score && score[1] || 0) / 100;
+	let cp = Number(score && score[1] || 0) / PERCENTAGE;
 	let mateNum;
 
 	if(mate) {
-		const side = (fen.split(" ")[1] == "w") == Boolean(mate[1]) ? "Black" : "White";
+		const side = fen.split(" ")[1] == "w" == Boolean(mate[1]) ? "Black" : "White";
 		mateNum = Number(mate[2]) + state.stockfish.header.length / 2;
 		if(index == 0) state.stockfish.mate = [side, mateNum];
 	}
@@ -106,10 +114,10 @@ function parseInfo(info) {
 		if(depth) state.stockfish.depth = depth[1];
 		if(score) state.stockfish.score = cp;
 	}
-	const moves = info.match(new RegExp(`pv (${move}(?: ${move})*)`));
+	const moves = info.match(new RegExp(`pv (${regMove}(?: ${regMove})*)`));
 	if(moves) {
 		if(state.stockfish.lines[index]?.raw == moves[1]) return;
-		const matches = moves[1].split(" ").map(m => m.match(new RegExp(move)));
+		const matches = moves[1].split(" ").map(m => m.match(new RegExp(regMove)));
 		state.stockfish.moves = [];
 		// chess.init(fen);
 		// for(const move of state.stockfish.header) {
@@ -121,7 +129,7 @@ function parseInfo(info) {
 		chess.init(h.length ? h[h.length - 1].after : fen);
 
 		for(const match of matches) {
-			const move = chess.move({ from: match[1], to: match[2], promotion: match[3] })
+			const move = chess.move({ from: match[1], to: match[2], promotion: match[3] });
 			if(move.san.endsWith("=")) {
 				// Stockfish doesn't stop here for some reason
 				cp = 0;
@@ -129,7 +137,7 @@ function parseInfo(info) {
 			}
 		}
 		const line = {
-			rawScore: mate ? (mate[1] ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY) : cp,
+			rawScore: getRawScore(mate, cp),
 			score: mate ? mate[1] + "#" + mate[2] : cp.toFixed(2),
 			raw: moves[1],
 			moves: chess.state.history.concat(),
@@ -138,6 +146,11 @@ function parseInfo(info) {
 		state.stockfish.lines[index] = line;
 	}
 	if(store.Stockfish.study) annotate();
+}
+
+function getRawScore(mate, cp) {
+	if(!mate) return cp;
+	return mate[1] ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
 }
 
 function annotate() {
@@ -160,60 +173,67 @@ function annotate() {
 
 function findBest() {
 	const depth = store.Stockfish.depth;
-	if(!store.Stockfish.study || depth < 4 || !annotate()) {
+	if(!store.Stockfish.study || depth < DEPTH_THRESHOLD || !annotate()) {
 		Stockfish.stop();
 	} else {
 		const h = state.stockfish.header;
 		h.push(...state.stockfish.lines[0].moves.slice(0, 2));
-		const fen = h[h.length - 1].after;
-		cmd("position fen " + fen);
+		cmd("position fen " + h[h.length - 1].after);
 		cmd("go depth " + depth);
+	}
+}
+
+async function tryFetch(file) {
+	const response = await fetch(file);
+	if(response.status != HTTP_SUCCESS) throw new Error();
+}
+
+async function tryInitMemory(ready, memory) {
+	try {
+		await ready;
+	} catch(e) {
+		if(e !== -1) throw e;
+		// Reduce memory and try again
+		Stockfish.stop();
+		memory /= 2;
+		if(memory < MIN_MEMORY) throw new Error("Not enough memory.");
+		await tryInitMemory(init(memory), memory);
 	}
 }
 
 export const Stockfish = {
 	async download() {
 		gtag("event", "fen_stockfish_download");
-		status.stockfish.status = 1;
+		status.stockfish.status = stockfishStatus.downloading;
 		if("serviceWorker" in navigator) {
 			// First we wait for service worker to finish installing.
 			// Otherwise caching won't work.
 			await navigator.serviceWorker.ready;
 		}
-		for(const file of files) {
-			const response = await fetch(file);
-			if(response.status != 200) {
-				alert("Download failed. Please check your network connection.");
-				status.stockfish.status = 0;
-				return;
-			}
+		try {
+			await Promise.all(files.map(file => tryFetch(file)));
+		} catch {
+			alert("Download failed. Please check your network connection.");
+			status.stockfish.status = stockfishStatus.notDownloaded;
+			return;
 		}
 		store.Stockfish.downloaded = true;
-		status.stockfish.status = 2;
+		status.stockfish.status = stockfishStatus.needReload;
 	},
 	async analyze() {
 		try {
 			gtag("event", "fen_stockfish_run");
-			let memory = 128; // Default memory
-			let ready = init(memory);
+			const memory = 128; // Default memory
+			const ready = init(memory);
 			fen = orthodoxFEN();
-			if(!fen) throw "Only orthodox chess is supported.";
-			if(!module) module = await loadChessModule();
+			if(!fen) throw new Error("Only orthodox chess is supported.");
+			if(!module) {
+				const m = await loadChessModule();
+				if(!module) module = m;
+			}
 			chess = new module.Chess();
 			chess.init(fen);
-			while(true) {
-				try {
-					await ready;
-					break;
-				} catch(e) {
-					if(e !== -1) throw e;
-					// Reduce memory and try again
-					Stockfish.stop();
-					memory /= 2
-					if(memory < 4) throw "Not enough memory.";
-					ready = init(memory);
-				}
-			}
+			await tryInitMemory(ready, memory);
 
 			state.stockfish = clone(STOCKFISH);
 			cmd("setoption name MultiPV value " + store.Stockfish.lines);
@@ -223,7 +243,7 @@ export const Stockfish = {
 		} catch(e) {
 			Stockfish.stop();
 			alert(e instanceof Error ? e.message : e);
-			status.stockfish.running = 0;
+			status.stockfish.running = stockfishRunning.stop;
 		}
 	},
 	play(line) {
@@ -236,7 +256,7 @@ export const Stockfish = {
 		// Stop all Stockfish workers and release memory
 		if(stockfish) stockfish.terminate();
 		stockfish = undefined;
-		status.stockfish.running = 0;
+		status.stockfish.running = stockfishRunning.stop;
 	},
 	format(moves) {
 		return module.formatGame(moves);

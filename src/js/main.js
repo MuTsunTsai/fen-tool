@@ -7,13 +7,11 @@ import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { env } from "./meta/env";
 import { init as initSDK } from "./api/sdk-base";
-
 import { API, normalForsyth } from "./tools/api";
 import { moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 import "./tools/stockfish";
 import "./tools/syzygy";
-
 import App from "../vue/app.vue";
 
 initSDK({
@@ -22,7 +20,7 @@ initSDK({
 });
 
 // https://stackoverflow.com/a/43321596/9953396
-document.addEventListener('mousedown', function(event) {
+document.addEventListener("mousedown", (event) => {
 	const el = document.activeElement?.nodeName.toLowerCase();
 	if(el == "input" || el == "textarea") return;
 	if(event.detail > 1) event.preventDefault();
@@ -71,11 +69,13 @@ window.share = async function(bt) {
 				text: normalForsyth(),
 			});
 		} finally {
-			bt.disabled = false;
-			i.className = old;
+			if(bt.disabled) {
+				bt.disabled = false;
+				i.className = old;
+			}
 		}
 	}
-}
+};
 
 //===========================================================
 // startup
@@ -88,7 +88,7 @@ initSession();
 initLayout();
 initDrag();
 
-watchEffect(function() {
+watchEffect(() => {
 	document.body.classList.toggle("split", state.split);
 	Promise.resolve().then(() => setOption({}));
 });

@@ -27,10 +27,6 @@
 	</div>
 </template>
 
-<script setup>
-	import { state, status, noEditing } from '../js/store';
-
-	function hideTemplate() {
-		return status.hor && state.popeye.playing;
-	}
+<script setup lang="ts">
+	import { status, noEditing, hideTemplate } from "js/store";
 </script>

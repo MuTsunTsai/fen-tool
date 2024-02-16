@@ -1,6 +1,12 @@
+import { ONE_SECOND } from "../meta/constants";
 import { orthodoxFEN } from "../squares";
 import { onSession, state, status } from "../store";
 import { importGame, loadChessModule } from "./play";
+import { alert } from "../meta/dialogs";
+
+const TOO_MANY_REQUESTS = 429;
+const COOL_DOWN_TIME = 61;
+const MAX_PIECES = 7;
 
 onSession(() => {
 	if(state.syzygy.lines) {
@@ -14,12 +20,12 @@ onSession(() => {
 	}
 });
 
-/** @type {import("../modules/chess.mjs")} */
+/** @type {import("../modules/chess")} */
 let module;
 
 let context;
 
-let sleeping = new Set();
+const sleeping = new Set();
 
 function sleep(s) {
 	return new Promise(resolve => {
@@ -27,7 +33,7 @@ function sleep(s) {
 		setTimeout(() => {
 			sleeping.delete(resolve);
 			resolve();
-		}, s * 1000);
+		}, s * ONE_SECOND);
 	});
 }
 
@@ -39,13 +45,13 @@ async function api(fen, ctx) {
 		await ready;
 		if(!ctx.running) return null;
 		const response = await fetch("https://tablebase.lichess.ovh/standard?fen=" + fen);
-		if(response.status == 429) {
+		if(response.status == TOO_MANY_REQUESTS) {
 			// Too many requests. Wait for one minute.
-			await sleep(61);
+			await sleep(COOL_DOWN_TIME);
 			return await api(fen, ctx);
-		} else return await response.json();
+		} else { return await response.json(); }
 	} catch {
-		throw "Unable to connect to the server. Please check your network connection.";
+		throw new Error("Unable to connect to the server. Please check your network connection.");
 	}
 }
 
@@ -93,6 +99,7 @@ async function run(ctx) {
 	line.moves[0].annotation = "!";
 	while(lines.length) {
 		const tasks = lines.map(l => search(l, ctx));
+		// eslint-disable-next-line no-await-in-loop
 		await Promise.all(tasks);
 		lines = state.syzygy.lines.filter(l => l.searching);
 		if(!ctx.running) return;
@@ -118,7 +125,7 @@ async function search(line, ctx) {
 		.filter(r => r)
 		.sort((a, b) => b.score - a.score)
 		.filter((r, _, a) => r.score == a[0].score);
-	line.searching = false;
+	if(line.searching) line.searching = false;
 	if(!ctx.running) return;
 
 	const continuations = results.filter(r => ctx.op != "draw" && r.moves.length > 0 || r.moves.length == 1);
@@ -127,8 +134,7 @@ async function search(line, ctx) {
 	const branches = continuations.map(r => createBranch(r, line, unique, chess, ctx));
 	const lines = state.syzygy.lines.concat();
 	const index = lines.indexOf(line);
-	if(unique) lines.splice(index, 1, ...branches);
-	else {
+	if(unique) { lines.splice(index, 1, ...branches); } else {
 		line.leaf = false;
 		lines.splice(index + 1, 0, ...branches);
 	}
@@ -173,7 +179,7 @@ function createBranch(r, line, unique, chess, ctx) {
 	};
 }
 
-const WIN = ["win", "maybe-win", "cursed-win"]
+const WIN = ["win", "maybe-win", "cursed-win"];
 const LOSS = ["loss", "maybe-loss", "blessed-loss"];
 
 function opposite(outcome) {
@@ -195,9 +201,11 @@ export const Syzygy = {
 			state.syzygy.header = null;
 			state.syzygy.lines = null;
 			ctx.fen = orthodoxFEN();
-			if(!ctx.fen) throw "Only orthodox chess is supported.";
+			if(!ctx.fen) throw new Error("Only orthodox chess is supported.");
 			const count = ctx.fen.split(" ")[0].match(/[a-z]/ig)?.length;
-			if(count > 7) throw "Only supports position with up to 7 pieces.";
+			if(count > MAX_PIECES) {
+				throw new Error(`Only supports position with up to ${MAX_PIECES} pieces.`);
+			}
 			await run(ctx);
 		} catch(e) {
 			alert(e instanceof Error ? e.message : e);
@@ -219,6 +227,9 @@ export const Syzygy = {
 		status.syzygy.running = false;
 	},
 	format(line) {
-		return module.formatGame(line.moves) + (line.searching ? " ..." : line.transpose ? " (transpose)" : "");
+		let result = module.formatGame(line.moves);
+		if(line.searching) result += " ...";
+		else if(line.transpose) result += " (transpose)";
+		return result;
 	},
 };

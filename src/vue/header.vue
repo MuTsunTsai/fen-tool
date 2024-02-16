@@ -19,7 +19,7 @@
 	</header>
 </template>
 
-<script setup>
-	import { status, noEditing } from '../js/store';
-	import { env } from '../js/meta/env';
+<script setup lang="ts">
+	import { status, noEditing } from "js/store";
+	import { env } from "js/meta/env";
 </script>

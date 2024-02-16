@@ -21,7 +21,7 @@ const purgeOption = {
 			/^--bs-btn-disabled/,
 			/^--bs-nav-tabs/,
 		],
-		standard: ["text-danger"],
+		standard: ["text-danger", /backdrop/],
 	},
 	// for Bootstrap
 	variables: true,
@@ -79,14 +79,17 @@ gulp.task("js", () =>
 	gulp.src("src/js/main.js")
 		.pipe($.newer({
 			dest: "docs/main.js",
-			extra: [__filename, vueSource, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, vueSource, "src/js/**/*.js", "src/js/**/*.ts"]
 		}))
 		.pipe(esb({
 			outfile: "main.js",
 			external: ["./modules/*"], // Everything in here are loaded on demand
-			plugins: [esVue(vueOption)]
+			plugins: [esVue(vueOption)],
+			minify: true,
+			sourcemap: true,
+			sourcesContent: false,
+			sourceRoot: "../",
 		}))
-		.pipe($.terser())
 		.pipe(gulp.dest("docs"))
 );
 
@@ -103,8 +106,6 @@ gulp.task("html", () =>
 				plugins: [esVue(vueOption)],
 			}),
 		}))
-		// Avoid VS Code Linter warnings
-		.pipe($.replace(/<script>(.+?)<\/script>/g, "<script>$1;</script>"))
 		.pipe(gulp.dest("docs"))
 );
 
@@ -112,7 +113,7 @@ gulp.task("gen", () =>
 	gulp.src("src/js/api/gen.js")
 		.pipe($.newer({
 			dest: "docs/gen/gen.js",
-			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
 		}))
 		.pipe(esb({ outfile: "gen.js" }))
 		.pipe($.terser())
@@ -149,7 +150,7 @@ gulp.task("sdk", () =>
 	gulp.src("src/js/api/sdk.js")
 		.pipe($.newer({
 			dest: "docs/sdk.js",
-			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
 		}))
 		.pipe(esb({ outfile: "sdk.js" }))
 		.pipe($.terser())
@@ -160,7 +161,7 @@ gulp.task("api", () =>
 	gulp.src("src/js/api/api.js")
 		.pipe($.newer({
 			dest: "docs/api/api.js",
-			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
 		}))
 		.pipe(esb({ outfile: "api.js" }))
 		.pipe($.terser())
@@ -171,7 +172,7 @@ gulp.task("ptt", () =>
 	gulp.src("src/js/modules/ptt.js")
 		.pipe($.newer({
 			dest: "docs/modules/ptt.js",
-			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
 		}))
 		.pipe(esb({ outfile: "ptt.js", format: "esm" }))
 		.pipe($.terser())
@@ -179,20 +180,26 @@ gulp.task("ptt", () =>
 );
 
 gulp.task("chess", () =>
-	gulp.src("src/js/modules/chess.mjs")
+	gulp.src("src/js/modules/chess.js")
 		.pipe($.newer({
 			dest: "docs/modules/chess.js",
-			extra: [__filename, "src/js/**/*.js", "src/js/**/*.mjs"]
+			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
 		}))
-		.pipe(esb({ outfile: "chess.js", format: "esm" }))
-		.pipe($.terser())
+		.pipe(esb({
+			outfile: "chess.js",
+			format: "esm",
+			minify: true,
+			sourcemap: true,
+			sourcesContent: false,
+			sourceRoot: "../../",
+		}))
 		.pipe(gulp.dest("docs/modules"))
 );
 
 const popeyeVersion = "489";
 
 gulp.task("popeye", () =>
-	gulp.src(["src/js/modules/popeye.js", `src/js/modules/py${popeyeVersion}.js`])
+	gulp.src(["src/js/modules/popeye.js", `src/js/vendor/py${popeyeVersion}.js`])
 		.pipe($.newer({
 			dest: `docs/modules/py${popeyeVersion}.js`,
 			extra: [__filename]
@@ -203,8 +210,8 @@ gulp.task("popeye", () =>
 		.pipe(gulp.dest("docs/modules"))
 );
 
-gulp.task("pyasm", () =>
-	gulp.src(["src/js/modules/popeye.js", `src/js/modules/py${popeyeVersion}.asm.js`])
+gulp.task("pyAsm", () =>
+	gulp.src(["src/js/modules/popeye.js", `src/js/vendor/py${popeyeVersion}.asm.js`])
 		.pipe($.newer({
 			dest: `docs/modules/py${popeyeVersion}.asm.js`,
 			extra: [__filename]
@@ -221,4 +228,4 @@ gulp.task("fa", () =>
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt", "chess", "popeye", "pyasm"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt", "chess", "popeye", "pyAsm"), "sw"));

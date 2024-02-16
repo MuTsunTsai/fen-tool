@@ -1,14 +1,22 @@
 import { nextTick } from "vue";
+
 import { setFEN, snapshot } from "../squares";
 import { onSession, state, store } from "../store";
-import { formatSolution, toNormalFEN } from "../meta/popeye/popeye.mjs";
+import { formatSolution, toNormalFEN } from "../meta/popeye/popeye";
 import { resize } from "../layout";
 import { drawTemplate, load } from "../render";
-import { makeForsyth, toSquare } from "../meta/fen.mjs";
-import { createAbbrExp, createAbbrReg } from "../meta/regex.mjs";
-import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base.mjs";
+import { makeForsyth, toSquare } from "../meta/fen";
+import { createAbbrExp, createAbbrReg } from "../meta/regex";
+import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base";
 import { animate, stopAnimation } from "../animation";
-import { parsePieceCommand } from "../meta/popeye/piece.mjs";
+import { parsePieceCommand } from "../meta/popeye/piece";
+import { BOARD_SIZE, MIN_MEMORY } from "../meta/constants";
+import { alert } from "../meta/dialogs";
+
+const INSUFFICIENT_MEMORY = -2;
+const MAX_LINES = 3000;
+const OUTPUT_INTERVAL = 500;
+const INIT_MEMORY = 512; // Initial settings
 
 // Session
 onSession(() => {
@@ -48,7 +56,7 @@ function tryScroll() {
 function stop(restart) {
 	worker.terminate();
 	worker = undefined;
-	const remain = 500 - (performance.now() - startTime);
+	const remain = OUTPUT_INTERVAL - (performance.now() - startTime);
 	tryScroll();
 	clearInterval(interval);
 	if(!restart) {
@@ -72,30 +80,30 @@ function createWorker() {
 			msg = "Unable to load the Popeye module; please check your network connection.";
 		} else {
 			worker.terminate();
-			msg = "An error occur in the Popeye module. Please submit an issue about this.\n" + e.message;
+			msg = "An error occur in the Popeye module. Please submit an issue about this.\n" + event.message;
 		}
 		state.popeye.output = error(msg);
 		worker = undefined;
 	};
 	worker.onmessage = event => {
 		const data = event.data;
-		if(++outputCount > 3000) {
+		if(++outputCount > MAX_LINES) {
 			// Restrict the output to 3000 lines.
 			// Too much output is bad for user experience, and is not what this app is meant for.
-			state.popeye.intOutput += `<br>${error("Too much output. Please modify the input to prevent excessive output.")}<br>`
+			state.popeye.intOutput += `<br>${error("Too much output. Please modify the input to prevent excessive output.")}<br>`;
 			stop();
 		} else if(data === -1) {
 			gtag("event", "fen_popeye_fallback");
 			path = "modules/py489.asm.js"; // fallback to asm.js
 			stop(true);
 			state.popeye.intOutput = "Fallback to JS mode.<br>";
-		} else if(data === -2) {
+		} else if(data === INSUFFICIENT_MEMORY) {
 			memory /= 2;
-			stop(memory >= 4);
+			stop(memory >= MIN_MEMORY);
 		} else if(data === null) {
 			stop();
 		} else {
-			shouldScroll = shouldScroll || Boolean(el) && el.scrollTop + el.clientHeight + 30 > el.scrollHeight;
+			shouldScroll = shouldScroll || elIsAlmostBottom();
 			if(typeof data.text == "string") state.popeye.intOutput += escapeHtml(data.text) + "<br>";
 			if(typeof data.err == "string") {
 				state.popeye.error = true;
@@ -105,16 +113,20 @@ function createWorker() {
 	};
 }
 
+function elIsAlmostBottom() {
+	const threshold = 30;
+	return Boolean(el) && el.scrollTop + el.clientHeight + threshold > el.scrollHeight;
+}
+
 function start() {
 	createWorker();
 
-	spinner = ".";
 	const p = state.popeye;
 	outputCount = 0;
 	p.intOutput = "";
 	p.error = false;
 	p.running = true;
-	interval = setInterval(flush, 500);
+	interval = setInterval(flush, OUTPUT_INTERVAL);
 	startTime = performance.now();
 	worker.postMessage({
 		mem: memory,
@@ -143,9 +155,9 @@ function parseInput(text) {
 	text = text
 		.replace(COMMANDS, "")	// remove remark, author, origin, title
 		.replace(PROTOCOL, "")	// remove protocol
-		.replace(BEGIN, "")		// remove BeginProblem
-		.replace(NEXT, "")		// accept only one problem input
-		.replace(END, "");		// remove EndProblem
+		.replace(BEGIN, "") // remove BeginProblem
+		.replace(NEXT, "") // accept only one problem input
+		.replace(END, ""); // remove EndProblem
 
 	const p = state.popeye;
 	if(new RegExp(`${FORSYTH}|${PIECES}`, "i").test(text)) {
@@ -163,7 +175,7 @@ function parseInput(text) {
 
 export function getPopeyeFEN() {
 	const { w, h } = store.board;
-	if(w != 8 || h != 8) return null;
+	if(w != BOARD_SIZE || h != BOARD_SIZE) return null;
 	const imitators = [];
 	const arr = snapshot().map((p, i) => {
 		if(p == "") return p;
@@ -176,7 +188,7 @@ export function getPopeyeFEN() {
 		}
 		return f;
 	});
-	return { fen: makeForsyth(arr, 8, 8), imitators };
+	return { fen: makeForsyth(arr), imitators };
 }
 
 async function setupStepElements(restore) {
@@ -194,7 +206,13 @@ async function goTo(index, init) {
 	const p = state.popeye;
 	const newStep = p.steps[index];
 	const oldStep = p.steps[p.index];
-	if(oldStep && oldStep.dataset.anime && (index == p.index - 1 && !oldStep.dataset.before || newStep.dataset.fen == oldStep.dataset.before)) {
+	if(
+		oldStep && oldStep.dataset.anime &&
+		(
+			index == p.index - 1 && !oldStep.dataset.before ||
+			newStep.dataset.fen == oldStep.dataset.before
+		)
+	) {
 		await animate(newStep.dataset.fen, oldStep.dataset.fen, oldStep.dataset.anime, true);
 	} else {
 		const before = newStep.dataset.before || p.steps[index - 1]?.dataset.fen;
@@ -231,7 +249,7 @@ function scrollTo(step) {
 export const Popeye = {
 	run() {
 		gtag("event", "fen_popeye_run");
-		memory = 512; // Initial settings
+		memory = INIT_MEMORY;
 		try {
 			const p = state.popeye;
 			p.intInput = parseInput(p.input);
@@ -290,12 +308,12 @@ export const Popeye = {
 		const lines = state.popeye.mapping.toUpperCase().split("\n");
 		const map = {};
 		for(const line of lines) {
-			let [k, v] = line.replace(/\s/g, "").split("=");
+			const [k, v] = line.replace(/\s/g, "").split("=");
 			if(k.match(KEY) && v && v.match(VALUE)) map[k] = v;
 		}
 		store.popeye.pieceMap = map;
 		state.popeye.editMap = false;
-	}
+	},
 };
 
 function getMappingText(pieceMap) {

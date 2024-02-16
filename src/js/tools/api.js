@@ -1,9 +1,10 @@
 import { store } from "../store";
 import { FEN } from "../meta/el";
 import { CE } from "../render";
-import { getDimensions } from "../meta/option";
-import { inferDimension, makeForsyth } from "../meta/fen.mjs";
+import { DEFAULT_SET, DEFAULT_SIZE, getDimensions } from "../meta/option";
+import { inferDimension, makeForsyth } from "../meta/fen";
 import { normalSnapshot } from "../squares";
+import { alert } from "../meta/dialogs";
 
 function getURL(url) {
 	return new URL(url, location.href).toString();
@@ -22,8 +23,8 @@ function getEmbedUrl() {
 	const options = store.board;
 	const fen = normalForsyth();
 	let url = getURL("gen/?fen=" + fen);
-	if(options.size != 44) url += "&size=" + options.size;
-	if(options.set != "1echecs") url += "&set=" + options.set;
+	if(options.size != DEFAULT_SIZE) url += "&size=" + options.size;
+	if(options.set != DEFAULT_SET) url += "&set=" + options.set;
 	if(options.pattern) url += "&pattern=" + options.pattern;
 	if(options.bg) url += "&bg=" + options.bg;
 	if(options.border != "1") url += "&border=" + options.border;
@@ -76,7 +77,7 @@ export const API = {
 	copyEmbed() {
 		gtag("event", "fen_copy_embed");
 		const options = store.board;
-		let url = getEmbedUrl();
+		const url = getEmbedUrl();
 		const { w, h } = getDimensions(options);
 		return `<iframe src="${url}" style="border:none;width:${w}px;height:${h}px"></iframe>`;
 	},
@@ -91,9 +92,9 @@ export const API = {
 	copySDK() {
 		gtag("event", "fen_copy_sdk");
 		const options = store.board;
-		let data = ""
-		if(options.size != 44) data += ` data-size="${options.size}"`;
-		if(options.set != "1echecs") data += ` data-set="${options.set}"`;
+		let data = "";
+		if(options.size != DEFAULT_SIZE) data += ` data-size="${options.size}"`;
+		if(options.set != DEFAULT_SET) data += ` data-set="${options.set}"`;
 		if(options.bg) data += ` data-bg="${options.bg}"`;
 		if(options.border != "1") data += ` data-border="${options.border}"`;
 		if(options.blackWhite) data += ` data-black-white="true" data-knight-offset="${options.knightOffset}"`;

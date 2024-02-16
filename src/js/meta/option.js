@@ -1,3 +1,7 @@
+import { BOARD_SIZE } from "./constants";
+
+export const DEFAULT_SIZE = 44;
+export const DEFAULT_SET = "1echecs";
 
 export const defaultOption = {
 	pattern: undefined,
@@ -5,24 +9,25 @@ export const defaultOption = {
 	exHigh: true,
 	border: "1",
 	blackWhite: false,
-	knightOffset: .6,
+	knightOffset: 0.6,
 	SN: false,
-	size: 44,
-	w: 8,
-	h: 8,
+	size: DEFAULT_SIZE,
+	w: BOARD_SIZE,
+	h: BOARD_SIZE,
 	fullFEN: false,
 	coordinates: false,
-	set: "1echecs",
+	set: DEFAULT_SET,
 	collapse: true,
 };
 
 const BORDER = /^\d+(,\d+)*$/;
 
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const sizes = [26, 32, 38, 44];
 const sets = ["1echecs", "alpha", "goodCompanion", "kilfiger", "merida", "mpchess", "skak"];
 
 /**
- * @param {string} border 
+ * @param {string} border
  */
 export function sanitizeBorder(border) {
 	if(typeof border != "string") return null;
@@ -64,7 +69,7 @@ export function makeOption(option) {
 }
 
 /**
- * @param {string} border 
+ * @param {string} border
  */
 function parseBorder(border) {
 	const array = border.split(",").map(n => {
@@ -78,7 +83,7 @@ function parseBorder(border) {
 export const LABEL_MARGIN = 20;
 
 /**
- * @param {boolean|undefined} horTemplate 
+ * @param {boolean|undefined} horTemplate
  */
 export function getDimensions(options, horTemplate) {
 	const border = parseBorder(options.border);

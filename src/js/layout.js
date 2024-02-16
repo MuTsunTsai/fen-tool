@@ -1,11 +1,14 @@
-import { CN, SN, CG, TP, TPG } from "./meta/el";
-import { getRenderSize, search, state, store, status } from "./store";
-import { drawTemplate, draw, load, drawEmpty } from "./render";
-import { setSquareSize, createSquares, container, snapshot, paste, setFEN, pushState, toFEN, callback } from "./squares";
+import { nextTick } from "vue";
+
+import { deepAssign } from "./meta/clone";
+import { CG, CN, SN, TP, TPG } from "./meta/el";
+import { getRenderSize, search, state, status, store } from "./store";
+import { draw, drawEmpty, drawTemplate, load } from "./render";
+import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, snapshot, toFEN } from "./squares";
 import { getDimensions, sanitizeBorder } from "./meta/option";
 import { dpr, env } from "./meta/env";
-import { nextTick } from "vue";
 import { redrawSDK } from "./api/sdk-base";
+import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "./meta/constants";
 
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
@@ -39,34 +42,8 @@ export async function setOption(o, force) {
 	const shouldDrawBoard = shouldRedraw || dimChange;
 	const shouldDrawTemplate = shouldRedraw || changed.mode;
 
-	if(shouldDrawTemplate) {
-		let tw = (3 * o.size + 2 * border.size) * dpr;
-		let th = (8 * o.size + 2 * border.size) * dpr;
-		if(status.hor) {
-			[tw, th] = [th + margin.x * dpr, tw];
-			CN.parentNode.classList.add("mb-3");
-			TP.classList.remove("ms-4");
-		} else {
-			th += margin.y * dpr;
-			CN.parentNode.classList.remove("mb-3");
-			TP.classList.add("ms-4");
-		}
-		if(TP.width !== tw || TP.height !== th) {
-			TPG.width = TP.width = tw;
-			TPG.height = TP.height = th;
-		}
-	}
-
-	if(shouldDrawBoard) {
-		const bw = w * dpr;
-		const bh = h * dpr;
-		if(CN.width !== bw || CN.height !== bh) {
-			SN.width = CG.width = CN.width = bw;
-			SN.height = CG.height = CN.height = bh;
-		}
-		drawEmpty(SN.getContext("2d"));
-	}
-
+	if(shouldDrawTemplate) setupTemplate(o.size, border.size, margin);
+	if(shouldDrawBoard) setupBoard(w, h);
 	resize();
 
 	// Async parts
@@ -80,6 +57,34 @@ export async function setOption(o, force) {
 	nextTick(resize); // Just in case; solves glitch in Popeye play mode
 }
 
+function setupTemplate(size, borderSize, margin) {
+	let tw = (TEMPLATE_SIZE * size + 2 * borderSize) * dpr;
+	let th = (BOARD_SIZE * size + 2 * borderSize) * dpr;
+	if(status.hor) {
+		[tw, th] = [th + margin.x * dpr, tw];
+		CN.parentNode.classList.add("mb-3");
+		TP.classList.remove("ms-4");
+	} else {
+		th += margin.y * dpr;
+		CN.parentNode.classList.remove("mb-3");
+		TP.classList.add("ms-4");
+	}
+	if(TP.width !== tw || TP.height !== th) {
+		TPG.width = TP.width = tw;
+		TPG.height = TP.height = th;
+	}
+}
+
+function setupBoard(w, h) {
+	const bw = w * dpr;
+	const bh = h * dpr;
+	if(CN.width !== bw || CN.height !== bh) {
+		SN.width = CG.width = CN.width = bw;
+		SN.height = CG.height = CN.height = bh;
+	}
+	drawEmpty(SN.getContext("2d"));
+}
+
 function setDimension(dim) {
 	const { w, h } = store.board;
 	const shot = snapshot();
@@ -89,14 +94,14 @@ function setDimension(dim) {
 
 export function resize() {
 	Zone.style.maxWidth = `calc(${bodyWidth()}px + 1rem)`;
-	CN.style.width = (CN.width / dpr) + "px";
-	TP.style.width = (TP.width / dpr) + "px";
+	CN.style.width = CN.width / dpr + "px";
+	TP.style.width = TP.width / dpr + "px";
 	const { w } = store.board;
-	const r = getRenderSize(undefined, undefined, 8);
+	const r = getRenderSize(undefined, undefined, BOARD_SIZE);
 	if(status.hor) {
-		if(w > 8) {
+		if(w > BOARD_SIZE) {
 			TP.style.width = r.width + "px";
-		} else if(w < 8) {
+		} else if(w < BOARD_SIZE) {
 			const { width } = getRenderSize(TP, true, w);
 			CN.style.width = width + "px";
 		}
@@ -106,7 +111,7 @@ export function resize() {
 	const rem = getREM();
 	if(store.board.collapse) {
 		Zone.style.width = "120%"; // First we enlarge the whole thing, to correctly measure DragZone.
-		Zone.style.width = (DragZone.clientWidth + 4 * rem) + "px"; // Then we set the size by DragZone.
+		Zone.style.width = DragZone.clientWidth + 4 * rem + "px"; // Then we set the size by DragZone.
 	} else {
 		Zone.style.width = "unset";
 	}
@@ -142,13 +147,14 @@ export async function initLayout() {
 	const fen = search.get("fen");
 	await setOption({}, true);
 	callback.draw = draw;
+	callback.setOption = setOption;
 	if(fen) {
 		setFEN(fen, true);
 		pushState();
 	} else {
 		toFEN();
 	}
-	setTimeout(resize, 1000); // This is needed on old Safari
+	setTimeout(resize, ONE_SECOND); // This is needed on old Safari
 }
 
 // Split mode RWD
@@ -167,7 +173,7 @@ if(!env.isTop) {
 		const iframe = document.getElementsByTagName("iframe")[0];
 		if(!iframe) return;
 		iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
-	}
+	};
 }
 
 export const Layout = {
@@ -189,3 +195,11 @@ export const Layout = {
 };
 
 window.Layout = Layout;
+
+addEventListener("storage", e => {
+	if(e.storageArea == localStorage && e.key == "settings") {
+		const settings = JSON.parse(localStorage.getItem("settings"));
+		deepAssign(store, settings, true);
+		setOption({}, true);
+	}
+});

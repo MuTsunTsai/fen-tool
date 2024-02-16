@@ -1,8 +1,9 @@
 import { store } from "../store";
 import { squares, setFEN } from "../squares";
 import { types } from "../draw";
-import { toSquare } from "../meta/fen.mjs";
+import { toSquare } from "../meta/fen";
 import { DB } from "../meta/el";
+import { alert } from "../meta/dialogs";
 
 export const PDB = {
 	async fetch(bt) {
@@ -32,22 +33,22 @@ export const PDB = {
 	copyEdit() {
 		gtag("event", "fen_pdb_copyEdit");
 		return createEdit();
-	}
+	},
 };
 
-const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression="
+const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression=";
 const pdbMap = ["K", "D", "L", "S", "T", "B", "I"]; // German
 const rotationMap = ["", "R", "U", "L"];
 
 function createQuery() {
-	let pieces = [];
+	const pieces = [];
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
 			const v = squares[i * w + j].value;
 			if(!v.match(/^[kqbsnrp]$/i)) continue; // only orthodox pieces are supported
 			const type = pdbMap[types.indexOf(v.toLowerCase().replace("s", "n"))];
-			const color = v == v.toLowerCase() ? "s" : "w";
+			const color = getColor(v);
 			pieces.push(color + type + toSquare(i, j));
 		}
 	}
@@ -65,10 +66,11 @@ function createEdit() {
 			const match = v.match(/^(-?)(?:\*(\d))?([kqbsnrpxc])$/i);
 			if(!match) continue;
 			let key;
-			if(match[3] == "x") key = "sY"; // Special case
-			else {
+			if(match[3] == "x") {
+				key = "sY"; // Special case
+			} else {
 				const type = pdbMap[types.indexOf(match[3].toLowerCase().replace("s", "n"))];
-				const color = match[1] ? "n" : v == v.toLowerCase() ? "s" : "w";
+				const color = match[1] ? "n" : getColor(v);
 				const rotation = rotationMap[Number(match[2] || 0)];
 				key = color + type + rotation;
 			}
@@ -78,4 +80,8 @@ function createEdit() {
 	const result = [];
 	for(const key in groups) result.push(key + groups[key]);
 	return result.join(" ");
+}
+
+function getColor(v) {
+	return v == v.toLowerCase() ? "s" : "w";
 }

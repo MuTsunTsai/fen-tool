@@ -1,15 +1,20 @@
+import { TEMPLATE_SIZE } from "./meta/constants";
+
+const ASSET_HEIGHT = 12;
+const SYMBOL_OFFSET = 6;
+
 const assets = document.createElement("canvas");
 const ctx = assets.getContext("2d");
 const imgs = new Map();
 
 /** One must call this function after {@link loadAsset}. */
 export function getAsset(options, dpr) {
-	const key = options.set + (options.size * dpr);
+	const key = options.set + options.size * dpr;
 	return imgs.get(key);
 }
 
 export async function loadAsset(path, options, dpr) {
-	const key = options.set + (options.size * dpr);
+	const key = options.set + options.size * dpr;
 	if(imgs.has(key)) return imgs.get(key);
 	const url = await load(path, options, dpr);
 	const img = await loadImg(url);
@@ -24,10 +29,10 @@ async function load(path, options, dpr) {
 		loadImg(`${path}/${set}${size}.png`),
 		loadImg(`${path}/symbol${size}.png`),
 	]);
-	assets.width = size * dpr * 3;
-	assets.height = size * dpr * 12;
+	assets.width = size * dpr * TEMPLATE_SIZE;
+	assets.height = size * dpr * ASSET_HEIGHT;
 	ctx.drawImage(pieces, 0, 0);
-	ctx.drawImage(symbols, 0, size * dpr * 6);
+	ctx.drawImage(symbols, 0, size * dpr * SYMBOL_OFFSET);
 	return assets.toDataURL();
 }
 

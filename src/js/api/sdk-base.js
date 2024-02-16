@@ -1,4 +1,4 @@
-import { inferDimension } from "../meta/fen.mjs";
+import { inferDimension } from "../meta/fen";
 import { getDimensions, makeOption } from "../meta/option";
 
 const script = document.currentScript;
@@ -41,7 +41,7 @@ export async function init(config) {
 			if(event.source != frame.contentWindow) return;
 			removeEventListener("message", handler);
 			resolve();
-		}
+		};
 		addEventListener("message", handler);
 		frame.src = apiURL.toString();
 	});
@@ -51,7 +51,7 @@ export async function init(config) {
 		for(const record of list) {
 			if(record.type == "attributes") {
 				const name = record.attributeName.toLowerCase();
-				const isData = name.startsWith("data")
+				const isData = name.startsWith("data");
 				if(record.target == script && isData) check(document.body);
 				if(record.target.nodeName == "IMG" && (name == "fen" || isData)) setup(record.target);
 			} else {
@@ -61,7 +61,7 @@ export async function init(config) {
 	}).observe(doc, {
 		childList: true,
 		attributes: true,
-		subtree: true
+		subtree: true,
 	});
 
 	check(doc);
