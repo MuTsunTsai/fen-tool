@@ -9,7 +9,7 @@ export const dpr = Math.min(2, Math.floor(devicePixelRatio));
  * For example, Firefox Android do support sharing URLs, but not images.
  * Therefore we need to actually call `navigator.canShare` method to test it.
  */
-function testPngShare() {
+function testPngShare(): boolean {
 	if(!canShare) return false;
 	// Generated using png-pixel.com
 	const binary = atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII");

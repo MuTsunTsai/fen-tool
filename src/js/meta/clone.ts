@@ -3,7 +3,7 @@
  * Deeply clone the nested contents of an object.
  * Objects on all depths will be cloned, not referred.
  */
-export function deepAssign(target, source, skipPropertiesNotInTarget = false) {
+export function deepAssign<T extends object>(target: T, source: T, skipPropertiesNotInTarget = false): T {
 	if(!(source instanceof Object)) return target;
 
 	// This also applies to the case where s is an array.
@@ -27,10 +27,10 @@ export function deepAssign(target, source, skipPropertiesNotInTarget = false) {
 /**
  * Clone an object.
  */
-function clonePolyfill(source) {
+function clonePolyfill<T extends object | undefined>(source: T): T {
 	// `isArray` is more reliable than `instanceof Array`,
 	// See https://stackoverflow.com/a/22289869/9953396
-	const target = Array.isArray(source) ? [] : {};
+	const target = (Array.isArray(source) ? [] : {}) as T;
 	return deepAssign(target, source);
 }
 
@@ -38,6 +38,5 @@ function clonePolyfill(source) {
  * Use native {@link structuredClone} whenever possible
  * (see [CanIUse](https://caniuse.com/?search=structuredClone)),
  * otherwise fallback to polyfill.
- * @type {typeof structuredClone}
  */
 export const clone = typeof structuredClone === "function" ? structuredClone : clonePolyfill;

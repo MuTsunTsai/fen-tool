@@ -1,7 +1,15 @@
 import { rotate, invert, parseXY, shift, mirror, parseFEN, makeForsyth } from "../fen";
 import { P, SQ, toNormalPiece, setPiece, movePiece, exchange } from "./base";
+import { Direction } from "../enum";
 
-export function makeTwin(fen, text) {
+import type { Color } from "../enum";
+
+interface Twin {
+	fen: string;
+	board: Board;
+}
+
+export function makeTwin(fen: string, text: string): Twin {
 	const board = parseFEN(fen);
 	// Remove spaces for ease of splitting into commands
 	const commands = text
@@ -22,36 +30,36 @@ const TW_MIRROR = new RegExp(`^mirror(${SQ})&lt;--&gt;(${SQ})$`);
 const TW_SHIFT = new RegExp(`^shift(${SQ})==&gt;(${SQ})$`);
 const TW_ROTATE = /^rotate(90|180|270)$/;
 
-function processTwinCommand(board, command) {
+function processTwinCommand(board: Board, command: string): void {
 	for(const process of [processMove, processExchange, processAddRemove,
 		processMirror, processShift, processSubstitute, processRotate, processPolish]) {
 		if(process(command, board)) return;
 	}
 }
 
-function processMove(command, board) {
+function processMove(command: string, board: Board): boolean {
 	const arr = command.match(TW_MOVE);
 	if(!arr) return false;
 	movePiece(board, arr[1], arr[2]);
 	return true;
 }
 
-function processExchange(command, board) {
+function processExchange(command: string, board: Board): boolean {
 	const arr = command.match(TW_EXCHANGE);
 	if(!arr) return false;
 	exchange(board, arr[1], arr[2]);
 	return true;
 }
 
-function processAddRemove(command, board) {
+function processAddRemove(command: string, board: Board): boolean {
 	const arr = command.match(TW_ADD_REMOVE);
 	if(!arr) return false;
-	if(arr[1] == "+" || arr[1] == "") setPiece(board, arr[4], arr[3], arr[2]);
+	if(arr[1] == "+" || arr[1] == "") setPiece(board, arr[4], arr[3], arr[2] as Color);
 	else setPiece(board, arr[4], "");
 	return true;
 }
 
-function processMirror(command, board) {
+function processMirror(command: string, board: Board): boolean {
 	const arr = command.match(TW_MIRROR);
 	if(!arr) return false;
 	let d;
@@ -65,7 +73,7 @@ function processMirror(command, board) {
 	return true;
 }
 
-function processShift(command, board) {
+function processShift(command: string, board: Board): boolean {
 	const arr = command.match(TW_SHIFT);
 	if(!arr) return false;
 	const from = parseXY(arr[1]);
@@ -74,7 +82,7 @@ function processShift(command, board) {
 	return true;
 }
 
-function processSubstitute(command, board) {
+function processSubstitute(command: string, board: Board): boolean {
 	const arr = command.match(TW_SUBSTITUTE);
 	if(!arr) return false;
 	const From = toNormalPiece(arr[1]), from = From.toLowerCase();
@@ -87,26 +95,26 @@ function processSubstitute(command, board) {
 	return true;
 }
 
-function processRotate(command, board) {
+function processRotate(command: string, board: Board): boolean {
 	const arr = command.match(TW_ROTATE);
 	if(!arr) return false;
 	replace(board, rotate(board, getRotate(arr[1])));
 	return true;
 }
 
-function processPolish(command, board) {
+function processPolish(command: string, board: Board): boolean {
 	if(command != "PolishType") return false;
 	replace(board, invert(board));
 	return true;
 }
 
-function replace(board, newBoard) {
+function replace(board: Board, newBoard: Board): void {
 	board.length = 0;
 	board.push(...newBoard);
 }
 
-function getRotate(text) {
-	if(text == "90") return -1;
-	if(text == "180") return 2;
-	return 1;
+function getRotate(text): Direction {
+	if(text == "90") return Direction.counterclockwise;
+	if(text == "180") return Direction.turn;
+	return Direction.clockwise;
 }

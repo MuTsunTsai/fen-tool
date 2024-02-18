@@ -6,7 +6,9 @@ import { env } from "./meta/env";
 import { deepAssign } from "./meta/clone";
 import { defaultCustomMap, pieceMap } from "./meta/popeye/base";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
-import { stockfishRunning, stockfishStatus } from "./meta/enum";
+import { PlayMode, StockfishRunning, StockfishStatus } from "./meta/enum";
+
+import type { PlayOption } from "./modules/chess";
 
 export const search = new URL(location.href).searchParams;
 
@@ -29,7 +31,7 @@ const settings = {
 		ep: true,
 		negative: false,
 		zero: false,
-	},
+	} as PlayOption,
 	Stockfish: {
 		study: false,
 		downloaded: false,
@@ -46,7 +48,6 @@ const settings = {
 	project: [],
 };
 
-/** @type {typeof settings} */
 export const store = reactive(settings);
 pieceMap.custom = () => store.popeye.pieceMap;
 
@@ -67,8 +68,8 @@ export const status = reactive({
 	dragging: false,
 	selection: null,
 	stockfish: {
-		status: stockfishStatus.notDownloaded,
-		running: stockfishRunning.stop,
+		status: StockfishStatus.notDownloaded,
+		running: StockfishRunning.stop,
 	},
 	syzygy: {
 		running: false,
@@ -105,11 +106,13 @@ const defaultState = {
 		retro: {
 			uncapture: null,
 			unpromote: false,
+			ep: false,
 		},
 		enPassant: "",
 		halfMove: 0,
 		fullMove: 1,
-		mode: "normal",
+		mode: PlayMode.normal,
+		over: undefined,
 	},
 	popeye: {
 		initFEN: null,
@@ -140,17 +143,16 @@ const defaultState = {
 	},
 };
 
-/** @type {typeof defaultState} */
 export const state = reactive(defaultState);
 
 /** Callbacks for registering session loading actions. */
-const onSessionLoad = [];
+const onSessionLoad: Action[] = [];
 
-export function onSession(callback) {
+export function onSession(callback: Action): void {
 	onSessionLoad.push(callback);
 }
 
-export function initSession() {
+export function initSession(): void {
 	const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 	deepAssign(settings, savedSettings, true);
 
@@ -169,7 +171,7 @@ export function initSession() {
 		deepAssign(state, savedState);
 	}
 
-	status.stockfish.status = store.Stockfish.downloaded ? stockfishStatus.ready : stockfishStatus.notDownloaded;
+	status.stockfish.status = store.Stockfish.downloaded ? StockfishStatus.ready : StockfishStatus.notDownloaded;
 
 	for(const action of onSessionLoad) action();
 
@@ -177,16 +179,25 @@ export function initSession() {
 	watchEffect(saveSession);
 }
 
-function saveSettings() {
+function saveSettings(): void {
 	localStorage.setItem("settings", JSON.stringify(store));
 }
 
-function saveSession() {
+function saveSession(): void {
 	// Save session only for top
 	if(env.isTop) sessionStorage.setItem("state", JSON.stringify(state));
 }
 
-export function getRenderSize(tp, horTemplate, requestWidth) {
+interface RenderSizeInfo {
+	s: number;
+	offset: IPoint & {
+		r: number;
+		b: number;
+	};
+	width: number;
+}
+
+export function getRenderSize(tp?: HTMLCanvasElement, horTemplate?: boolean, requestWidth?: number): RenderSizeInfo {
 	const { size, w } = store.board;
 	const { border, margin } = getDimensions(store.board, horTemplate);
 	const bSize = border.size;
@@ -204,10 +215,10 @@ export function getRenderSize(tp, horTemplate, requestWidth) {
 	return { s, offset, width };
 }
 
-export function noEditing() {
+export function noEditing(): boolean {
 	return state.play.playing || state.popeye.playing;
 }
 
-export function hideTemplate() {
+export function hideTemplate(): boolean {
 	return status.hor && state.popeye.playing;
 }

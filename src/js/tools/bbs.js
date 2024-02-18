@@ -1,10 +1,10 @@
 import { store } from "../store";
 import { normalSnapshot } from "../squares";
 import { normalForsyth } from "./api";
-import { DB } from "../meta/el";
 import { env } from "../meta/env";
 import { BOARD_SIZE } from "../meta/constants";
 import { alert } from "../meta/dialogs";
+import { problemId } from "./pdb";
 
 export const BBS = {
 	async copy() {
@@ -15,6 +15,6 @@ export const BBS = {
 		gtag("event", "fen_bbs_copy");
 		const path = "./modules/ptt.js";
 		const ptt = await import(path);
-		return ptt.generate(normalSnapshot(), normalForsyth(), DB.value, store.BBS, store.board, env.isTouch);
+		return ptt.generate(normalSnapshot(), normalForsyth(), problemId.value, store.BBS, store.board, env.isTouch);
 	},
 };

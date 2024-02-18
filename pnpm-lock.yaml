@@ -49,6 +49,9 @@ devDependencies:
   '@types/chai':
     specifier: ^4.3.11
     version: 4.3.11
+  '@types/gtag.js':
+    specifier: ^0.0.19
+    version: 0.0.19
   '@types/gulp-concat':
     specifier: ^0.0.37
     version: 0.0.37
@@ -2191,6 +2194,10 @@ packages:
 
   /@types/expect@1.20.4:
     resolution: {integrity: sha512-Q5Vn3yjTDyCMV50TB6VRIbQNxSE4OmZR86VSbGaNpfUolm0iePBB4KdEEHmxoY5sT2+2DIvXW0rvMDP2nHZ4Mg==}
+    dev: true
+
+  /@types/gtag.js@0.0.19:
+    resolution: {integrity: sha512-KHoDzrf9rSd0mooKN576PjExpdk/XRrNu4RQnmigsScSTSidwyOUe9kDrHz9UPKjiBrx2QEsSkexbJSgS0j72w==}
     dev: true
 
   /@types/gulp-concat@0.0.37:

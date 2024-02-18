@@ -1,9 +1,9 @@
 import { squares, setFEN } from "../squares";
 import { store } from "../store";
 import { makeForsyth, toYACPDB, toSquare, convertSN, emptyBoard } from "../meta/fen";
-import { DB } from "../meta/el";
 import { alert } from "../meta/dialogs";
 import { CHAR_A_OFFSET } from "../meta/constants";
+import { problemId } from "./pdb";
 
 export const YACPDB = {
 	copyFEN() {
@@ -17,7 +17,7 @@ export const YACPDB = {
 			gtag("event", "fen_yacpdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
-			const url = "https://yacpdb.org/gateway/ql?q=" + encodeURIComponent(`Id('${DB.value}')`);
+			const url = "https://yacpdb.org/gateway/ql?q=" + encodeURIComponent(`Id('${problemId.value}')`);
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const json = await response.json();
 			if(json.success) {

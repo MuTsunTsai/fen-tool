@@ -1,6 +1,8 @@
 import { parseSquare } from "../fen";
 import { createAbbrExp } from "../regex";
 
+import type { Color } from "../enum";
+
 export const SQ = `[a-h][1-8]`;
 export const P = `(?:[0-9A-Z][0-9A-Z]|[A-Z])`;
 const Effect = String.raw`\[[^\]]+\]`;
@@ -17,7 +19,7 @@ export const Main = String.raw`(?:(?<move>0-0(?:-0)?|${Normal})(?:${Effect})*(?:
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
 export const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?: [+#=])?`;
 
-export function setPiece(board, sq, piece, color) {
+export function setPiece(board: Board, sq: string, piece: string, color?: Color): string {
 	piece = toNormalPiece(piece);
 	if(color == "w") piece = piece.toUpperCase();
 	if(color == "b") piece = piece.toLowerCase();
@@ -26,13 +28,13 @@ export function setPiece(board, sq, piece, color) {
 	return piece;
 }
 
-export function movePiece(board, from, to, animation) {
+export function movePiece(board: Board, from: string, to: string, animation?: string[]): string {
 	if(animation) animation.push(from + to);
-	from = parseSquare(from);
-	to = parseSquare(to);
-	board[to] = board[from];
-	board[from] = "";
-	return board[to];
+	const a = parseSquare(from);
+	const b = parseSquare(to);
+	board[b] = board[a];
+	board[a] = "";
+	return board[b];
 }
 
 // Partly based on PDB fairy pieces statistics
@@ -89,21 +91,18 @@ for(const key in defaultPieceMap) {
 	for(const s of defaultPieceMap[key].split(",")) pieceMap.default[s] = key;
 }
 
-export function toNormalPiece(p) {
+export function toNormalPiece(p: string): string {
 	const upper = p.toUpperCase();
 	const normal = findCustom(pieceMap.custom(), upper) || pieceMap.default[upper];
 	if(normal) return p == upper ? normal : normal.toLowerCase();
 	return p;
 }
 
-function findCustom(map, p) {
+function findCustom(map: Record<string, string>, p: string): string | undefined {
 	for(const key in map) if(map[key] == p) return key;
 }
 
-/**
- * @param {string} p
- */
-export function toPopeyePiece(p) {
+export function toPopeyePiece(p: string): string {
 	let prefix = p.startsWith("-") ? "=" : "";
 	if(prefix) p = p.substring(1);
 	const upper = p.toUpperCase();
@@ -120,10 +119,10 @@ export function toPopeyePiece(p) {
 	}
 	return prefix + p;
 }
-export function exchange(board, from, to) {
-	from = parseSquare(from);
-	to = parseSquare(to);
-	const temp = board[to];
-	board[to] = board[from];
-	board[from] = temp;
+export function exchange(board: Board, from: string, to: string): void {
+	const a = parseSquare(from);
+	const b = parseSquare(to);
+	const temp = board[b];
+	board[b] = board[a];
+	board[a] = temp;
 }

@@ -1,7 +1,8 @@
-import { FEN, CN } from "./meta/el";
+import { shallowRef } from "vue";
+
+import { CN } from "./meta/el";
 import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, parseFEN } from "./meta/fen";
 import { state, status, store } from "./store";
-import { readText } from "./copy";
 import { animate, animeSettings } from "./animation";
 import { BOARD_SIZE, INIT_SQ_COUNT } from "./meta/constants";
 
@@ -10,6 +11,8 @@ export const container = document.getElementById("Squares");
 export const callback = {};
 
 const FONT_MARGIN = 10;
+
+export const currentFEN = shallowRef("");
 
 animeSettings.options = store.board;
 animeSettings.callback = setFEN;
@@ -95,7 +98,7 @@ export function setSquare(sq, value) {
 
 export function setFEN(v, check) {
 	const arr = parseEdwards(v);
-	FEN.value = arr[0] + (store.board.fullFEN ? edwards() : "");
+	currentFEN.value = arr[0] + (store.board.fullFEN ? edwards() : "");
 	toSquares(check);
 }
 
@@ -123,7 +126,7 @@ addEventListener("popstate", loadState);
 
 export function pushState() {
 	const current = new URL(location.href).searchParams.get("fen") || DEFAULT;
-	const forsyth = FEN.value.split(" ")[0];
+	const forsyth = currentFEN.value.split(" ")[0];
 	const url = forsyth == DEFAULT ? "" : "?fen=" + encodeURIComponent(forsyth);
 	if(forsyth !== current) {
 		history.pushState(null, "", url || ".");
@@ -160,7 +163,7 @@ export function toFEN() {
 export function updateEdwards() {
 	const { w, h, fullFEN } = store.board;
 	const data = snapshot();
-	FEN.value = makeForsyth(data, w, h) + (fullFEN ? edwards() : "");
+	currentFEN.value = makeForsyth(data, w, h) + (fullFEN ? edwards() : "");
 	return data;
 }
 
@@ -226,10 +229,11 @@ function getCastle(check) {
 }
 
 function toSquares(check) {
-	parseFullFEN(FEN.value);
-	const infer = inferDimension(FEN.value);
+	const fen = currentFEN.value;
+	parseFullFEN(fen);
+	const infer = inferDimension(fen);
 	const { w, h } = infer || store.board;
-	const values = parseFEN(FEN.value, w, h);
+	const values = parseFEN(fen, w, h);
 	callback.setOption?.({ w, h });
 	let changed = false;
 	for(let i = 0; i < w * h; i++) {
@@ -272,7 +276,7 @@ export function toggleReadOnly(readOnly) {
 export function replace(board) {
 	if(board.anime) {
 		const fen = makeForsyth(board, store.board.w, store.board.h);
-		animate(FEN.value, fen, board.anime);
+		animate(currentFEN.value, fen, board.anime);
 	} else {
 		board.forEach((v, i) => squares[i].value = v);
 		toFEN();
@@ -290,27 +294,19 @@ export function resetEdwards() {
 	for(const key of keys) state.play.castle[key] = true;
 }
 
-window.FEN = {
+export const FEN = {
 	update: () => {
-		parseEdwards(FEN.value);
+		parseEdwards(currentFEN.value);
 		toSquares(true);
 	},
 	empty() {
 		for(const sq of squares) sq.value = "";
 		toFEN();
 	},
-	reset() {
+	reset(ed) {
 		callback.setOption?.({ w: 8, h: 8 });
-		if(store.board.fullFEN) resetEdwards();
+		if(store.board.fullFEN || ed) resetEdwards();
 		setFEN(INIT_FORSYTH);
-	},
-	copy() {
-		gtag("event", "fen_copy");
-		navigator.clipboard.writeText(FEN.value);
-	},
-	async paste() {
-		gtag("event", "fen_paste");
-		setFEN(await readText(), true);
 	},
 	color(c) {
 		for(const sq of squares) {

@@ -10,6 +10,8 @@ import { dpr, env } from "./meta/env";
 import { redrawSDK } from "./api/sdk-base";
 import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "./meta/constants";
 
+const PX = "px";
+
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
 const EditZone = document.getElementById("EditZone");
@@ -94,16 +96,16 @@ function setDimension(dim) {
 
 export function resize() {
 	Zone.style.maxWidth = `calc(${bodyWidth()}px + 1rem)`;
-	CN.style.width = CN.width / dpr + "px";
-	TP.style.width = TP.width / dpr + "px";
+	CN.style.width = CN.width / dpr + PX;
+	TP.style.width = TP.width / dpr + PX;
 	const { w } = store.board;
 	const r = getRenderSize(undefined, undefined, BOARD_SIZE);
 	if(status.hor) {
 		if(w > BOARD_SIZE) {
-			TP.style.width = r.width + "px";
+			TP.style.width = r.width + PX;
 		} else if(w < BOARD_SIZE) {
 			const { width } = getRenderSize(TP, true, w);
-			CN.style.width = width + "px";
+			CN.style.width = width + PX;
 		}
 	}
 	container.style.borderWidth = `${r.offset.y}px ${r.offset.r}px ${r.offset.b}px ${r.offset.x}px`;
@@ -111,29 +113,25 @@ export function resize() {
 	const rem = getREM();
 	if(store.board.collapse) {
 		Zone.style.width = "120%"; // First we enlarge the whole thing, to correctly measure DragZone.
-		Zone.style.width = DragZone.clientWidth + 4 * rem + "px"; // Then we set the size by DragZone.
+		Zone.style.width = DragZone.clientWidth + 4 * rem + PX; // Then we set the size by DragZone.
 	} else {
 		Zone.style.width = "unset";
 	}
 
-	CG.style.width = CN.clientWidth + "px";
-	CG.style.height = CN.clientHeight + "px";
-	TPG.style.width = TP.clientWidth + "px";
-	TPG.style.height = TP.clientHeight + "px";
+	CG.style.width = CN.clientWidth + PX;
+	CG.style.height = CN.clientHeight + PX;
+	TPG.style.width = TP.clientWidth + PX;
+	TPG.style.height = TP.clientHeight + PX;
 
 	setSquareSize(r.s);
 
 	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
-		EditZone.style.marginTop = -DragZone.clientHeight + "px";
-		EditZone.style.width = DragZone.clientWidth + "px";
-		EditZone.style.textAlign = status.hor ? "center" : "start";
-		Zone.classList.add("collapse");
+		EditZone.style.marginTop = -DragZone.clientHeight + PX;
+		EditZone.style.width = DragZone.clientWidth + PX;
 		status.collapse = true;
 	} else {
 		EditZone.style.marginTop = "0";
 		EditZone.style.width = "unset";
-		EditZone.style.textAlign = "unset";
-		Zone.classList.remove("collapse");
 		status.collapse = false;
 	}
 }
@@ -172,12 +170,11 @@ if(!env.isTop) {
 	window.resizeIframe = function() {
 		const iframe = document.getElementsByTagName("iframe")[0];
 		if(!iframe) return;
-		iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
+		iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + PX;
 	};
 }
 
 export const Layout = {
-	setOption,
 	setDimension,
 	setBorder(el) {
 		const border = sanitizeBorder(el.value);
@@ -188,13 +185,15 @@ export const Layout = {
 			setOption({ border });
 		}
 	},
+	get set() { return store.board.set; },
+	set set(v) { setOption({ set: v }); },
+	get size() { return store.board.size; },
+	set size(v) { setOption({ size: v }); },
 	get height() { return store.board.h; },
 	set height(v) { setDimension({ h: v }); },
 	get width() { return store.board.w; },
 	set width(v) { setDimension({ w: v }); },
 };
-
-window.Layout = Layout;
 
 addEventListener("storage", e => {
 	if(e.storageArea == localStorage && e.key == "settings") {

@@ -20,16 +20,15 @@ export const defaultOption = {
 	collapse: true,
 };
 
+type Option = typeof defaultOption;
+
 const BORDER = /^\d+(,\d+)*$/;
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const sizes = [26, 32, 38, 44];
 const sets = ["1echecs", "alpha", "goodCompanion", "kilfiger", "merida", "mpchess", "skak"];
 
-/**
- * @param {string} border
- */
-export function sanitizeBorder(border) {
+export function sanitizeBorder(border: string): string {
 	if(typeof border != "string") return null;
 	// Allow nearly arbitrary input
 	border = border.replace(/\D/g, ",")
@@ -40,7 +39,7 @@ export function sanitizeBorder(border) {
 	return border;
 }
 
-export function makeOption(option) {
+export function makeOption(option: Partial<Option>): Option {
 	const result = Object.assign({}, defaultOption);
 	if(option) {
 		const size = Number(option.size);
@@ -52,7 +51,7 @@ export function makeOption(option) {
 		if(option.border) result.border = option.border;
 
 		if(0 < option.knightOffset && option.knightOffset < 1) {
-			result.knightOffset = option.offset;
+			result.knightOffset = option.knightOffset;
 		}
 
 		result.blackWhite = Boolean(option.blackWhite);
@@ -68,10 +67,7 @@ export function makeOption(option) {
 	return result;
 }
 
-/**
- * @param {string} border
- */
-function parseBorder(border) {
+function parseBorder(border: string): Border {
 	const array = border.split(",").map(n => {
 		const result = Number(n);
 		return isNaN(result) ? 0 : Math.abs(Math.floor(result));
@@ -82,10 +78,18 @@ function parseBorder(border) {
 
 export const LABEL_MARGIN = 20;
 
-/**
- * @param {boolean|undefined} horTemplate
- */
-export function getDimensions(options, horTemplate) {
+interface Border {
+	array: number[];
+	size: number;
+}
+
+interface DimensionInfo extends Dimension {
+	border: Border;
+	offset: IPoint;
+	margin: IPoint;
+}
+
+export function getDimensions(options: Option, horTemplate?: boolean): DimensionInfo {
 	const border = parseBorder(options.border);
 	const margin = options.coordinates ? { x: LABEL_MARGIN, y: LABEL_MARGIN } : { x: 0, y: 0 };
 	if(horTemplate === true) margin.y = 0;

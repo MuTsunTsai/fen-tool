@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-	import Edit from "./edit.vue";
+	import Edit from "./edit/edit.vue";
 	import Options from "./options.vue";
 	import Play from "./play.vue";
 	import Database from "./database.vue";

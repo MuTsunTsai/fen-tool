@@ -25,17 +25,19 @@
 				</span>
 				<span class="btn-gap" v-if="status.module.chess">
 					<span v-for="(h, i) in state.play.history" :key="i">
-						<span v-if="state.play.history[i - 1] && state.play.history[i - 1].color == h.color">
-							<span v-if="h.color == 'w'"> ... </span>
+						<span v-if="state.play.history[i - 1] && state.play.history[i - 1].Color == h.Color">
+							<span v-if="h.Color == Color.white"> ... </span>
 							<span v-else>{{ PLAY.number(h) }}...</span>
 						</span>
-						<span v-if="h.color == 'b' && i == 0" class="ms-2">{{ PLAY.number(h) }}...</span>
-						<span v-if="h.color == 'w'" class="ms-2">{{ PLAY.number(h) }}.</span>
+						<span v-if="h.Color == Color.black && i == 0" class="ms-2">{{ PLAY.number(h) }}...</span>
+						<span v-if="h.Color == Color.white" class="ms-2">{{ PLAY.number(h) }}.</span>
 						<span class="btn step px-1 py-0" @click="PLAY.move(i)" :class="{ active: i == state.play.moveNumber }">{{
 							PLAY.format(h) }}</span>
 					</span>
-					<span v-if="state.play.mode != 'retro' && state.play.over == 1">Checkmate.</span>
-					<span v-if="state.play.mode != 'retro' && state.play.over == 2">Draw.</span>
+					<template v-if="state.play.mode != PlayMode.retro">
+						<span v-if="state.play.over == overState.checkmate">Checkmate.</span>
+						<span v-if="state.play.over == overState.draw">Draw.</span>
+					</template>
 				</span>
 			</div>
 			<div class="btn-gap">
@@ -77,13 +79,13 @@
 				</div>
 			</div>
 			<div class="mt-2" v-if="!isRetro()">
-				<Checkbox v-model="PLAY.ep">Add ep to en passant moves</Checkbox>
+				<Checkbox v-model="store.PLAY.ep">Add ep to en passant moves</Checkbox>
 			</div>
 			<div class="mt-2">
-				<Checkbox v-model="PLAY.zero">Use number 0 for castling notation</Checkbox>
+				<Checkbox v-model="store.PLAY.zero">Use number 0 for castling notation</Checkbox>
 			</div>
 			<div class="mt-2" v-if="isRetro()">
-				<Checkbox v-model="PLAY.negative">Use negative numbers in retro mode</Checkbox>
+				<Checkbox v-model="store.PLAY.negative">Use negative numbers in retro mode</Checkbox>
 			</div>
 		</div>
 
@@ -92,8 +94,7 @@
 			<div class="btn-gap">
 				<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start
 					playing</button>
-				<button type="button" class="btn btn-secondary" onclick="FEN.reset()" @click="PLAY.reset"
-						:disabled="state.popeye.playing">
+				<button type="button" class="btn btn-secondary" @click="FEN.reset(true)" :disabled="state.popeye.playing">
 					<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
 				</button>
 				<button class="btn btn-secondary" @click="PLAY.pasteGame" :disabled="state.popeye.playing">
@@ -105,7 +106,7 @@
 					<div class="d-flex align-items-center flex-wrap-reverse mb-2">
 						<div class="flex-grow-1 col-form-label" style="flex-basis: max-content;">
 							<Radio v-model="state.play.turn" label="Turn:" :text="['White', 'Black']" :value="['w', 'b']"
-								   :disabled="state.play.mode == 'pass'" />
+								   :disabled="state.play.mode == PlayMode.pass" />
 						</div>
 						<div class="flex-grow-1" style="flex-basis: max-content;">
 							<div class="row gx-3">
@@ -137,7 +138,7 @@
 						<label class="col-auto col-form-label">En passant square: </label>
 						<div class="col">
 							<input type="text" class="form-control" maxlength="2" v-model="state.play.enPassant"
-								   :disabled="state.play.mode == 'retro'">
+								   :disabled="isRetro()">
 						</div>
 					</div>
 					<div class="row gx-3">
@@ -146,7 +147,7 @@
 								<label class="col-auto col-form-label">Half moves: </label>
 								<div class="col">
 									<input type="number" class="form-control" min="0" v-model.number="state.play.halfMove"
-										   :disabled="state.play.mode == 'retro'">
+										   :disabled="isRetro()">
 								</div>
 							</div>
 						</div>
@@ -155,13 +156,13 @@
 								<label class="col-auto col-form-label">Full moves: </label>
 								<div class="col">
 									<input type="number" class="form-control" min="1" v-model.number="state.play.fullMove"
-										   :disabled="state.play.mode == 'retro'">
+										   :disabled="isRetro()">
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="text-end">
-						<button class="btn btn-secondary" @click="PLAY.reset">Reset settings</button>
+						<button class="btn btn-secondary" @click="resetEdwards">Reset settings</button>
 					</div>
 				</div>
 			</div>
@@ -177,9 +178,11 @@
 	import CopyButton from "@/components/copyButton.vue";
 	import Checkbox from "@/components/checkbox.vue";
 	import Radio from "@/components/radio.vue";
-	import { playMode } from "js/meta/enum";
+	import { Color, PlayMode } from "js/meta/enum";
+	import { FEN, resetEdwards } from "js/squares";
+	import { overState } from "js/modules/chess";
 
-	const isRetro = (): boolean => state.play.mode == playMode.retro;
+	const isRetro = (): boolean => state.play.mode == PlayMode.retro;
 
 	const isMin = (): boolean => state.play.moveNumber < 0;
 	const isMax = (): boolean => state.play.moveNumber >= state.play.history.length - 1;

@@ -5,7 +5,7 @@ import { orthodoxFEN } from "../squares";
 import { STOCKFISH, onSession, state, status, store } from "../store";
 import { importGame, loadChessModule } from "./play";
 import { alert } from "../meta/dialogs";
-import { stockfishRunning, stockfishStatus } from "../meta/enum";
+import { StockfishRunning, StockfishStatus } from "../meta/enum";
 import { MIN_MEMORY } from "../meta/constants";
 
 const DEPTH_THRESHOLD = 4;
@@ -64,13 +64,13 @@ const files = [
 function init(memory) {
 	if(stockfish) return Promise.resolve();
 	return new Promise((resolve, reject) => {
-		status.stockfish.running = stockfishRunning.starting;
+		status.stockfish.running = StockfishRunning.starting;
 		stockfish = new Worker(`${path}stockfish-nnue-16${suffix}.js#stockfish-nnue-16${suffix}.wasm`);
 		stockfish.onmessage = e => {
 			const msg = e.data;
 			console.info(msg);
 			if(msg == "readyok") {
-				status.stockfish.running = stockfishRunning.running;
+				status.stockfish.running = StockfishRunning.running;
 				resolve();
 			}
 			if(msg.startsWith("info ")) parseInfo(msg.substring(INFO_OFFSET));
@@ -93,7 +93,7 @@ function init(memory) {
 }
 
 function parseInfo(info) {
-	if(status.stockfish.running != stockfishRunning.running) return; // Prevent displaying weird results.
+	if(status.stockfish.running != StockfishRunning.running) return; // Prevent displaying weird results.
 
 	const multi = info.match(/multipv (\d+)/);
 	if(!multi) return;
@@ -204,7 +204,7 @@ async function tryInitMemory(ready, memory) {
 export const Stockfish = {
 	async download() {
 		gtag("event", "fen_stockfish_download");
-		status.stockfish.status = stockfishStatus.downloading;
+		status.stockfish.status = StockfishStatus.downloading;
 		if("serviceWorker" in navigator) {
 			// First we wait for service worker to finish installing.
 			// Otherwise caching won't work.
@@ -214,11 +214,11 @@ export const Stockfish = {
 			await Promise.all(files.map(file => tryFetch(file)));
 		} catch {
 			alert("Download failed. Please check your network connection.");
-			status.stockfish.status = stockfishStatus.notDownloaded;
+			status.stockfish.status = StockfishStatus.notDownloaded;
 			return;
 		}
 		store.Stockfish.downloaded = true;
-		status.stockfish.status = stockfishStatus.needReload;
+		status.stockfish.status = StockfishStatus.needReload;
 	},
 	async analyze() {
 		try {
@@ -243,7 +243,7 @@ export const Stockfish = {
 		} catch(e) {
 			Stockfish.stop();
 			alert(e instanceof Error ? e.message : e);
-			status.stockfish.running = stockfishRunning.stop;
+			status.stockfish.running = StockfishRunning.stop;
 		}
 	},
 	play(line) {
@@ -256,7 +256,7 @@ export const Stockfish = {
 		// Stop all Stockfish workers and release memory
 		if(stockfish) stockfish.terminate();
 		stockfish = undefined;
-		status.stockfish.running = stockfishRunning.stop;
+		status.stockfish.running = StockfishRunning.stop;
 	},
 	format(moves) {
 		return module.formatGame(moves);

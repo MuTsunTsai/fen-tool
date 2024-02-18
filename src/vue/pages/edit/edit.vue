@@ -2,11 +2,11 @@
 	<section :class="{ show: state.tab == 0 }">
 		<div class="mb-3 btn-gap">
 			<span class="d-inline-block">
-				<button type="button" class="btn btn-secondary" onclick="FEN.empty()" :disabled="noEditing()" title="Empty board">
+				<button type="button" class="btn btn-secondary" @click="FEN.empty" :disabled="noEditing()" title="Empty board">
 					<i class="fa-solid fa-trash-can"></i>
 					<span>&ensp;Empty board</span>
 				</button>
-				<button type="button" class="btn btn-secondary" onclick="FEN.reset()" :disabled="noEditing()"
+				<button type="button" class="btn btn-secondary" @click="FEN.reset" :disabled="noEditing()"
 						title="Starting position">
 					<i class="fa-solid fa-flag-checkered"></i>
 					<span>&ensp;Starting position</span>
@@ -47,11 +47,11 @@
 				</button>
 			</span>
 			<span class="btn-group">
-				<button type="button" class="btn btn-secondary px-2" title="All Black" onclick="FEN.color(-1)"
+				<button type="button" class="btn btn-secondary px-2" title="All Black" @click="FEN.color(-1)"
 						:disabled="noEditing()">
 					<i class="fa-solid fa-chess-king fa-fw text-black shadow-white"></i>
 				</button>
-				<button type="button" class="btn btn-secondary px-2" title="All Neutral" onclick="FEN.color(0)"
+				<button type="button" class="btn btn-secondary px-2" title="All Neutral" @click="FEN.color(0)"
 						:disabled="noEditing()">
 					<i v-if="!store.board.blackWhite" class="fa-solid fa-chess-king fa-fw shadow-neutral" style="color:gray;"></i>
 					<template v-else>
@@ -60,22 +60,22 @@
 						   style="margin-left:-1.25em; clip-path: polygon(51.5% 0, 100% 0, 100% 100%, 51.5% 100%);"></i>
 					</template>
 				</button>
-				<button type="button" class="btn btn-secondary px-2" title="All White" onclick="FEN.color(1)" :disabled="noEditing()">
+				<button type="button" class="btn btn-secondary px-2" title="All White" @click="FEN.color(1)" :disabled="noEditing()">
 					<i class="fa-solid fa-chess-king fa-fw text-white shadow-black"></i>
 				</button>
 			</span>
 			<span class="btn-group">
-				<button type="button" class="btn btn-secondary" title="Switch side" onclick="FEN.invert(false)"
+				<button type="button" class="btn btn-secondary" title="Switch side" @click="FEN.invert(false)"
 						:disabled="noEditing()">
 					<i class="fa-solid fa-chess-king text-black shadow-white"></i>&ensp;<i
 					   class="fa-solid fa-arrows-left-right"></i>&ensp;<i class="fa-solid fa-chess-king text-white shadow-black"></i>
 				</button>
-				<button type="button" class="btn btn-secondary" title="Switch case (including text)" onclick="FEN.invert(true)"
+				<button type="button" class="btn btn-secondary" title="Switch case (including text)" @click="FEN.invert(true)"
 						:disabled="noEditing()">
 					A&ensp;<i class="fa-solid fa-arrows-left-right"></i>&ensp;a
 				</button>
 				<button v-if="!store.board.SN" type="button" class="btn btn-secondary"
-						title="Change all S to N when 'Use S for knight' mode is off" onclick="FEN.fixSN()" :disabled="noEditing()">
+						title="Change all S to N when 'Use S for knight' mode is off" @click="FEN.fixSN()" :disabled="noEditing()">
 					S&ensp;<i class="fa-solid fa-arrow-right"></i>&ensp;N
 				</button>
 			</span>
@@ -89,9 +89,7 @@
 				<CopyButton :factory="API.copyUrl" class="btn-primary">Create image URL</CopyButton>
 			</span>
 			<span class="d-inline-block">
-				<button v-if="status.envReady && env.canShare" class="btn btn-primary" onclick="share(this)">
-					<i class="fa-solid fa-share-nodes"></i>&ensp;Share image
-				</button>
+				<ShareButton />
 				<a class="btn btn-primary" download="board.png" id="Save" onclick="gtag('event', 'img_save')">
 					<i class="fa-solid fa-download"></i>&ensp;Save image
 				</a>
@@ -117,9 +115,10 @@
 	import { getBlob } from "js/render";
 	import CopyButton from "@/components/copyButton.vue";
 	import { stopAnimation } from "js/animation";
-	import { replace, snapshot } from "js/squares";
+	import { replace, snapshot, FEN } from "js/squares";
 	import { shift, mirror, rotate } from "js/meta/fen";
 	import { setOption } from "js/layout";
+	import ShareButton from "./shareButton.vue";
 
 	function shiftBy(dx: number, dy: number): void {
 		stopAnimation(true);
@@ -139,4 +138,5 @@
 		if(w !== h) setOption({ w: h, h: w });
 		replace(rotate(snapshot(), d, w, h));
 	}
+
 </script>

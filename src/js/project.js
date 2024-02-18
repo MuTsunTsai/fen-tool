@@ -1,15 +1,15 @@
 import { shallowRef, watchEffect } from "vue";
 
 import { alert } from "./meta/dialogs";
-import { FEN } from "./meta/el";
 import { store } from "./store";
+import { currentFEN } from "./squares";
 
 export const Project = {
 	reset() {
 		store.project = [];
 	},
 	add() {
-		store.project.push(makeEntry(FEN.value));
+		store.project.push(makeEntry(currentFEN.value));
 	},
 	remove(i) {
 		store.project.splice(i, 1);

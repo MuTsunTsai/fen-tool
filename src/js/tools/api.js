@@ -1,9 +1,8 @@
 import { store } from "../store";
-import { FEN } from "../meta/el";
 import { CE } from "../render";
 import { DEFAULT_SET, DEFAULT_SIZE, getDimensions } from "../meta/option";
 import { inferDimension, makeForsyth } from "../meta/fen";
-import { normalSnapshot } from "../squares";
+import { currentFEN, normalSnapshot } from "../squares";
 import { alert } from "../meta/dialogs";
 
 function getURL(url) {
@@ -15,7 +14,7 @@ export function normalForsyth() {
 	if(SN) {
 		return makeForsyth(normalSnapshot(), w, h);
 	} else {
-		return FEN.value;
+		return currentFEN.value;
 	}
 }
 

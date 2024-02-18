@@ -1,9 +1,12 @@
+import { shallowRef } from "vue";
+
 import { store } from "../store";
 import { squares, setFEN } from "../squares";
 import { types } from "../draw";
 import { toSquare } from "../meta/fen";
-import { DB } from "../meta/el";
 import { alert } from "../meta/dialogs";
+
+export const problemId = shallowRef("");
 
 export const PDB = {
 	async fetch(bt) {
@@ -11,7 +14,7 @@ export const PDB = {
 			gtag("event", "fen_pdb_get");
 			bt.disabled = true;
 			bt.value = "Fetching...";
-			const url = pdbURL + encodeURIComponent(`PROBID='${DB.value}'`);
+			const url = pdbURL + encodeURIComponent(`PROBID='${problemId.value}'`);
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const text = await response.text();
 			setFEN(text.match(/<b>FEN:<\/b> (.+)/)[1], true);

@@ -30,7 +30,7 @@
 		<div class="row gx-3 mb-3">
 			<label class="col-auto col-form-label">Problem Id:</label>
 			<div class="col">
-				<input type="text" class="form-control" id="DB" :readonly="noEditing() || undefined">
+				<input type="text" class="form-control" v-model="problemId" :readonly="noEditing() || undefined">
 			</div>
 			<div class="col-auto">
 				<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)" :disabled="noEditing()">
@@ -57,7 +57,7 @@
 
 	import { store, state, noEditing } from "js/store";
 	import { YACPDB } from "js/tools/yacpdb";
-	import { PDB } from "js/tools/pdb";
+	import { PDB, problemId } from "js/tools/pdb";
 	import CopyButton from "@/components/copyButton.vue";
 	import Checkbox from "@/components/checkbox.vue";
 

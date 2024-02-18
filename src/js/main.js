@@ -2,12 +2,9 @@ import { createSSRApp, watchEffect } from "vue";
 
 import { store, state, status, initSession } from "./store";
 import { updateEdwards } from "./squares";
-import { getBlob } from "./render";
 import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
-import { env } from "./meta/env";
 import { init as initSDK } from "./api/sdk-base";
-import { API, normalForsyth } from "./tools/api";
 import { moveHistory } from "./tools/play";
 import { Popeye } from "./tools/popeye";
 import "./tools/stockfish";
@@ -42,40 +39,6 @@ addEventListener("keydown", e => {
 		else Popeye.moveBy(1);
 	}
 });
-
-//===========================================================
-// export
-//===========================================================
-
-window.share = async function(bt) {
-	gtag("event", "fen_img_share");
-	if(env.canSharePng) {
-		const blob = await getBlob();
-		const files = [new File([blob], "board.png", { type: "image/png" })];
-		navigator.share({ files });
-	} else {
-		// Firefox Android fallback mode
-		bt.disabled = true;
-		const i = bt.querySelector("i");
-		const old = i.className;
-		i.className = "fa-spin fa-solid fa-spinner";
-		try {
-			const url = await API.copyUrl();
-			navigator.share({
-				url,
-				// Actually FF Android hasn't implement `text` parameter yet,
-				// but it won't hurt adding it either.
-				// See https://caniuse.com/mdn-api_navigator_canshare_data_text_parameter
-				text: normalForsyth(),
-			});
-		} finally {
-			if(bt.disabled) {
-				bt.disabled = false;
-				i.className = old;
-			}
-		}
-	}
-};
 
 //===========================================================
 // startup

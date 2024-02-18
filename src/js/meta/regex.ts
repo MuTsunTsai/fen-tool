@@ -1,7 +1,4 @@
-/**
- * @param {string} text
- */
-export function createAbbrReg(text, prefix = "", suffix = "") {
+export function createAbbrReg(text: string, prefix = "", suffix = ""): RegExp {
 	return new RegExp(prefix + createAbbrExp(text) + suffix, "i");
 }
 
@@ -10,9 +7,8 @@ export function createAbbrReg(text, prefix = "", suffix = "") {
  * while allowing just the first few characters (at least 4 by default).
  * For example, if `remark` is given, all `rema`, `remar` and `remark`
  * will match, but not `remat`.
- * @param {string} text
  */
-export function createAbbrExp(text) {
+export function createAbbrExp(text: string): string {
 	let length = 4;
 	if(text.match(/^\d/)) {
 		length = Number(text[0]);
@@ -22,10 +18,7 @@ export function createAbbrExp(text) {
 	return "\\b" + text.substring(0, length) + createAbbrExpRecursive(text.substring(length));
 }
 
-/**
- * @param {string} text
- */
-function createAbbrExpRecursive(text) {
+function createAbbrExpRecursive(text: string): string {
 	if(text == "") return "";
 	return String.raw`(?:${text[0]}${createAbbrExpRecursive(text.substring(1))}|\b)`;
 }

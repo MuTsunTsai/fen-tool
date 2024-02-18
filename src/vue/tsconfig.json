@@ -3,6 +3,10 @@
 		"allowJs": true,
 		"baseUrl": "../",
 		"moduleResolution": "node",
+		"target": "ESNext",
+		"types": [
+			"gtag.js"
+		],
 		"paths": {
 			"@/*": [
 				"./vue/*"

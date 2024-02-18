@@ -1,6 +1,10 @@
 {
 	"compilerOptions": {
+		"baseUrl": "../",
 		"allowJs": true,
-		"noEmit": true
+		"noEmit": true,
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext",
+		"target": "ESNext",
 	}
 }

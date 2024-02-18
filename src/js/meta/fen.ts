@@ -1,5 +1,7 @@
 import { CHAR_A_OFFSET, BOARD_SIZE } from "./constants";
 
+import type { Direction } from "./enum";
+
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 export const INIT_FORSYTH = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
@@ -13,10 +15,7 @@ export const ONE_EMOJI = RegExp(`^(?:${EMOJI})$`, "u");
 const VALUE = RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
 const FEN_UNIT = RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
-/**
- * @param {string} fen
- */
-export function inferDimension(fen) {
+export function inferDimension(fen: string): Dimension {
 	const values = fen.match(FEN_UNIT) || [];
 	const rows = [0];
 	let cursor = 0;
@@ -34,12 +33,11 @@ export function inferDimension(fen) {
 
 /**
  * Parse FEN syntax.
- * @param {string} fen
  * @returns An array of values for each squares.
  */
-export function parseFEN(fen, w = BOARD_SIZE, h = BOARD_SIZE) {
+export function parseFEN(fen: string, w = BOARD_SIZE, h = BOARD_SIZE): string[] {
 	const values = fen.match(FEN_UNIT) || [];
-	const result = [];
+	const result: string[] = [];
 	let ignoreNextSlash = false;
 	for(const value of values) {
 		if(value == "/") {
@@ -62,11 +60,10 @@ export function parseFEN(fen, w = BOARD_SIZE, h = BOARD_SIZE) {
 
 /**
  * Make Forsyth notation from an array of values.
- * @param {string[]} values
  */
-export function makeForsyth(values, w = BOARD_SIZE, h = BOARD_SIZE) {
+export function makeForsyth(values: string[], w = BOARD_SIZE, h = BOARD_SIZE): string {
 	let aggregateSpaces = 0, result = "";
-	function flush() {
+	function flush(): void {
 		if(aggregateSpaces) result += aggregateSpaces;
 		aggregateSpaces = 0;
 	}
@@ -86,7 +83,7 @@ export function makeForsyth(values, w = BOARD_SIZE, h = BOARD_SIZE) {
 	return result;
 }
 
-export function normalize(v, useSN, convert) {
+export function normalize(v: string, useSN: boolean, convert: boolean): string {
 	// Text input shortcut
 	if(!v.match(VALUE)) {
 		if(v.match(ONE_EMOJI)) {
@@ -118,7 +115,7 @@ export function normalize(v, useSN, convert) {
 	return v;
 }
 
-export function toYACPDB(value) {
+export function toYACPDB(value: string): string {
 	value = convertSN(value, false, true);
 	const match = value.match(/^(-?)(?:\*(\d))?([kqbnrp])$/i);
 	if(!match) return "";
@@ -127,7 +124,7 @@ export function toYACPDB(value) {
 	return "(" + (match[1] ? "!" : "") + v + (match[2] || "") + ")";
 }
 
-export function convertSN(value, useSN, convert) {
+export function convertSN(value: string, useSN?: boolean, convert?: boolean): string {
 	if(!value.match(/^-?(\*\d)?[sng]$/i)) return value;
 	if(useSN) {
 		if(convert) value = value.replace("s", "g").replace("S", "G");
@@ -141,10 +138,10 @@ export function convertSN(value, useSN, convert) {
 
 /**
  * Convert to board coordinate notation (only orthodox board is supported).
- * @param {number} i
- * @param {number|undefined} j
  */
-export function toSquare(i, j, h = BOARD_SIZE) {
+export function toSquare(index: number): string;
+export function toSquare(i: number, j: number, h?: number): string;
+export function toSquare(i: number, j?: number, h = BOARD_SIZE): string {
 	if(j === undefined) {
 		j = i % BOARD_SIZE;
 		i = (i - j) / BOARD_SIZE;
@@ -152,20 +149,20 @@ export function toSquare(i, j, h = BOARD_SIZE) {
 	return String.fromCharCode(CHAR_A_OFFSET + j) + (h - i);
 }
 
-export function parseXY(sq, h = BOARD_SIZE) {
+export function parseXY(sq: string, h = BOARD_SIZE): IPoint {
 	return { x: sq.charCodeAt(0) - CHAR_A_OFFSET, y: h - Number(sq[1]) };
 }
 
-export function parseSquare(sq, w = BOARD_SIZE, h = BOARD_SIZE) {
+export function parseSquare(sq: string, w = BOARD_SIZE, h = BOARD_SIZE): number {
 	const { x, y } = parseXY(sq, h);
 	return y * w + x;
 }
 
-export function emptyBoard(n) {
+export function emptyBoard(n: number): Board {
 	return Array.from({ length: n }, _ => "");
 }
 
-export function shift(array, dx, dy, w = BOARD_SIZE, h = BOARD_SIZE) {
+export function shift(array: string[], dx: number, dy: number, w = BOARD_SIZE, h = BOARD_SIZE): Board {
 	const result = emptyBoard(w * h);
 	result.anime = "";
 	for(let i = 0; i < h; i++) {
@@ -180,7 +177,7 @@ export function shift(array, dx, dy, w = BOARD_SIZE, h = BOARD_SIZE) {
 	return result;
 }
 
-export function mirror(array, d, w = BOARD_SIZE, h = BOARD_SIZE) {
+export function mirror(array: string[], d: string, w = BOARD_SIZE, h = BOARD_SIZE): Board {
 	const result = emptyBoard(w * h);
 	result.anime = "";
 	for(let i = 0; i < h; i++) {
@@ -204,9 +201,8 @@ export function mirror(array, d, w = BOARD_SIZE, h = BOARD_SIZE) {
 
 /**
  * Rotate an array and return the new array.
- * @param {number} d direction, -1 for counterclockwise, 1 for clockwise, 2 for 180-degree.
  */
-export function rotate(array, d, w = BOARD_SIZE, h = BOARD_SIZE) {
+export function rotate(array: string[], d: Direction, w = BOARD_SIZE, h = BOARD_SIZE): Board {
 	const result = emptyBoard(w * h);
 	if(w == h) result.anime = "";
 	for(let i = 0; i < w; i++) {
@@ -220,7 +216,7 @@ export function rotate(array, d, w = BOARD_SIZE, h = BOARD_SIZE) {
 	return result;
 }
 
-function getRotatedCoordinates(i, j, w, h, d) {
+function getRotatedCoordinates(i: number, j: number, w: number, h: number, d: number): IPoint {
 	if(d == 1) return { x: i, y: h - 1 - j };
 	if(d == 2) return { x: h - 1 - j, y: w - 1 - i };
 	return { x: w - 1 - i, y: j };
@@ -228,12 +224,12 @@ function getRotatedCoordinates(i, j, w, h, d) {
 
 /**
  * Switch the upper/lower cases.
- * @param {boolean} l Whether to also switch texts.
+ * @param switchText Whether to also switch texts.
  */
-export function invert(array, l) {
+export function invert(array: string[], switchText?: boolean): string[] {
 	return array.map(s => {
 		if(s == "" || s.startsWith("-")) return s;
-		if(!l && s.startsWith("'")) return s;
+		if(!switchText && s.startsWith("'")) return s;
 		const t = s.toLowerCase();
 		if(s == t) s = s.toUpperCase();
 		else s = t;
