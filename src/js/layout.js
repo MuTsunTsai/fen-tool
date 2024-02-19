@@ -11,6 +11,7 @@ import { redrawSDK } from "./api/sdk-base";
 import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "./meta/constants";
 
 const PX = "px";
+const X_GAP = 2; // rem
 
 const Zone = document.getElementById("Zone");
 const DragZone = document.getElementById("DragZone");
@@ -31,8 +32,7 @@ export async function setOption(o, force) {
 	const { border, margin, w, h } = getDimensions(o);
 
 	// Decide mode
-	const rem = getREM();
-	const newMode = bodyWidth() < (o.w + 3) * o.size + margin.x + 4 * border.size + 4.2 * rem;
+	const newMode = getMode(o, margin, border);
 	changed.mode = newMode !== status.hor;
 	status.hor = newMode;
 
@@ -57,6 +57,16 @@ export async function setOption(o, force) {
 	if(shouldDrawTemplate) drawTemplate();
 
 	nextTick(resize); // Just in case; solves glitch in Popeye play mode
+}
+
+function getMode(o, margin, border) {
+	const rem = getREM();
+	const NUM_BORDERS = 4; // 2 for board, 2 for template
+	const SENSITIVITY = 0.2; // to prevent floating error
+	return bodyWidth() <
+		(o.w + TEMPLATE_SIZE) * o.size + margin.x +
+		NUM_BORDERS * border.size +
+		(2 * X_GAP + SENSITIVITY) * rem;
 }
 
 function setupTemplate(size, borderSize, margin) {
@@ -113,7 +123,7 @@ export function resize() {
 	const rem = getREM();
 	if(store.board.collapse) {
 		Zone.style.width = "120%"; // First we enlarge the whole thing, to correctly measure DragZone.
-		Zone.style.width = DragZone.clientWidth + 4 * rem + PX; // Then we set the size by DragZone.
+		Zone.style.width = DragZone.clientWidth + 2 * X_GAP * rem + PX; // Then we set the size by DragZone.
 	} else {
 		Zone.style.width = "unset";
 	}
@@ -125,7 +135,8 @@ export function resize() {
 
 	setSquareSize(r.s);
 
-	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + 6 * rem) {
+	const NUM_GAPS = 3; // 2 on the sides and 1 in between
+	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + NUM_GAPS * X_GAP * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + PX;
 		EditZone.style.width = DragZone.clientWidth + PX;
 		status.collapse = true;

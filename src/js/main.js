@@ -5,7 +5,7 @@ import { updateEdwards } from "./squares";
 import { initLayout, setOption } from "./layout";
 import { initDrag } from "./drag";
 import { init as initSDK } from "./api/sdk-base";
-import { moveHistory } from "./tools/play";
+import { moveHistory } from "./tools/play/play";
 import { Popeye } from "./tools/popeye";
 import "./tools/stockfish";
 import "./tools/syzygy";

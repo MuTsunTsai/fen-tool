@@ -38,7 +38,7 @@
 		</div>
 		<div class="row align-items-center flex-wrap">
 			<div class="col-auto mb-2">
-				<Checkbox v-model="DB.exact">Search exactly these pieces</Checkbox>
+				<Checkbox v-model="store.DB.exact">Search exactly these pieces</Checkbox>
 			</div>
 			<div class="col text-end btn-gap" style="flex-basis: 24rem;">
 				<CopyButton :factory="DB.copyQuery" class="btn-secondary">

@@ -5,6 +5,7 @@ import { checkRetraction, createRetractContext, testOtherSideCheck, tryUncapture
 import { bumpMove, manipulateFEN, resetMove, switchSide } from "./utils";
 import { Color, PlayMode } from "../meta/enum";
 
+import type { PlayOption } from "js/tools/play/data";
 import type { RetroMove } from "./retro";
 import type { Move as CMove, Square } from "chess.js";
 
@@ -37,13 +38,6 @@ export interface PlayState {
 type SymbolSet = Record<"K" | "Q" | "B" | "N" | "R" | "P", string>;
 
 type PlaySymbol = "unicode" | "german" | undefined;
-
-export interface PlayOption {
-	symbol: PlaySymbol;
-	ep: boolean;
-	negative: boolean;
-	zero: boolean;
-}
 
 export class Chess extends ChessBase {
 

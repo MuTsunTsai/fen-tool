@@ -3,7 +3,7 @@ import { env } from "../meta/env";
 import { SQ } from "../meta/popeye/base";
 import { orthodoxFEN } from "../squares";
 import { STOCKFISH, onSession, state, status, store } from "../store";
-import { importGame, loadChessModule } from "./play";
+import { importGame, loadChessModule } from "./play/play";
 import { alert } from "../meta/dialogs";
 import { StockfishRunning, StockfishStatus } from "../meta/enum";
 import { MIN_MEMORY } from "../meta/constants";

@@ -1,25 +1,11 @@
-import { BOARD_SIZE } from "../meta/constants";
+import { BOARD_SIZE } from "../../meta/constants";
+import { fullWidthMap, DIGITS, UNCOLORED_NOTES, NOTES } from "./data";
 import { isInUAO } from "./uao";
 
-const DIGITS = "０１２３４５６７８９".split("");
+import type { BbsOptions } from "./data";
+import type { BoardOptions } from "js/meta/option";
 
-const fullWidthMap = (function() {
-	const map = new Map();
-	const FW1 = ("abcdefghijklmnopqrstuvwxyz" +
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-		",./<>?;':\"[]\\{}|!@#$%^&*()_+-=`~").split("");
-	const FW2 = ("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ" +
-		"ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ" +
-		"，．／＜＞？；’：”〔〕＼｛｝｜！＠＃＄％︿＆＊（）ˍ＋－＝‘～").split("");
-	for(let i = 0; i < FW1.length; i++) map.set(FW1[i], FW2[i]);
-	for(let i = 0; i < DIGITS.length; i++) map.set(i.toString(), DIGITS[i]);
-	return map;
-})();
-
-const NOTES = "黑白,ｐＰ ＝ 小兵,ｒＲ ＝ 城堡,ｎＮ ＝ 騎士,ｂＢ ＝ 主教,ｑＱ ＝ 皇后,ｋＫ ＝ 國王,".split(",");
-const UNCOLORED_NOTES = ",ｐ ＝ 小兵,ｒ ＝ 城堡,ｎ ＝ 騎士,ｂ ＝ 主教,ｑ ＝ 皇后,ｋ ＝ 國王,".split(",");
-
-function fullWidth(value, useMarkers) {
+function fullWidth(value: string, useMarkers?: boolean): string {
 	if(useMarkers && value.toLowerCase() == "c") return "‧";
 	if(useMarkers && value.toLowerCase() == "x") return "╳";
 	if(useMarkers && value.toLowerCase() == "s") return "■";
@@ -29,7 +15,10 @@ function fullWidth(value, useMarkers) {
 	return fullWidthMap.get(value);
 }
 
-export function generate(squares, fen, id, bbs, options, isTouch) {
+export function generate(
+	squares: string[], fen: string, id: string,
+	bbs: BbsOptions, options, isTouch: boolean
+): string {
 	const us = (isTouch ? "*" : unescape("%1B")) + "[";
 	let result = "";
 	for(let i = 0; i < BOARD_SIZE; i++) {
@@ -50,7 +39,7 @@ export function generate(squares, fen, id, bbs, options, isTouch) {
 	return result;
 }
 
-function square(bbs, value, us, bg) {
+function square(bbs: BbsOptions, value: string, us: string, bg: string): string {
 	let result = "";
 	if(value.startsWith("-")) {
 		value = value.substring(1);
@@ -69,7 +58,7 @@ function square(bbs, value, us, bg) {
 	return result;
 }
 
-function piece(bbs, bg, value) {
+function piece(bbs: BbsOptions, bg: string, value: string): string {
 	let result = "";
 	if(bbs.redBlue) {
 		if(value == value.toUpperCase()) result += "1;31;";
@@ -83,7 +72,7 @@ function piece(bbs, bg, value) {
 	return result;
 }
 
-function backgroundColor(i, j, options) {
+function backgroundColor(i: number, j: number, options: BoardOptions): string {
 	if(options.pattern == "mono") return "43m";
 	else return Boolean((i + j) % 2) == (options.pattern != "inverted") ? "42m" : "43m";
 }

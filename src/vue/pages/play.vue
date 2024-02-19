@@ -171,8 +171,8 @@
 </template>
 
 <script setup lang="ts">
+	import { PLAY } from "js/tools/play/play";
 	import { env } from "js/meta/env";
-	import { PLAY } from "js/tools/play";
 	import { state, status, store } from "js/store";
 	import { updateBG } from "js/render";
 	import CopyButton from "@/components/copyButton.vue";

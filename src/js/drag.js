@@ -2,13 +2,14 @@ import { getRenderSize, noEditing, state, status, store } from "./store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
 import { CN, PV, TP, CG, TPG } from "./meta/el";
 import { drawTemplate, templateValues } from "./render";
-import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "./tools/play";
+import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "./tools/play/play";
 import { types } from "./draw";
 import { LABEL_MARGIN } from "./meta/option";
 import { env } from "./meta/env";
 import { animate } from "./animation";
 import { Popeye } from "./tools/popeye";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
+import { Rotation, TemplateRow } from "./meta/enum";
 
 const DRAG_THRESHOLD = 5;
 const ROTATE_THRESHOLD = 10;
@@ -66,7 +67,6 @@ function cancelSelection() {
 	drawTemplate([]);
 }
 
-// eslint-disable-next-line max-lines-per-function, complexity
 function mouseup(event) {
 	if(status.dragging == "pending" && !state.play.playing && event.target == PV) {
 		const now = performance.now();
@@ -79,32 +79,7 @@ function mouseup(event) {
 	if(ghost) ghost.style.display = "none";
 	wrapEvent(event);
 
-	const now = performance.now();
-	// In some touch device, a tap will be converted to a delayed up-down
-	// with time difference up to about 220ms
-	if(now - lastDown < CLICK_THRESHOLD) {
-		if(event.target == TP && !noEditing()) {
-			let { x, y } = getXY(event, TP);
-			if(status.hor) [x, y] = [y, x];
-			if(inRange(x, y, TEMPLATE_SIZE, BOARD_SIZE)) {
-				const v = templateValues[y * TEMPLATE_SIZE + x];
-				if(status.selection == v) status.selection = null;
-				else status.selection = v;
-				drawTemplate([]);
-			} else {
-				cancelSelection();
-			}
-			status.dragging = false;
-			return;
-		} else if(event.target == PV && state.popeye.playing) {
-			const { x } = getXY(event, PV);
-			if(x < 3) Popeye.moveBy(-1);
-			if(x > 4) Popeye.moveBy(1);
-			return;
-		}
-	}
-
-	if(state.popeye.playing || !status.dragging) return;
+	if(handleTap(event) || state.popeye.playing || !status.dragging) return;
 	status.dragging = false;
 
 	if(!draggingValue) return;
@@ -125,11 +100,41 @@ function mouseup(event) {
 		if(path && path.length > ROTATE_THRESHOLD) { // Touch rotation
 			const center = getCenter(path);
 			const wn = windingNumber(center, path);
-			rotate(currentSq, wn > 0 ? 1 : 3);
+			rotate(currentSq, wn > 0 ? Rotation.r90 : Rotation.r270);
 		}
 	} else {
 		pushState();
 	}
+}
+
+function handleTap(event) {
+	const now = performance.now();
+	// In some touch device, a tap will be converted to a delayed up-down
+	// with time difference up to about 220ms
+	if(now - lastDown >= CLICK_THRESHOLD) return false;
+
+	if(event.target == TP && !noEditing()) {
+		let { x, y } = getXY(event, TP);
+		if(status.hor) [x, y] = [y, x];
+		if(inRange(x, y, TEMPLATE_SIZE, BOARD_SIZE)) {
+			const v = templateValues[y * TEMPLATE_SIZE + x];
+			if(status.selection == v) status.selection = null;
+			else status.selection = v;
+			drawTemplate([]);
+		} else {
+			cancelSelection();
+		}
+		status.dragging = false;
+		return true;
+	} else if(event.target == PV && state.popeye.playing) {
+		const FILE_3RD = 3;
+		const FILE_4TH = 4;
+		const { x } = getXY(event, PV);
+		if(x < FILE_3RD) Popeye.moveBy(-1);
+		if(x > FILE_4TH) Popeye.moveBy(1);
+		return true;
+	}
+	return false;
 }
 
 function getCenter(points) {
@@ -181,14 +186,14 @@ function wheel(event) {
 		const now = performance.now();
 		if(now - lastWheel < WHEEL_THRESHOLD) return; // throttle
 		lastWheel = now;
-		rotate(sq, event.deltaY > 0 ? 1 : 3);
+		rotate(sq, event.deltaY > 0 ? Rotation.r90 : Rotation.r270);
 	}
 }
 
 function rotate(sq, by) {
 	// Lookbehind is not supported for Safari<16.4
 	sq.value = sq.value.replace(/(^-?)(?:\*(\d))?([^-].*$)/, (_, a, b, c) => {
-		const rotation = (Number(b || 0) + by) % 4;
+		const rotation = (Number(b || 0) + by) % Rotation.full;
 		return a + (rotation ? "*" + rotation : "") + c;
 	});
 	toFEN();
@@ -251,7 +256,7 @@ function handleMouseDownInPlayMode(event) {
 	if(state.play.pendingPromotion) {
 		if(status.hor) [sqX, sqY] = [sqY, sqX];
 		const x = draggingValue == "p" ? 0 : 1;
-		if(sqY > 0 && sqY < 5 && sqX == x) {
+		if(sqY > TemplateRow.k && sqY < TemplateRow.p && sqX == x) {
 			confirmPromotion(fromIndex, types[sqY]);
 		}
 	}

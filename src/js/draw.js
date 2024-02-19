@@ -2,11 +2,15 @@ import { ONE_EMOJI, convertSN } from "./meta/fen";
 import { getAsset } from "./asset";
 import { LABEL_MARGIN, getDimensions } from "./meta/option";
 import { CHAR_A_OFFSET } from "./meta/constants";
+import { Rotation } from "./meta/enum";
 
 const DEFAULT_KNIGHT_OFFSET = 0.5;
 const MAX_ALPHABET = 26;
 const TEXT_PADDING = 4;
+const TEXT_OFFSET = 5;
 const CLASSIC_STEPS = 7.5;
+const CLASSIC_WIDTH_FACTOR = 60;
+const FULL_ALPHA = 255;
 
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
@@ -115,7 +119,7 @@ function parsePiece(value, options) {
 	const match = value.match(/^\*(\d)/);
 	let rotate = match && match[1] || undefined;
 	if(rotate !== undefined) value = value.substring(2);
-	rotate = Number(rotate) % 4;
+	rotate = Number(rotate) % Rotation.full;
 
 	if(options.SN) value = convertSN(value, false, true);
 	const lower = value.toLowerCase();
@@ -172,7 +176,7 @@ function drawCoordinates(ctx, options, bSize) {
 	for(let i = 0; i < h; i++) {
 		const text = (i + 1).toString();
 		const measure = ctx.measureText(text);
-		const y = size * (h - i) - (size - 10) / 2;
+		const y = size * (h - i) - size / 2 + TEXT_OFFSET;
 		const x = (LABEL_MARGIN - measure.width) / 2 - LABEL_MARGIN - bSize;
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);
@@ -180,7 +184,7 @@ function drawCoordinates(ctx, options, bSize) {
 	for(let i = 0; i < w && i < MAX_ALPHABET; i++) {
 		const text = String.fromCharCode(CHAR_A_OFFSET + i);
 		const measure = ctx.measureText(text);
-		const y = size * h + LABEL_MARGIN + bSize - 5;
+		const y = size * h + LABEL_MARGIN + bSize - TEXT_OFFSET;
 		const x = size * i + (size - measure.width) / 2;
 		ctx.strokeText(text, x, y);
 		ctx.fillText(text, x, y);
@@ -208,7 +212,7 @@ function createGlow(ctx, size, dpr) {
 		for(let y = 0; y < bound; y++) {
 			const alpha = alphaData[y * bound + x];
 			if(alpha == 0) continue;
-			ctx.globalAlpha = alpha / 255;
+			ctx.globalAlpha = alpha / FULL_ALPHA;
 			maskCtx.drawImage(cn, x - offset, y - offset);
 		}
 	}
@@ -232,7 +236,7 @@ function drawBlank(ctx, i, j, options) {
 	ctx.translate(j * size, i * size);
 	if(options.bg == "classic") {
 		ctx.strokeStyle = "black";
-		ctx.lineWidth = size / 60;
+		ctx.lineWidth = size / CLASSIC_WIDTH_FACTOR;
 		ctx.fillStyle = "#fff";
 		ctx.fillRect(0, 0, size, size);
 		if(!light) drawClassic(ctx, size);

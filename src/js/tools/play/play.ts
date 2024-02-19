@@ -1,25 +1,18 @@
-import { animate, stopAnimation } from "../animation";
-import { readText } from "../copy";
-import { types } from "../draw";
-import { makeForsyth, parseFEN, parseSquare, toSquare } from "../meta/fen";
-import { drawTemplate, load } from "../render";
-import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../squares";
-import { onSession, state, status, store } from "../store";
-import { alert } from "../meta/dialogs";
-import { Color, PlayMode, TemplatePieces } from "../meta/enum";
+import { animate, stopAnimation } from "../../animation";
+import { readText } from "../../copy";
+import { types } from "../../draw";
+import { makeForsyth, parseFEN, parseSquare, toSquare } from "../../meta/fen";
+import { drawTemplate, load } from "../../render";
+import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../../squares";
+import { onSession, state, status, store } from "../../store";
+import { alert } from "../../meta/dialogs";
+import { Color, PlayMode, TemplateRow } from "../../meta/enum";
 import { BOARD_SIZE } from "js/meta/constants";
+import { RANK_1ST, RANK_8TH, MASK } from "./data";
 
-import type * as ChessModule from "../modules/chess";
+import type { CastlingAnimation } from "./data";
+import type * as ChessModule from "../../modules/chess";
 import type { Square } from "chess.js";
-
-interface CastlingAnimation {
-	before: string;
-	after: string;
-	move: string;
-}
-
-const RANK_1ST = 1;
-const RANK_8TH = 8;
 
 onSession(() => {
 	// Restore playing session
@@ -36,12 +29,6 @@ onSession(() => {
 let module: typeof ChessModule;
 let chess: ChessModule.Chess;
 let pendingTarget: number;
-
-const wMask = [TemplatePieces.wQ, TemplatePieces.wB, TemplatePieces.wN, TemplatePieces.wR];
-const bMask = [TemplatePieces.bQ, TemplatePieces.bB, TemplatePieces.bN, TemplatePieces.bR];
-
-const wrMask = bMask.concat(TemplatePieces.bP, TemplatePieces.wP, TemplatePieces.bC);
-const brMask = wMask.concat(TemplatePieces.bP, TemplatePieces.wP, TemplatePieces.wC);
 
 export function moveHistory(v: number): void {
 	const p = state.play;
@@ -127,7 +114,7 @@ export function checkPromotion(from: number, to: number): boolean {
 	if(!chess.checkPromotion(toSquare(from), toSquare(to))) return false;
 	pendingTarget = to;
 	state.play.pendingPromotion = true;
-	drawTemplate(chess.turn() == Color.black ? bMask : wMask);
+	drawTemplate(chess.turn() == Color.black ? MASK.b : MASK.w);
 	return true;
 }
 
@@ -180,7 +167,7 @@ function resetRetro(): void {
 }
 
 function drawRetroTemplate(): void {
-	drawTemplate(chess.turn() == Color.black ? wrMask : brMask);
+	drawTemplate(chess.turn() == Color.black ? MASK.wr : MASK.br);
 }
 
 export function retroClick(x: number, y: number): void {
@@ -189,9 +176,9 @@ export function retroClick(x: number, y: number): void {
 	const matchTurn = x == 0 == (chess.turn() == Color.black);
 	const toggle = (p: string): void => { retro.uncapture = retro.uncapture == p ? null : p; };
 	if(matchTurn) {
-		if(0 < y && y < 7) toggle(types[y]);
-		if(y == 5 || y == 6) retro.unpromote = false;
-	} else if(y == 5) {
+		if(TemplateRow.k < y && y < TemplateRow.x) toggle(types[y]);
+		if(y == TemplateRow.p || y == TemplateRow.c) retro.unpromote = false;
+	} else if(y == TemplateRow.p) {
 		retro.unpromote = !retro.unpromote;
 		if(retro.uncapture == "p" || retro.uncapture == "c") retro.uncapture = null;
 	}

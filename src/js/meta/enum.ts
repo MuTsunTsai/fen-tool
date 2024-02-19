@@ -17,6 +17,13 @@ export enum Direction {
 	turn = 2,
 }
 
+export enum Rotation {
+	r90 = 1,
+	r180 = 2,
+	r270 = 3,
+	full = 4,
+}
+
 export enum Color {
 	black = "b",
 	white = "w",
@@ -29,7 +36,7 @@ export enum PlayMode {
 	retro = "retro",
 }
 
-export enum TemplatePieces {
+export enum TemplateMap {
 	bK, wK, nK,
 	bQ, wQ, nQ,
 	bB, wB, nB,
@@ -38,4 +45,8 @@ export enum TemplatePieces {
 	bP, wP, nP,
 	bC, wC, nC,
 	bX, wX, nX,
+}
+
+export enum TemplateRow {
+	k, q, b, n, r, p, c, x,
 }

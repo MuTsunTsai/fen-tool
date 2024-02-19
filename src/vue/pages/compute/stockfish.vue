@@ -35,7 +35,7 @@
 					</div>
 				</div>
 				<div class="col mb-2" style="flex-basis: 10rem;">
-					<Checkbox v-model="Stockfish.study" :disabled="store.Stockfish.lines <= 1">Study mode</Checkbox>
+					<Checkbox v-model="store.Stockfish.study" :disabled="store.Stockfish.lines <= 1">Study mode</Checkbox>
 				</div>
 			</div>
 			<!-- Start button -->

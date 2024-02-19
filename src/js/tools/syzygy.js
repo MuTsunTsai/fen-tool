@@ -1,7 +1,7 @@
 import { ONE_SECOND } from "../meta/constants";
 import { orthodoxFEN } from "../squares";
 import { onSession, state, status } from "../store";
-import { importGame, loadChessModule } from "./play";
+import { importGame, loadChessModule } from "./play/play";
 import { alert } from "../meta/dialogs";
 
 const TOO_MANY_REQUESTS = 429;

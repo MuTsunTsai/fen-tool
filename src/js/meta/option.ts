@@ -3,7 +3,7 @@ import { BOARD_SIZE } from "./constants";
 export const DEFAULT_SIZE = 44;
 export const DEFAULT_SET = "1echecs";
 
-export const defaultOption = {
+export const DEFAULT_BOARD_OPTIONS = {
 	pattern: undefined,
 	bg: undefined,
 	exHigh: true,
@@ -20,7 +20,7 @@ export const defaultOption = {
 	collapse: true,
 };
 
-type Option = typeof defaultOption;
+export type BoardOptions = typeof DEFAULT_BOARD_OPTIONS;
 
 const BORDER = /^\d+(,\d+)*$/;
 
@@ -39,8 +39,8 @@ export function sanitizeBorder(border: string): string {
 	return border;
 }
 
-export function makeOption(option: Partial<Option>): Option {
-	const result = Object.assign({}, defaultOption);
+export function makeOption(option: Partial<BoardOptions>): BoardOptions {
+	const result = Object.assign({}, DEFAULT_BOARD_OPTIONS);
 	if(option) {
 		const size = Number(option.size);
 		if(sizes.includes(size)) result.size = size;
@@ -89,7 +89,7 @@ interface DimensionInfo extends Dimension {
 	margin: IPoint;
 }
 
-export function getDimensions(options: Option, horTemplate?: boolean): DimensionInfo {
+export function getDimensions(options: BoardOptions, horTemplate?: boolean): DimensionInfo {
 	const border = parseBorder(options.border);
 	const margin = options.coordinates ? { x: LABEL_MARGIN, y: LABEL_MARGIN } : { x: 0, y: 0 };
 	if(horTemplate === true) margin.y = 0;

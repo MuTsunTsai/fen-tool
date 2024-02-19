@@ -9,6 +9,15 @@ import { animeSettings } from "./animation";
 import { emptyBoard } from "./meta/fen";
 import { redrawSDK } from "./api/sdk-base";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
+import { TemplateMap, TemplateRow } from "./meta/enum";
+
+const SELECTION_WIDTH_FACTOR = 12;
+const SELECTION_GRID = 8;
+const SELECTION_OFFSET = 5;
+const TEXT_BORDER_WIDTH_FACTOR = 12;
+const TEXT_OFFSET_FACTOR = 15;
+const MASK_ALPHA_DARK = 0.5;
+const MASK_ALPHA_LIGHT = 0.4;
 
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
@@ -62,7 +71,7 @@ export function drawTemplate(except) {
 		if(status.selection) {
 			tCtx.save();
 			const { offset } = getDimensions(store.board, status.hor);
-			tCtx.lineWidth = size / 12;
+			tCtx.lineWidth = size / SELECTION_WIDTH_FACTOR;
 			tCtx.strokeStyle = "#0d6efd";
 			tCtx.translate(offset.x, offset.y);
 			const index = templateValues.indexOf(status.selection);
@@ -88,17 +97,17 @@ function drawEp(size) {
 	tCtx.save();
 	tCtx.font = `${size / 2}px sans-serif`;
 	tCtx.strokeStyle = "black";
-	tCtx.lineWidth = size / 12;
+	tCtx.lineWidth = size / TEXT_BORDER_WIDTH_FACTOR;
 	tCtx.fillStyle = "white";
 	tCtx.lineJoin = "round";
-	drawEpCore(1, 7);
-	drawEpCore(2, 7);
+	drawEpCore(1, TemplateRow.x);
+	drawEpCore(2, TemplateRow.x);
 	tCtx.restore();
 }
 
 function drawMask(except, size) {
 	tCtx.save();
-	tCtx.globalAlpha = status.isDark ? 0.5 : 0.4;
+	tCtx.globalAlpha = status.isDark ? MASK_ALPHA_DARK : MASK_ALPHA_LIGHT;
 	tCtx.fillStyle = "black";
 	for(let i = 0; i < TEMPLATE_SIZE; i++) {
 		for(let j = 0; j < BOARD_SIZE; j++) {
@@ -113,11 +122,11 @@ function drawMask(except, size) {
 function drawSelection(except, size) {
 	tCtx.save();
 	const retro = state.play.retro;
-	const x = except[0] == 3 ? 0 : 1;
-	tCtx.lineWidth = size / 12;
+	const x = except[0] == TemplateMap.bQ ? 0 : 1;
+	tCtx.lineWidth = size / SELECTION_WIDTH_FACTOR;
 	tCtx.strokeStyle = "#0d6efd";
 	if(retro.uncapture) drawSelectionCore(x, types.indexOf(retro.uncapture));
-	if(retro.unpromote) drawSelectionCore(1 - x, 5);
+	if(retro.unpromote) drawSelectionCore(1 - x, SELECTION_OFFSET);
 	tCtx.restore();
 }
 
@@ -138,7 +147,7 @@ function getTemplate() {
 
 function drawEpCore(x, y) {
 	const { size } = store.board;
-	const offset = size / 15;
+	const offset = size / TEXT_OFFSET_FACTOR;
 	if(status.hor) [x, y] = [y, x];
 	const measure = tCtx.measureText("ep");
 	const width = measure.width;
@@ -149,20 +158,20 @@ function drawEpCore(x, y) {
 
 function drawSelectionCore(x, y) {
 	const { size } = store.board;
-	const unit = size / 8;
+	const unit = size / SELECTION_GRID;
 	if(status.hor) [x, y] = [y, x];
 	const offset = 0.5;
-	const drawLines = (...pt) => {
-		tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
-		for(let i = 1; i < pt.length; i++) {
-			tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
+	const drawLines = (...line) => {
+		for(const pt of line) {
+			tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
+			for(let i = 1; i < pt.length; i++) {
+				tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
+			}
 		}
 	};
 	tCtx.beginPath();
-	drawLines([0, 2], [0, 0], [2, 0]);
-	drawLines([5, 0], [7, 0], [7, 2]);
-	drawLines([7, 5], [7, 7], [5, 7]);
-	drawLines([0, 5], [0, 7], [2, 7]);
+	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+	drawLines([[0, 2], [0, 0], [2, 0]], [[5, 0], [7, 0], [7, 2]], [[7, 5], [7, 7], [5, 7]], [[0, 5], [0, 7], [2, 7]]);
 	tCtx.stroke();
 }
 

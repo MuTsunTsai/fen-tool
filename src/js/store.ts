@@ -1,37 +1,26 @@
 import { reactive, watchEffect } from "vue";
 
-import { defaultOption, getDimensions } from "./meta/option";
+import { DEFAULT_BOARD_OPTIONS, getDimensions } from "./meta/option";
 import { CN } from "./meta/el";
 import { env } from "./meta/env";
 import { deepAssign } from "./meta/clone";
 import { defaultCustomMap, pieceMap } from "./meta/popeye/base";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
-import { PlayMode, StockfishRunning, StockfishStatus } from "./meta/enum";
-
-import type { PlayOption } from "./modules/chess";
+import { StockfishRunning, StockfishStatus } from "./meta/enum";
+import { DEFAULT_BBS_OPTIONS } from "./modules/ptt/data";
+import { DEFAULT_PLAY_OPTIONS, DEFAULT_PLAY_STATE } from "./tools/play/data";
 
 export const search = new URL(location.href).searchParams;
 
 // Persistent settings, and is synchronized across instances
 
 const settings = {
-	BBS: {
-		Id: true,
-		coordinates: true,
-		notes: true,
-		uncoloredNotes: false,
-		redBlue: false,
-	},
+	BBS: DEFAULT_BBS_OPTIONS,
 	DB: {
 		use: "PDB",
 		exact: false,
 	},
-	PLAY: {
-		symbol: null,
-		ep: true,
-		negative: false,
-		zero: false,
-	} as PlayOption,
+	PLAY: DEFAULT_PLAY_OPTIONS,
 	Stockfish: {
 		study: false,
 		downloaded: false,
@@ -44,7 +33,7 @@ const settings = {
 	popeye: {
 		pieceMap: defaultCustomMap,
 	},
-	board: defaultOption,
+	board: DEFAULT_BOARD_OPTIONS,
 	project: [],
 };
 
@@ -89,31 +78,7 @@ const defaultState = {
 	split: false,
 	tab: 0,
 	compute: "py",
-	play: {
-		initFEN: null,
-		playing: false,
-		pendingPromotion: false,
-		moveNumber: -1,
-		game: "",
-		history: [],
-		turn: "w",
-		castle: {
-			K: true,
-			Q: true,
-			k: true,
-			q: true,
-		},
-		retro: {
-			uncapture: null,
-			unpromote: false,
-			ep: false,
-		},
-		enPassant: "",
-		halfMove: 0,
-		fullMove: 1,
-		mode: PlayMode.normal,
-		over: undefined,
-	},
+	play: DEFAULT_PLAY_STATE,
 	popeye: {
 		initFEN: null,
 		index: null,
