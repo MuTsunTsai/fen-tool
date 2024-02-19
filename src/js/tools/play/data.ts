@@ -1,5 +1,10 @@
 import { PlayMode, TemplateMap } from "js/meta/enum";
 
+import type { PieceSymbolR } from "js/modules/retro";
+import type { overState } from "js/modules/chess";
+import type { Move } from "chess.js";
+
+
 export const DEFAULT_PLAY_OPTIONS = {
 	symbol: null,
 	ep: true,
@@ -10,12 +15,12 @@ export const DEFAULT_PLAY_OPTIONS = {
 export type PlayOption = typeof DEFAULT_PLAY_OPTIONS;
 
 export const DEFAULT_PLAY_STATE = {
-	initFEN: null,
+	initFEN: "",
 	playing: false,
 	pendingPromotion: false,
 	moveNumber: -1,
 	game: "",
-	history: [],
+	history: [] as Move[],
 	turn: "w",
 	castle: {
 		K: true,
@@ -24,7 +29,7 @@ export const DEFAULT_PLAY_STATE = {
 		q: true,
 	},
 	retro: {
-		uncapture: null,
+		uncapture: undefined as PieceSymbolR | undefined,
 		unpromote: false,
 		ep: false,
 	},
@@ -32,7 +37,7 @@ export const DEFAULT_PLAY_STATE = {
 	halfMove: 0,
 	fullMove: 1,
 	mode: PlayMode.normal,
-	over: undefined,
+	over: undefined as overState | undefined,
 };
 
 export interface CastlingAnimation {

@@ -28,14 +28,14 @@ const BORDER = /^\d+(,\d+)*$/;
 const sizes = [26, 32, 38, 44];
 const sets = ["1echecs", "alpha", "goodCompanion", "kilfiger", "merida", "mpchess", "skak"];
 
-export function sanitizeBorder(border: string): string {
-	if(typeof border != "string") return null;
+export function sanitizeBorder(border?: string): string | undefined {
+	if(typeof border != "string") return undefined;
 	// Allow nearly arbitrary input
 	border = border.replace(/\D/g, ",")
 		.replace(/,+/g, ",")
 		.replace(/^,/, "")
 		.replace(/,$/, "");
-	if(!border.match(BORDER)) return null;
+	if(!border.match(BORDER)) return undefined;
 	return border;
 }
 
@@ -45,19 +45,19 @@ export function makeOption(option: Partial<BoardOptions>): BoardOptions {
 		const size = Number(option.size);
 		if(sizes.includes(size)) result.size = size;
 
-		if(sets.includes(option.set)) result.set = option.set;
+		if(option.set && sets.includes(option.set)) result.set = option.set;
 
 		option.border = sanitizeBorder(option.border);
 		if(option.border) result.border = option.border;
 
-		if(0 < option.knightOffset && option.knightOffset < 1) {
+		if(option.knightOffset && 0 < option.knightOffset && option.knightOffset < 1) {
 			result.knightOffset = option.knightOffset;
 		}
 
 		result.blackWhite = Boolean(option.blackWhite);
 		result.pattern = option.pattern;
 		result.bg = option.bg;
-		result.SN = option.SN;
+		result.SN = option.SN || false;
 
 		const w = Math.floor(Number(option.w));
 		const h = Math.floor(Number(option.h));

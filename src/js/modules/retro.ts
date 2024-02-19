@@ -6,18 +6,20 @@ import { manipulateFEN, switchSide } from "./utils";
 import type { Move, Piece, PieceSymbol, Square, Color as ChessColor } from "chess.js";
 import type { Chess } from "./chess";
 
+export type PieceSymbolR = PieceSymbol | "c";
+
 export interface RetroMove {
 	from: Square;
 	to: Square;
-	uncapture?: PieceSymbol | "c";
-	unpromote: boolean;
+	uncapture?: PieceSymbolR;
+	unpromote?: boolean;
 }
 
 interface RetractContext {
 	ep: boolean;
 	type: PieceSymbol;
-	uncapture: PieceSymbol | "c";
-	unpromote: boolean;
+	uncapture?: PieceSymbolR;
+	unpromote?: boolean;
 	isWhite: boolean;
 	temp: ChessBase;
 	piece: Piece;
@@ -33,7 +35,7 @@ interface CastlingRights {
 
 const MAX_UNITS = 16;
 
-export function createRetractContext(arg: RetroMove, chess: Chess): RetractContext {
+export function createRetractContext(arg: RetroMove, chess: Chess): RetractContext | null {
 	if(!arg) return null;
 	const { from, to, unpromote } = arg;
 	if(chess.get(to)) return null;
@@ -62,7 +64,7 @@ export function createRetractContext(arg: RetroMove, chess: Chess): RetractConte
 	return { type, ep, uncapture, unpromote, isWhite, temp, piece, rank, from, to };
 }
 
-function basicLegalCheck(type: PieceSymbol | undefined, ep: boolean, unpromote: boolean): boolean {
+function basicLegalCheck(type: PieceSymbol | undefined, ep: boolean, unpromote?: boolean): boolean {
 	if(!type) return false;
 	if(ep && type != "p") return false;
 	if(unpromote && (type == "p" || type == "k")) return false;
@@ -143,7 +145,7 @@ function tryRetract(chess: ChessBase, from: Square, to: Square): boolean {
 	return true;
 }
 
-export function checkRetraction(context: RetractContext): Move {
+export function checkRetraction(context: RetractContext): Move | null {
 	const { type, unpromote, from, to, temp } = context;
 
 	// Check if the retraction is legal

@@ -6,8 +6,8 @@ import { bumpMove, manipulateFEN, resetMove, switchSide } from "./utils";
 import { Color, PlayMode } from "../meta/enum";
 
 import type { PlayOption } from "js/tools/play/data";
-import type { RetroMove } from "./retro";
-import type { Move as CMove, Square } from "chess.js";
+import type { PieceSymbolR, RetroMove } from "./retro";
+import type { Move as CMove, PieceSymbol, Square } from "chess.js";
 
 export interface Move extends CMove {
 	annotation?: string;
@@ -45,9 +45,9 @@ export class Chess extends ChessBase {
 
 	public state: PlayState;
 
-	constructor(state: PlayState) {
+	constructor(state = {} as PlayState) {
 		super();
-		this.state = state || {} as PlayState;
+		this.state = state;
 		this.state.history = this.state.history || [];
 	}
 
@@ -82,7 +82,10 @@ export class Chess extends ChessBase {
 				this.load(this.state.initFEN);
 			}
 		} catch(e) {
-			throw new Error("The position is not playable: " + e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&."));
+			if(e instanceof Error) {
+				const msg = e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&.");
+				throw new Error("The position is not playable: " + msg);
+			}
 		}
 	}
 
@@ -109,7 +112,7 @@ export class Chess extends ChessBase {
 	/**
 	 * Make a move and return the move object.
 	 */
-	move(arg: string | MoveArgs): Move | null {
+	move(arg: string | MoveArgs): Move {
 		const state = this.state;
 		const fen = this.fen();
 		const cache = state.history.concat();
@@ -130,10 +133,10 @@ export class Chess extends ChessBase {
 			state.history.push(move);
 			state.moveNumber++;
 			return move;
-		} catch {
+		} catch(e) {
 			state.history = cache;
 			this.load(fen);
-			return null;
+			throw e;
 		}
 	}
 
@@ -147,15 +150,15 @@ export class Chess extends ChessBase {
 		}
 	}
 
-	addRetroMoves(moves: string[]): string {
+	addRetroMoves(moves: string[]): string | undefined {
 		for(const move of moves) {
 			if(move == "...") continue;
 			const retract = parseRetroMove(move);
-			if(!this.retract(retract)) return move;
+			if(!retract || !this.retract(retract)) return move;
 		}
 	}
 
-	addNormalMoves(moves: string[]): string {
+	addNormalMoves(moves: string[]): string | undefined {
 		let sideDetermined = false; // Whether we're on the right track
 		const isPass = this.state.mode == PlayMode.pass;
 		for(const move of moves) {
@@ -227,7 +230,7 @@ export class Chess extends ChessBase {
 	goto(h?: Move): string {
 		const fen = this.getFenOf(h);
 		this.load(fen);
-		this.state.moveNumber = this.state.history.indexOf(h);
+		this.state.moveNumber = h ? this.state.history.indexOf(h) : -1;
 		return fen;
 	}
 
@@ -237,7 +240,7 @@ export class Chess extends ChessBase {
 	}
 }
 
-export function formatGame(history: Move[], options: Partial<PlayOption>): string {
+export function formatGame(history: Move[], options?: Partial<PlayOption>): string {
 	if(history.length == 0) return "";
 	let result = "";
 	if(history[0].color == Color.black) result += history[0].before.split(" ")[5] + "... ";
@@ -247,14 +250,14 @@ export function formatGame(history: Move[], options: Partial<PlayOption>): strin
 			else result += number(h) + "... ";
 		}
 		if(h.color == "w") result += number(h) + ". ";
-		result += format(h, null, options) + " ";
+		result += format(h, undefined, options) + " ";
 	}
 	return result.trimEnd();
 }
 
 export function number(h: Move, mode?: PlayMode, options = Chess.options): string {
 	if(!h) return "";
-	const num = h.before.match(/\d+$/)[0]; // The last number in FEN
+	const num = h.before.match(/\d+$/)![0]; // The last number in FEN
 	const prefix = mode == PlayMode.retro && options.negative ? "-" : "";
 	return prefix + num;
 }
@@ -279,7 +282,7 @@ export function format(h: Move, mode?: PlayMode, options: Partial<PlayOption> = 
 	return move;
 }
 
-function getSymbol(sym: PlaySymbol): SymbolSet | null {
+function getSymbol(sym: PlaySymbol | null): SymbolSet | null {
 	if(sym == "unicode") return unicode;
 	if(sym == "german") return german;
 	return null;
@@ -318,12 +321,12 @@ const german: SymbolSet = {
 	"P": "B",
 };
 
-function parseRetroMove(move: string): RetroMove {
+function parseRetroMove(move: string): RetroMove | null {
 	const match = move.match(/^\w?([a-h][1-8])[-x](\w?)([a-h][1-8])(ep)?(?:=(\w))?/);
 	if(!match) return null;
-	let uncapture = null;
+	let uncapture: PieceSymbolR | undefined;
 	if(match[4]) uncapture = "c";
-	else if(match[2]) uncapture = match[2].toLowerCase();
+	else if(match[2]) uncapture = match[2].toLowerCase() as PieceSymbol;
 	return {
 		from: match[3] as Square,
 		to: match[1] as Square,

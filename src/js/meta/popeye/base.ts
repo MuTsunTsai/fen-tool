@@ -59,7 +59,7 @@ export const defaultCustomMap = {
 /**
  * This is the mapping suggested by https://github.com/thomas-maeder/popeye/blob/develop/pie-engl.txt
  */
-const defaultPieceMap = {
+const defaultPieceMap: Record<string, string> = {
 	"*1B": "25,37,AL,AN,BM,C,CT,DB,GN,GY,NH",
 	"*1K": "PO",
 	"*1N": "36,AO,BK,BN,DR,GR,KP,LS,MA,MS,OH,RK,S1,S2,S3,S4,SQ,SS,SW,UU,Z,ZE,ZH,ZR",
@@ -84,8 +84,8 @@ const defaultPieceMap = {
 };
 
 export const pieceMap = {
-	custom: () => ({}),
-	default: {},
+	custom: () => ({} as Record<string, string>),
+	default: {} as Record<string, string>,
 };
 for(const key in defaultPieceMap) {
 	for(const s of defaultPieceMap[key].split(",")) pieceMap.default[s] = key;
@@ -102,7 +102,7 @@ function findCustom(map: Record<string, string>, p: string): string | undefined 
 	for(const key in map) if(map[key] == p) return key;
 }
 
-export function toPopeyePiece(p: string): string {
+export function toPopeyePiece(p: string): string | null {
 	let prefix = p.startsWith("-") ? "=" : "";
 	if(prefix) p = p.substring(1);
 	const upper = p.toUpperCase();

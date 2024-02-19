@@ -15,7 +15,7 @@ export const ONE_EMOJI = RegExp(`^(?:${EMOJI})$`, "u");
 const VALUE = RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
 const FEN_UNIT = RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
-export function inferDimension(fen: string): Dimension {
+export function inferDimension(fen: string): Dimension | undefined {
 	const values = fen.match(FEN_UNIT) || [];
 	const rows = [0];
 	let cursor = 0;

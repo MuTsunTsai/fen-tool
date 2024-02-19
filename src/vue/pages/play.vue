@@ -25,12 +25,12 @@
 				</span>
 				<span class="btn-gap" v-if="status.module.chess">
 					<span v-for="(h, i) in state.play.history" :key="i">
-						<span v-if="state.play.history[i - 1] && state.play.history[i - 1].Color == h.Color">
-							<span v-if="h.Color == Color.white"> ... </span>
+						<span v-if="state.play.history[i - 1] && state.play.history[i - 1].color == h.color">
+							<span v-if="h.color == Color.white"> ... </span>
 							<span v-else>{{ PLAY.number(h) }}...</span>
 						</span>
-						<span v-if="h.Color == Color.black && i == 0" class="ms-2">{{ PLAY.number(h) }}...</span>
-						<span v-if="h.Color == Color.white" class="ms-2">{{ PLAY.number(h) }}.</span>
+						<span v-if="h.color == Color.black && i == 0" class="ms-2">{{ PLAY.number(h) }}...</span>
+						<span v-if="h.color == Color.white" class="ms-2">{{ PLAY.number(h) }}.</span>
 						<span class="btn step px-1 py-0" @click="PLAY.move(i)" :class="{ active: i == state.play.moveNumber }">{{
 							PLAY.format(h) }}</span>
 					</span>

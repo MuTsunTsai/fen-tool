@@ -19,7 +19,7 @@ export function parseMoves(text: string): string[] {
 
 	const moves = [];
 
-	let number: string;
+	let number: string | undefined;
 	let roundCount = 0;
 	for(let i = 0; i < tokens.length; i++) {
 		const token = tokens[i];

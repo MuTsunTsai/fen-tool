@@ -13,8 +13,8 @@
 		]
 	},
 	"include": [
-		"./**/*.mjs",
-		"./**/*.ts"
+		"./**/*.ts",
+		"../src/**/*.d.ts"
 	],
 	"ts-node": {
 		"files": true,

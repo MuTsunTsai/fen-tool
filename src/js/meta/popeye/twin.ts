@@ -113,7 +113,7 @@ function replace(board: Board, newBoard: Board): void {
 	board.push(...newBoard);
 }
 
-function getRotate(text): Direction {
+function getRotate(text: string): Direction {
 	if(text == "90") return Direction.counterclockwise;
 	if(text == "180") return Direction.turn;
 	return Direction.clockwise;

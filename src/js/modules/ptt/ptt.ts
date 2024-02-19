@@ -17,7 +17,7 @@ function fullWidth(value: string, useMarkers?: boolean): string {
 
 export function generate(
 	squares: string[], fen: string, id: string,
-	bbs: BbsOptions, options, isTouch: boolean
+	bbs: BbsOptions, options: BoardOptions, isTouch: boolean
 ): string {
 	const us = (isTouch ? "*" : unescape("%1B")) + "[";
 	let result = "";

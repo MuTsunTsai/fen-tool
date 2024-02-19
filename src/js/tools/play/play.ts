@@ -10,6 +10,7 @@ import { Color, PlayMode, TemplateRow } from "../../meta/enum";
 import { BOARD_SIZE } from "js/meta/constants";
 import { RANK_1ST, RANK_8TH, MASK } from "./data";
 
+import type { PieceSymbolR } from "js/modules/retro";
 import type { CastlingAnimation } from "./data";
 import type * as ChessModule from "../../modules/chess";
 import type { Square } from "chess.js";
@@ -160,7 +161,7 @@ function start(): void {
 
 function resetRetro(): void {
 	state.play.retro = {
-		uncapture: null,
+		uncapture: undefined,
 		unpromote: false,
 		ep: false,
 	};
@@ -174,13 +175,13 @@ export function retroClick(x: number, y: number): void {
 	if(x == 2) return;
 	const retro = state.play.retro;
 	const matchTurn = x == 0 == (chess.turn() == Color.black);
-	const toggle = (p: string): void => { retro.uncapture = retro.uncapture == p ? null : p; };
+	const toggle = (p: PieceSymbolR): void => { retro.uncapture = retro.uncapture == p ? undefined : p; };
 	if(matchTurn) {
-		if(TemplateRow.k < y && y < TemplateRow.x) toggle(types[y]);
+		if(TemplateRow.k < y && y < TemplateRow.x) toggle(types[y] as PieceSymbolR);
 		if(y == TemplateRow.p || y == TemplateRow.c) retro.unpromote = false;
 	} else if(y == TemplateRow.p) {
 		retro.unpromote = !retro.unpromote;
-		if(retro.uncapture == "p" || retro.uncapture == "c") retro.uncapture = null;
+		if(retro.uncapture == "p" || retro.uncapture == "c") retro.uncapture = undefined;
 	}
 	drawRetroTemplate();
 }
@@ -207,15 +208,16 @@ export const PLAY = {
 			state.play.over = chess.overState();
 			start();
 		} catch(e) {
-			alert(e instanceof Error ? e.message : e);
+			if(e instanceof Error) alert(e.message);
 		}
 		gtag("event", "fen_play_" + state.play.mode);
 	},
 	exit() {
+		const fen = state.play.initFEN;
 		state.play.playing = false;
 		state.play.game = "";
-		setFEN(state.play.initFEN);
-		parseFullFEN(state.play.initFEN);
+		setFEN(fen);
+		parseFullFEN(fen);
 		toggleReadOnly(false);
 		drawTemplate([]);
 	},

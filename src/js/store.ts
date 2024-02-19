@@ -118,7 +118,7 @@ export function onSession(callback: Action): void {
 }
 
 export function initSession(): void {
-	const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
+	const savedSettings = JSON.parse(localStorage.getItem("settings") || "{}");
 	deepAssign(settings, savedSettings, true);
 
 	// These are the exceptions
@@ -131,7 +131,7 @@ export function initSession(): void {
 
 	if(search.has("janko")) settings.feature.janko = true;
 
-	const savedState = env.isTop ? JSON.parse(sessionStorage.getItem("state")) : null;
+	const savedState = env.isTop ? JSON.parse(sessionStorage.getItem("state") || "null") : null;
 	if(savedState) {
 		deepAssign(state, savedState);
 	}
