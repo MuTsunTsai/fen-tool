@@ -119,9 +119,9 @@
 
 <script setup lang="ts">
 	import { store, state } from "js/store";
-	import { redraw, updateBG, drawExport } from "js/render";
-	import { resize, setOption, Layout } from "js/layout";
-	import { toFEN, updateSN } from "js/squares";
+	import { redraw, updateBG, drawExport } from "js/view/render";
+	import { resize, setOption, Layout } from "js/interface/layout";
+	import { toFEN, updateSN } from "js/interface/squares";
 	import Checkbox from "@/components/checkbox.vue";
 	import InputNumber from "@/components/inputNumber.vue";
 

@@ -1,15 +1,15 @@
 import { shallowRef } from "vue";
 
-import { store } from "../store";
-import { squares, setFEN } from "../squares";
-import { types } from "../draw";
-import { toSquare } from "../meta/fen";
-import { alert } from "../meta/dialogs";
+import { store } from "js/store";
+import { squares, setFEN } from "js/interface/squares";
+import { types } from "js/view/draw";
+import { toSquare } from "js/meta/fen";
+import { alert } from "js/meta/dialogs";
 
 export const problemId = shallowRef("");
 
 export const PDB = {
-	async fetch(bt) {
+	async fetch(bt: HTMLButtonElement) {
 		try {
 			gtag("event", "fen_pdb_get");
 			bt.disabled = true;
@@ -17,7 +17,7 @@ export const PDB = {
 			const url = pdbURL + encodeURIComponent(`PROBID='${problemId.value}'`);
 			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
 			const text = await response.text();
-			setFEN(text.match(/<b>FEN:<\/b> (.+)/)[1], true);
+			setFEN(text.match(/<b>FEN:<\/b> (.+)/)![1], true);
 		} catch {
 			alert("An error has occurred. Please try again later.");
 		} finally {
@@ -43,7 +43,7 @@ const pdbURL = "https://pdb.dieschwalbe.de/search.jsp?expression=";
 const pdbMap = ["K", "D", "L", "S", "T", "B", "I"]; // German
 const rotationMap = ["", "R", "U", "L"];
 
-function createQuery() {
+function createQuery(): string {
 	const pieces = [];
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
@@ -60,8 +60,8 @@ function createQuery() {
 	return result;
 }
 
-function createEdit() {
-	const groups = {};
+function createEdit(): string {
+	const groups = {} as Record<string, string>;
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
@@ -85,6 +85,6 @@ function createEdit() {
 	return result.join(" ");
 }
 
-function getColor(v) {
+function getColor(v: string): string {
 	return v == v.toLowerCase() ? "s" : "w";
 }

@@ -1,8 +1,8 @@
-import { squares, setFEN } from "../squares";
-import { store } from "../store";
-import { makeForsyth, toYACPDB, toSquare, convertSN, emptyBoard } from "../meta/fen";
-import { alert } from "../meta/dialogs";
-import { CHAR_A_OFFSET } from "../meta/constants";
+import { squares, setFEN } from "js/interface/squares";
+import { store } from "js/store";
+import { makeForsyth, toYACPDB, toSquare, convertSN, emptyBoard } from "js/meta/fen";
+import { alert } from "js/meta/dialogs";
+import { CHAR_A_OFFSET } from "js/meta/constants";
 import { problemId } from "./pdb";
 
 export const YACPDB = {
@@ -12,7 +12,7 @@ export const YACPDB = {
 		const values = squares.map(s => toYACPDB(s.value));
 		return makeForsyth(values, w, h);
 	},
-	async fetch(bt) {
+	async fetch(bt: HTMLButtonElement) {
 		try {
 			gtag("event", "fen_yacpdb_get");
 			bt.disabled = true;
@@ -24,13 +24,13 @@ export const YACPDB = {
 				const { w, h } = store.board;
 				const list = json.result.entries[0].algebraic;
 				const values = emptyBoard(w * h);
-				function add(v) {
+				function add(v: string) {
 					const x = v.charCodeAt(1) - CHAR_A_OFFSET, y = Number(v[2]);
 					values[(h - y) * w + x] = v[0];
 				}
 				for(const black of list.black) add(black.toLowerCase());
 				for(const white of list.white) add(white);
-				setFEN(makeForsyth(values), w, h);
+				setFEN(makeForsyth(values, w, h));
 			}
 		} catch {
 			alert("An error has occurred. Please try again later.");
@@ -53,7 +53,7 @@ export const YACPDB = {
 	},
 };
 
-function createQuery() {
+function createQuery(): string {
 	const pieces = [];
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
@@ -71,8 +71,8 @@ function createQuery() {
 	return result;
 }
 
-function createEdit() {
-	const groups = { w: [], b: [], n: [] };
+function createEdit(): string {
+	const groups = { w: [] as string[], b: [] as string[], n: [] as string[] };
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
@@ -91,6 +91,6 @@ function createEdit() {
 	return result.join("\n");
 }
 
-function getColor(v) {
+function getColor(v: string): "b" | "w" {
 	return v == v.toLowerCase() ? "b" : "w";
 }

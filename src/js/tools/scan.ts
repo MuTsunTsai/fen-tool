@@ -1,10 +1,10 @@
-import { search } from "../store";
-import { alert } from "../meta/dialogs";
+import { search } from "js/store";
+import { alert } from "js/meta/dialogs";
 
 const supportedTypes = ["image/png", "image/jpeg", "image/bmp", "image/webp"];
 
 /** Intercepting images passed in through web share target API */
-async function loadImage() {
+async function loadImage(): Promise<void> {
 	const index = search.get("image");
 	if(index) {
 		// Remove search param, preventing re-triggering on reload
@@ -20,11 +20,7 @@ async function loadImage() {
 
 loadImage();
 
-/**
- *
- * @param {Blob} blob
- */
-function scan(blob) {
+function scan(blob: Blob): void {
 	if(!supportedTypes.includes(blob.type)) {
 		alert("Unsupported format.");
 		return;
@@ -36,10 +32,9 @@ function scan(blob) {
 
 /**
  * Open an image file from input element.
- * @param {HTMLInputElement} input
  */
-export function openFile(input) {
-	const file = input.files[0];
+export function openFile(input: HTMLInputElement): void {
+	const file = input.files?.[0];
 	input.value = "";
-	scan(file);
+	if(file) scan(file);
 }

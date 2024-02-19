@@ -22,8 +22,8 @@
 <script setup lang="ts">
 	import { status, noEditing } from "js/store";
 	import { env } from "js/meta/env";
-	import { currentFEN, setFEN, FEN } from "js/squares";
-	import { readText } from "js/copy";
+	import { currentFEN, setFEN, FEN } from "js/interface/squares";
+	import { readText } from "js/interface/copy";
 
 	function copy(): void {
 		gtag("event", "fen_copy");

@@ -1,11 +1,13 @@
 import { BOARD_SIZE } from "./constants";
 
+import type { Background } from "./enum";
+
 export const DEFAULT_SIZE = 44;
 export const DEFAULT_SET = "1echecs";
 
 export const DEFAULT_BOARD_OPTIONS = {
-	pattern: undefined,
-	bg: undefined,
+	pattern: undefined as string | undefined,
+	bg: undefined as Background | undefined,
 	exHigh: true,
 	border: "1",
 	blackWhite: false,
@@ -78,7 +80,7 @@ function parseBorder(border: string): Border {
 
 export const LABEL_MARGIN = 20;
 
-interface Border {
+export interface Border {
 	array: number[];
 	size: number;
 }

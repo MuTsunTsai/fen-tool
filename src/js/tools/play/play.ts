@@ -1,18 +1,18 @@
-import { animate, stopAnimation } from "../../animation";
-import { readText } from "../../copy";
-import { types } from "../../draw";
-import { makeForsyth, parseFEN, parseSquare, toSquare } from "../../meta/fen";
-import { drawTemplate, load } from "../../render";
-import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "../../squares";
-import { onSession, state, status, store } from "../../store";
-import { alert } from "../../meta/dialogs";
-import { Color, PlayMode, TemplateRow } from "../../meta/enum";
+import { animate, stopAnimation } from "js/view/animation";
+import { readText } from "js/interface/copy";
+import { types } from "js/view/draw";
+import { makeForsyth, parseFEN, parseSquare, toSquare } from "js/meta/fen";
+import { drawTemplate, load } from "js/view/render";
+import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "js/interface/squares";
+import { onSession, state, status, store } from "js/store";
+import { alert } from "js/meta/dialogs";
+import { Color, PlayMode, TemplateRow } from "js/meta/enum";
 import { BOARD_SIZE } from "js/meta/constants";
 import { RANK_1ST, RANK_8TH, MASK } from "./data";
 
 import type { PieceSymbolR } from "js/modules/retro";
 import type { CastlingAnimation } from "./data";
-import type * as ChessModule from "../../modules/chess";
+import type * as ChessModule from "js/modules/chess";
 import type { Square } from "chess.js";
 
 onSession(() => {

@@ -1,17 +1,17 @@
 import { nextTick } from "vue";
 
-import { setFEN, snapshot } from "../squares";
-import { onSession, state, store } from "../store";
-import { formatSolution, toNormalFEN } from "../meta/popeye/popeye";
-import { resize } from "../layout";
-import { drawTemplate, load } from "../render";
-import { makeForsyth, toSquare } from "../meta/fen";
-import { createAbbrExp, createAbbrReg } from "../meta/regex";
-import { P, defaultCustomMap, toPopeyePiece } from "../meta/popeye/base";
-import { animate, stopAnimation } from "../animation";
-import { parsePieceCommand } from "../meta/popeye/piece";
-import { BOARD_SIZE, MIN_MEMORY } from "../meta/constants";
-import { alert } from "../meta/dialogs";
+import { setFEN, snapshot } from "js/interface/squares";
+import { onSession, state, store } from "js/store";
+import { formatSolution, toNormalFEN } from "js/meta/popeye/popeye";
+import { resize } from "js/interface/layout";
+import { drawTemplate, load } from "js/view/render";
+import { makeForsyth, toSquare } from "js/meta/fen";
+import { createAbbrExp, createAbbrReg } from "js/meta/regex";
+import { P, defaultCustomMap, toPopeyePiece } from "js/meta/popeye/base";
+import { animate, stopAnimation } from "js/view/animation";
+import { parsePieceCommand } from "js/meta/popeye/piece";
+import { BOARD_SIZE, MIN_MEMORY } from "js/meta/constants";
+import { alert } from "js/meta/dialogs";
 
 const INSUFFICIENT_MEMORY = -2;
 const MAX_LINES = 3000;

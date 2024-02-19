@@ -1,9 +1,9 @@
-import { store } from "../store";
-import { CE } from "../render";
-import { DEFAULT_SET, DEFAULT_SIZE, getDimensions } from "../meta/option";
-import { inferDimension, makeForsyth } from "../meta/fen";
-import { currentFEN, normalSnapshot } from "../squares";
-import { alert } from "../meta/dialogs";
+import { store } from "js/store";
+import { CE } from "js/view/render";
+import { DEFAULT_SET, DEFAULT_SIZE, getDimensions } from "js/meta/option";
+import { inferDimension, makeForsyth } from "js/meta/fen";
+import { currentFEN, normalSnapshot } from "js/interface/squares";
+import { alert } from "js/meta/dialogs";
 
 function getURL(url) {
 	return new URL(url, location.href).toString();

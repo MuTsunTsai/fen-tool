@@ -111,13 +111,13 @@
 	import { store, state, status, noEditing } from "js/store";
 	import { env } from "js/meta/env";
 	import { API } from "js/tools/api";
-	import { copyImage } from "js/copy";
-	import { getBlob } from "js/render";
+	import { copyImage } from "js/interface/copy";
+	import { getBlob } from "js/view/render";
 	import CopyButton from "@/components/copyButton.vue";
-	import { stopAnimation } from "js/animation";
-	import { replace, snapshot, FEN } from "js/squares";
+	import { stopAnimation } from "js/view/animation";
+	import { replace, snapshot, FEN } from "js/interface/squares";
 	import { shift, mirror, rotate } from "js/meta/fen";
-	import { setOption } from "js/layout";
+	import { setOption } from "js/interface/layout";
 	import ShareButton from "./shareButton.vue";
 
 	function shiftBy(dx: number, dy: number): void {

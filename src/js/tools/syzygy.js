@@ -1,8 +1,8 @@
-import { ONE_SECOND } from "../meta/constants";
-import { orthodoxFEN } from "../squares";
-import { onSession, state, status } from "../store";
+import { ONE_SECOND } from "js/meta/constants";
+import { orthodoxFEN } from "js/interface/squares";
+import { onSession, state, status } from "js/store";
 import { importGame, loadChessModule } from "./play/play";
-import { alert } from "../meta/dialogs";
+import { alert } from "js/meta/dialogs";
 
 const TOO_MANY_REQUESTS = 429;
 const COOL_DOWN_TIME = 61;
@@ -20,7 +20,7 @@ onSession(() => {
 	}
 });
 
-/** @type {import("../modules/chess")} */
+/** @type {import("js/modules/chess")} */
 let module;
 
 let context;

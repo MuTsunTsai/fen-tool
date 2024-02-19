@@ -1,7 +1,7 @@
-import { inferDimension, parseFEN } from "../meta/fen";
-import { makeOption } from "../meta/option";
+import { inferDimension, parseFEN } from "js/meta/fen";
+import { makeOption } from "js/meta/option";
 import { dpr, draw } from "./draw.js";
-import { loadAsset } from "../asset";
+import { loadAsset } from "js/view/asset";
 
 parent.postMessage(null, "*"); // Signal ready
 

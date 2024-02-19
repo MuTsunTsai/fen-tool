@@ -50,3 +50,9 @@ export enum TemplateMap {
 export enum TemplateRow {
 	k, q, b, n, r, p, c, x,
 }
+
+export enum Background {
+	gray = "gray",
+	green = "green",
+	classic = "classic",
+}

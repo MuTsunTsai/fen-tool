@@ -47,8 +47,8 @@
 
 	import { store, state, status, noEditing } from "js/store";
 	import { env } from "js/meta/env";
-	import { Project } from "js/project";
-	import { setFEN } from "js/squares";
+	import { Project } from "js/tools/project";
+	import { setFEN } from "js/interface/squares";
 
 	const sorting = shallowRef(false);
 

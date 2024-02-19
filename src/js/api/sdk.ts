@@ -1,6 +1,6 @@
 import { init } from "./sdk-base";
 
-const script = document.currentScript;
+const script = document.currentScript!;
 
 init({
 	getDefault: () => script.dataset,

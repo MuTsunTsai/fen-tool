@@ -1,10 +1,10 @@
 import { shallowRef } from "vue";
 
-import { CN } from "./meta/el";
-import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, parseFEN } from "./meta/fen";
-import { state, status, store } from "./store";
-import { animate, animeSettings } from "./animation";
-import { BOARD_SIZE, INIT_SQ_COUNT } from "./meta/constants";
+import { CN } from "js/meta/el";
+import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, parseFEN } from "js/meta/fen";
+import { state, status, store } from "js/store";
+import { animate, animeSettings } from "js/view/animation";
+import { BOARD_SIZE, INIT_SQ_COUNT } from "js/meta/constants";
 
 export const squares = new Array(INIT_SQ_COUNT);
 export const container = document.getElementById("Squares");

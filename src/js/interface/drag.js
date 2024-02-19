@@ -1,15 +1,15 @@
-import { getRenderSize, noEditing, state, status, store } from "./store";
+import { getRenderSize, noEditing, state, status, store } from "js/store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
-import { CN, PV, TP, CG, TPG } from "./meta/el";
-import { drawTemplate, templateValues } from "./render";
-import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "./tools/play/play";
-import { types } from "./draw";
-import { LABEL_MARGIN } from "./meta/option";
-import { env } from "./meta/env";
-import { animate } from "./animation";
-import { Popeye } from "./tools/popeye";
-import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
-import { Rotation, TemplateRow } from "./meta/enum";
+import { CN, PV, TP, CG, TPG } from "js/meta/el";
+import { drawTemplate, templateValues } from "js/view/render";
+import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "js/tools/play/play";
+import { types } from "js/view/draw";
+import { LABEL_MARGIN } from "js/meta/option";
+import { env } from "js/meta/env";
+import { animate } from "js/view/animation";
+import { Popeye } from "js/tools/popeye";
+import { BOARD_SIZE, TEMPLATE_SIZE } from "js/meta/constants";
+import { Rotation, TemplateRow } from "js/meta/enum";
 
 const DRAG_THRESHOLD = 5;
 const ROTATE_THRESHOLD = 10;

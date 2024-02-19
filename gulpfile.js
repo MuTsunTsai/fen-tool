@@ -76,7 +76,7 @@ gulp.task("css", () =>
 );
 
 gulp.task("js", () =>
-	gulp.src("src/js/main.js")
+	gulp.src("src/js/main.ts")
 		.pipe($.newer({
 			dest: "docs/main.js",
 			extra: [__filename, vueSource, "src/js/**/*.js", "src/js/**/*.ts"]
@@ -110,7 +110,7 @@ gulp.task("html", () =>
 );
 
 gulp.task("gen", () =>
-	gulp.src("src/js/api/gen.js")
+	gulp.src("src/js/api/gen.ts")
 		.pipe($.newer({
 			dest: "docs/gen/gen.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
@@ -147,7 +147,7 @@ gulp.task("sw", () =>
 );
 
 gulp.task("sdk", () =>
-	gulp.src("src/js/api/sdk.js")
+	gulp.src("src/js/api/sdk.ts")
 		.pipe($.newer({
 			dest: "docs/sdk.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]
@@ -158,7 +158,7 @@ gulp.task("sdk", () =>
 );
 
 gulp.task("api", () =>
-	gulp.src("src/js/api/api.js")
+	gulp.src("src/js/api/api.ts")
 		.pipe($.newer({
 			dest: "docs/api/api.js",
 			extra: [__filename, "src/js/**/*.js", "src/js/**/*.ts"]

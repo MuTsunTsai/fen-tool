@@ -1,14 +1,14 @@
 import { nextTick } from "vue";
 
-import { deepAssign } from "./meta/clone";
-import { CG, CN, SN, TP, TPG } from "./meta/el";
-import { getRenderSize, search, state, status, store } from "./store";
-import { draw, drawEmpty, drawTemplate, load } from "./render";
+import { deepAssign } from "js/meta/clone";
+import { CG, CN, SN, TP, TPG } from "js/meta/el";
+import { getRenderSize, search, state, status, store } from "js/store";
+import { draw, drawEmpty, drawTemplate, load } from "js/view/render";
 import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, snapshot, toFEN } from "./squares";
-import { getDimensions, sanitizeBorder } from "./meta/option";
-import { dpr, env } from "./meta/env";
-import { redrawSDK } from "./api/sdk-base";
-import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "./meta/constants";
+import { getDimensions, sanitizeBorder } from "js/meta/option";
+import { dpr, env } from "js/meta/env";
+import { redrawSDK } from "js/api/sdk-base";
+import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "js/meta/constants";
 
 const PX = "px";
 const X_GAP = 2; // rem

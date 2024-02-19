@@ -1,4 +1,4 @@
-import { TEMPLATE_SIZE } from "./meta/constants";
+import { TEMPLATE_SIZE } from "js/meta/constants";
 
 const ASSET_HEIGHT = 12;
 const SYMBOL_OFFSET = 6;

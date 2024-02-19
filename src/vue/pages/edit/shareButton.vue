@@ -10,7 +10,7 @@
 	import { status } from "js/store";
 	import { env } from "js/meta/env";
 	import { API, normalForsyth } from "js/tools/api";
-	import { getBlob } from "js/render";
+	import { getBlob } from "js/view/render";
 
 	const sharing = shallowRef(false);
 

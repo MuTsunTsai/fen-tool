@@ -1,43 +1,50 @@
-import { inferDimension } from "../meta/fen";
-import { getDimensions, makeOption } from "../meta/option";
+import { inferDimension } from "js/meta/fen";
+import { getDimensions, makeOption } from "js/meta/option";
 
-const script = document.currentScript;
+import type { BoardOptions } from "js/meta/option";
+
+const script = document.currentScript as HTMLScriptElement;
 const selector = "img[fen]";
 
 const frame = document.createElement("iframe");
 frame.style.display = "none";
 
-let currentConfig;
+interface SdkConfig {
+	getDefault: () => Partial<BoardOptions>;
+	getTitle: (fen: string, dataSet: DOMStringMap) => string;
+}
 
-function setup(img) {
+let currentConfig: SdkConfig;
+
+function setup(img: HTMLImageElement): void {
 	const channel = new MessageChannel();
 	channel.port1.onmessage = event => {
 		img.src = event.data;
 		img.title = currentConfig.getTitle(fen, img.dataset);
 	};
-	const fen = img.getAttribute("fen");
+	const fen = img.getAttribute("fen")!;
 	const options = makeOption(Object.assign({}, currentConfig.getDefault(), img.dataset));
 	const dim = inferDimension(fen);
 	if(dim) Object.assign(options, dim);
 	const { w, h } = getDimensions(options);
 	img.width = w;
 	img.height = h;
-	frame.contentWindow.postMessage({ fen, options }, "*", [channel.port2]);
+	frame.contentWindow!.postMessage({ fen, options }, "*", [channel.port2]);
 }
 
-function check(node) {
+function check(node: Node): void {
 	if(node instanceof Element) {
-		if(node.matches(selector)) setup(node);
-		else node.querySelectorAll(selector).forEach(img => setup(img));
+		if(node.matches(selector)) setup(node as HTMLImageElement);
+		else node.querySelectorAll(selector).forEach(img => setup(img as HTMLImageElement));
 	}
 }
 
-export async function init(config) {
+export async function init(config: SdkConfig): Promise<void> {
 	const apiURL = new URL("api/", script.src);
 	currentConfig = config;
 	document.head.appendChild(frame); // sounds funny but works
-	await new Promise(resolve => {
-		const handler = event => {
+	await new Promise<void>(resolve => {
+		const handler = (event: MessageEvent): void => {
 			if(event.source != frame.contentWindow) return;
 			removeEventListener("message", handler);
 			resolve();
@@ -50,10 +57,12 @@ export async function init(config) {
 	new MutationObserver(list => {
 		for(const record of list) {
 			if(record.type == "attributes") {
-				const name = record.attributeName.toLowerCase();
+				const name = record.attributeName!.toLowerCase();
 				const isData = name.startsWith("data");
 				if(record.target == script && isData) check(document.body);
-				if(record.target.nodeName == "IMG" && (name == "fen" || isData)) setup(record.target);
+				if(record.target.nodeName == "IMG" && (name == "fen" || isData)) {
+					setup(record.target as HTMLImageElement);
+				}
 			} else {
 				for(const node of record.addedNodes) check(node);
 			}
@@ -67,6 +76,6 @@ export async function init(config) {
 	check(doc);
 }
 
-export function redrawSDK() {
+export function redrawSDK(): void {
 	check(document.body);
 }

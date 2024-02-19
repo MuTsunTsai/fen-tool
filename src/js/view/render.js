@@ -1,15 +1,15 @@
-import { CN, CG, TP, TPG, PV, SN } from "./meta/el";
-import { store, state, noEditing, status } from "./store";
-import { pushState, snapshot } from "./squares";
+import { CN, CG, TP, TPG, PV, SN } from "js/meta/el";
+import { store, state, noEditing, status } from "js/store";
+import { pushState, snapshot } from "js/interface/squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
-import { getDimensions } from "./meta/option";
-import { dpr } from "./meta/env";
+import { getDimensions } from "js/meta/option";
+import { dpr } from "js/meta/env";
 import { animeSettings } from "./animation";
-import { emptyBoard } from "./meta/fen";
-import { redrawSDK } from "./api/sdk-base";
-import { BOARD_SIZE, TEMPLATE_SIZE } from "./meta/constants";
-import { TemplateMap, TemplateRow } from "./meta/enum";
+import { emptyBoard } from "js/meta/fen";
+import { redrawSDK } from "js/api/sdk-base";
+import { BOARD_SIZE, TEMPLATE_SIZE } from "js/meta/constants";
+import { TemplateMap, TemplateRow } from "js/meta/enum";
 
 const SELECTION_WIDTH_FACTOR = 12;
 const SELECTION_GRID = 8;

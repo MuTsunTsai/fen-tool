@@ -1,8 +1,8 @@
 import { shallowRef, watchEffect } from "vue";
 
-import { alert } from "./meta/dialogs";
-import { store } from "./store";
-import { currentFEN } from "./squares";
+import { alert } from "js/meta/dialogs";
+import { store } from "js/store";
+import { currentFEN } from "js/interface/squares";
 
 export const Project = {
 	reset() {

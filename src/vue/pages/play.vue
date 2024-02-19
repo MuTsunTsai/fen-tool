@@ -174,12 +174,12 @@
 	import { PLAY } from "js/tools/play/play";
 	import { env } from "js/meta/env";
 	import { state, status, store } from "js/store";
-	import { updateBG } from "js/render";
+	import { updateBG } from "js/view/render";
 	import CopyButton from "@/components/copyButton.vue";
 	import Checkbox from "@/components/checkbox.vue";
 	import Radio from "@/components/radio.vue";
 	import { Color, PlayMode } from "js/meta/enum";
-	import { FEN, resetEdwards } from "js/squares";
+	import { FEN, resetEdwards } from "js/interface/squares";
 	import { overState } from "js/modules/chess";
 
 	const isRetro = (): boolean => state.play.mode == PlayMode.retro;

@@ -1,5 +1,5 @@
-import { env } from "./meta/env";
-import { alert } from "./meta/dialogs";
+import { env } from "js/meta/env";
+import { alert } from "js/meta/dialogs";
 
 export async function copyImage(factory) {
 	if(env.canCopyImg) {

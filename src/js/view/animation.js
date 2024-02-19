@@ -1,8 +1,8 @@
 import { getAsset } from "./asset";
 import { drawBoard, drawPiece } from "./draw";
-import { dpr } from "./meta/env";
-import { parseFEN, parseSquare, parseXY } from "./meta/fen";
-import { getDimensions } from "./meta/option";
+import { dpr } from "js/meta/env";
+import { parseFEN, parseSquare, parseXY } from "js/meta/fen";
+import { getDimensions } from "js/meta/option";
 
 const speed = 150;
 

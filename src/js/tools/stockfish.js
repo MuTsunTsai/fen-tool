@@ -1,12 +1,12 @@
-import { clone } from "../meta/clone";
-import { env } from "../meta/env";
-import { SQ } from "../meta/popeye/base";
-import { orthodoxFEN } from "../squares";
-import { STOCKFISH, onSession, state, status, store } from "../store";
+import { clone } from "js/meta/clone";
+import { env } from "js/meta/env";
+import { SQ } from "js/meta/popeye/base";
+import { orthodoxFEN } from "js/interface/squares";
+import { STOCKFISH, onSession, state, status, store } from "js/store";
 import { importGame, loadChessModule } from "./play/play";
-import { alert } from "../meta/dialogs";
-import { StockfishRunning, StockfishStatus } from "../meta/enum";
-import { MIN_MEMORY } from "../meta/constants";
+import { alert } from "js/meta/dialogs";
+import { StockfishRunning, StockfishStatus } from "js/meta/enum";
+import { MIN_MEMORY } from "js/meta/constants";
 
 const DEPTH_THRESHOLD = 4;
 const PERCENTAGE = 100;
@@ -32,10 +32,10 @@ onSession(() => {
 /** @type {Worker} */
 let stockfish;
 
-/** @type {import("../modules/chess")} */
+/** @type {import("js/modules/chess")} */
 let module;
 
-/** @type {import("../modules/chess").Chess} */
+/** @type {import("js/modules/chess").Chess} */
 let chess;
 
 /** @type {string} */

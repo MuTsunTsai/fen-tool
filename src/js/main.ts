@@ -1,9 +1,9 @@
 import { createSSRApp, watchEffect } from "vue";
 
 import { store, state, status, initSession } from "./store";
-import { updateEdwards } from "./squares";
-import { initLayout, setOption } from "./layout";
-import { initDrag } from "./drag";
+import { updateEdwards } from "./interface/squares";
+import { initLayout, setOption } from "./interface/layout";
+import { initDrag } from "./interface/drag";
 import { init as initSDK } from "./api/sdk-base";
 import { moveHistory } from "./tools/play/play";
 import { Popeye } from "./tools/popeye";
@@ -13,7 +13,7 @@ import App from "../vue/app.vue";
 
 initSDK({
 	getDefault: () => store.board,
-	getTitle: fen => fen,
+	getTitle: (fen: string) => fen,
 });
 
 // https://stackoverflow.com/a/43321596/9953396

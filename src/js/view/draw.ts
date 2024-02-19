@@ -1,8 +1,11 @@
-import { ONE_EMOJI, convertSN } from "./meta/fen";
+import { ONE_EMOJI, convertSN } from "js/meta/fen";
 import { getAsset } from "./asset";
-import { LABEL_MARGIN, getDimensions } from "./meta/option";
-import { CHAR_A_OFFSET } from "./meta/constants";
-import { Rotation } from "./meta/enum";
+import { LABEL_MARGIN, getDimensions } from "js/meta/option";
+import { CHAR_A_OFFSET } from "js/meta/constants";
+import { Rotation } from "js/meta/enum";
+
+import type { BoardOptions, Border } from "js/meta/option";
+import type { Background } from "js/meta/enum";
 
 const DEFAULT_KNIGHT_OFFSET = 0.5;
 const MAX_ALPHABET = 26;
@@ -15,11 +18,11 @@ const FULL_ALPHA = 255;
 export const types = ["k", "q", "b", "n", "r", "p", "c", "x", "s", "t", "a", "d"];
 
 const pieces = document.createElement("canvas");
-const pieceCtx = pieces.getContext("2d");
+const pieceCtx = pieces.getContext("2d")!;
 const mask = document.createElement("canvas");
-const maskCtx = mask.getContext("2d");
+const maskCtx = mask.getContext("2d")!;
 
-const maskAlpha = {
+const maskAlphaRaw = {
 	26: "YdVh1QDVYdVh",
 	32: "AAAKAAAAo/+jAAr/AP8KAKP/owAAAAoAAA==",
 	38: "AAw+DAAM3P/cDD7/AP8+DNz/3AwADD4MAA==",
@@ -28,9 +31,14 @@ const maskAlpha = {
 	64: "AAAEHgQAAAA/5v/mPwAE5v///+YEHv//AP//HgTm////5gQAP+b/5j8AAAAEHgQAAA==",
 	76: "AARZhFkEAAS7////uwRZ//////9ZhP//AP//hFn//////1kEu////7sEAARZhFkEAA==",
 	88: "AEfE68RHAEf8/////EfE///////E6///AP//68T//////8RH/P////xHAEfE68RHAA==",
-};
+} as Record<number, string>;
+const maskAlpha = {} as Record<number, number[]>;
 
-export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
+export function drawBoard(
+	ctx: CanvasRenderingContext2D,
+	squares: string[], options: BoardOptions,
+	dpr: number, ghost?: boolean, isTemplate?: boolean
+): void {
 	const { w, h, border, offset, margin } = getDimensions(options, isTemplate);
 	const assets = getAsset(options, dpr);
 	ctx.canvas.width = w * dpr;
@@ -58,9 +66,12 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
 			}
 		}
 		ctx.restore();
-		ctx.drawImage(mask, 0, 0); // Repeat 3 times to increase masking
+
+		// Repeat 3 times to increase masking
 		ctx.drawImage(mask, 0, 0);
 		ctx.drawImage(mask, 0, 0);
+		ctx.drawImage(mask, 0, 0);
+
 		ctx.drawImage(pieces, 0, 0);
 	}
 	ctx.scale(dpr, dpr);
@@ -73,11 +84,20 @@ export function drawBoard(ctx, squares, options, dpr, ghost, isTemplate) {
 	if(!ghost) drawBorder(ctx, border, w, h, margin);
 }
 
+interface DrawContext {
+	assets: CanvasImageSource;
+	options: BoardOptions;
+	dpr: number;
+}
+
 /**
  * The core drawing method.
- * @param {CanvasRenderingContext2D} ctx
  */
-export function drawPiece(ctx, i, j, raw, { assets, options, dpr }) {
+export function drawPiece(
+	ctx: CanvasRenderingContext2D,
+	i: number, j: number, raw: string,
+	{ assets, options, dpr }: DrawContext
+): void {
 	const context = parsePiece(raw, options);
 	if(!context) return;
 	const { neutral, rotate, isText, value, lower, typeIndex } = context;
@@ -110,14 +130,23 @@ export function drawPiece(ctx, i, j, raw, { assets, options, dpr }) {
 	ctx.restore();
 }
 
-function parsePiece(value, options) {
+interface PieceContext {
+	neutral: boolean;
+	rotate: number;
+	isText: boolean;
+	value: string;
+	lower: string;
+	typeIndex: number;
+}
+
+function parsePiece(value: string | undefined, options: BoardOptions): PieceContext | null {
 	if(value === undefined) value = "";
 
-	const neutral = value && value.startsWith("-");
+	const neutral = Boolean(value) && value.startsWith("-");
 	if(neutral) value = value.substring(1);
 
 	const match = value.match(/^\*(\d)/);
-	let rotate = match && match[1] || undefined;
+	let rotate = match && match[1] ? Number(match[1]) : undefined;
 	if(rotate !== undefined) value = value.substring(2);
 	rotate = Number(rotate) % Rotation.full;
 
@@ -130,25 +159,25 @@ function parsePiece(value, options) {
 	return { neutral, rotate, isText, value, lower, typeIndex };
 }
 
-function getShiftX(context, bw) {
+function getShiftX(context: PieceContext, bw: boolean): number {
 	const { neutral, value, lower } = context;
 	if(neutral) return bw ? 0 : 2;
 	else return value == lower ? 0 : 1;
 }
 
-function getFraction(neutral, lower, bw, options) {
+function getFraction(neutral: boolean, lower: string, bw: boolean, options: BoardOptions): number {
 	if(!neutral || !bw) return 1;
 	return lower == "n" ? options.knightOffset : DEFAULT_KNIGHT_OFFSET;
 }
 
-function background(pattern, i, j) {
+function background(pattern: string | undefined, i: number, j: number): number {
 	if(pattern == "mono") return 1;
 	let bg = (i + j) % 2;
 	if(pattern != "inverted") bg = 1 - bg;
 	return bg;
 }
 
-function drawBorder(ctx, border, w, h, margin) {
+function drawBorder(ctx: CanvasRenderingContext2D, border: Border, w: number, h: number, margin: IPoint): void {
 	ctx.save();
 	ctx.translate(margin.x, 0);
 	w -= margin.x;
@@ -166,7 +195,7 @@ function drawBorder(ctx, border, w, h, margin) {
 	ctx.restore();
 }
 
-function drawCoordinates(ctx, options, bSize) {
+function drawCoordinates(ctx: CanvasRenderingContext2D, options: BoardOptions, bSize: number): void {
 	const { size, w, h } = options;
 	ctx.font = "15px sans-serif";
 	ctx.strokeStyle = "black";
@@ -191,7 +220,7 @@ function drawCoordinates(ctx, options, bSize) {
 	}
 }
 
-function createGlow(ctx, size, dpr) {
+function createGlow(ctx: CanvasRenderingContext2D, size: number, dpr: number): void {
 	const cn = ctx.canvas;
 	mask.width = pieces.width = cn.width;
 	mask.height = pieces.height = cn.height;
@@ -219,9 +248,9 @@ function createGlow(ctx, size, dpr) {
 	ctx.restore();
 }
 
-function getMask(id) {
-	if(typeof maskAlpha[id] == "string") {
-		const binary = atob(maskAlpha[id]);
+function getMask(id: number): number[] {
+	if(!(id in maskAlpha)) {
+		const binary = atob(maskAlphaRaw[id]);
 		const result = [];
 		for(let i = 0; i < binary.length; i++) result.push(binary.charCodeAt(i));
 		maskAlpha[id] = result;
@@ -229,7 +258,7 @@ function getMask(id) {
 	return maskAlpha[id];
 }
 
-function drawBlank(ctx, i, j, options) {
+function drawBlank(ctx: CanvasRenderingContext2D, i: number, j: number, options: BoardOptions): void {
 	const light = background(options.pattern, i, j);
 	const size = options.size;
 	ctx.save();
@@ -247,7 +276,7 @@ function drawBlank(ctx, i, j, options) {
 	ctx.restore();
 }
 
-function drawClassic(ctx, size) {
+function drawClassic(ctx: CanvasRenderingContext2D, size: number): void {
 	ctx.beginPath();
 	const step = size / CLASSIC_STEPS;
 	for(let i = 0; i < size; i += step) {
@@ -261,7 +290,7 @@ function drawClassic(ctx, size) {
 	ctx.stroke();
 }
 
-function getBgColor(light, bg) {
+function getBgColor(light: number, bg: Background | undefined): string {
 	if(bg == "classic") {
 		return "none";
 	} else if(bg == "gray") {
@@ -273,11 +302,11 @@ function getBgColor(light, bg) {
 	}
 }
 
-function getHeight(measure) {
+function getHeight(measure: TextMetrics): number {
 	return measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;
 }
 
-function drawText(ctx, text, size) {
+function drawText(ctx: CanvasRenderingContext2D, text: string, size: number): void {
 	ctx.save();
 	const isEmoji = ONE_EMOJI.test(text);
 	const font = size - TEXT_PADDING;
