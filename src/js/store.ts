@@ -10,6 +10,8 @@ import { StockfishRunning, StockfishStatus } from "./meta/enum";
 import { DEFAULT_BBS_OPTIONS } from "./modules/ptt/data";
 import { DEFAULT_PLAY_OPTIONS, DEFAULT_PLAY_STATE } from "./tools/play/data";
 
+import type { ProjectEntry } from "./tools/project";
+
 export const search = new URL(location.href).searchParams;
 
 // Persistent settings, and is synchronized across instances
@@ -34,7 +36,7 @@ const settings = {
 		pieceMap: defaultCustomMap,
 	},
 	board: DEFAULT_BOARD_OPTIONS,
-	project: [],
+	project: [] as ProjectEntry[],
 };
 
 export const store = reactive(settings);

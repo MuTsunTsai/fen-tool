@@ -4,6 +4,11 @@ import { alert } from "js/meta/dialogs";
 import { store } from "js/store";
 import { currentFEN } from "js/interface/squares";
 
+export interface ProjectEntry {
+	id: number;
+	fen: string;
+}
+
 export const Project = {
 	reset() {
 		store.project = [];
@@ -11,10 +16,10 @@ export const Project = {
 	add() {
 		store.project.push(makeEntry(currentFEN.value));
 	},
-	remove(i) {
+	remove(i: number) {
 		store.project.splice(i, 1);
 	},
-	async open(file) {
+	async open(file: File) {
 		const content = await readFile(file);
 		try {
 			const json = JSON.parse(content);
@@ -28,10 +33,11 @@ export const Project = {
 			);
 			if(!matches || !matches.length) {
 				alert("Unable to parse the file. It's not an FEN-Tool project file and it doesn't contain valid FENs.");
+				return;
 			}
-			const entries = [];
+			const entries: ProjectEntry[] = [];
 			for(const [i, match] of matches.entries()) {
-				entries.push(makeEntry(match), i);
+				entries.push(makeEntry(match, i));
 			}
 			store.project = entries;
 		}
@@ -39,7 +45,7 @@ export const Project = {
 	link: shallowRef(""),
 };
 
-function makeEntry(fen, offset = 0) {
+function makeEntry(fen: string, offset = 0): ProjectEntry {
 	return {
 		// We cannot assume that the data are unique, so we need an id for Slicksort.
 		// Using timestamp is unique enough for our use case.
@@ -59,14 +65,10 @@ watchEffect(() => {
 	Project.link.value = link;
 });
 
-/**
- * @param {File} file
- * @returns {Promise<string>}
- */
-function readFile(file) {
+function readFile(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		reader.onload = e => resolve(e.target.result);
+		reader.onload = e => resolve(e.target!.result as string);
 		reader.onerror = e => reject(e);
 		reader.readAsText(file);
 	});
