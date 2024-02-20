@@ -37,7 +37,7 @@
 		await wait;
 
 		return new Promise<void>(resolve => {
-			message.value = msg;
+			message.value = msg.replace(/\n/g, "<br>");
 			el.value!.addEventListener("hide.bs.modal", () => {
 				resolve();
 			}, { once: true });

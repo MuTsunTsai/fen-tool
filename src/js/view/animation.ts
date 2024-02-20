@@ -4,31 +4,60 @@ import { dpr } from "js/meta/env";
 import { parseFEN, parseSquare, parseXY } from "js/meta/fen";
 import { getDimensions } from "js/meta/option";
 
+import type { BoardOptions } from "js/meta/option";
+
+interface Move {
+	p: string;
+	promo?: string;
+	from: IPoint;
+	to: IPoint;
+}
+
+interface Stage {
+	board: Board;
+	moves: Move[];
+}
+
 const speed = 150;
 
 /** For injecting dependencies. */
-export const animeSettings = {};
+export const animeSettings = {} as {
+	ctx: CanvasRenderingContext2D;
+	options: BoardOptions;
 
-/** @type {Animation} */
-let animation;
+	/** What to do after the animation is completed. */
+	callback: Consumer<string>;
+};
 
-export function animate(before, after, instruction, reverse) {
+let animation: Animation | undefined;
+
+export function animate(before: string, after: string, instruction: string, reverse: boolean): Promise<void> {
 	stopAnimation();
 	animation = new Animation(before, after, instruction, reverse);
 	return animation.promise;
 }
 
-export function stopAnimation(useCallBack) {
+export function stopAnimation(useCallBack?: boolean): void {
 	if(animation) animation.stop(useCallBack ? animeSettings.callback : undefined);
 }
 
 class Animation {
 
-	constructor(before, after, instruction, reverse) {
+	public promise: Promise<void>;
+	private after: string;
+	private reverse: boolean;
+	private resolve!: Action;
+	private cursor: number;
+	private stages: Stage[];
+	private anime: Consumer<DOMHighResTimeStamp>;
+	private request: number;
+	private background!: ImageData;
+	private startTime: number | undefined;
+
+	constructor(before: string, after: string, instruction: string, reverse: boolean) {
 		this.after = reverse ? before : after;
 		this.reverse = reverse;
 
-		/** @type {Promise<void>} */
 		this.promise = new Promise(resolve => this.resolve = resolve);
 
 		this.cursor = -1;
@@ -37,8 +66,8 @@ class Animation {
 		const board = parseFEN(before);
 		const { h, w } = animeSettings.options;
 		for(const stage of stages) {
-			const moves = [];
-			const squares = stage.match(/[`a-z]\d(=(\*\d)?[A-Z])?/g);
+			const moves: Move[] = [];
+			const squares = stage.match(/[`a-z]\d(=(\*\d)?[A-Z])?/g)!;
 			for(let i = 0; i < squares.length; i += 2) {
 				const from = squares[i], to = squares[i + 1];
 				const sq = parseSquare(from, w, h);
@@ -60,19 +89,18 @@ class Animation {
 			}
 		}
 
-		this.background = undefined;
 		this.anime = this.step.bind(this);
 		this.request = requestAnimationFrame(this.anime);
 	}
 
-	stop(callback) {
+	stop(callback?: Consumer<string>): void {
 		cancelAnimationFrame(this.request);
 		animation = undefined;
 		if(callback) callback(this.after);
 		this.resolve();
 	}
 
-	step(timestamp) {
+	step(timestamp: DOMHighResTimeStamp): void {
 		const { ctx, options, callback } = animeSettings;
 
 		if(!this.startTime) this.startTime = timestamp;

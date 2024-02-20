@@ -1,4 +1,4 @@
-import { CN, CG, TP, TPG, PV, SN } from "js/meta/el";
+import { cnvMain, cnvGhost, cnvTemplate, cnvTempGhost, imgOverlay, cnvSquares } from "js/meta/el";
 import { store, state, noEditing, status } from "js/store";
 import { pushState, snapshot } from "js/interface/squares";
 import { drawBoard, types } from "./draw";
@@ -22,11 +22,11 @@ const MASK_ALPHA_LIGHT = 0.4;
 export const templateValues = "k,K,-k,q,Q,-q,b,B,-b,n,N,-n,r,R,-r,p,P,-p,c,C,-c,x,X,-x".split(",");
 const templateHorValues = "k,q,b,n,r,p,c,x,K,Q,B,N,R,P,C,X,-k,-q,-b,-n,-r,-p,-c,-x".split(",");
 
-function getExportDPR() {
+function getExportDPR(): number {
 	return store.board.exHigh ? 2 : 1;
 }
 
-export async function load() {
+export async function load(): Promise<void> {
 	status.loading = true;
 	const tasks = [loadAsset("assets", store.board, dpr)];
 	const exDPR = getExportDPR();
@@ -35,27 +35,24 @@ export async function load() {
 	status.loading = false;
 }
 
-export const ctx = CN.getContext("2d");
-const gCtx = CG.getContext("2d");
-const tCtx = TP.getContext("2d");
-const tgCtx = TPG.getContext("2d");
+export const ctxMain = cnvMain.getContext("2d")!;
+const ctxGhost = cnvGhost.getContext("2d")!;
+const ctxTemplate = cnvTemplate.getContext("2d")!;
+const ctxTempGhost = cnvTempGhost.getContext("2d")!;
 
-export const CE = document.createElement("canvas");
-const eCtx = CE.getContext("2d");
+export const cnvHidden = document.createElement("canvas");
+const ctxHidden = cnvHidden.getContext("2d")!;
 
 const cache = {
-	except: undefined,
-	data: undefined,
+	except: undefined as number[] | undefined,
+	data: undefined as string[] | undefined,
 };
 
-animeSettings.ctx = ctx;
+animeSettings.ctx = ctxMain;
 
-/**
- * @param {number[]} except
- */
-export function drawTemplate(except) {
+export function drawTemplate(except?: number[]): void {
 	if(except) cache.except = except;
-	else except = cache.except;
+	else except = cache.except!;
 	const options = Object.assign(
 		{},
 		store.board,
@@ -64,73 +61,73 @@ export function drawTemplate(except) {
 			{ w: TEMPLATE_SIZE, h: BOARD_SIZE }
 	);
 	const squares = getTemplate();
-	drawBoard(tCtx, squares, options, dpr, false, status.hor);
+	drawBoard(ctxTemplate, squares, options, dpr, false, status.hor);
 	const { size } = store.board;
 	if(!noEditing()) {
-		drawBoard(tgCtx, squares, options, dpr, true, status.hor);
+		drawBoard(ctxTempGhost, squares, options, dpr, true, status.hor);
 		if(status.selection) {
-			tCtx.save();
+			ctxTemplate.save();
 			const { offset } = getDimensions(store.board, status.hor);
-			tCtx.lineWidth = size / SELECTION_WIDTH_FACTOR;
-			tCtx.strokeStyle = "#0d6efd";
-			tCtx.translate(offset.x, offset.y);
+			ctxTemplate.lineWidth = size / SELECTION_WIDTH_FACTOR;
+			ctxTemplate.strokeStyle = "#0d6efd";
+			ctxTemplate.translate(offset.x, offset.y);
 			const index = templateValues.indexOf(status.selection);
 			const x = index % TEMPLATE_SIZE;
 			const y = (index - x) / TEMPLATE_SIZE;
 			drawSelectionCore(x, y);
-			tCtx.restore();
+			ctxTemplate.restore();
 		}
 	} else {
 		const isRetro = state.play.mode == "retro";
-		tCtx.save();
+		ctxTemplate.save();
 		const { offset } = getDimensions(store.board, status.hor);
-		tCtx.translate(offset.x, offset.y);
+		ctxTemplate.translate(offset.x, offset.y);
 
 		if(isRetro) drawEp(size);
 		drawMask(except, size);
 		if(isRetro) drawSelection(except, size);
-		tCtx.restore();
+		ctxTemplate.restore();
 	}
 }
 
-function drawEp(size) {
-	tCtx.save();
-	tCtx.font = `${size / 2}px sans-serif`;
-	tCtx.strokeStyle = "black";
-	tCtx.lineWidth = size / TEXT_BORDER_WIDTH_FACTOR;
-	tCtx.fillStyle = "white";
-	tCtx.lineJoin = "round";
+function drawEp(size: number): void {
+	ctxTemplate.save();
+	ctxTemplate.font = `${size / 2}px sans-serif`;
+	ctxTemplate.strokeStyle = "black";
+	ctxTemplate.lineWidth = size / TEXT_BORDER_WIDTH_FACTOR;
+	ctxTemplate.fillStyle = "white";
+	ctxTemplate.lineJoin = "round";
 	drawEpCore(1, TemplateRow.x);
 	drawEpCore(2, TemplateRow.x);
-	tCtx.restore();
+	ctxTemplate.restore();
 }
 
-function drawMask(except, size) {
-	tCtx.save();
-	tCtx.globalAlpha = status.isDark ? MASK_ALPHA_DARK : MASK_ALPHA_LIGHT;
-	tCtx.fillStyle = "black";
+function drawMask(except: number[], size: number): void {
+	ctxTemplate.save();
+	ctxTemplate.globalAlpha = status.isDark ? MASK_ALPHA_DARK : MASK_ALPHA_LIGHT;
+	ctxTemplate.fillStyle = "black";
 	for(let i = 0; i < TEMPLATE_SIZE; i++) {
 		for(let j = 0; j < BOARD_SIZE; j++) {
 			if(except?.includes(j * TEMPLATE_SIZE + i)) continue;
 			const [x, y] = status.hor ? [j, i] : [i, j];
-			tCtx.fillRect(x * size, y * size, size, size);
+			ctxTemplate.fillRect(x * size, y * size, size, size);
 		}
 	}
-	tCtx.restore();
+	ctxTemplate.restore();
 }
 
-function drawSelection(except, size) {
-	tCtx.save();
+function drawSelection(except: number[], size: number): void {
+	ctxTemplate.save();
 	const retro = state.play.retro;
 	const x = except[0] == TemplateMap.bQ ? 0 : 1;
-	tCtx.lineWidth = size / SELECTION_WIDTH_FACTOR;
-	tCtx.strokeStyle = "#0d6efd";
+	ctxTemplate.lineWidth = size / SELECTION_WIDTH_FACTOR;
+	ctxTemplate.strokeStyle = "#0d6efd";
 	if(retro.uncapture) drawSelectionCore(x, types.indexOf(retro.uncapture));
 	if(retro.unpromote) drawSelectionCore(1 - x, SELECTION_OFFSET);
-	tCtx.restore();
+	ctxTemplate.restore();
 }
 
-function getTemplate() {
+function getTemplate(): string[] {
 	let result = status.hor ? templateHorValues : templateValues;
 	if(state.play.playing && state.play.mode == "retro") {
 		result = result.concat();
@@ -145,55 +142,55 @@ function getTemplate() {
 	return result;
 }
 
-function drawEpCore(x, y) {
+function drawEpCore(x: number, y: number): void {
 	const { size } = store.board;
 	const offset = size / TEXT_OFFSET_FACTOR;
 	if(status.hor) [x, y] = [y, x];
-	const measure = tCtx.measureText("ep");
+	const measure = ctxTemplate.measureText("ep");
 	const width = measure.width;
 	const descent = measure.actualBoundingBoxDescent;
-	tCtx.strokeText("ep", x * size - width - offset, y * size - descent - offset);
-	tCtx.fillText("ep", x * size - width - offset, y * size - descent - offset);
+	ctxTemplate.strokeText("ep", x * size - width - offset, y * size - descent - offset);
+	ctxTemplate.fillText("ep", x * size - width - offset, y * size - descent - offset);
 }
 
-function drawSelectionCore(x, y) {
+function drawSelectionCore(x: number, y: number): void {
 	const { size } = store.board;
 	const unit = size / SELECTION_GRID;
 	if(status.hor) [x, y] = [y, x];
 	const offset = 0.5;
-	const drawLines = (...line) => {
+	const drawLines = (...line: [number, number][][]): void => {
 		for(const pt of line) {
-			tCtx.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
+			ctxTemplate.moveTo(x * size + unit * (pt[0][0] + offset), y * size + unit * (pt[0][1] + offset));
 			for(let i = 1; i < pt.length; i++) {
-				tCtx.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
+				ctxTemplate.lineTo(x * size + unit * (pt[i][0] + offset), y * size + unit * (pt[i][1] + offset));
 			}
 		}
 	};
-	tCtx.beginPath();
+	ctxTemplate.beginPath();
 	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
 	drawLines([[0, 2], [0, 0], [2, 0]], [[5, 0], [7, 0], [7, 2]], [[7, 5], [7, 7], [5, 7]], [[0, 5], [0, 7], [2, 7]]);
-	tCtx.stroke();
+	ctxTemplate.stroke();
 }
 
-export async function draw(data) {
+export async function draw(data?: string[]): Promise<void> {
 	if(data) cache.data = data;
 	else data = cache.data || snapshot();
 	const options = store.board;
-	drawBoard(ctx, data, options, dpr);
-	drawBoard(eCtx, data, options, getExportDPR());
+	drawBoard(ctxMain, data, options, dpr);
+	drawBoard(ctxHidden, data, options, getExportDPR());
 	updatePieceCount(data);
 	if(!status.dragging) {
-		drawBoard(gCtx, data, options, dpr, true);
+		drawBoard(ctxGhost, data, options, dpr, true);
 		pushState();
 	}
 	if(location.protocol.startsWith("http")) {
-		const a = document.getElementById("Save");
+		const a = document.getElementById("Save") as HTMLAnchorElement;
 		if(a.href) URL.revokeObjectURL(a.href);
-		PV.src = a.href = URL.createObjectURL(await getBlob());
+		imgOverlay.src = a.href = URL.createObjectURL(await getBlob());
 	}
 }
 
-function updatePieceCount(data) {
+function updatePieceCount(data: string[]): void {
 	let w = 0, b = 0, n = 0, t = 0;
 	for(const s of data) {
 		if(s == "") continue;
@@ -205,27 +202,27 @@ function updatePieceCount(data) {
 	status.pieceCount = `(${w}+${b}${n > 0 ? "+" + n : ""}${t > 0 ? "+" + t : ""})`;
 }
 
-export function drawEmpty(context) {
+export function drawEmpty(context: CanvasRenderingContext2D): void {
 	const { w, h } = store.board;
 	drawBoard(context, emptyBoard(w * h), store.board, dpr);
 }
 
-export function getBlob() {
-	return new Promise(resolve => CE.toBlob(resolve));
+export function getBlob(): Promise<Blob> {
+	return new Promise<Blob>(resolve => cnvHidden.toBlob(resolve as BlobCallback));
 }
 
-export function updateBG() {
-	drawEmpty(SN.getContext("2d"));
+export function updateBG(): void {
+	drawEmpty(cnvSquares.getContext("2d")!);
 	redraw();
 }
 
-export function redraw() {
+export function redraw(): void {
 	draw();
 	drawTemplate();
 	if(store.project.length) redrawSDK();
 }
 
-export async function drawExport() {
+export async function drawExport(): Promise<void> {
 	await load();
 	draw();
 }

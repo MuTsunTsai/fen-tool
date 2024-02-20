@@ -1,7 +1,7 @@
 import { nextTick } from "vue";
 
 import { deepAssign } from "js/meta/clone";
-import { CG, CN, SN, TP, TPG } from "js/meta/el";
+import { cnvGhost, cnvMain, cnvSquares, cnvTemplate, cnvTempGhost } from "js/meta/el";
 import { getRenderSize, search, state, status, store } from "js/store";
 import { draw, drawEmpty, drawTemplate, load } from "js/view/render";
 import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, snapshot, toFEN } from "./squares";
@@ -74,27 +74,27 @@ function setupTemplate(size, borderSize, margin) {
 	let th = (BOARD_SIZE * size + 2 * borderSize) * dpr;
 	if(status.hor) {
 		[tw, th] = [th + margin.x * dpr, tw];
-		CN.parentNode.classList.add("mb-3");
-		TP.classList.remove("ms-4");
+		cnvMain.parentNode.classList.add("mb-3");
+		cnvTemplate.classList.remove("ms-4");
 	} else {
 		th += margin.y * dpr;
-		CN.parentNode.classList.remove("mb-3");
-		TP.classList.add("ms-4");
+		cnvMain.parentNode.classList.remove("mb-3");
+		cnvTemplate.classList.add("ms-4");
 	}
-	if(TP.width !== tw || TP.height !== th) {
-		TPG.width = TP.width = tw;
-		TPG.height = TP.height = th;
+	if(cnvTemplate.width !== tw || cnvTemplate.height !== th) {
+		cnvTempGhost.width = cnvTemplate.width = tw;
+		cnvTempGhost.height = cnvTemplate.height = th;
 	}
 }
 
 function setupBoard(w, h) {
 	const bw = w * dpr;
 	const bh = h * dpr;
-	if(CN.width !== bw || CN.height !== bh) {
-		SN.width = CG.width = CN.width = bw;
-		SN.height = CG.height = CN.height = bh;
+	if(cnvMain.width !== bw || cnvMain.height !== bh) {
+		cnvSquares.width = cnvGhost.width = cnvMain.width = bw;
+		cnvSquares.height = cnvGhost.height = cnvMain.height = bh;
 	}
-	drawEmpty(SN.getContext("2d"));
+	drawEmpty(cnvSquares.getContext("2d"));
 }
 
 function setDimension(dim) {
@@ -106,16 +106,16 @@ function setDimension(dim) {
 
 export function resize() {
 	Zone.style.maxWidth = `calc(${bodyWidth()}px + 1rem)`;
-	CN.style.width = CN.width / dpr + PX;
-	TP.style.width = TP.width / dpr + PX;
+	cnvMain.style.width = cnvMain.width / dpr + PX;
+	cnvTemplate.style.width = cnvTemplate.width / dpr + PX;
 	const { w } = store.board;
 	const r = getRenderSize(undefined, undefined, BOARD_SIZE);
 	if(status.hor) {
 		if(w > BOARD_SIZE) {
-			TP.style.width = r.width + PX;
+			cnvTemplate.style.width = r.width + PX;
 		} else if(w < BOARD_SIZE) {
-			const { width } = getRenderSize(TP, true, w);
-			CN.style.width = width + PX;
+			const { width } = getRenderSize(cnvTemplate, true, w);
+			cnvMain.style.width = width + PX;
 		}
 	}
 	container.style.borderWidth = `${r.offset.y}px ${r.offset.r}px ${r.offset.b}px ${r.offset.x}px`;
@@ -128,15 +128,15 @@ export function resize() {
 		Zone.style.width = "unset";
 	}
 
-	CG.style.width = CN.clientWidth + PX;
-	CG.style.height = CN.clientHeight + PX;
-	TPG.style.width = TP.clientWidth + PX;
-	TPG.style.height = TP.clientHeight + PX;
+	cnvGhost.style.width = cnvMain.clientWidth + PX;
+	cnvGhost.style.height = cnvMain.clientHeight + PX;
+	cnvTempGhost.style.width = cnvTemplate.clientWidth + PX;
+	cnvTempGhost.style.height = cnvTemplate.clientHeight + PX;
 
 	setSquareSize(r.s);
 
 	const NUM_GAPS = 3; // 2 on the sides and 1 in between
-	if(Zone.clientWidth < DragZone.clientWidth + CN.clientWidth + NUM_GAPS * X_GAP * rem) {
+	if(Zone.clientWidth < DragZone.clientWidth + cnvMain.clientWidth + NUM_GAPS * X_GAP * rem) {
 		EditZone.style.marginTop = -DragZone.clientHeight + PX;
 		EditZone.style.width = DragZone.clientWidth + PX;
 		status.collapse = true;

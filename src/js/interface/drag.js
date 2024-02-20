@@ -1,6 +1,6 @@
 import { getRenderSize, noEditing, state, status, store } from "js/store";
 import { squares, toFEN, setSquare, pushState } from "./squares";
-import { CN, PV, TP, CG, TPG } from "js/meta/el";
+import { cnvMain, imgOverlay, cnvTemplate, cnvGhost, cnvTempGhost } from "js/meta/el";
 import { drawTemplate, templateValues } from "js/view/render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "js/tools/play/play";
 import { types } from "js/view/draw";
@@ -22,15 +22,15 @@ let ghost, draggingValue, fromIndex;
 let path;
 
 export function initDrag() {
-	PV.onmousedown = mouseDown;
-	PV.ontouchstart = mouseDown;
-	PV.ondragstart = e => e.preventDefault();
-	PV.onwheel = wheel;
-	TP.onmousedown = mouseDown;
-	TP.ontouchstart = mouseDown;
+	imgOverlay.onmousedown = mouseDown;
+	imgOverlay.ontouchstart = mouseDown;
+	imgOverlay.ondragstart = e => e.preventDefault();
+	imgOverlay.onwheel = wheel;
+	cnvTemplate.onmousedown = mouseDown;
+	cnvTemplate.ontouchstart = mouseDown;
 
 	document.body.onmousedown = event => {
-		if(!noEditing() && event.target != TP && event.target != PV) cancelSelection();
+		if(!noEditing() && event.target != cnvTemplate && event.target != imgOverlay) cancelSelection();
 	};
 	document.body.onmousemove = mousemove;
 	document.body.ontouchmove = mousemove;
@@ -68,7 +68,7 @@ function cancelSelection() {
 }
 
 function mouseup(event) {
-	if(status.dragging == "pending" && !state.play.playing && event.target == PV) {
+	if(status.dragging == "pending" && !state.play.playing && event.target == imgOverlay) {
 		const now = performance.now();
 		if(now - lastTap < TAP_THRESHOLD) currentSq.focus();
 		lastTap = now;
@@ -84,7 +84,7 @@ function mouseup(event) {
 
 	if(!draggingValue) return;
 	const { w, h } = store.board;
-	const { x, y } = getXY(event, CN);
+	const { x, y } = getXY(event, cnvMain);
 	const index = y * w + x;
 	const inBoard = inRange(x, y, w, h);
 	if(state.play.playing) {
@@ -113,8 +113,8 @@ function handleTap(event) {
 	// with time difference up to about 220ms
 	if(now - lastDown >= CLICK_THRESHOLD) return false;
 
-	if(event.target == TP && !noEditing()) {
-		let { x, y } = getXY(event, TP);
+	if(event.target == cnvTemplate && !noEditing()) {
+		let { x, y } = getXY(event, cnvTemplate);
 		if(status.hor) [x, y] = [y, x];
 		if(inRange(x, y, TEMPLATE_SIZE, BOARD_SIZE)) {
 			const v = templateValues[y * TEMPLATE_SIZE + x];
@@ -126,10 +126,10 @@ function handleTap(event) {
 		}
 		status.dragging = false;
 		return true;
-	} else if(event.target == PV && state.popeye.playing) {
+	} else if(event.target == imgOverlay && state.popeye.playing) {
 		const FILE_3RD = 3;
 		const FILE_4TH = 4;
-		const { x } = getXY(event, PV);
+		const { x } = getXY(event, imgOverlay);
 		if(x < FILE_3RD) Popeye.moveBy(-1);
 		if(x > FILE_4TH) Popeye.moveBy(1);
 		return true;
@@ -208,8 +208,8 @@ function mouseDown(event) {
 	wrapEvent(event);
 
 	if(document.activeElement) document.activeElement.blur();
-	const isCN = this != TP;
-	const { offset, s } = isCN ? getRenderSize() : getRenderSize(TP, status.hor);
+	const isCN = this != cnvTemplate;
+	const { offset, s } = isCN ? getRenderSize() : getRenderSize(cnvTemplate, status.hor);
 	const { w, h } = store.board;
 	startX = event.offsetX;
 	startY = event.offsetY;
@@ -217,7 +217,7 @@ function mouseDown(event) {
 	sqX = Math.floor((startX - ox) / s);
 	sqY = Math.floor((startY - oy) / s);
 	const index = sqY * (isCN ? w : TEMPLATE_SIZE) + sqX;
-	ghost = isCN ? CG : TPG;
+	ghost = isCN ? cnvGhost : cnvTempGhost;
 
 	const v = status.selection;
 	if(isCN && v) return quickEdit(event, w, h, v, index);
@@ -300,8 +300,8 @@ function getDisplacement(event) {
 function dragMove(event) {
 	const { offset, s } = getRenderSize();
 	const { w, h, coordinates } = store.board;
-	const r = CN.getBoundingClientRect();
-	const left = ghost == TPG && coordinates && !status.hor ? r.left + LABEL_MARGIN : r.left;
+	const r = cnvMain.getBoundingClientRect();
+	const left = ghost == cnvTempGhost && coordinates && !status.hor ? r.left + LABEL_MARGIN : r.left;
 	const y = Math.floor((event.clientY - r.top - offset.y) / s);
 	const x = Math.floor((event.clientX - r.left - offset.x) / s);
 	if(x !== sqX || y !== sqY) path = null;

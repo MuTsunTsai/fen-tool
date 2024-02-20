@@ -1,6 +1,6 @@
 import { shallowRef } from "vue";
 
-import { CN } from "js/meta/el";
+import { cnvMain } from "js/meta/el";
 import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, parseFEN } from "js/meta/fen";
 import { state, status, store } from "js/store";
 import { animate, animeSettings } from "js/view/animation";
@@ -22,8 +22,8 @@ function draw(data) {
 }
 
 export function setSquareSize(size) {
-	container.style.width = CN.clientWidth + "px";
-	container.style.height = CN.clientHeight + "px";
+	container.style.width = cnvMain.clientWidth + "px";
+	container.style.height = cnvMain.clientHeight + "px";
 	for(const sq of squares) {
 		sq.style.fontSize = size - FONT_MARGIN + "px";
 		sq.style.lineHeight = size - FONT_MARGIN + "px";

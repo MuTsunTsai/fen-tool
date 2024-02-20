@@ -1,7 +1,7 @@
 import { reactive, watchEffect } from "vue";
 
 import { DEFAULT_BOARD_OPTIONS, getDimensions } from "./meta/option";
-import { CN } from "./meta/el";
+import { cnvMain } from "./meta/el";
 import { env } from "./meta/env";
 import { deepAssign } from "./meta/clone";
 import { defaultCustomMap, pieceMap } from "./meta/popeye/base";
@@ -168,7 +168,7 @@ export function getRenderSize(tp?: HTMLCanvasElement, horTemplate?: boolean, req
 	const bSize = border.size;
 	const tSize = horTemplate ? BOARD_SIZE : TEMPLATE_SIZE;
 	const files = tp ? tSize : w;
-	const factor = (tp || CN).clientWidth / (size * files + bSize * 2 + margin.x);
+	const factor = (tp || cnvMain).clientWidth / (size * files + bSize * 2 + margin.x);
 	const s = size * factor;
 	const offset = {
 		x: (bSize + margin.x) * factor,

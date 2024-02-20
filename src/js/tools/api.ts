@@ -1,15 +1,15 @@
 import { store } from "js/store";
-import { CE } from "js/view/render";
+import { cnvHidden, getBlob } from "js/view/render";
 import { DEFAULT_SET, DEFAULT_SIZE, getDimensions } from "js/meta/option";
 import { inferDimension, makeForsyth } from "js/meta/fen";
 import { currentFEN, normalSnapshot } from "js/interface/squares";
 import { alert } from "js/meta/dialogs";
 
-function getURL(url) {
+function getURL(url: string): string {
 	return new URL(url, location.href).toString();
 }
 
-export function normalForsyth() {
+export function normalForsyth(): string {
 	const { SN, w, h } = store.board;
 	if(SN) {
 		return makeForsyth(normalSnapshot(), w, h);
@@ -18,7 +18,7 @@ export function normalForsyth() {
 	}
 }
 
-function getEmbedUrl() {
+function getEmbedUrl(): string {
 	const options = store.board;
 	const fen = normalForsyth();
 	let url = getURL("gen/?fen=" + fen);
@@ -40,11 +40,11 @@ export const API = {
 	},
 	copyBase64() {
 		gtag("event", "fen_link_copy64");
-		return CE.toDataURL();
+		return cnvHidden.toDataURL();
 	},
 	copyBase64Img() {
 		gtag("event", "fen_link_copy64img");
-		return `<img fen="${CE.toDataURL()}">`;
+		return `<img fen="${cnvHidden.toDataURL()}">`;
 	},
 	/**
 	 * This feature uses imgBB API. Tried a few other providers before:
@@ -57,7 +57,7 @@ export const API = {
 	async copyUrl() {
 		gtag("event", "fen_gen_link");
 		const data = new FormData();
-		const blob = await new Promise(resolve => CE.toBlob(resolve));
+		const blob = await getBlob();
 		data.append("key", "7802c5da1788f2315222d44bfba20519");
 		data.append("image", blob, "fen");
 		try {

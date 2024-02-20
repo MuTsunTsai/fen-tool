@@ -13,3 +13,5 @@ interface Board extends Array<string> {
 }
 
 type Action = () => void;
+
+type Consumer<T> = (arg: T) => void;

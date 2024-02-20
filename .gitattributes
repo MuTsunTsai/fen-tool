@@ -1,0 +1,7 @@
+
+# Set checkout as LF for consistency
+* eof=lf
+
+# Set GitHub linguist exclusion
+docs/**/* linguist-vendored
+**/vendor/**/* linguist-vendored

@@ -1,4 +1,3 @@
-import * as googleAnalytics from "workbox-google-analytics";
 import * as precaching from "workbox-precaching";
 import * as routing from "workbox-routing";
 import * as strategies from "workbox-strategies";
@@ -22,9 +21,6 @@ const headersPlugin = {
 		}));
 	},
 };
-
-// Activate Workbox GA
-googleAnalytics.initialize();
 
 // Default resources use StaleWhileRevalidate strategy
 // Need to store in a different cache, as precache could get cleaned-up on update

@@ -1,28 +1,30 @@
 import { TEMPLATE_SIZE } from "js/meta/constants";
 
+import type { BoardOptions } from "js/meta/option";
+
 const ASSET_HEIGHT = 12;
 const SYMBOL_OFFSET = 6;
 
 const assets = document.createElement("canvas");
-const ctx = assets.getContext("2d");
-const imgs = new Map();
+const ctx = assets.getContext("2d")!;
+const imgs = new Map<string, CanvasImageSource>();
 
 /** One must call this function after {@link loadAsset}. */
-export function getAsset(options, dpr) {
+export function getAsset(options: BoardOptions, dpr: number): CanvasImageSource {
 	const key = options.set + options.size * dpr;
-	return imgs.get(key);
+	return imgs.get(key)!;
 }
 
-export async function loadAsset(path, options, dpr) {
+export async function loadAsset(path: string, options: BoardOptions, dpr: number): Promise<CanvasImageSource> {
 	const key = options.set + options.size * dpr;
-	if(imgs.has(key)) return imgs.get(key);
+	if(imgs.has(key)) return imgs.get(key)!;
 	const url = await load(path, options, dpr);
 	const img = await loadImg(url);
 	imgs.set(key, img);
 	return img;
 }
 
-async function load(path, options, dpr) {
+async function load(path: string, options: BoardOptions, dpr: number): Promise<string> {
 	const { set, size } = options;
 	path += "/x" + dpr;
 	const [pieces, symbols] = await Promise.all([
@@ -36,7 +38,7 @@ async function load(path, options, dpr) {
 	return assets.toDataURL();
 }
 
-function loadImg(file) {
+function loadImg(file: string): Promise<HTMLImageElement> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.onload = () => resolve(img);
