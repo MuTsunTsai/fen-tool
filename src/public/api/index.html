@@ -17,6 +17,7 @@
 		if(isHttps) {
 			gtag('js', new Date());
 			gtag('config', 'G-NCH5HC15TN');
+			gtag("event", "fen_sdk", { url: location.href });
 		}
 		if('serviceWorker' in navigator) {
 			const scope = isHttps ? "/fen-tool/" : "/";
