@@ -2,12 +2,8 @@ import { rotate, invert, parseXY, shift, mirror, parseFEN, makeForsyth } from ".
 import { P, SQ, toNormalPiece, setPiece, movePiece, exchange } from "./base";
 import { Direction } from "../enum";
 
+import type { Twin } from "./types";
 import type { Color } from "../enum";
-
-interface Twin {
-	fen: string;
-	board: Board;
-}
 
 export function makeTwin(fen: string, text: string): Twin {
 	const board = parseFEN(fen);

@@ -65,3 +65,9 @@ function isLeft(P0: IPoint, P1: IPoint, P2: IPoint): number {
 		(P2.x - P0.x) * (P1.y - P0.y);
 	return res;
 }
+export function getDisplacement(event: FederatedEvent, pt: IPoint): number {
+	const dx = event.offsetX - pt.x;
+	const dy = event.offsetY - pt.y;
+	const result = Math.sqrt(dx * dx + dy * dy);
+	return result;
+}

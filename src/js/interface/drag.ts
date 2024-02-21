@@ -10,7 +10,7 @@ import { animate } from "js/view/animation";
 import { Popeye } from "js/tools/popeye";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "js/meta/constants";
 import { Rotation, TemplateRow } from "js/meta/enum";
-import { wrapEvent, getXY, getRotation } from "./event";
+import { wrapEvent, getXY, getRotation, getDisplacement } from "./event";
 
 import type { MixedEvent, FederatedEvent } from "./event";
 
@@ -48,7 +48,7 @@ export function initDrag(): void {
 
 function mouseMove(event: MixedEvent): void {
 	const ev = wrapEvent(event);
-	if(status.dragging == "pending" && getDisplacement(ev) > DRAG_THRESHOLD) {
+	if(status.dragging == "pending" && getDisplacement(ev, startPt) > DRAG_THRESHOLD) {
 		lastDown = 0;
 		if(draggingValue) {
 			path = env.isTouch ? [] : null;
@@ -254,13 +254,6 @@ function dragStart(event: FederatedEvent, square?: HTMLInputElement): void {
 	}
 	status.dragging = true;
 	dragMove(event);
-}
-
-function getDisplacement(event: FederatedEvent): number {
-	const dx = event.offsetX - startPt.x;
-	const dy = event.offsetY - startPt.y;
-	const result = Math.sqrt(dx * dx + dy * dy);
-	return result;
 }
 
 function dragMove(event: FederatedEvent): void {

@@ -10,29 +10,31 @@ import { dpr, env } from "js/meta/env";
 import { redrawSDK } from "js/api/sdk-base";
 import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "js/meta/constants";
 
+import type { BoardOptions, Border } from "js/meta/option";
+
 const PX = "px";
-const X_GAP = 2; // rem
+const X_GAP = 2; // in rem
 
-const Zone = document.getElementById("Zone");
-const DragZone = document.getElementById("DragZone");
-const EditZone = document.getElementById("EditZone");
+const Zone = document.getElementById("Zone") as HTMLDivElement;
+const DragZone = document.getElementById("DragZone") as HTMLDivElement;
+const EditZone = document.getElementById("EditZone") as HTMLDivElement;
 
-function bodyWidth() {
+function bodyWidth(): number {
 	return document.body.clientWidth / (state.split ? 2 : 1);
 }
 
-export async function setOption(o, force) {
+export async function setOption(o: Partial<BoardOptions>, force?: boolean): Promise<void> {
 	const options = store.board;
-	const changed = {};
-	for(const key in options) {
-		changed[key] = o[key] !== undefined && o[key] !== options[key];
-		if(changed[key]) options[key] = o[key];
-		else o[key] = options[key];
+	const changed: Record<string, boolean> = {};
+	for(const k in o) {
+		const key = k as keyof BoardOptions;
+		changed[key] = o[key] !== options[key];
 	}
-	const { border, margin, w, h } = getDimensions(o);
+	Object.assign(options, o);
+	const { border, margin, w, h } = getDimensions(options);
 
 	// Decide mode
-	const newMode = getMode(o, margin, border);
+	const newMode = getMode(options, margin, border);
 	changed.mode = newMode !== status.hor;
 	status.hor = newMode;
 
@@ -44,7 +46,7 @@ export async function setOption(o, force) {
 	const shouldDrawBoard = shouldRedraw || dimChange;
 	const shouldDrawTemplate = shouldRedraw || changed.mode;
 
-	if(shouldDrawTemplate) setupTemplate(o.size, border.size, margin);
+	if(shouldDrawTemplate) setupTemplate(options.size, border.size, margin);
 	if(shouldDrawBoard) setupBoard(w, h);
 	resize();
 
@@ -59,7 +61,7 @@ export async function setOption(o, force) {
 	nextTick(resize); // Just in case; solves glitch in Popeye play mode
 }
 
-function getMode(o, margin, border) {
+function getMode(o: BoardOptions, margin: IPoint, border: Border): boolean {
 	const rem = getREM();
 	const NUM_BORDERS = 4; // 2 for board, 2 for template
 	const SENSITIVITY = 0.2; // to prevent floating error
@@ -69,7 +71,7 @@ function getMode(o, margin, border) {
 		(2 * X_GAP + SENSITIVITY) * rem;
 }
 
-function setupTemplate(size, borderSize, margin) {
+function setupTemplate(size: number, borderSize: number, margin: IPoint): void {
 	let tw = (TEMPLATE_SIZE * size + 2 * borderSize) * dpr;
 	let th = (BOARD_SIZE * size + 2 * borderSize) * dpr;
 	if(status.hor) [tw, th] = [th + margin.x * dpr, tw];
@@ -80,24 +82,24 @@ function setupTemplate(size, borderSize, margin) {
 	}
 }
 
-function setupBoard(w, h) {
+function setupBoard(w: number, h: number): void {
 	const bw = w * dpr;
 	const bh = h * dpr;
 	if(cnvMain.width !== bw || cnvMain.height !== bh) {
 		cnvSquares.width = cnvGhost.width = cnvMain.width = bw;
 		cnvSquares.height = cnvGhost.height = cnvMain.height = bh;
 	}
-	drawEmpty(cnvSquares.getContext("2d"));
+	drawEmpty(cnvSquares.getContext("2d")!);
 }
 
-function setDimension(dim) {
+function setDimension(dim: Partial<BoardOptions>): void {
 	const { w, h } = store.board;
 	const shot = createSnapshot();
 	setOption(dim);
 	paste(shot, w, h);
 }
 
-export function resize() {
+export function resize(): void {
 	Zone.style.maxWidth = `calc(${bodyWidth()}px + 1rem)`;
 	cnvMain.style.width = cnvMain.width / dpr + PX;
 	cnvTemplate.style.width = cnvTemplate.width / dpr + PX;
@@ -140,11 +142,11 @@ export function resize() {
 	}
 }
 
-function getREM() {
+function getREM(): number {
 	return parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
-export async function initLayout() {
+export async function initLayout(): Promise<void> {
 	window.addEventListener("resize", () => setOption({}));
 	const fen = search.get("fen");
 	await setOption({}, true);
@@ -174,13 +176,19 @@ if(!env.isTop) {
 	window.resizeIframe = function() {
 		const iframe = document.getElementsByTagName("iframe")[0];
 		if(!iframe) return;
-		iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + PX;
+		iframe.style.minHeight = iframe.contentDocument!.body.scrollHeight + PX;
 	};
+}
+
+declare global {
+	interface Window {
+		resizeIframe: Action;
+	}
 }
 
 export const Layout = {
 	setDimension,
-	setBorder(el) {
+	setBorder(el: HTMLInputElement) {
 		const border = sanitizeBorder(el.value);
 		if(!border) {
 			el.value = store.board.border;
@@ -201,7 +209,8 @@ export const Layout = {
 
 addEventListener("storage", e => {
 	if(e.storageArea == localStorage && e.key == "settings") {
-		const settings = JSON.parse(localStorage.getItem("settings"));
+		const settingsString = localStorage.getItem("settings");
+		const settings = settingsString ? JSON.parse(settingsString) : null;
 		deepAssign(store, settings, true);
 		setOption({}, true);
 	}
