@@ -1,6 +1,6 @@
 import { cnvMain, cnvGhost, cnvTemplate, cnvTempGhost, imgOverlay, cnvSquares } from "js/meta/el";
 import { store, state, noEditing, status } from "js/store";
-import { pushState, snapshot } from "js/interface/squares";
+import { pushState, createSnapshot } from "js/interface/squares";
 import { drawBoard, types } from "./draw";
 import { loadAsset } from "./asset";
 import { getDimensions } from "js/meta/option";
@@ -174,7 +174,7 @@ function drawSelectionCore(x: number, y: number): void {
 
 export async function draw(data?: string[]): Promise<void> {
 	if(data) cache.data = data;
-	else data = cache.data || snapshot();
+	else data = cache.data || createSnapshot();
 	const options = store.board;
 	drawBoard(ctxMain, data, options, dpr);
 	drawBoard(ctxHidden, data, options, getExportDPR());

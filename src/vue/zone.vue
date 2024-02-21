@@ -12,7 +12,7 @@
 					</div>
 				</div>
 				<div id="DragZone" class="flex-grow-0 pb-4">
-					<div class="position-relative d-inline-block" style="line-height: 0;">
+					<div class="position-relative d-inline-block" :class="{ 'mb-3': status.hor }" style="line-height: 0;">
 						<canvas id="CN"></canvas>
 						<div class="loader" :class="{ show: status.loading }">
 							<div class="h-100 d-flex align-items-center justify-content-center">
@@ -21,7 +21,7 @@
 						</div>
 						<img id="PV">
 					</div>
-					<canvas id="TP" class="ms-4" v-show="!hideTemplate()"></canvas>
+					<canvas id="TP" :class="{ 'ms-4': !status.hor }" v-show="!hideTemplate()"></canvas>
 				</div>
 			</div>
 		</div>

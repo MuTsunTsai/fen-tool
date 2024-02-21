@@ -83,7 +83,7 @@ export function makeForsyth(values: string[], w = BOARD_SIZE, h = BOARD_SIZE): s
 	return result;
 }
 
-export function normalize(v: string, useSN: boolean, convert: boolean): string {
+export function normalize(v: string, useSN: boolean, convert?: boolean): string {
 	// Text input shortcut
 	if(!v.match(VALUE)) {
 		if(v.match(ONE_EMOJI)) {

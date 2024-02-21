@@ -10,6 +10,9 @@ import { animate } from "js/view/animation";
 import { Popeye } from "js/tools/popeye";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "js/meta/constants";
 import { Rotation, TemplateRow } from "js/meta/enum";
+import { wrapEvent, getXY, getRotation } from "./event";
+
+import type { MixedEvent, FederatedEvent } from "./event";
 
 const DRAG_THRESHOLD = 5;
 const ROTATE_THRESHOLD = 10;
@@ -17,11 +20,15 @@ const TAP_THRESHOLD = 300;
 const CLICK_THRESHOLD = 250;
 const WHEEL_THRESHOLD = 50;
 
-let startX, startY, sqX, sqY, currentSq, lastTap = 0, lastDown;
-let ghost, draggingValue, fromIndex;
-let path;
+const startPt: IPoint = { x: 0, y: 0 };
+const sq: IPoint = { x: 0, y: 0 };
+let currentSq: HTMLInputElement | undefined;
+let lastTap = 0, lastDown = 0;
+let ghost: HTMLCanvasElement, draggingValue: string | undefined, fromIndex: number;
+let path: null | IPoint[];
+let lastWheel = performance.now();
 
-export function initDrag() {
+export function initDrag(): void {
 	imgOverlay.onmousedown = mouseDown;
 	imgOverlay.ontouchstart = mouseDown;
 	imgOverlay.ondragstart = e => e.preventDefault();
@@ -32,59 +39,45 @@ export function initDrag() {
 	document.body.onmousedown = event => {
 		if(!noEditing() && event.target != cnvTemplate && event.target != imgOverlay) cancelSelection();
 	};
-	document.body.onmousemove = mousemove;
-	document.body.ontouchmove = mousemove;
-	document.body.onmouseleave = mouseup;
-	document.body.onmouseup = mouseup;
-	document.body.ontouchend = mouseup;
+	document.body.onmousemove = mouseMove;
+	document.body.ontouchmove = mouseMove;
+	document.body.onmouseleave = mouseUp;
+	document.body.onmouseup = mouseUp;
+	document.body.ontouchend = mouseUp;
 }
 
-function mousemove(event) {
-	wrapEvent(event);
-	if(status.dragging == "pending" && getDisplacement(event) > DRAG_THRESHOLD) {
-		lastDown = NaN;
+function mouseMove(event: MixedEvent): void {
+	const ev = wrapEvent(event);
+	if(status.dragging == "pending" && getDisplacement(ev) > DRAG_THRESHOLD) {
+		lastDown = 0;
 		if(draggingValue) {
 			path = env.isTouch ? [] : null;
-			dragStart(event, Boolean(currentSq));
+			dragStart(ev, currentSq);
 		} else { status.dragging = false; }
 	}
 	if(status.dragging === true) {
-		if(path) path.push({ x: event.clientX, y: event.clientY });
-		dragMove(event);
+		if(path) path.push({ x: ev.clientX, y: ev.clientY });
+		dragMove(ev);
 	}
 }
 
-function getXY(event, canvas) {
-	const { s, offset } = getRenderSize();
-	const r = canvas.getBoundingClientRect();
-	const y = Math.floor((event.clientY - r.top - offset.y) / s);
-	const x = Math.floor((event.clientX - r.left - offset.x) / s);
-	return { x, y };
-}
-
-function cancelSelection() {
+function cancelSelection(): void {
 	status.selection = null;
 	drawTemplate([]);
 }
 
-function mouseup(event) {
-	if(status.dragging == "pending" && !state.play.playing && event.target == imgOverlay) {
-		const now = performance.now();
-		if(now - lastTap < TAP_THRESHOLD) currentSq.focus();
-		lastTap = now;
-		event.preventDefault(); // Prevent touchend triggering mouseup
-		status.dragging = false;
-	}
+function mouseUp(event: MixedEvent): void {
+	handleDoubleTap(event);
 
 	if(ghost) ghost.style.display = "none";
-	wrapEvent(event);
+	const ev = wrapEvent(event);
 
-	if(handleTap(event) || state.popeye.playing || !status.dragging) return;
+	if(handleTap(ev) || state.popeye.playing || !status.dragging) return;
 	status.dragging = false;
 
 	if(!draggingValue) return;
 	const { w, h } = store.board;
-	const { x, y } = getXY(event, cnvMain);
+	const { x, y } = getXY(ev, cnvMain);
 	const index = y * w + x;
 	const inBoard = inRange(x, y, w, h);
 	if(state.play.playing) {
@@ -97,17 +90,25 @@ function mouseup(event) {
 		else sync();
 	} else if(inBoard) {
 		setSquare(squares[index], draggingValue);
-		if(path && path.length > ROTATE_THRESHOLD) { // Touch rotation
-			const center = getCenter(path);
-			const wn = windingNumber(center, path);
-			rotate(currentSq, wn > 0 ? Rotation.r90 : Rotation.r270);
+		if(currentSq && path && path.length > ROTATE_THRESHOLD) { // Touch rotation
+			rotate(currentSq, getRotation(path));
 		}
 	} else {
 		pushState();
 	}
 }
 
-function handleTap(event) {
+function handleDoubleTap(event: MixedEvent): void {
+	if(currentSq && status.dragging == "pending" && !state.play.playing && event.target == imgOverlay) {
+		const now = performance.now();
+		if(now - lastTap < TAP_THRESHOLD) currentSq.focus();
+		lastTap = now;
+		event.preventDefault(); // Prevent touchend triggering mouseup
+		status.dragging = false;
+	}
+}
+
+function handleTap(event: FederatedEvent): boolean {
 	const now = performance.now();
 	// In some touch device, a tap will be converted to a delayed up-down
 	// with time difference up to about 220ms
@@ -137,93 +138,58 @@ function handleTap(event) {
 	return false;
 }
 
-function getCenter(points) {
-	let x = 0, y = 0;
-	for(const point of points) {
-		x += point.x;
-		y += point.y;
-	}
-	x /= points.length;
-	y /= points.length;
-	return { x, y };
-}
 
-function windingNumber(center, points) {
-	let wn = 0;
-	for(let i = 0, j = points.length - 1; i < points.length; j = i++) {
-		const pi = points[i], pj = points[j];
-		if(pj.y <= center.y) {
-			if(pi.y > center.y) {
-				if(isLeft(pj, pi, center) > 0) wn++;
-			}
-		} else {
-			if(pi.y <= center.y) {
-				if(isLeft(pj, pi, center) < 0) wn--;
-			}
-		}
-	}
-	return wn;
-}
-
-function isLeft(P0, P1, P2) {
-	const res = (P1.x - P0.x) * (P2.y - P0.y) -
-		(P2.x - P0.x) * (P1.y - P0.y);
-	return res;
-}
-
-let lastWheel = performance.now();
-
-function wheel(event) {
+function wheel(event: WheelEvent): void {
 	if(noEditing()) return;
 	const { w, h } = store.board;
 	const { offset, s } = getRenderSize();
 	const x = Math.floor((event.offsetX - offset.x) / s);
 	const y = Math.floor((event.offsetY - offset.y) / s);
 	if(inRange(x, y, w, h)) {
-		const sq = squares[y * w + x];
-		if(sq.value == "") return;
+		const square = squares[y * w + x];
+		if(square.value == "") return;
 		event.preventDefault();
 		const now = performance.now();
 		if(now - lastWheel < WHEEL_THRESHOLD) return; // throttle
 		lastWheel = now;
-		rotate(sq, event.deltaY > 0 ? Rotation.r90 : Rotation.r270);
+		rotate(square, event.deltaY > 0 ? Rotation.r90 : Rotation.r270);
 	}
 }
 
-function rotate(sq, by) {
+function rotate(square: HTMLInputElement, by: number): void {
 	// Lookbehind is not supported for Safari<16.4
-	sq.value = sq.value.replace(/(^-?)(?:\*(\d))?([^-].*$)/, (_, a, b, c) => {
+	square.value = square.value.replace(/(^-?)(?:\*(\d))?([^-].*$)/, (_, a, b, c) => {
 		const rotation = (Number(b || 0) + by) % Rotation.full;
 		return a + (rotation ? "*" + rotation : "") + c;
 	});
 	toFEN();
 }
 
-function mouseDown(event) {
+function mouseDown(this: GlobalEventHandlers, event: MixedEvent): void {
 	lastDown = performance.now();
 	if(state.popeye.playing) return;
 	if(status.loading ||
 		event.button != 0 && !event.targetTouches ||
 		event.targetTouches && event.targetTouches.length > 1) return;
-	wrapEvent(event);
+	const ev = wrapEvent(event);
 
-	if(document.activeElement) document.activeElement.blur();
+	if(document.activeElement) (document.activeElement as HTMLInputElement).blur();
 	const isCN = this != cnvTemplate;
 	const { offset, s } = isCN ? getRenderSize() : getRenderSize(cnvTemplate, status.hor);
 	const { w, h } = store.board;
-	startX = event.offsetX;
-	startY = event.offsetY;
+	startPt.x = ev.offsetX;
+	startPt.y = ev.offsetY;
 	const [ox, oy] = [offset.x, offset.y];
-	sqX = Math.floor((startX - ox) / s);
-	sqY = Math.floor((startY - oy) / s);
-	const index = sqY * (isCN ? w : TEMPLATE_SIZE) + sqX;
+	sq.x = Math.floor((startPt.x - ox) / s);
+	sq.y = Math.floor((startPt.y - oy) / s);
+	const index = sq.y * (isCN ? w : TEMPLATE_SIZE) + sq.x;
 	ghost = isCN ? cnvGhost : cnvTempGhost;
 
 	const v = status.selection;
-	if(isCN && v) return quickEdit(event, w, h, v, index);
+	if(isCN && v) return quickEdit(ev, w, h, v, index);
 
 	if(state.play.playing) {
-		if(!isCN) handleMouseDownInPlayMode(event);
+		if(!isCN) handleMouseDownInPlayMode(ev);
 		if(!isCN || !checkDragPrecondition(index)) return;
 	}
 
@@ -235,97 +201,86 @@ function mouseDown(event) {
 	} else {
 		currentSq = undefined;
 	}
-	if(!isCN || currentSq.value != "") {
-		handleGhost(event, { isCN, s, ox, oy, index });
+	if(!currentSq || currentSq.value != "") {
+		handleGhost(ev, s, offset, index);
 	}
 }
 
-function quickEdit(event, w, h, v, index) {
+function quickEdit(event: FederatedEvent, w: number, h: number, v: string, index: number): void {
 	event.preventDefault();
-	if(inRange(sqX, sqY, w, h)) {
-		const sq = squares[index];
-		if(sq.value == v) sq.value = "";
-		else sq.value = v;
+	if(inRange(sq.x, sq.y, w, h)) {
+		const square = squares[index];
+		if(square.value == v) square.value = "";
+		else square.value = v;
 		toFEN();
 	} else {
 		cancelSelection();
 	}
 }
 
-function handleMouseDownInPlayMode(event) {
+function handleMouseDownInPlayMode(event: FederatedEvent): void {
 	if(state.play.pendingPromotion) {
-		if(status.hor) [sqX, sqY] = [sqY, sqX];
+		if(status.hor) [sq.x, sq.y] = [sq.y, sq.x];
 		const x = draggingValue == "p" ? 0 : 1;
-		if(sqY > TemplateRow.k && sqY < TemplateRow.p && sqX == x) {
-			confirmPromotion(fromIndex, types[sqY]);
+		if(sq.y > TemplateRow.k && sq.y < TemplateRow.p && sq.x == x) {
+			confirmPromotion(fromIndex, types[sq.y]);
 		}
 	}
 	if(state.play.mode == "retro") {
 		event.preventDefault(); // Prevent touchstart triggering mousedown
-		if(status.hor) [sqX, sqY] = [sqY, sqX];
-		retroClick(sqX, sqY);
+		if(status.hor) [sq.x, sq.y] = [sq.y, sq.x];
+		retroClick(sq.x, sq.y);
 	}
 }
 
-function handleGhost(event, context) {
-	const { isCN, s, ox, oy, index } = context;
+function handleGhost(event: FederatedEvent, s: number, offset: IPoint, index: number): void {
+	const [ox, oy] = [offset.x, offset.y];
 	event.preventDefault();
-	ghost.style.clip = `rect(${sqY * s + oy + 1}px,${(sqX + 1) * s + ox - 1}px,${(sqY + 1) * s + oy - 1}px,${sqX * s + ox + 1}px)`;
-	if(isCN) {
+	ghost.style.clip = `rect(${sq.y * s + oy + 1}px,${(sq.x + 1) * s + ox - 1}px,${(sq.y + 1) * s + oy - 1}px,${sq.x * s + ox + 1}px)`;
+	if(currentSq) {
 		draggingValue = currentSq.value;
 	} else {
-		draggingValue = status.hor ? templateValues[sqX * TEMPLATE_SIZE + sqY] : templateValues[index];
+		draggingValue = status.hor ? templateValues[sq.x * TEMPLATE_SIZE + sq.y] : templateValues[index];
 		status.dragging = "pending";
 	}
 }
 
-function dragStart(event, isCN) {
+function dragStart(event: FederatedEvent, square?: HTMLInputElement): void {
 	cancelSelection();
 	ghost.style.display = "block";
-	if(isCN) {
-		currentSq.value = "";
+	if(square) {
+		square.value = "";
 		toFEN();
 	}
 	status.dragging = true;
 	dragMove(event);
 }
 
-function getDisplacement(event) {
-	const dx = event.offsetX - startX;
-	const dy = event.offsetY - startY;
+function getDisplacement(event: FederatedEvent): number {
+	const dx = event.offsetX - startPt.x;
+	const dy = event.offsetY - startPt.y;
 	const result = Math.sqrt(dx * dx + dy * dy);
 	return result;
 }
 
-function dragMove(event) {
+function dragMove(event: FederatedEvent): void {
 	const { offset, s } = getRenderSize();
 	const { w, h, coordinates } = store.board;
 	const r = cnvMain.getBoundingClientRect();
 	const left = ghost == cnvTempGhost && coordinates && !status.hor ? r.left + LABEL_MARGIN : r.left;
 	const y = Math.floor((event.clientY - r.top - offset.y) / s);
 	const x = Math.floor((event.clientX - r.left - offset.x) / s);
-	if(x !== sqX || y !== sqY) path = null;
+	if(x !== sq.x || y !== sq.y) path = null;
 	const { scrollLeft, scrollTop } = document.documentElement;
 	if(inRange(x, y, w, h)) {
-		ghost.style.left = left + (x - sqX) * s + scrollLeft + "px";
-		ghost.style.top = r.top + (y - sqY) * s + scrollTop + "px";
+		ghost.style.left = left + (x - sq.x) * s + scrollLeft + "px";
+		ghost.style.top = r.top + (y - sq.y) * s + scrollTop + "px";
 	} else {
-		ghost.style.left = event.clientX + scrollLeft + 1 - startX + "px";
-		ghost.style.top = event.clientY + scrollTop - startY + "px";
+		ghost.style.left = event.clientX + scrollLeft + 1 - startPt.x + "px";
+		ghost.style.top = event.clientY + scrollTop - startPt.y + "px";
 	}
 }
 
-function inRange(x, y, w, h) {
+function inRange(x: number, y: number, w: number, h: number): boolean {
 	return y > -1 && y < h && x > -1 && x < w;
-}
-
-function wrapEvent(event) {
-	if(event.targetTouches) {
-		const bcr = event.target.getBoundingClientRect();
-		const touch = event.targetTouches[0] || event.changedTouches[0];
-		event.clientX = touch.clientX;
-		event.clientY = touch.clientY;
-		event.offsetX = event.clientX - bcr.x;
-		event.offsetY = event.clientY - bcr.y;
-	}
 }

@@ -5,10 +5,21 @@ import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, 
 import { state, status, store } from "js/store";
 import { animate, animeSettings } from "js/view/animation";
 import { BOARD_SIZE, INIT_SQ_COUNT } from "js/meta/constants";
+import { Color } from "js/meta/enum";
 
-export const squares = new Array(INIT_SQ_COUNT);
-export const container = document.getElementById("Squares");
-export const callback = {};
+import type { BoardOptions } from "js/meta/option";
+
+type CastlingRightsKeys = "K" | "Q" | "k" | "q";
+
+const castlingKeys: CastlingRightsKeys[] = ["K", "Q", "k", "q"];
+
+export const squares = new Array<HTMLInputElement>(INIT_SQ_COUNT);
+export const container = document.getElementById("Squares") as HTMLDivElement;
+
+export const callback = {} as {
+	draw: (data: Board) => void;
+	setOption: (options: Partial<BoardOptions>) => void;
+};
 
 const FONT_MARGIN = 10;
 
@@ -17,11 +28,11 @@ export const currentFEN = shallowRef("");
 animeSettings.options = store.board;
 animeSettings.callback = setFEN;
 
-function draw(data) {
+function draw(data: Board): void {
 	callback.draw?.(data);
 }
 
-export function setSquareSize(size) {
+export function setSquareSize(size: number): void {
 	container.style.width = cnvMain.clientWidth + "px";
 	container.style.height = cnvMain.clientHeight + "px";
 	for(const sq of squares) {
@@ -30,7 +41,7 @@ export function setSquareSize(size) {
 	}
 }
 
-export function createSquares() {
+export function createSquares(): void {
 	const { w, h } = store.board;
 	const total = w * h;
 	container.style.gridTemplateColumns = `repeat(${w}, 1fr)`;
@@ -40,10 +51,10 @@ export function createSquares() {
 			const sq = document.createElement("input");
 			squares[i] = sq;
 			sq.type = "text";
-			sq.oninput = onInput;
-			sq.onchange = checkInput;
-			sq.onfocus = squareOnFocus;
-			sq.onblur = squareOnBlur;
+			sq.addEventListener("input", onInput);
+			sq.addEventListener("change", onChange);
+			sq.addEventListener("focus", onFocus);
+			sq.addEventListener("blur", onBlur);
 			sq.classList.add("square");
 			container.appendChild(sq);
 		}
@@ -51,63 +62,67 @@ export function createSquares() {
 	}
 }
 
-function squareOnFocus() {
+function onFocus(this: HTMLInputElement): void {
 	this.style.zIndex = "10";
 	if(status.collapse) {
-		const data = snapshot();
+		// In collapse mode, redraw the board but keep the current square empty
+		const data = createSnapshot();
 		data[squares.indexOf(this)] = "";
 		draw(data);
 	}
 	this.select();
 }
-function squareOnBlur() {
+function onBlur(this: HTMLInputElement): void {
 	this.style.zIndex = "unset";
 	// We check the input again on blur, as some browser extensions could
 	// programmatically modify its value without triggering onchange event.
-	if(checkInputCore(this)) toFEN();
-	else if(status.collapse) draw(snapshot());
+	if(checkInput(this)) {
+		toFEN();
+	} else if(status.collapse) {
+		draw(createSnapshot()); // restore board drawing
+	}
 }
 
-function checkInput() {
-	checkInputCore(this);
+function onChange(this: HTMLInputElement): void {
+	checkInput(this);
 	if(status.collapse) this.blur();
 	toFEN();
 }
 
-function onInput() {
+function onInput(this: HTMLInputElement): void {
 	if(!status.collapse) {
-		const data = snapshot();
+		const data = createSnapshot();
 		data[squares.indexOf(this)] = normalize(this.value, store.board.SN);
 		draw(data);
 	}
 }
 
-function checkInputCore(s, convert) {
+function checkInput(s: HTMLInputElement, convert?: boolean): boolean {
 	const v = normalize(s.value, store.board.SN, convert);
 	const changed = v !== s.value;
 	s.value = v;
 	return changed;
 }
 
-export function setSquare(sq, value) {
+export function setSquare(sq: HTMLInputElement, value: string): void {
 	const updated = sq.value !== value;
 	sq.value = value;
-	checkInputCore(sq); // Needed for "S for knight"
+	checkInput(sq); // Needed for "S for knight"
 	if(updated) toFEN();
 }
 
-export function setFEN(v, check) {
-	const arr = parseEdwards(v);
+export function setFEN(fen: string, check?: boolean): void {
+	const arr = parseEdwards(fen);
 	currentFEN.value = arr[0] + (store.board.fullFEN ? edwards() : "");
 	toSquares(check);
 }
 
-function parseEdwards(v) {
-	const arr = v.split(" ");
+function parseEdwards(ed: string): string[] {
+	const arr = ed.split(" ");
 	if(arr[1] && arr[1].match(/^[wb]$/)) state.play.turn = arr[1];
 	if(arr[2] && arr[2].match(/^(-|[kq]+)$/i)) {
 		for(const key in state.play.castle) {
-			state.play.castle[key] = arr[2].includes(key);
+			state.play.castle[key as CastlingRightsKeys] = arr[2].includes(key);
 		}
 	}
 	if(arr[3] && arr[3].match(/^[a-h][36]$/)) state.play.enPassant = arr[3];
@@ -116,7 +131,7 @@ function parseEdwards(v) {
 	return arr;
 }
 
-function loadState() {
+function loadState(): void {
 	if(state.play.playing) return;
 	const url = new URL(location.href);
 	const fen = url.searchParams.get("fen");
@@ -124,7 +139,7 @@ function loadState() {
 }
 addEventListener("popstate", loadState);
 
-export function pushState() {
+export function pushState(): void {
 	const current = new URL(location.href).searchParams.get("fen") || DEFAULT;
 	const forsyth = currentFEN.value.split(" ")[0];
 	const url = forsyth == DEFAULT ? "" : "?fen=" + encodeURIComponent(forsyth);
@@ -133,57 +148,57 @@ export function pushState() {
 	}
 }
 
-export function snapshot() {
+export function createSnapshot(): Board {
 	const { w, h } = store.board;
 	const total = w * h;
 	return squares.slice(0, total).map(s => s.value);
 }
 
-export function normalSnapshot() {
-	return snapshot().map(v => convertSN(v, false, true));
+export function createNormalSnapshot(): Board {
+	return createSnapshot().map(v => convertSN(v, false, true));
 }
 
-export function paste(shot, ow, oh) {
+export function paste(snapshot: Board, ow: number, oh: number): void {
 	const { w, h } = store.board;
 	for(let i = 0; i < h; i++) {
 		for(let j = 0; j < w; j++) {
 			const sq = squares[i * w + j];
-			if(i < oh && j < ow) sq.value = shot[i * ow + j];
+			if(i < oh && j < ow) sq.value = snapshot[i * ow + j];
 			else sq.value = "";
 		}
 	}
 	toFEN();
 }
 
-export function toFEN() {
+export function toFEN(): void {
 	const data = updateEdwards();
 	draw(data);
 }
 
-export function updateEdwards() {
+export function updateEdwards(): Board {
 	const { w, h, fullFEN } = store.board;
-	const data = snapshot();
+	const data = createSnapshot();
 	currentFEN.value = makeForsyth(data, w, h) + (fullFEN ? edwards() : "");
 	return data;
 }
 
-function orthodoxForsyth() {
+function orthodoxForsyth(): string | null {
 	const { w, h } = store.board;
 	if(w != BOARD_SIZE || h != BOARD_SIZE) return null;
-	const ss = normalSnapshot();
+	const ss = createNormalSnapshot();
 	for(const s of ss) {
 		if(s != "" && !s.match(/^[kqbsnrp]$/i)) return null;
 	}
 	return makeForsyth(ss);
 }
 
-export function orthodoxFEN() {
+export function orthodoxFEN(): string | null {
 	const forsyth = orthodoxForsyth();
 	if(!forsyth) return null;
 	return forsyth + edwards(true);
 }
 
-function edwards(check) {
+function edwards(check?: boolean): string {
 	const p = state.play;
 
 	if(!p.enPassant.match(/^[a-h][36]$/)) p.enPassant = ""; // Ignore invalid squares
@@ -203,8 +218,8 @@ function edwards(check) {
 	return ` ${p.turn} ${castle} ${ep} ${p.halfMove} ${p.fullMove}`;
 }
 
-function getCastle(check) {
-	const ss = snapshot();
+function getCastle(check?: boolean): string {
+	const ss = createSnapshot();
 	let result = "";
 	const c = state.play.castle;
 	if(check) {
@@ -228,7 +243,7 @@ function getCastle(check) {
 	return result == "" ? "-" : result;
 }
 
-function toSquares(check) {
+function toSquares(check?: boolean): void {
 	const fen = currentFEN.value;
 	parseFullFEN(fen);
 	const infer = inferDimension(fen);
@@ -238,23 +253,19 @@ function toSquares(check) {
 	let changed = false;
 	for(let i = 0; i < w * h; i++) {
 		squares[i].value = values[i];
-		changed = checkInputCore(squares[i]) || changed; // order matters
+		changed = checkInput(squares[i]) || changed; // order matters
 	}
 	if(changed || check || !infer) toFEN();
-	else draw(snapshot());
+	else draw(createSnapshot());
 }
 
-/**
- * @param {string} fen
- */
-export function parseFullFEN(fen) {
+export function parseFullFEN(fen: string): void {
 	const s = state.play;
 	const arr = fen.split(" ");
 	if(arr.length == 1) return;
 	if(arr[1] == "w" || arr[1] == "b") s.turn = arr[1];
 	if(arr[2]) {
-		const keys = ["K", "Q", "k", "q"];
-		for(const key of keys) s.castle[key] = arr[2].includes(key);
+		for(const key of castlingKeys) s.castle[key] = arr[2].includes(key);
 	}
 	s.enPassant = !arr[3] || arr[3] == "-" ? "" : arr[3];
 	if(s.mode != "retro") {
@@ -263,17 +274,17 @@ export function parseFullFEN(fen) {
 	}
 }
 
-export function updateSN() {
+export function updateSN(): void {
 	let changed = false;
-	for(const s of squares) changed = checkInputCore(s, true) || changed; // order matters
+	for(const s of squares) changed = checkInput(s, true) || changed; // order matters
 	if(changed) toFEN();
 }
 
-export function toggleReadOnly(readOnly) {
+export function toggleReadOnly(readOnly: boolean): void {
 	for(const s of squares) s.readOnly = readOnly;
 }
 
-export function replace(board) {
+export function replace(board: Board): void {
 	if(board.anime) {
 		const fen = makeForsyth(board, store.board.w, store.board.h);
 		animate(currentFEN.value, fen, board.anime);
@@ -283,15 +294,14 @@ export function replace(board) {
 	}
 }
 
-export function resetEdwards() {
+export function resetEdwards(): void {
 	Object.assign(state.play, {
-		turn: "w",
+		turn: Color.white,
 		enPassant: "",
 		halfMove: 0,
 		fullMove: 1,
 	});
-	const keys = ["K", "Q", "k", "q"];
-	for(const key of keys) state.play.castle[key] = true;
+	for(const key of castlingKeys) state.play.castle[key] = true;
 }
 
 export const FEN = {
@@ -303,12 +313,12 @@ export const FEN = {
 		for(const sq of squares) sq.value = "";
 		toFEN();
 	},
-	reset(ed) {
+	reset(ed?: boolean) {
 		callback.setOption?.({ w: 8, h: 8 });
 		if(store.board.fullFEN || ed) resetEdwards();
 		setFEN(INIT_FORSYTH);
 	},
-	color(c) {
+	color(c: number) {
 		for(const sq of squares) {
 			let s = sq.value;
 			if(s.startsWith("'") || s == "") continue;
@@ -329,7 +339,7 @@ export const FEN = {
 		}
 		toFEN();
 	},
-	invert(l) {
-		replace(invert(snapshot(), l));
+	invert(l?: boolean) {
+		replace(invert(createSnapshot(), l));
 	},
 };

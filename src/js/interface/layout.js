@@ -4,7 +4,7 @@ import { deepAssign } from "js/meta/clone";
 import { cnvGhost, cnvMain, cnvSquares, cnvTemplate, cnvTempGhost } from "js/meta/el";
 import { getRenderSize, search, state, status, store } from "js/store";
 import { draw, drawEmpty, drawTemplate, load } from "js/view/render";
-import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, snapshot, toFEN } from "./squares";
+import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, createSnapshot, toFEN } from "./squares";
 import { getDimensions, sanitizeBorder } from "js/meta/option";
 import { dpr, env } from "js/meta/env";
 import { redrawSDK } from "js/api/sdk-base";
@@ -72,15 +72,8 @@ function getMode(o, margin, border) {
 function setupTemplate(size, borderSize, margin) {
 	let tw = (TEMPLATE_SIZE * size + 2 * borderSize) * dpr;
 	let th = (BOARD_SIZE * size + 2 * borderSize) * dpr;
-	if(status.hor) {
-		[tw, th] = [th + margin.x * dpr, tw];
-		cnvMain.parentNode.classList.add("mb-3");
-		cnvTemplate.classList.remove("ms-4");
-	} else {
-		th += margin.y * dpr;
-		cnvMain.parentNode.classList.remove("mb-3");
-		cnvTemplate.classList.add("ms-4");
-	}
+	if(status.hor) [tw, th] = [th + margin.x * dpr, tw];
+	else th += margin.y * dpr;
 	if(cnvTemplate.width !== tw || cnvTemplate.height !== th) {
 		cnvTempGhost.width = cnvTemplate.width = tw;
 		cnvTempGhost.height = cnvTemplate.height = th;
@@ -99,7 +92,7 @@ function setupBoard(w, h) {
 
 function setDimension(dim) {
 	const { w, h } = store.board;
-	const shot = snapshot();
+	const shot = createSnapshot();
 	setOption(dim);
 	paste(shot, w, h);
 }

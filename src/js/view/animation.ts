@@ -31,7 +31,7 @@ export const animeSettings = {} as {
 
 let animation: Animation | undefined;
 
-export function animate(before: string, after: string, instruction: string, reverse: boolean): Promise<void> {
+export function animate(before: string, after: string, instruction: string, reverse: boolean = false): Promise<void> {
 	stopAnimation();
 	animation = new Animation(before, after, instruction, reverse);
 	return animation.promise;

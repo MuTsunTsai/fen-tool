@@ -83,7 +83,6 @@ gulp.task("js", () =>
 		}))
 		.pipe(esb({
 			outfile: "main.js",
-			external: ["./modules/*"], // Everything in here are loaded on demand
 			plugins: [esVue(vueOption)],
 			minify: true,
 			sourcemap: true,

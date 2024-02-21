@@ -24,7 +24,7 @@ export const YACPDB = {
 				const { w, h } = store.board;
 				const list = json.result.entries[0].algebraic;
 				const values = emptyBoard(w * h);
-				function add(v: string) {
+				function add(v: string): void {
 					const x = v.charCodeAt(1) - CHAR_A_OFFSET, y = Number(v[2]);
 					values[(h - y) * w + x] = v[0];
 				}

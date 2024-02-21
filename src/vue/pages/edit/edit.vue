@@ -115,7 +115,7 @@
 	import { getBlob } from "js/view/render";
 	import CopyButton from "@/components/copyButton.vue";
 	import { stopAnimation } from "js/view/animation";
-	import { replace, snapshot, FEN } from "js/interface/squares";
+	import { replace, createSnapshot, FEN } from "js/interface/squares";
 	import { shift, mirror, rotate } from "js/meta/fen";
 	import { setOption } from "js/interface/layout";
 	import ShareButton from "./shareButton.vue";
@@ -123,20 +123,20 @@
 	function shiftBy(dx: number, dy: number): void {
 		stopAnimation(true);
 		const { w, h } = store.board;
-		replace(shift(snapshot(), dx, dy, w, h));
+		replace(shift(createSnapshot(), dx, dy, w, h));
 	}
 
 	function mirrorBy(d: string): void {
 		stopAnimation(true);
 		const { w, h } = store.board;
-		replace(mirror(snapshot(), d, w, h));
+		replace(mirror(createSnapshot(), d, w, h));
 	}
 
 	function rotateBy(d: number): void {
 		stopAnimation(true);
 		const { w, h } = store.board;
 		if(w !== h) setOption({ w: h, h: w });
-		replace(rotate(snapshot(), d, w, h));
+		replace(rotate(createSnapshot(), d, w, h));
 	}
 
 </script>

@@ -2,7 +2,7 @@ import { store } from "js/store";
 import { cnvHidden, getBlob } from "js/view/render";
 import { DEFAULT_SET, DEFAULT_SIZE, getDimensions } from "js/meta/option";
 import { inferDimension, makeForsyth } from "js/meta/fen";
-import { currentFEN, normalSnapshot } from "js/interface/squares";
+import { currentFEN, createNormalSnapshot } from "js/interface/squares";
 import { alert } from "js/meta/dialogs";
 
 function getURL(url: string): string {
@@ -12,7 +12,7 @@ function getURL(url: string): string {
 export function normalForsyth(): string {
 	const { SN, w, h } = store.board;
 	if(SN) {
-		return makeForsyth(normalSnapshot(), w, h);
+		return makeForsyth(createNormalSnapshot(), w, h);
 	} else {
 		return currentFEN.value;
 	}

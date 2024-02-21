@@ -1,6 +1,6 @@
 import { nextTick } from "vue";
 
-import { setFEN, snapshot } from "js/interface/squares";
+import { setFEN, createSnapshot } from "js/interface/squares";
 import { onSession, state, store } from "js/store";
 import { formatSolution, toNormalFEN } from "js/meta/popeye/popeye";
 import { resize } from "js/interface/layout";
@@ -177,7 +177,7 @@ export function getPopeyeFEN() {
 	const { w, h } = store.board;
 	if(w != BOARD_SIZE || h != BOARD_SIZE) return null;
 	const imitators = [];
-	const arr = snapshot().map((p, i) => {
+	const arr = createSnapshot().map((p, i) => {
 		if(p == "") return p;
 		let f = store.board.SN ? p.replace("s", "n").replace("S", "N").replace("g", "s").replace("G", "S") : p; // normalize
 		f = toPopeyePiece(f);

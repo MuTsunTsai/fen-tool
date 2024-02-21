@@ -56,8 +56,8 @@ export const status = reactive({
 	pieceCount: "(0+0)",
 	hor: false,
 	collapse: false,
-	dragging: false,
-	selection: null,
+	dragging: false as boolean | string,
+	selection: null as string | null,
 	stockfish: {
 		status: StockfishStatus.notDownloaded,
 		running: StockfishRunning.stop,

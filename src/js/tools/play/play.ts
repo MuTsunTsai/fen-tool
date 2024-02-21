@@ -134,7 +134,7 @@ export function checkDragPrecondition(index: number): boolean {
 
 export async function loadChessModule(): Promise<typeof ChessModule> {
 	if(!module) {
-		// break into 2 lines to prevent SSG trying to resolve this path.
+		// break into 2 lines to prevent bundling
 		const path = "./modules/chess.js";
 		const m = await import(path);
 		if(!module) {
