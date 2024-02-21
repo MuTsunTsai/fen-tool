@@ -66,21 +66,41 @@ function parseOptionCondition(items?: string[]): { options: string[], conditions
 	return { options, conditions };
 }
 
-// https://github.com/dturevski/olive-gui/blob/99b4527d0d430119b2a4e5f6388665d62e1b0f1a/popeye.py#L11-L24
+// All Popeye options according to its docs
 const OptionRegExps = [
-	"Defence [1-9][0-9]*",
+	"Try",
+	"Defence [1-9]\\d*",
 	"SetPlay",
-	"Threat [1-9][0-9]*",
+	"NullMoves",
+	"Threat [1-9]\\d*",
+	"WhiteToPlay",
 	"Variation",
 	"MoveNumbers",
+	"StartMoveNumber [1-9]\\d*",
+	"NoWk",
+	"NoBk",
 	"Duplex",
-	"MaxFlightsquares [1-9][0-9]*",
+	"NoThreat",
+	"MaxSolutions [1-9]\\d*",
+	"MaxFlightsquares [1-9]\\d*",
 	"EnPassant [a-h][36]( [a-h][36])?",
+	"CastlingMutuallyExclusive [ah][18][ah][18]",
+	"NoBoard",
+	"NoShortVariations",
 	"HalfDuplex",
 	"PostKeyPlay",
-	"NoCastling( [a-h][1-8])+",
-	"Hole [a-h][1-8]",
+	"NonTrivial [1-9]\\d* [1-9]\\d*",
+	"Intelligent",
+	"MaxTime [1-9]\\d*",
+	"NoCastling( [aeh][18])+",
 	"Quodlibet",
+	"StopOnShortSolutions",
+	"Beep",
+	"SuppressGrid",
+	"WriteGrid",
+	"KeepMatingPiece",
+	"LastCapture .+",
+	"GoalIsEnd",
 ].map(s => new RegExp("^" + s + "$"));
 
 function insertPieces(board: Board, items: string[], color: Color): void {
