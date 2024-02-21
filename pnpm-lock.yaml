@@ -34,6 +34,9 @@ devDependencies:
   '@mutsuntsai/esbuild-plugin-vue':
     specifier: ^0.1.6
     version: 0.1.6(@vue/compiler-sfc@3.4.19)
+  '@playwright/test':
+    specifier: ^1.41.2
+    version: 1.41.2
   '@stylistic/eslint-plugin':
     specifier: ^1.6.2
     version: 1.6.2(eslint@8.56.0)(typescript@5.3.3)
@@ -1901,6 +1904,14 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
+    dev: true
+
+  /@playwright/test@1.41.2:
+    resolution: {integrity: sha512-qQB9h7KbibJzrDpkXkYvsmiDJK14FULCCZgEcoe2AvFAS64oCirWTwzTlAYEbKaRxWs5TFesE1Na6izMv3HfGg==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dependencies:
+      playwright: 1.41.2
     dev: true
 
   /@popperjs/core@2.11.8:
@@ -4626,6 +4637,14 @@ packages:
     dev: true
     optional: true
 
+  /fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
   /fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -6575,6 +6594,22 @@ packages:
   /pinkie@2.0.4:
     resolution: {integrity: sha512-MnUuEycAemtSaeFSjXKW/aroV7akBbY+Sv+RkyqFjgAe73F+MR0TBWKBRDkmfWq/HiFmdavfZ1G7h4SPZXaCSg==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /playwright-core@1.41.2:
+    resolution: {integrity: sha512-VaTvwCA4Y8kxEe+kfm2+uUUw5Lubf38RxF7FpBxLPmGe5sdNkSg5e3ChEigaGrX7qdqT3pt2m/98LiyvU2x6CA==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dev: true
+
+  /playwright@1.41.2:
+    resolution: {integrity: sha512-v0bOa6H2GJChDL8pAeLa/LZC4feoAMbSQm1/jF/ySsWWoaNItvrMP7GEkvEEFyCTUYKMxjQKaTSg5up7nR6/8A==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dependencies:
+      playwright-core: 1.41.2
+    optionalDependencies:
+      fsevents: 2.3.2
     dev: true
 
   /plugin-error@0.1.2:
