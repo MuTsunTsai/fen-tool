@@ -266,9 +266,14 @@ label[for] {
 }
 
 @media (min-width: 400px) {
-	.nav-link.active .d-sm-inline {
-		margin-left: 0.5rem;
-		display: inline !important;
+	.nav-link.active {
+		.d-sm-none {
+			margin-right: 0.5rem;
+		}
+
+		.d-sm-inline {
+			display: inline !important;
+		}
 	}
 }
 
