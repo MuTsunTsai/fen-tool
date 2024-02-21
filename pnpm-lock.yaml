@@ -29,6 +29,9 @@ dependencies:
   workbox-strategies:
     specifier: ^7.0.0
     version: 7.0.0
+  yaml:
+    specifier: ^2.3.4
+    version: 2.3.4
 
 devDependencies:
   '@mutsuntsai/esbuild-plugin-vue':
@@ -8534,7 +8537,6 @@ packages:
   /yaml@2.3.4:
     resolution: {integrity: sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==}
     engines: {node: '>= 14'}
-    dev: true
 
   /yargs-parser@20.2.4:
     resolution: {integrity: sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==}

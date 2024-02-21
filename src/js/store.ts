@@ -10,7 +10,7 @@ import { StockfishRunning, StockfishStatus } from "./meta/enum";
 import { DEFAULT_BBS_OPTIONS } from "./modules/ptt/data";
 import { DEFAULT_PLAY_OPTIONS, DEFAULT_PLAY_STATE } from "./tools/play/data";
 
-import type { ProjectEntry } from "./tools/project";
+import type { ProjectEntry } from "./tools/project/entry";
 
 export const search = new URL(location.href).searchParams;
 

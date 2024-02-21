@@ -87,7 +87,7 @@
 							<label class="col-auto col-form-label">Border pattern:</label>
 							<div class="col">
 								<input type="text" placeholder="Use comma-separated numbers" title="Use comma-separated numbers"
-									   class="form-control" :value="store.board.border" @change="Layout.setBorder($event.target)">
+									   class="form-control" :value="store.board.border" @change="Layout.setBorder($event.target as HTMLInputElement)">
 							</div>
 						</div>
 					</div>

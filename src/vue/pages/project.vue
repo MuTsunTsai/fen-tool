@@ -1,10 +1,20 @@
 <template>
 	<section :class="{ show: state.tab == 8 }">
-		<input type="file" class="d-none" id="project_file" @change="open($event.target)" accept=".fentool">
+		<input type="file" class="d-none" id="project_file" @change="open($event.target)" accept=".fentool,.olv">
 		<div class="btn-gap">
-			<button class="btn btn-primary" @click="Project.add()" title="Add current position">
-				<i class="fa-solid fa-plus"></i>&ensp;Add
-			</button>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary pe-2" @click="Project.add()">
+					<i class="fa-solid fa-plus"></i>&ensp;Add
+				</button>
+				<button type="button" class="ps-2 btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false">
+					<span class="visually-hidden">Toggle Dropdown</span>
+				</button>
+				<div class="dropdown-menu">
+					<div class="dropdown-item" @click="Project.add(true)">Include Popeye inputs</div>
+				</div>
+			</div>
+
 			<label for="project_file" class="btn btn-secondary" title="Open a project file">
 				<i class="fa-regular fa-folder-open"></i>&ensp;Open
 			</label>
@@ -32,7 +42,7 @@
 					   :press-delay="env.isTouch ? 200 : 0" helper-class="thumbnail-ghost">
 				<SlickItem v-for="(item, i) of store.project" :index="i" :key="item.id">
 					<div class="thumbnail-wrapper" :class="{ touch: env.isTouch }" @dragstart.prevent>
-						<img :fen="item.fen" @click="set(item.fen)" class="thumbnail" :class="{ disabled: noEditing() }">
+						<img :fen="item.fen" @click="set(item)" class="thumbnail" :class="{ disabled: noEditing() }">
 						<i class="fa-solid fa-circle-xmark text-danger" @click="Project.remove(i)"></i>
 					</div>
 				</SlickItem>
@@ -44,18 +54,27 @@
 <script setup lang="ts">
 	import { SlickList, SlickItem } from "vue-slicksort";
 	import { shallowRef } from "vue";
+	// import { Dropdown } from "bootstrap";
 
 	import { store, state, status, noEditing } from "js/store";
 	import { env } from "js/meta/env";
-	import { Project } from "js/tools/project";
+	import { Project } from "js/tools/project/project";
 	import { setFEN } from "js/interface/squares";
+
+	import type { ProjectEntry } from "js/tools/project/entry";
 
 	const sorting = shallowRef(false);
 
-	function set(fen: string): void {
+	function set(item: ProjectEntry): void {
 		if(noEditing()) return;
-		setFEN(fen);
-		if(env.isTouch) document.body.scrollTo({ behavior: "smooth", top: 0 });
+		setFEN(item.fen);
+		if(item.popeye) {
+			state.tab = 7;
+			state.compute = "py";
+			state.popeye.input = item.popeye;
+		} else if(env.isTouch) {
+			document.body.scrollTo({ behavior: "smooth", top: 0 });
+		}
 	}
 
 	function open(target: EventTarget): void {

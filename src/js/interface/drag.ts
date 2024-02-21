@@ -7,7 +7,7 @@ import { types } from "js/view/draw";
 import { LABEL_MARGIN } from "js/meta/option";
 import { env } from "js/meta/env";
 import { animate } from "js/view/animation";
-import { Popeye } from "js/tools/popeye";
+import { Popeye } from "js/tools/popeye/popeye";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "js/meta/constants";
 import { Rotation, TemplateRow } from "js/meta/enum";
 import { wrapEvent, getXY, getRotation, getDisplacement } from "./event";

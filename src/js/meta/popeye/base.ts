@@ -93,12 +93,13 @@ for(const key in defaultPieceMap) {
 
 export function toNormalPiece(p: string): string {
 	const upper = p.toUpperCase();
-	const normal = findCustom(pieceMap.custom(), upper) || pieceMap.default[upper];
+	const normal = findCustom(upper) || pieceMap.default[upper];
 	if(normal) return p == upper ? normal : normal.toLowerCase();
 	return p;
 }
 
-function findCustom(map: Record<string, string>, p: string): string | undefined {
+export function findCustom(p: string): string | undefined {
+	const map = pieceMap.custom();
 	for(const key in map) if(map[key] == p) return key;
 }
 

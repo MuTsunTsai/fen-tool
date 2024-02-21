@@ -226,6 +226,7 @@ section {
 #TP,
 #PV,
 .nav-item,
+.dropdown-item,
 input[type="checkbox"],
 label[for] {
 	cursor: pointer;
@@ -423,6 +424,8 @@ label[for] {
 		--bs-body-color: #eee;
 		--bs-light-rgb: 70, 70, 70;
 		--bs-border-color: #666;
+		--bs-border-color-translucent: #777;
+		--bs-tertiary-bg: #555;
 	}
 
 	.table {

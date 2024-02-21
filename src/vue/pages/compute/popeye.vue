@@ -3,7 +3,7 @@
 		<div v-show="!state.popeye.playing && !state.popeye.editMap">
 			<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input" :disabled="state.popeye.running"
 					  :placeholder="placeholder"></textarea>
-			<div class="mb-3 row gx-1">
+			<div class="mb-3 row gx-2">
 				<div class="col">
 					<div class="w-passive-100">
 						<button type="button" class="btn btn-secondary" @click="Popeye.editMap" :disabled="state.popeye.running"
@@ -95,7 +95,7 @@
 
 <script setup lang="ts">
 	import { state } from "js/store";
-	import { Popeye } from "js/tools/popeye";
+	import { Popeye } from "js/tools/popeye/popeye";
 
 	const placeholder = "For example:\n=============\nStipulation #2\nOption Variation";
 </script>
