@@ -112,8 +112,6 @@ export function getStipulations(input: string): string[] {
 
 /**
  * Try to guess the WB/BW move ordering; this is needed only for castling.
- * @param {string} stip
- * @param {boolean} halfDuplex
  */
 export function inferMoveOrdering(stip: string, halfDuplex = false): Ordering {
 	if(!stip) return "wb"; // sstip not supported for the moment

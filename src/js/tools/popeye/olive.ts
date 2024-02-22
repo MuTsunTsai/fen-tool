@@ -4,17 +4,21 @@ import { makeEntry } from "../project/entry";
 import { emptyBoard, makeForsyth, parseSquare } from "js/meta/fen";
 import { INIT_SQ_COUNT } from "js/meta/constants";
 import { Color } from "js/meta/enum";
-import { findCustom } from "js/meta/popeye/base";
-import { alert } from "js/meta/dialogs";
+import { toNormalFEN } from "js/meta/popeye/popeye";
+import { FORSYTH } from "./popeye";
+import { pieceCommand } from "js/meta/popeye/piece";
 
+import type { PopeyeBoardInfo } from "./popeye";
 import type { ProjectEntry } from "../project/entry";
 
+interface Algebraic {
+	black?: string[];
+	white?: string[];
+	neutral?: string[];
+}
+
 interface OliveFormat {
-	algebraic: {
-		black?: string[];
-		white?: string[];
-		neutral?: string[];
-	};
+	algebraic: Algebraic;
 	options?: string[];
 	stipulation?: string;
 }
@@ -26,26 +30,17 @@ export function parseOliveFormat(content: string): ProjectEntry[] | null {
 		const entries: ProjectEntry[] = [];
 		for(const [i, document] of documents.entries()) {
 			const json = document.toJS() as OliveFormat;
+			const fen = toPopeyeFen(json.algebraic);
 			const popeye: string[] = [];
-			const board = emptyBoard(INIT_SQ_COUNT);
-			try {
-				if(json.algebraic.black) insertPieces(board, json.algebraic.black, Color.black);
-				if(json.algebraic.white) insertPieces(board, json.algebraic.white, Color.white);
-				if(json.algebraic.neutral) insertPieces(board, json.algebraic.neutral, Color.neutral);
-			} catch(e) {
-				if(e instanceof Error) {
-					alert("The following fairy piece cannot be mapped: " + e.message +
-						"\nPlease edit the fairy piece mapping to include it.");
-				}
-				break;
-			}
+			if(fen !== toNormalFEN(fen)) popeye.push("Forsyth " + fen);
 			if(json.stipulation) popeye.push("Stipulation " + json.stipulation);
 			const { options, conditions } = parseOptionCondition(json.options);
 			popeye.push("Option " + options.join(" "));
 			if(conditions.length) popeye.push("Condition " + conditions.join(" "));
-
-			const fen = makeForsyth(board);
-			entries.push(makeEntry(fen, popeye.join("\n"), i));
+			entries.push(makeEntry({
+				fen,
+				popeye: popeye.join("\n"),
+			}, i));
 		}
 		return entries;
 	} catch(e) {
@@ -105,19 +100,36 @@ const OptionRegExps = [
 
 function insertPieces(board: Board, items: string[], color: Color): void {
 	for(const item of items) {
-		const raw = item.substring(0, item.length - 2);
-		let piece = findPiece(raw);
-		if(!piece) throw new Error(raw);
 		const sq = parseSquare(item.substring(item.length - 2));
-		if(color == Color.white) piece = piece.toUpperCase();
-		else if(color == Color.black) piece = piece.toLowerCase();
-		else piece = "=" + piece;
+		let piece = item.substring(0, item.length - 2); // uppercase by default
+		if(piece.length == 2) piece = "." + piece;
+		const isBlack = color == Color.black;
+		if(isBlack) piece = piece.toLowerCase();
+		if(color == Color.neutral) piece = "=" + piece;
+		else if(!(/[a-z]/i).test(piece)) piece = (isBlack ? "-" : "+") + piece;
 		board[sq] = piece;
 	}
 }
 
-function findPiece(piece: string): string | undefined {
-	if(["K", "Q", "B", "R", "P"].includes(piece)) return piece;
-	if(piece == "S") return "N";
-	return findCustom(piece);
+function toPopeyeFen(algebraic: Algebraic): string {
+	const board = emptyBoard(INIT_SQ_COUNT);
+	if(algebraic.black) insertPieces(board, algebraic.black, Color.black);
+	if(algebraic.white) insertPieces(board, algebraic.white, Color.white);
+	if(algebraic.neutral) insertPieces(board, algebraic.neutral, Color.neutral);
+	return makeForsyth(board);
+}
+
+export function normalizeInput(input: string, info: PopeyeBoardInfo): string {
+	if(info.fromInput) {
+		input = input
+			.replace(new RegExp(`${pieceCommand}\\s+`, "ig"), "")
+			.replace(new RegExp(`${FORSYTH}\\s\\S+\\s+`, "ig"), "");
+	}
+	if(
+		info.fen !== toNormalFEN(info.fen) &&
+		!input.includes("Forsyth")
+	) {
+		input = `Forsyth ${info.fen}\n${input}`;
+	}
+	return input;
 }

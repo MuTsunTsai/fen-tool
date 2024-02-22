@@ -13,7 +13,7 @@ const specs = [
 
 const onePieceList = `(?<p>${P})(?<sq>(?:${SQ})+)`;
 const oneColor = String.raw`\s+(?<c>${colors})(?:\s+(?:${specs}))?(?<l>(?:\s+${onePieceList})+)`;
-const pieceCommand = String.raw`${createAbbrExp("2pieces")}(?:${oneColor})+(?=\s+(?:${Commands})|$)`;
+export const pieceCommand = String.raw`${createAbbrExp("2pieces")}(?:${oneColor})+(?=\s+(?:${Commands})|$)`;
 
 export function parsePieceCommand(input: string): string | null {
 	const commands = input.match(new RegExp(pieceCommand, "ig"));

@@ -27,34 +27,33 @@ onSession(() => {
 	}
 });
 
-/** @type {Worker} */
-let worker;
+let worker: Worker | undefined;
 
 /** Current memory setting. */
-let memory;
+let memory: number;
 
 let path = "modules/py489.js";
-let startTime;
-let interval;
-let outputCount;
+let startTime: number;
+let interval: number;
+let outputCount: number;
 let shouldScroll = false;
 
-const el = document.getElementById("Output");
+const el = document.getElementById("Output") as HTMLDivElement;
 
-function flush() {
+function flush(): void {
 	state.popeye.output = state.popeye.intOutput + `<br><i class="fa-solid fa-spinner fa-spin"></i>`;
 	tryScroll();
 }
 
-function tryScroll() {
+function tryScroll(): void {
 	if(shouldScroll) {
 		shouldScroll = false;
 		nextTick(() => el.scrollTop = el.scrollHeight - el.clientHeight);
 	}
 }
 
-function stop(restart) {
-	worker.terminate();
+function stop(restart?: boolean): void {
+	if(worker) worker.terminate();
 	worker = undefined;
 	const remain = OUTPUT_INTERVAL - (performance.now() - startTime);
 	tryScroll();
@@ -68,10 +67,11 @@ function stop(restart) {
 	}
 }
 
-function createWorker() {
-	if(worker) return;
-	worker = new Worker(path);
-	worker.onerror = event => {
+function createWorker(): Worker {
+	if(worker) return worker;
+	const w = new Worker(path);
+	worker = w;
+	w.onerror = event => {
 		event.preventDefault();
 		clearInterval(interval);
 		state.popeye.running = false;
@@ -79,13 +79,13 @@ function createWorker() {
 		if(!event.filename) {
 			msg = "Unable to load the Popeye module; please check your network connection.";
 		} else {
-			worker.terminate();
+			w.terminate();
 			msg = "An error occur in the Popeye module. Please submit an issue about this.\n" + event.message;
 		}
 		state.popeye.output = error(msg);
 		worker = undefined;
 	};
-	worker.onmessage = event => {
+	w.onmessage = event => {
 		const data = event.data;
 		if(++outputCount > MAX_LINES) {
 			// Restrict the output to 3000 lines.
@@ -111,15 +111,16 @@ function createWorker() {
 			}
 		}
 	};
+	return w;
 }
 
-function elIsAlmostBottom() {
+function elIsAlmostBottom(): boolean {
 	const threshold = 30;
 	return Boolean(el) && el.scrollTop + el.clientHeight + threshold > el.scrollHeight;
 }
 
-function start() {
-	createWorker();
+function start(): void {
+	const w = createWorker();
 
 	const p = state.popeye;
 	outputCount = 0;
@@ -128,17 +129,17 @@ function start() {
 	p.running = true;
 	interval = setInterval(flush, OUTPUT_INTERVAL);
 	startTime = performance.now();
-	worker.postMessage({
+	w.postMessage({
 		mem: memory,
 		input: "Opti NoBoard\n" + p.intInput,
 	}); // NoBoard is used in any case
 }
 
-function error(text) {
+function error(text: string): string {
 	return `<span class="text-danger">${text}</span>`;
 }
 
-function escapeHtml(text) {
+function escapeHtml(text: string): string {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
@@ -148,10 +149,10 @@ const PROTOCOL = new RegExp(String.raw`${createAbbrExp("5protocol")}\s+\S+`, "i"
 const BEGIN = createAbbrReg("3beginProblem");
 const END = createAbbrReg("3endProblem");
 const NEXT = /\bnext\s[\s\S]+$/i;
-const FORSYTH = createAbbrExp("3forsyth");
+export const FORSYTH = createAbbrExp("3forsyth");
 const PIECES = createAbbrExp("2pieces");
 
-function parseInput(text) {
+function parseInput(text: string): string {
 	text = text
 		.replace(COMMANDS, "")	// remove remark, author, origin, title
 		.replace(PROTOCOL, "")	// remove protocol
@@ -160,26 +161,36 @@ function parseInput(text) {
 		.replace(END, ""); // remove EndProblem
 
 	const p = state.popeye;
-	if(new RegExp(`${FORSYTH}|${PIECES}`, "i").test(text)) {
-		// If Forsyth command or Pieces command is used, get the board from it
-		p.initFEN = parsePieceCommand(text) || text.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
-		if(p.initFEN) setFEN(toNormalFEN(p.initFEN));
+	const { fen, imitators, fromInput } = getPopeyeFEN(text);
+	p.initFEN = fen;
+	if(fromInput) {
+		setFEN(toNormalFEN(fen));
 		return text; // board is assigned manually
-	} else {
-		const { fen, imitators } = getPopeyeFEN();
-		p.initFEN = fen;
-		if(imitators.length) text += "\ncond imitator " + imitators.join("");
-		return `fors ${p.initFEN}\n${text}`;
 	}
+	if(imitators.length) text += "\ncond imitator " + imitators.join("");
+	return `fors ${fen}\n${text}`;
 }
 
-export function getPopeyeFEN() {
+export interface PopeyeBoardInfo {
+	fen: string;
+	fromInput: boolean;
+	imitators: string[];
+}
+
+export function getPopeyeFEN(input: string): PopeyeBoardInfo {
+	if(new RegExp(`${FORSYTH}|${PIECES}`, "i").test(input)) {
+		// If Forsyth command or Pieces command is used, get the board from it
+		const fen = parsePieceCommand(input) || input.match(new RegExp(String.raw`${FORSYTH}\s+(\S+)`, "i"))?.[1];
+		if(fen) return { fen, imitators: [], fromInput: true };
+	}
+
 	const { w, h } = store.board;
-	if(w != BOARD_SIZE || h != BOARD_SIZE) return null;
-	const imitators = [];
+	if(w != BOARD_SIZE || h != BOARD_SIZE) throw new Error();
+
+	const imitators: string[] = [];
 	const arr = createSnapshot().map((p, i) => {
 		if(p == "") return p;
-		let f = store.board.SN ? p.replace("s", "n").replace("S", "N").replace("g", "s").replace("G", "S") : p; // normalize
+		let f: string | null = store.board.SN ? p.replace("s", "n").replace("S", "N").replace("g", "s").replace("G", "S") : p; // normalize
 		f = toPopeyePiece(f);
 		if(!f) throw alert("Unspecified fairy piece: " + p);
 		if(f.match(/^=?i$/i)) {
@@ -188,10 +199,10 @@ export function getPopeyeFEN() {
 		}
 		return f;
 	});
-	return { fen: makeForsyth(arr), imitators };
+	return { fen: makeForsyth(arr), imitators, fromInput: false };
 }
 
-async function setupStepElements(restore) {
+async function setupStepElements(restore?: boolean): Promise<void> {
 	const p = state.popeye;
 	p.steps = [...el.querySelectorAll("span")];
 	if(p.steps.length == 0) return;
@@ -202,7 +213,7 @@ async function setupStepElements(restore) {
 	nextTick(resize);
 }
 
-async function goTo(index, init) {
+async function goTo(index: number, init?: boolean): Promise<void> {
 	const p = state.popeye;
 	const newStep = p.steps[index];
 	const oldStep = p.steps[p.index];
@@ -213,14 +224,14 @@ async function goTo(index, init) {
 			newStep.dataset.fen == oldStep.dataset.before
 		)
 	) {
-		await animate(newStep.dataset.fen, oldStep.dataset.fen, oldStep.dataset.anime, true);
+		await animate(newStep.dataset.fen!, oldStep.dataset.fen!, oldStep.dataset.anime, true);
 	} else {
 		const before = newStep.dataset.before || p.steps[index - 1]?.dataset.fen;
 		if(newStep.dataset.anime && before) {
-			await animate(before, newStep.dataset.fen, newStep.dataset.anime);
+			await animate(before, newStep.dataset.fen!, newStep.dataset.anime);
 		} else {
 			stopAnimation();
-			setFEN(newStep.dataset.fen);
+			setFEN(newStep.dataset.fen!);
 		}
 	}
 	if(!init) oldStep.classList.remove("active");
@@ -232,7 +243,7 @@ async function goTo(index, init) {
 	nextTick(() => scrollTo(newStep));
 }
 
-function scrollTo(step) {
+function scrollTo(step: HTMLSpanElement): void {
 	// We cannot simply use scrollIntoView here, as that will also scroll the entire page,
 	// which is not the desired behavior.
 	const margin = 10;
@@ -268,10 +279,10 @@ export const Popeye = {
 		p.output = formatSolution(p.intInput, p.initFEN, p.intOutput);
 		nextTick(setupStepElements);
 	},
-	step(e) {
+	step(e: Event) {
 		const p = state.popeye;
 		if(!p.playing) return;
-		const index = p.steps.indexOf(e.target);
+		const index = p.steps.indexOf(e.target as HTMLSpanElement);
 		if(index >= 0 && index != p.index) {
 			e.preventDefault();
 			goTo(index);
@@ -279,13 +290,13 @@ export const Popeye = {
 	},
 	exit() {
 		const p = state.popeye;
-		setFEN(p.steps[0].dataset.fen);
+		setFEN(p.steps[0].dataset.fen!);
 		p.output = p.intOutput;
 		p.playing = false;
 		drawTemplate([]);
 		nextTick(resize);
 	},
-	moveBy(v) {
+	moveBy(v: number) {
 		const p = state.popeye;
 		let n = p.index;
 		n += v;
@@ -293,7 +304,7 @@ export const Popeye = {
 		if(n > p.steps.length - 1) n = p.steps.length - 1;
 		Popeye.move(n);
 	},
-	move(n) {
+	move(n: number) {
 		if(n != state.popeye.index) goTo(n);
 	},
 	editMap() {
@@ -306,7 +317,7 @@ export const Popeye = {
 	},
 	saveMap() {
 		const lines = state.popeye.mapping.toUpperCase().split("\n");
-		const map = {};
+		const map: Record<string, string> = {};
 		for(const line of lines) {
 			const [k, v] = line.replace(/\s/g, "").split("=");
 			if(k.match(KEY) && v && v.match(VALUE)) map[k] = v;
@@ -316,7 +327,7 @@ export const Popeye = {
 	},
 };
 
-function getMappingText(pieceMap) {
+function getMappingText(pieceMap: Record<string, string>): string {
 	const map = [];
 	for(const key in pieceMap) {
 		map.push(`${key}=${pieceMap[key]}`);

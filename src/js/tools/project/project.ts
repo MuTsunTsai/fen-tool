@@ -3,8 +3,11 @@ import { shallowRef, watchEffect } from "vue";
 import { alert, confirm } from "js/meta/dialogs";
 import { state, store } from "js/store";
 import { currentFEN } from "js/interface/squares";
-import { parseOliveFormat } from "../popeye/olive";
+import { normalizeInput, parseOliveFormat } from "../popeye/olive";
 import { makeEntry } from "./entry";
+import { FORSYTH, getPopeyeFEN } from "../popeye/popeye";
+import { pieceCommand } from "js/meta/popeye/piece";
+import { toNormalFEN } from "js/meta/popeye/popeye";
 
 import type { ProjectEntry } from "./entry";
 
@@ -27,7 +30,7 @@ function parseTextFormat(content: string): ProjectEntry[] | null {
 	if(!matches || !matches.length) return null;
 	const entries: ProjectEntry[] = [];
 	for(const [i, match] of matches.entries()) {
-		entries.push(makeEntry(match, undefined, i));
+		entries.push(makeEntry({ fen: match }, i));
 	}
 	return entries;
 }
@@ -39,7 +42,14 @@ export const Project = {
 		}
 	},
 	add(popeye?: boolean) {
-		store.project.push(makeEntry(currentFEN.value, popeye ? state.popeye.input : undefined));
+		if(popeye) {
+			let input = state.popeye.input;
+			const info = getPopeyeFEN(input);
+			input = normalizeInput(input, info);
+			store.project.push(makeEntry({ fen: info.fen, popeye: input }));
+		} else {
+			store.project.push(makeEntry({ fen: currentFEN.value }));
+		}
 	},
 	remove(i: number) {
 		store.project.splice(i, 1);

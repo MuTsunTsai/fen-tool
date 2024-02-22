@@ -11,7 +11,7 @@
 					<span class="visually-hidden">Toggle Dropdown</span>
 				</button>
 				<div class="dropdown-menu">
-					<div class="dropdown-item" @click="Project.add(true)">Include Popeye inputs</div>
+					<div class="dropdown-item" @click="Project.add(true)">As a Popeye problem</div>
 				</div>
 			</div>
 
@@ -42,7 +42,7 @@
 					   :press-delay="env.isTouch ? 200 : 0" helper-class="thumbnail-ghost">
 				<SlickItem v-for="(item, i) of store.project" :index="i" :key="item.id">
 					<div class="thumbnail-wrapper" :class="{ touch: env.isTouch }" @dragstart.prevent>
-						<img :fen="item.fen" @click="set(item)" class="thumbnail" :class="{ disabled: noEditing() }">
+						<img :fen="getFen(item)" @click="set(item)" class="thumbnail" :class="{ disabled: noEditing() }">
 						<i class="fa-solid fa-circle-xmark text-danger" @click="Project.remove(i)"></i>
 					</div>
 				</SlickItem>
@@ -54,12 +54,12 @@
 <script setup lang="ts">
 	import { SlickList, SlickItem } from "vue-slicksort";
 	import { shallowRef } from "vue";
-	// import { Dropdown } from "bootstrap";
 
 	import { store, state, status, noEditing } from "js/store";
 	import { env } from "js/meta/env";
 	import { Project } from "js/tools/project/project";
 	import { setFEN } from "js/interface/squares";
+	import { toNormalFEN } from "js/meta/popeye/popeye";
 
 	import type { ProjectEntry } from "js/tools/project/entry";
 
@@ -67,12 +67,13 @@
 
 	function set(item: ProjectEntry): void {
 		if(noEditing()) return;
-		setFEN(item.fen);
+		setFEN(getFen(item));
 		if(item.popeye) {
 			state.tab = 7;
 			state.compute = "py";
 			state.popeye.input = item.popeye;
-		} else if(env.isTouch) {
+		}
+		if(env.isTouch) {
 			document.body.scrollTo({ behavior: "smooth", top: 0 });
 		}
 	}
@@ -83,5 +84,10 @@
 		if(!file) return;
 		el.value = "";
 		Project.open(file);
+	}
+
+	function getFen(item: ProjectEntry): string {
+		if(item.popeye?.includes("Forsyth")) return toNormalFEN(item.fen);
+		return item.fen;
 	}
 </script>

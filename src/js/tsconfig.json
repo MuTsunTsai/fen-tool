@@ -6,6 +6,14 @@
 		"moduleResolution": "NodeNext",
 		"module": "NodeNext",
 		"strict": true,
-		"target": "ESNext"
+		"target": "ESNext",
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"types": [
+			"gtag.js"
+		]
 	}
 }

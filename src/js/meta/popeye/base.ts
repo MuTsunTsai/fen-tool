@@ -107,7 +107,7 @@ export function toPopeyePiece(p: string): string | null {
 	let prefix = p.startsWith("-") ? "=" : "";
 	if(prefix) p = p.substring(1);
 	const upper = p.toUpperCase();
-	if(!upper.match(/^[KQBNRP]$/)) {
+	if(!isOrthodoxPiece(upper)) {
 		const isWhite = upper == p;
 		const map = pieceMap.custom();
 		if(!(upper in map)) return null;
@@ -120,10 +120,15 @@ export function toPopeyePiece(p: string): string | null {
 	}
 	return prefix + p;
 }
+
 export function exchange(board: Board, from: string, to: string): void {
 	const a = parseSquare(from);
 	const b = parseSquare(to);
 	const temp = board[b];
 	board[b] = board[a];
 	board[a] = temp;
+}
+
+export function isOrthodoxPiece(upperCase: string): boolean {
+	return (/^[KQBNRP]$/).test(upperCase);
 }

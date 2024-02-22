@@ -33,7 +33,7 @@ const settings = {
 		janko: false,
 	},
 	popeye: {
-		pieceMap: defaultCustomMap,
+		pieceMap: defaultCustomMap as Record<string, string>,
 	},
 	board: DEFAULT_BOARD_OPTIONS,
 	project: [] as ProjectEntry[],
@@ -82,9 +82,9 @@ const defaultState = {
 	compute: "py",
 	play: DEFAULT_PLAY_STATE,
 	popeye: {
-		initFEN: null,
-		index: null,
-		steps: null,
+		initFEN: "",
+		index: 0,
+		steps: [] as HTMLSpanElement[],
 		playing: false,
 		error: false,
 		running: false,
@@ -98,10 +98,10 @@ const defaultState = {
 		output: "",
 
 		/** The internal input to Popeye. */
-		intInput: null,
+		intInput: "",
 
 		/** The internal output from Popeye. */
-		intOutput: null,
+		intOutput: "",
 	},
 	stockfish: STOCKFISH,
 	syzygy: {
