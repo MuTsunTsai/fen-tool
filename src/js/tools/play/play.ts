@@ -65,10 +65,14 @@ export function makeMove(fromIndex: number, toIndex: number, promotion?: string)
 		}
 		return result;
 	} else {
-		const move = chess.move({ from, to, promotion });
-		if(!move) return false;
-		if(move.flags == "k" || move.flags == "q") return generateCastlingAnimation(move);
-		return true;
+		try {
+			const move = chess.move({ from, to, promotion });
+			if(!move) return false;
+			if(move.flags == "k" || move.flags == "q") return generateCastlingAnimation(move);
+			return true;
+		} catch {
+			return false;
+		}
 	}
 }
 
