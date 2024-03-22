@@ -10,6 +10,7 @@ export function parseMoves(text: string): string[] {
 		.replace(/\s+/g, " ")
 		.trim();
 
+	if(text === "") return []; // empty game
 	const tokens = text.split(" ").filter(m => !m.match(/^\$\d+$/)); // ignore NAG
 
 	const last = tokens[tokens.length - 1];

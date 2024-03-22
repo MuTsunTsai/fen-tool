@@ -56,3 +56,14 @@ export enum Background {
 	green = "green",
 	classic = "classic",
 }
+
+export enum Tabs {
+	edit = 0,
+	options = 1,
+	database = 2,
+	bbs = 4,
+	api = 5,
+	play = 6,
+	compute = 7,
+	project = 8,
+}

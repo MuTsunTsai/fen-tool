@@ -6,7 +6,7 @@ import { drawTemplate, load } from "js/view/render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "js/interface/squares";
 import { onSession, state, status, store } from "js/store";
 import { alert } from "js/meta/dialogs";
-import { Color, PlayMode, TemplateRow } from "js/meta/enum";
+import { Color, PlayMode, Tabs, TemplateRow } from "js/meta/enum";
 import { BOARD_SIZE } from "js/meta/constants";
 import { RANK_1ST, RANK_8TH, MASK } from "./data";
 
@@ -269,3 +269,12 @@ export const PLAY = {
 		await importGame(text);
 	},
 };
+
+// Handle URL play parameter
+const paramPlay = new URL(location.href).searchParams.get("play");
+if(paramPlay !== null) {
+	setTimeout(() => {
+		state.tab = Tabs.play;
+		importGame(paramPlay);
+	}, 0);
+}
