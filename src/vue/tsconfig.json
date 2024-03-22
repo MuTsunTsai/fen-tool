@@ -2,7 +2,10 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"baseUrl": "../",
-		"moduleResolution": "node",
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext",
+		"noEmit": true,
+		"strict": true,
 		"target": "ESNext",
 		"types": [
 			"gtag.js"
@@ -12,5 +15,9 @@
 				"./vue/*"
 			]
 		}
-	}
+	},
+	"include": [
+		"./**/*.vue",
+		"../js/**/*"
+	]
 }

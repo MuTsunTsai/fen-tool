@@ -24,7 +24,7 @@
 		const el = event.target as HTMLInputElement;
 		const oldV = props.modelValue;
 		const newV = Math.round(Number(el.value));
-		if(isNaN(newV) || newV < props.min || newV > props.max) {
+		if(isNaN(newV) || newV < props.min || props.max !== undefined && newV > props.max) {
 			el.value = oldV.toString();
 		} else {
 			emit("update:modelValue", newV);
@@ -36,5 +36,5 @@
 	}
 
 	const isMin = (): boolean => props.modelValue <= props.min;
-	const isMax = (): boolean => props.modelValue >= props.max;
+	const isMax = (): boolean => props.max !== undefined && props.modelValue >= props.max;
 </script>

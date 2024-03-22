@@ -37,7 +37,7 @@ export interface PlayState {
 
 type SymbolSet = Record<"K" | "Q" | "B" | "N" | "R" | "P", string>;
 
-type PlaySymbol = "unicode" | "german" | undefined;
+export type PlaySymbol = "unicode" | "german" | null;
 
 export class Chess extends ChessBase {
 
@@ -282,7 +282,7 @@ export function format(h: Move, mode?: PlayMode, options: Partial<PlayOption> = 
 	return move;
 }
 
-function getSymbol(sym: PlaySymbol | null): SymbolSet | null {
+function getSymbol(sym?: PlaySymbol): SymbolSet | null {
 	if(sym == "unicode") return unicode;
 	if(sym == "german") return german;
 	return null;

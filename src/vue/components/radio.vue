@@ -19,7 +19,7 @@
 	}>();
 	const emit = defineEmits(["update:modelValue"]);
 
-	const id = "rdo" + getCurrentInstance().uid;
+	const id = "rdo" + getCurrentInstance()!.uid;
 
 	function checked(i: number): boolean {
 		return props.modelValue === props.value[i];

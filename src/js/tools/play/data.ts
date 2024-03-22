@@ -1,12 +1,12 @@
 import { PlayMode, TemplateMap } from "js/meta/enum";
 
 import type { PieceSymbolR } from "js/modules/retro";
-import type { overState } from "js/modules/chess";
+import type { overState, PlaySymbol } from "js/modules/chess";
 import type { Move } from "chess.js";
 
 
 export const DEFAULT_PLAY_OPTIONS = {
-	symbol: null,
+	symbol: null as PlaySymbol,
 	ep: true,
 	negative: false,
 	zero: false,

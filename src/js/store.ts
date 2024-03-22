@@ -67,13 +67,26 @@ export const status = reactive({
 	},
 });
 
+interface StockfishLine {
+	moves: string[];
+	score: number;
+	pgn: string;
+}
+
+interface SyzygyLine {
+	leaf: boolean;
+	searching: boolean;
+	pgn: string;
+	indent: number;
+}
+
 // Session data, will be restored on tab reloading/restoring/duplicating
 // (only for top window).
 export const STOCKFISH = {
 	depth: 0,
 	score: null,
 	mate: null,
-	lines: [],
+	lines: [] as StockfishLine[],
 	header: [],
 };
 const defaultState = {
@@ -106,7 +119,7 @@ const defaultState = {
 	stockfish: STOCKFISH,
 	syzygy: {
 		header: null,
-		lines: null,
+		lines: null as SyzygyLine[] | null,
 	},
 };
 

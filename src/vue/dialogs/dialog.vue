@@ -25,7 +25,7 @@
 	const el = shallowRef<HTMLElement>();
 
 	onMounted(() => {
-		modal = new Modal(el.value, { backdrop: "static" });
+		modal = new Modal(el.value!, { backdrop: "static" });
 	});
 
 	const message = shallowRef<string>("");

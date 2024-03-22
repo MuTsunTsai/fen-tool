@@ -17,5 +17,5 @@
 	}>();
 	defineEmits(["update:modelValue", "change"]);
 
-	const id = "chk" + getCurrentInstance().uid;
+	const id = "chk" + getCurrentInstance()!.uid;
 </script>

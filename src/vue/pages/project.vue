@@ -78,9 +78,9 @@
 		}
 	}
 
-	function open(target: EventTarget): void {
+	function open(target: EventTarget | null): void {
 		const el = target as HTMLInputElement;
-		const file = el.files[0];
+		const file = el.files?.[0];
 		if(!file) return;
 		el.value = "";
 		Project.open(file);

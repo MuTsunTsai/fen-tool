@@ -33,7 +33,7 @@
 				<input type="text" class="form-control" v-model="problemId" :readonly="noEditing() || undefined">
 			</div>
 			<div class="col-auto">
-				<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target)" :disabled="noEditing()">
+				<input type="button" class="btn btn-primary" value="Get FEN" @click="DB.fetch($event.target as HTMLButtonElement)" :disabled="noEditing()">
 			</div>
 		</div>
 		<div class="row align-items-center flex-wrap">
