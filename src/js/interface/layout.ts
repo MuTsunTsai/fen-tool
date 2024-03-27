@@ -163,15 +163,22 @@ export async function initLayout(): Promise<void> {
 
 // Split mode RWD
 if(!env.isTop) {
+	function resizeSelf(): void {
+		try {
+			parent.resizeIframe();
+		} catch {
+			//
+		}
+	}
 	if(typeof ResizeObserver !== "undefined") {
-		const observer = new ResizeObserver(e => parent.resizeIframe());
+		const observer = new ResizeObserver(resizeSelf);
 		observer.observe(document.body);
 	} else {
 		// fallback to MutationObserver
-		const observer = new MutationObserver(e => parent.resizeIframe());
+		const observer = new MutationObserver(resizeSelf);
 		observer.observe(document.body, { childList: true });
 	}
-	parent.resizeIframe(); // init
+	resizeSelf(); // init
 } else {
 	window.resizeIframe = function() {
 		const iframe = document.getElementsByTagName("iframe")[0];
