@@ -3,9 +3,9 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "serve",
+			"script": "start",
 			"problemMatcher": [],
-			"label": "pnpm: serve",
+			"label": "pnpm: start",
 			"detail": "serve -L docs",
 			"isBackground": true,
 			"presentation": {
