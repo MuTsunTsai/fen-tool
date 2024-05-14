@@ -18,9 +18,9 @@ export function makeTwin(fen: string, text: string): Twin {
 	return { fen: makeForsyth(board), board };
 }
 
-const TW_MOVE = new RegExp(`^[nwb]${P}(${SQ})--&gt;(${SQ})$`);
-const TW_EXCHANGE = new RegExp(`^[nwb]${P}(${SQ})&lt;--&gt;[nwb]${P}(${SQ})$`);
-const TW_ADD_REMOVE = new RegExp(`^([+-]?)([nwb])(${P})(${SQ})$`);
+const TW_MOVE = new RegExp(`^[nwb](?:hcc)?${P}(${SQ})--&gt;(${SQ})$`);
+const TW_EXCHANGE = new RegExp(`^[nwb](?:hcc)?${P}(${SQ})&lt;--&gt;[nwb](?:hcc)?${P}(${SQ})$`);
+const TW_ADD_REMOVE = new RegExp(`^([+-]?)([nwb])(?:hcc)?(${P})(${SQ})$`);
 const TW_SUBSTITUTE = new RegExp(`^(${P})==&gt;(${P})$`);
 const TW_MIRROR = new RegExp(`^mirror(${SQ})&lt;--&gt;(${SQ})$`);
 const TW_SHIFT = new RegExp(`^shift(${SQ})==&gt;(${SQ})$`);

@@ -106,6 +106,7 @@ function createWorker(): Worker {
 			shouldScroll = shouldScroll || elIsAlmostBottom();
 			if(typeof data.text == "string") state.popeye.intOutput += escapeHtml(data.text) + "<br>";
 			if(typeof data.err == "string") {
+				if(data.err=="Calling stub instead of signal()") return; // It seems that this error can be ignored
 				state.popeye.error = true;
 				state.popeye.intOutput += error(escapeHtml(data.err));
 			}

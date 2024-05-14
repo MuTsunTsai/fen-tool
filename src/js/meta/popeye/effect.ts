@@ -42,8 +42,8 @@ export function makeEffect(board: Board, extra: string, imitators: string[]): st
 }
 
 function getPiece(board: Board, at: string): string {
-	const p = board[parseSquare(at)];
-	return p.match(new RegExp(P, "i"))![0].toUpperCase();
+	let p = board[parseSquare(at)];
+	return p.match(new RegExp("^(\\*\\d)?" + P + "$", "i"))![0].toUpperCase();
 }
 
 function getColor(board: Board, at: string): Color {

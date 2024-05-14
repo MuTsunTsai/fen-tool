@@ -15,7 +15,7 @@ export const COMMANDS = new RegExp(Commands, "ig");
 
 // Note that effect could occur before or after promotion notation.
 // This is one thing that is somewhat inconsistent in Popeye output.
-export const Main = String.raw`(?:(?<move>0-0(?:-0)?|${Normal})(?:${Effect})*(?:${Promotion})?(?:=(?<cc>[nwb]))?)(?:${Effect})*`;
+export const Main = String.raw`(?<mod>hcc)?(?:(?<move>0-0(?:-0)?|${Normal})(?:${Effect})*(?:${Promotion})?(?:=(?<cc>[nwb]))?)(?:${Effect})*`;
 const Main_raw = Main.replace(/\?<[^>]+>/g, "");
 export const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?: [+#=])?`;
 

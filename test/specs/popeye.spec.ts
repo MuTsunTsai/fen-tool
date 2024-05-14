@@ -521,6 +521,30 @@ describe("Popeye", function() {
 				expect(result[1]).to.equal("k7/b1K5/2B5/8/8/8/8/8");
 			});
 
+			it("Hurdle Color Change", function() {
+				/*
+				stip h#3
+				opt nowk
+				auth Stephen Emmerson
+				orig Unpublished
+				tit N.B. minor dual in (b)
+				pie blac ke8
+				pie blac hur gd8 ma8 eaf8 swg8
+				twin move a8 h8
+				*/
+
+				const input = "stip h#3\nopt nowk\ntwin move a8 h8";
+				const fen = "m2gk.ea.sw1/8/8/8/8/8/8/8";
+				const output = "Popeye WASM-32Bit v4.89 (512 MB)<br><br>a) <br><br>  1.hccMa8-e7[d8=w] hccGd8-f6[e7=w]   2.hccSWg8-g7[f8=w] hccEAf8-g6[f6=b]   3.hccSWg7-f7[f6=w] hccEAg6-e6[f7=w] #<br><br>b) bhccMa8--&gt;h8  <br><br>  1.hccEAf8-g7[g8=w] hccSWg8-f8[g7=w]   2.hccMh8-g6[g7=b] hccSWf8-f7   3.hccMg6-f8[g7=w] hccSWf7-e7[f8=w] #<br>  1.hccEAf8-g7[g8=w] hccSWg8-f8[g7=w]   2.hccMh8-g6[g7=b] hccSWf8-f7   3.hccMg6-f8[g7=w] hccSWf7-e7 #<br><br>solution finished. Time = 0.139 s<br><br><br>";
+
+				const result = parse(input, fen, output);
+				expect(result.length).to.equal(21);
+
+				expect(result[6]).to.equal("4k3/4*3Q*1N2/4*3R*2Q2/8/8/8/8/8");
+				expect(result[13]).to.equal("3*2qk*3Q2/4*1N1*3R1/8/8/8/8/8/8");
+				expect(result[20]).to.equal("3*2qk*3q2/4*1N1*3R1/8/8/8/8/8/8");
+			});
+
 		});
 
 	});
