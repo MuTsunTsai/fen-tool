@@ -42,7 +42,7 @@ export function makeEffect(board: Board, extra: string, imitators: string[]): st
 }
 
 function getPiece(board: Board, at: string): string {
-	let p = board[parseSquare(at)];
+	const p = board[parseSquare(at)];
 	return p.match(new RegExp("^(\\*\\d)?" + P + "$", "i"))![0].toUpperCase();
 }
 
