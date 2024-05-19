@@ -5,8 +5,12 @@ import type { Direction } from "./enum";
 export const DEFAULT = "8/8/8/8/8/8/8/8";
 export const INIT_FORSYTH = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-const FLAG = `[\\uD83C][\\uDDE6-\\uDDFF][\\uD83C][\\uDDE6-\\uDDFF]`; // See https://stackoverflow.com/a/53360229/9953396
-const EMOJI = `${FLAG}|\\p{ExtPict}\\uFE0F?\\p{EMod}?(\\u200D\\p{ExtPict}\\uFE0F?\\p{EMod}?)*`;
+// See https://stackoverflow.com/a/53360229/9953396
+const FLAG = `[\\uD83C][\\uDDE6-\\uDDFF][\\uD83C][\\uDDE6-\\uDDFF]`;
+
+// Safari < 14 does not support shorthands of "ExtPict" and "EMod"
+const EMOJI = `${FLAG}|\\p{Extended_Pictographic}\\uFE0F?\\p{Emoji_Modifier}?(\\u200D\\p{Extended_Pictographic}\\uFE0F?\\p{Emoji_Modifier}?)*`;
+
 const YACPDB = `\\((!?)([kqbnrp])(\\d?)\\)`; // also captures 3 parts
 const TYPES = `[kqbnrpcxstadg]`;
 const TEXT = `'(${EMOJI}|[^'])|''..`;
