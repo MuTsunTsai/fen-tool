@@ -6,7 +6,11 @@ import { STOCKFISH, onSession, state, status, store } from "js/store";
 import { importGame, loadChessModule } from "./play/play";
 import { alert } from "js/meta/dialogs";
 import { StockfishRunning, StockfishStatus } from "js/meta/enum";
-import { MIN_MEMORY } from "js/meta/constants";
+
+/**
+ * Minimal amount of memory required to run Stockfish.
+ */
+const MIN_MEMORY = 4;
 
 const DEPTH_THRESHOLD = 4;
 const PERCENTAGE = 100;

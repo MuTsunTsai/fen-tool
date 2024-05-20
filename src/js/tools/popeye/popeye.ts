@@ -10,13 +10,34 @@ import { createAbbrExp, createAbbrReg } from "js/meta/regex";
 import { P, defaultCustomMap, toPopeyePiece } from "js/meta/popeye/base";
 import { animate, stopAnimation } from "js/view/animation";
 import { parsePieceCommand } from "js/meta/popeye/piece";
-import { BOARD_SIZE, MIN_MEMORY } from "js/meta/constants";
+import { BOARD_SIZE } from "js/meta/constants";
 import { alert } from "js/meta/dialogs";
 
 const INSUFFICIENT_MEMORY = -2;
+
+/**
+ * Restrict the output to 3000 lines.
+ *
+ * Too much output is bad for user experience, and is not what this app is meant for.
+ */
 const MAX_LINES = 3000;
+
+/** Interval to flush the output message. */
 const OUTPUT_INTERVAL = 500;
-const INIT_MEMORY = 512; // Initial settings
+
+/**
+ * Minimal amount of memory required to run Popeye.
+ *
+ * Popeye is highly recursive and requires quite some stack memory to run.
+ * We have set the stack size of Popeye WASM to 8MB, so 16MB total sounds reasonable.
+ */
+const MIN_MEMORY = 16;
+
+/** Initial memory setting. */
+const INIT_MEMORY = 512;
+
+/** Path of worker. */
+const path = "modules/py489.js";
 
 // Session
 onSession(() => {
@@ -32,7 +53,6 @@ let worker: Worker | undefined;
 /** Current memory setting. */
 let memory: number;
 
-let path = "modules/py489.js";
 let startTime: number;
 let interval: number;
 let outputCount: number;
@@ -88,12 +108,13 @@ function createWorker(): Worker {
 	w.onmessage = event => {
 		const data = event.data;
 		if(++outputCount > MAX_LINES) {
-			// Restrict the output to 3000 lines.
-			// Too much output is bad for user experience, and is not what this app is meant for.
 			state.popeye.intOutput += `<br>${error("Too much output. Please modify the input to prevent excessive output.")}<br>`;
 			stop();
 		} else if(data === INSUFFICIENT_MEMORY) {
 			memory /= 2;
+			if(memory < MIN_MEMORY) {
+				state.popeye.intOutput += `<br>${error("Not enough memory to run Popeye.")}<br>`;
+			}
 			stop(memory >= MIN_MEMORY);
 		} else if(data === null) {
 			stop();
