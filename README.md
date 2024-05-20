@@ -51,11 +51,6 @@ Tips:
 If you have those on the board, it will automatically add the corresponding `condition` command to your input.
 2. You can use left/right keys (or A/D keys) to quickly navigate move history.
 
-By default it will run Popeye in WebAssembly,
-but it is known that it will get a runtime error in some versions of Safari and iOS.
-In that case it will automatically fallback to run Popeye in asm.js
-(it's slower, but works).
-
 Thanks to [Dmitri Turevski](https://github.com/dturevski) for sharing his insights in Popeye.
 
 ### Stockfish

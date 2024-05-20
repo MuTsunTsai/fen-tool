@@ -8,5 +8,5 @@ export const INIT_SQ_COUNT = 64;
 
 export const CHAR_A_OFFSET = 97;
 
-export const MIN_MEMORY = 4;
+export const MIN_MEMORY = 16;
 

@@ -92,11 +92,6 @@ function createWorker(): Worker {
 			// Too much output is bad for user experience, and is not what this app is meant for.
 			state.popeye.intOutput += `<br>${error("Too much output. Please modify the input to prevent excessive output.")}<br>`;
 			stop();
-		} else if(data === -1) {
-			gtag("event", "fen_popeye_fallback");
-			path = "modules/py489.asm.js"; // fallback to asm.js
-			stop(true);
-			state.popeye.intOutput = "Fallback to JS mode.<br>";
 		} else if(data === INSUFFICIENT_MEMORY) {
 			memory /= 2;
 			stop(memory >= MIN_MEMORY);

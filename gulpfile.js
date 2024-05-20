@@ -209,22 +209,10 @@ gulp.task("popeye", () =>
 		.pipe(gulp.dest("docs/modules"))
 );
 
-gulp.task("pyAsm", () =>
-	gulp.src(["src/js/modules/popeye.js", `src/js/vendor/py${popeyeVersion}.asm.js`])
-		.pipe($.newer({
-			dest: `docs/modules/py${popeyeVersion}.asm.js`,
-			extra: [__filename]
-		}))
-		.pipe($.if(file => file.stem == "popeye", $.terser()))
-		.pipe($.concat(`py${popeyeVersion}.asm.js`))
-		.pipe($.terser()) // cannot drop top-level variables for some reason
-		.pipe(gulp.dest("docs/modules"))
-);
-
 gulp.task("fa", () =>
 	gulp.src("src/vue/**/*.vue")
 		.pipe($.fontawesome())
 		.pipe(gulp.dest("docs/lib"))
 );
 
-gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt", "chess", "popeye", "pyAsm"), "sw"));
+gulp.task("default", gulp.series(gulp.parallel("css", "js", "html", "gen", "sdk", "api", "ptt", "chess", "popeye"), "sw"));
