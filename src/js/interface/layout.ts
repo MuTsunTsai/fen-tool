@@ -23,6 +23,15 @@ function bodyWidth(): number {
 	return document.body.clientWidth / (state.split ? 2 : 1);
 }
 
+// On mobile devices, canvas context might get recycled when the app goes to background.
+// We force re-render when we get back to ensure everything is in display.
+document.addEventListener("visibilitychange", () => {
+	if(document.visibilityState == "visible") {
+		draw();
+		drawTemplate();
+	}
+});
+
 export async function setOption(o: Partial<BoardOptions>, force?: boolean): Promise<void> {
 	const options = store.board;
 	const changed: Record<string, boolean> = {};
