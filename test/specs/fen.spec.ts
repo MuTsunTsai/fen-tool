@@ -1,8 +1,13 @@
-import { inferDimension, makeForsyth, parseFEN } from "js/meta/fen";
+import { inferDimension, makeForsyth, normalizeSpaceRepresentation, parseFEN } from "js/meta/fen";
 
 describe("FEN", function() {
 
 	describe("FEN Parsing", function() {
+
+		it("Infers spacing systems", function() {
+			const result = normalizeSpaceRepresentation("31Q12/211112/111113/2C5/1111211/11P113/1P*2n14/111113");
+			expect(result).to.equal("4Q3/8/8/2C5/8/2P5/1P*2n5/8");
+		});
 
 		it("Works with orthodox FEN", function() {
 			const result = parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");

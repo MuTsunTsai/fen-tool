@@ -1,7 +1,7 @@
 import { shallowRef } from "vue";
 
 import { cnvMain } from "js/meta/el";
-import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, parseFEN } from "js/meta/fen";
+import { DEFAULT, INIT_FORSYTH, convertSN, inferDimension, invert, makeForsyth, normalize, normalizeSpaceRepresentation, parseFEN } from "js/meta/fen";
 import { state, status, store } from "js/store";
 import { animate, animeSettings } from "js/view/animation";
 import { BOARD_SIZE, INIT_SQ_COUNT } from "js/meta/constants";
@@ -244,13 +244,14 @@ function getCastle(check?: boolean): string {
 }
 
 function toSquares(check?: boolean): void {
-	const fen = currentFEN.value;
-	parseFullFEN(fen);
+	const rawFEN = currentFEN.value;
+	parseFullFEN(rawFEN);
+	const fen = normalizeSpaceRepresentation(rawFEN);
 	const infer = inferDimension(fen);
 	const { w, h } = infer || store.board;
 	const values = parseFEN(fen, w, h);
 	callback.setOption?.({ w, h });
-	let changed = false;
+	let changed = fen != rawFEN;
 	for(let i = 0; i < w * h; i++) {
 		squares[i].value = values[i];
 		changed = checkInput(squares[i]) || changed; // order matters

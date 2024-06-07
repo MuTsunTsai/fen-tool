@@ -16,22 +16,62 @@ const FFEN = `[-~]?(\\*\\d)?(${TYPES}|${TEXT})`;
 
 export const ONE_EMOJI = RegExp(`^(?:${EMOJI})$`, "u");
 const VALUE = RegExp(`^(?:${YACPDB}|${FFEN})$`, "iu");
-const FEN_UNIT = RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
+const FEN_TOKEN = RegExp(`\\/|\\d+|${YACPDB}|${FFEN}|.`, "iug");
 
-export function inferDimension(fen: string): Dimension | undefined {
-	const values = fen.match(FEN_UNIT) || [];
+/**
+ * There are two possible representation systems for blank squares concerning larger boards.
+ * The "normal system" used by FFEN and internally by FEN Tool,
+ * is to treat consecutive digits as a single token.
+ * The other "single digit" system, on the other hand, treat each digit separately,
+ * so 10 consecutive blank squares will have to represent as "91" or something equivalent.
+ * This functions normalizes the latter into the former.
+ */
+export function normalizeSpaceRepresentation(fen: string): string {
+	const tokens = fen.match(FEN_TOKEN) || [];
+	if(!tokens.some(token => token.match(/^\d\d+$/))) return fen;
 	const rows = [0];
 	let cursor = 0;
-	for(const value of values) {
-		if(value == "/") rows[++cursor] = 0;
-		else if(value.match(/^\d+$/)) rows[cursor] += Number(value);
+	for(let i = 0; i < tokens.length; i++) {
+		const token = tokens[i];
+		if(token == "/") {
+			rows[++cursor] = 0;
+		} else if(token.match(/^\d+$/)) {
+			if(token.length == 1) {
+				rows[cursor] += Number(token);
+			} else {
+				const value = token.split("").map(n => Number(n)).reduce((v, x) => v + x, 0);
+				rows[cursor] += value;
+				tokens[i] = value.toString();
+			}
+		} else {
+			rows[cursor]++;
+		}
+	}
+	if(allEqual(rows)) return tokens.join("");
+	return fen;
+}
+
+export function inferDimension(fen: string): Dimension | undefined {
+	const tokens = fen.match(FEN_TOKEN) || [];
+	const rows = [0];
+	let cursor = 0;
+	for(const token of tokens) {
+		if(token == "/") rows[++cursor] = 0;
+		else if(token.match(/^\d+$/)) rows[cursor] += Number(token);
 		else rows[cursor]++;
 	}
 	const h = rows.length;
 	if(h == 1) return undefined; // There's no "/", we cannot be certain
-	const w = rows[0];
-	for(const v of rows) if(v != w) return undefined;
-	return { w, h };
+	if(!allEqual(rows)) return undefined;
+	return { w: rows[0], h };
+}
+
+function allEqual(numbers: number[]): boolean {
+	const first = numbers[0];
+	for(let i = 1; i < numbers.length; i++) {
+		if(numbers[i] != first) return false;
+	}
+	return true;
 }
 
 /**
@@ -39,7 +79,7 @@ export function inferDimension(fen: string): Dimension | undefined {
  * @returns An array of values for each squares.
  */
 export function parseFEN(fen: string, w = BOARD_SIZE, h = BOARD_SIZE): string[] {
-	const values = fen.match(FEN_UNIT) || [];
+	const values = fen.match(FEN_TOKEN) || [];
 	const result: string[] = [];
 	let ignoreNextSlash = false;
 	for(const value of values) {
