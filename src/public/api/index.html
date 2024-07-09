@@ -14,7 +14,8 @@
 		window.dataLayer = window.dataLayer || [];
 		function gtag() { dataLayer.push(arguments); }
 		var isHttps = location.protocol == "https:";
-		if(isHttps) {
+		var isSelf = document.referrer && document.referrer.includes("mutsuntsai.github.io");
+		if(isHttps && !isSelf) {
 			gtag('js', new Date());
 			gtag('config', 'G-NCH5HC15TN');
 			gtag("event", "fen_sdk", { url: location.href });
