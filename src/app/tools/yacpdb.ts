@@ -18,7 +18,7 @@ export const YACPDB = {
 			bt.disabled = true;
 			bt.value = "Fetching...";
 			const url = "https://yacpdb.org/gateway/ql?q=" + encodeURIComponent(`Id('${problemId.value}')`);
-			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
+			const response = await fetch("https://corsproxy.io/?" + url);
 			const json = await response.json();
 			if(json.success) {
 				const { w, h } = store.board;

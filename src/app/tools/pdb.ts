@@ -15,7 +15,7 @@ export const PDB = {
 			bt.disabled = true;
 			bt.value = "Fetching...";
 			const url = pdbURL + encodeURIComponent(`PROBID='${problemId.value}'`);
-			const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
+			const response = await fetch("https://corsproxy.io/?" + url);
 			const text = await response.text();
 			setFEN(text.match(/<b>FEN:<\/b> (.+)/)![1], true);
 		} catch {
