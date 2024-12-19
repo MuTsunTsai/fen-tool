@@ -138,7 +138,7 @@ export function checkDragPrecondition(index: number): boolean {
 
 export async function loadChessModule(): Promise<typeof ChessModule> {
 	if(!module) {
-		const m = await import("app/modules/chess/chess");
+		const m = await import("../../modules/chess/chess");
 		if(!module) {
 			module = m;
 			module.Chess.options = store.PLAY;
