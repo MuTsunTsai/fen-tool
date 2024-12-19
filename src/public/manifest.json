@@ -1,0 +1,67 @@
+{
+	"name": "FEN Tool",
+	"short_name": "FEN Tool",
+	"id": "/fen-tool",
+	"start_url": "/fen-tool",
+	"scope": "/fen-tool",
+	"display": "standalone",
+	"theme_color": "#D18B47",
+	"background_color": "#D18B47",
+	"orientation": "natural",
+	"description": "Quick online tool for chess with features for composing problems and APIs.",
+	"icons": [
+		{
+			"src": "assets/icon/icon-512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		},
+		{
+			"src": "assets/icon/icon-192.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "assets/icon/icon-96.png",
+			"type": "image/png",
+			"sizes": "96x96"
+		},
+		{
+			"src": "assets/icon/icon-48.png",
+			"type": "image/png",
+			"sizes": "48x48"
+		},
+		{
+			"src": "assets/icon/icon-32.png",
+			"type": "image/png",
+			"sizes": "32x32"
+		},
+		{
+			"src": "assets/icon/icon-16.png",
+			"type": "image/png",
+			"sizes": "16x16"
+		}
+	],
+	"related_applications": [
+		{
+			"platform": "webapp",
+			"url": "https://mutsuntsai.github.io/fen-tool/manifest.json"
+		}
+	],
+	"url_handlers": [
+		{
+			"origin": "https://mutsuntsai.github.io/fen-tool"
+		}
+	],
+	"share_target": {
+		"action": "/fen-tool/share",
+		"method": "POST",
+		"enctype": "multipart/form-data",
+		"params": {
+			"text": "fen",
+			"files": {
+				"name": "image",
+				"accept": ["image/png", "image/jpeg", "image/bmp", "image/webp"]
+			}
+		}
+	}
+}

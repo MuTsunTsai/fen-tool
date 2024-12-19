@@ -2,8 +2,8 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"baseUrl": "../",
-		"moduleResolution": "NodeNext",
-		"module": "NodeNext",
+		"moduleResolution": "node",
+		"module": "ESNext",
 		"noEmit": true,
 		"strict": true,
 		"target": "ESNext",
@@ -18,6 +18,6 @@
 	},
 	"include": [
 		"./**/*.vue",
-		"../js/**/*"
+		"../shared/*.d.ts"
 	]
 }

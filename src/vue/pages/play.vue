@@ -1,7 +1,6 @@
 <template>
 	<section :class="{ show: state.tab == 6 }">
 
-		<!-- Playing -->
 		<div v-if="state.play.playing">
 			<div class="mb-3">
 				<span class="btn-gap">
@@ -89,7 +88,6 @@
 			</div>
 		</div>
 
-		<!-- Not playing -->
 		<template v-else>
 			<div class="btn-gap">
 				<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start
@@ -171,16 +169,16 @@
 </template>
 
 <script setup lang="ts">
-	import { PLAY } from "js/tools/play/play";
-	import { env } from "js/meta/env";
-	import { state, status, store } from "js/store";
-	import { updateBG } from "js/view/render";
+	import { PLAY } from "app/tools/play/play";
+	import { env } from "app/meta/env";
+	import { state, status, store } from "app/store";
+	import { updateBG } from "app/view/render";
 	import CopyButton from "@/components/copyButton.vue";
 	import Checkbox from "@/components/checkbox.vue";
 	import Radio from "@/components/radio.vue";
-	import { Color, PlayMode } from "js/meta/enum";
-	import { FEN, resetEdwards } from "js/interface/squares";
-	import { overState } from "js/modules/chess";
+	import { Color, PlayMode } from "app/meta/enum";
+	import { FEN, resetEdwards } from "app/interface/squares";
+	import { overState } from "app/modules/chess/types";
 
 	const isRetro = (): boolean => state.play.mode == PlayMode.retro;
 

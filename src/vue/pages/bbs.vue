@@ -16,9 +16,9 @@
 </template>
 
 <script setup lang="ts">
-	import { state, status, store } from "js/store";
-	import { env } from "js/meta/env";
-	import { BBS } from "js/tools/bbs";
+	import { state, status, store } from "app/store";
+	import { env } from "app/meta/env";
+	import { BBS } from "app/tools/bbs";
 	import Checkbox from "@/components/checkbox.vue";
 	import CopyButton from "@/components/copyButton.vue";
 </script>

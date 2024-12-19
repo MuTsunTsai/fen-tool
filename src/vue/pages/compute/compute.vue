@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-	import { state } from "js/store";
+	import { state } from "app/store";
 	import Popeye from "./popeye.vue";
 	import Stockfish from "./stockfish.vue";
 	import Syzygy from "./syzygy.vue";

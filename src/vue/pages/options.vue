@@ -118,10 +118,10 @@
 </template>
 
 <script setup lang="ts">
-	import { store, state } from "js/store";
-	import { redraw, updateBG, drawExport } from "js/view/render";
-	import { resize, setOption, Layout } from "js/interface/layout";
-	import { toFEN, updateSN } from "js/interface/squares";
+	import { store, state } from "app/store";
+	import { redraw, updateBG, drawExport } from "app/view/render";
+	import { resize, setOption, Layout } from "app/interface/layout";
+	import { toFEN, updateSN } from "app/interface/squares";
 	import Checkbox from "@/components/checkbox.vue";
 	import InputNumber from "@/components/inputNumber.vue";
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>FEN Visualization SDK</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width, user-scalable=no">
+	<meta name="description" content="Quick online tool for editing FEN.">
+	<link rel="icon" href="../favicon.ico" type="image/x-icon">
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-NCH5HC15TN"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		var isHttps = location.protocol == "https:";
+		var isSelf = document.referrer && document.referrer.includes("mutsuntsai.github.io");
+		if(isHttps && !isSelf) {
+			gtag('js', new Date());
+			gtag('config', 'G-NCH5HC15TN');
+			gtag("event", "fen_sdk", { url: location.href });
+		}
+		if(isHttps && 'serviceWorker' in navigator) {
+			navigator.serviceWorker.register('../sw.js', { scope: "/fen-tool/" });
+		}
+	</script>
+</head>
+
+<body>
+	<canvas id="CN"></canvas>
+</body>
+
+</html>

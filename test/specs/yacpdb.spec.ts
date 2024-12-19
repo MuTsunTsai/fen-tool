@@ -1,4 +1,4 @@
-import { toYACPDB } from "js/meta/fen";
+import { toYACPDB } from "app/meta/fen";
 
 describe("YACPDB syntax", function() {
 

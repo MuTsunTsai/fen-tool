@@ -1,4 +1,4 @@
-import { createAbbrExp } from "js/meta/regex";
+import { createAbbrExp } from "app/meta/regex";
 
 describe("RegExp utility", function() {
 

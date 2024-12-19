@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-	import { status, hideTemplate } from "js/store";
-	import { env } from "js/meta/env";
+	import { status, hideTemplate } from "app/store";
+	import { env } from "app/meta/env";
 	import MenuTab from "@/components/menuTab.vue";
 </script>

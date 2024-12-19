@@ -1,4 +1,4 @@
-import { inferDimension, makeForsyth, normalizeSpaceRepresentation, parseFEN } from "js/meta/fen";
+import { inferDimension, makeForsyth, normalizeSpaceRepresentation, parseFEN } from "app/meta/fen";
 
 describe("FEN", function() {
 

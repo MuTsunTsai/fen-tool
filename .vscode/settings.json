@@ -33,11 +33,13 @@
 		".*rc.json": ".$(capture)ignore",
 		".eslintrc.json": "eslint-local-rules.js",
 		".gitignore": ".gitattributes",
+		"README.md": "LICENSE.md",
 		"package.json": "pnpm-lock.yaml, .npmrc"
 	},
 	"files.exclude": {
 		"**/node_modules": true,
-		"test-results/": true
+		"test-results/": true,
+		"**/.rsdoctor": true
 	},
 	"npm.packageManager": "pnpm"
 }

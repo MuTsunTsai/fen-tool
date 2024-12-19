@@ -55,13 +55,13 @@
 	import { SlickList, SlickItem } from "vue-slicksort";
 	import { shallowRef } from "vue";
 
-	import { store, state, status, noEditing } from "js/store";
-	import { env } from "js/meta/env";
-	import { Project } from "js/tools/project/project";
-	import { setFEN } from "js/interface/squares";
-	import { toNormalFEN } from "js/meta/popeye/popeye";
+	import { store, state, status, noEditing } from "app/store";
+	import { env } from "app/meta/env";
+	import { Project } from "app/tools/project/project";
+	import { setFEN } from "app/interface/squares";
+	import { toNormalFEN } from "app/meta/popeye/popeye";
 
-	import type { ProjectEntry } from "js/tools/project/entry";
+	import type { ProjectEntry } from "app/tools/project/entry";
 
 	const sorting = shallowRef(false);
 

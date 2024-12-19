@@ -7,8 +7,8 @@
 <script setup lang="ts">
 	import { shallowRef } from "vue";
 
-	import { env } from "js/meta/env";
-	import { ONE_SECOND } from "js/meta/constants";
+	import { env } from "app/meta/env";
+	import { ONE_SECOND } from "app/meta/constants";
 
 	const props = defineProps<{
 		class: string;

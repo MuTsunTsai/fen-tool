@@ -7,7 +7,7 @@
 <script setup lang="ts">
 	import { onMounted, shallowRef } from "vue";
 
-	import { alert } from "js/meta/dialogs";
+	import { alert } from "app/meta/dialogs";
 	import Dialog from "./dialog.vue";
 
 	defineOptions({ name: "Alert" });

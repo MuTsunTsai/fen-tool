@@ -1,7 +1,7 @@
-import { getStipulations, inferMoveOrdering, parseSolution } from "js/meta/popeye/popeye";
-import { INIT_FORSYTH } from "js/meta/fen";
-import { pieceMap, toPopeyePiece } from "js/meta/popeye/base";
-import { parsePieceCommand } from "js/meta/popeye/piece";
+import { getStipulations, inferMoveOrdering, parseSolution } from "app/meta/popeye/popeye";
+import { INIT_FORSYTH } from "app/meta/fen";
+import { pieceMap, toPopeyePiece } from "app/meta/popeye/base";
+import { parsePieceCommand } from "app/meta/popeye/piece";
 
 pieceMap.custom = () => ({
 	"*1B": "25",

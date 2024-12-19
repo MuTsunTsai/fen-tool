@@ -30,8 +30,8 @@
 </template>
 
 <script setup lang="ts">
-	import { state } from "js/store";
-	import { API } from "js/tools/api";
+	import { state } from "app/store";
+	import { API } from "app/tools/api";
 	import CopyButton from "@/components/copyButton.vue";
 
 	const local = !location.protocol.startsWith("http");

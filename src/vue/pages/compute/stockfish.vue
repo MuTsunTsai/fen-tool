@@ -38,7 +38,7 @@
 					<Checkbox v-model="store.Stockfish.study" :disabled="store.Stockfish.lines <= 1">Study mode</Checkbox>
 				</div>
 			</div>
-			<!-- Start button -->
+
 			<div class="btn-gap">
 				<button v-if="!status.stockfish.running" type="button" class="btn btn-primary" @click="Stockfish.analyze">
 					<i class="fa-solid fa-play"></i>&ensp;Analyze with Stockfish 16
@@ -50,7 +50,7 @@
 					<i class="fa-solid fa-stop"></i>&ensp;Stop
 				</button>
 			</div>
-			<!-- Output -->
+
 			<div class="mt-3">
 				<div v-if="state.stockfish.depth">
 					<span>Depth: {{ state.stockfish.depth }}</span>
@@ -91,9 +91,9 @@
 </template>
 
 <script setup lang="ts">
-	import { store, state, status } from "js/store";
-	import { StockfishStatus, StockfishRunning } from "js/meta/enum";
-	import { Stockfish } from "js/tools/stockfish";
+	import { store, state, status } from "app/store";
+	import { StockfishStatus, StockfishRunning } from "app/meta/enum";
+	import { Stockfish } from "app/tools/stockfish";
 	import Checkbox from "@/components/checkbox.vue";
 	import InputNumber from "@/components/inputNumber.vue";
 </script>

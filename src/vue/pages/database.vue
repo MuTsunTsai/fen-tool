@@ -55,9 +55,9 @@
 <script setup lang="ts">
 	import { computed } from "vue";
 
-	import { store, state, noEditing } from "js/store";
-	import { YACPDB } from "js/tools/yacpdb";
-	import { PDB, problemId } from "js/tools/pdb";
+	import { store, state, noEditing } from "app/store";
+	import { YACPDB } from "app/tools/yacpdb";
+	import { PDB, problemId } from "app/tools/pdb";
 	import CopyButton from "@/components/copyButton.vue";
 	import Checkbox from "@/components/checkbox.vue";
 

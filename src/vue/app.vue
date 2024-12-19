@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-	import { state } from "js/store";
+	import { state } from "app/store";
 	import Alert from "./dialogs/alert.vue";
 	import Confirm from "./dialogs/confirm.vue";
 	import Menu from "./menu.vue";

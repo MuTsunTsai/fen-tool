@@ -27,6 +27,6 @@
 </template>
 
 <script setup lang="ts">
-	import { state, status } from "js/store";
-	import { Syzygy } from "js/tools/syzygy";
+	import { state, status } from "app/store";
+	import { Syzygy } from "app/tools/syzygy";
 </script>

@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-	import { status, noEditing, hideTemplate } from "js/store";
+	import { status, noEditing, hideTemplate } from "app/store";
 
 	import type { CSSProperties } from "vue";
 

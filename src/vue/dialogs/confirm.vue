@@ -8,7 +8,7 @@
 <script setup lang="ts">
 	import { onMounted, shallowRef } from "vue";
 
-	import { confirm } from "js/meta/dialogs";
+	import { confirm } from "app/meta/dialogs";
 	import Dialog from "./dialog.vue";
 
 	defineOptions({ name: "Confirm" });

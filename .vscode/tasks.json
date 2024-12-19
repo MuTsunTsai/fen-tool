@@ -2,23 +2,39 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "start",
-			"problemMatcher": [],
-			"label": "pnpm: start",
-			"detail": "serve -L docs",
+			"label": "Server",
+			"type": "shell",
+			"command": "pnpm rsbuild dev",
 			"isBackground": true,
 			"presentation": {
+				"echo": true,
 				"reveal": "never",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": false
+			},
+			"problemMatcher": {
+				"pattern": {
+					"regexp": ".",
+					"file": 1,
+					"line": 1,
+					"column": 1,
+					"message": 1
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "Rsbuild",
+					"endsPattern": "ready"
+				}
 			},
 			"runOptions": {
-				"runOn": "folderOpen"
+				"instanceLimit": 1
 			}
 		},
 		{
 			"label": "Gulp build",
 			"type": "shell",
-			"command": "pnpm build",
+			"command": "pnpm prebuild",
 			"presentation": {
 				"echo": true,
 				"reveal": "never",
@@ -42,6 +58,13 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "PreLaunch",
+			"dependsOn": [
+				"Server",
+				"Gulp build"
+			]
 		}
 	]
 }

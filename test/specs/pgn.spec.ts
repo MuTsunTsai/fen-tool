@@ -1,4 +1,4 @@
-import { parseMoves } from "js/modules/pgn";
+import { parseMoves } from "app/modules/chess/pgn";
 
 describe("PGN Parsing", function() {
 

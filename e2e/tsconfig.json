@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"baseUrl": "../src",
 	},
-	"extends": "../src/js/tsconfig",
+	"extends": "../src/app/tsconfig",
 	"include": [
 		"./**/*.ts",
 	]

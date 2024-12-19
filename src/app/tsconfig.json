@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"baseUrl": "../",
+		"allowJs": true,
+		"noEmit": true,
+		"moduleResolution": "node",
+		"module": "ESNext",
+		"strict": true,
+		"target": "ESNext",
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"types": [
+			"gtag.js"
+		],
+		"paths": {
+			"@/*": [
+				"./vue/*"
+			]
+		}
+	},
+	"include": [
+		"**/*.ts",
+		"**/*.js",
+		"../shared/*.d.ts"
+	]
+}

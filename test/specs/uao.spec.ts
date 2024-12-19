@@ -1,4 +1,4 @@
-import { isInUAO } from "js/modules/ptt/uao";
+import { isInUAO } from "app/modules/ptt/uao";
 
 describe("UAO code page", function() {
 

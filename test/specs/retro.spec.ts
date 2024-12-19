@@ -1,4 +1,4 @@
-import { Chess } from "js/modules/chess";
+import { Chess } from "app/modules/chess/chess";
 
 describe("Retro mode", function() {
 

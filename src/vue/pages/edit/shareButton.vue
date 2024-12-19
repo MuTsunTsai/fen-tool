@@ -7,10 +7,10 @@
 <script setup lang="ts">
 	import { shallowRef } from "vue";
 
-	import { status } from "js/store";
-	import { env } from "js/meta/env";
-	import { API, normalForsyth } from "js/tools/api";
-	import { getBlob } from "js/view/render";
+	import { status } from "app/store";
+	import { env } from "app/meta/env";
+	import { API, normalForsyth } from "app/tools/api";
+	import { getBlob } from "app/view/render";
 
 	const sharing = shallowRef(false);
 

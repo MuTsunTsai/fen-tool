@@ -94,8 +94,8 @@
 </template>
 
 <script setup lang="ts">
-	import { state } from "js/store";
-	import { Popeye } from "js/tools/popeye/popeye";
+	import { state } from "app/store";
+	import { Popeye } from "app/tools/popeye/popeye";
 
 	const placeholder = "For example:\n=============\nStipulation #2\nOption Variation";
 </script>

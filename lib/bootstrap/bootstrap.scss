@@ -1,0 +1,31 @@
+$enable-negative-margins: true;
+$enable-shadows: true;
+
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+@mixin button($color) {
+	@include button-variant(
+		$color,
+		$color,
+		$hover-background: shade-color($color, $btn-hover-bg-shade-amount),
+		$hover-border: shade-color($color, $btn-hover-border-shade-amount),
+		$active-background: shade-color($color, $btn-active-bg-shade-amount),
+		$active-border: shade-color($color, $btn-active-border-shade-amount)
+	);
+}
+
+@media (prefers-color-scheme: light) {
+	.btn-secondary {
+		@include button(#ccc);
+	}
+
+	.step {
+		@include button($light);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.step {
+		@include button($secondary);
+	}
+}
