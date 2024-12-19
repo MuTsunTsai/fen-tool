@@ -6,7 +6,7 @@
 					<i class="fa-solid fa-trash-can"></i>
 					<span>&ensp;Empty board</span>
 				</button>
-				<button type="button" class="btn btn-secondary" @click="FEN.reset" :disabled="noEditing()"
+				<button type="button" class="btn btn-secondary" @click="FEN.reset()" :disabled="noEditing()"
 						title="Starting position">
 					<i class="fa-solid fa-flag-checkered"></i>
 					<span>&ensp;Starting position</span>
