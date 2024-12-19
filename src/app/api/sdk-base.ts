@@ -40,7 +40,8 @@ function check(node: Node): void {
 }
 
 export async function init(config: SdkConfig): Promise<void> {
-	const apiURL = new URL("../../../api/", script.src);
+	const origin = new URL(script.src).origin;
+	const apiURL = new URL(origin + "/fen-tool/api/");
 	currentConfig = config;
 	document.head.appendChild(frame); // sounds funny but works
 	await new Promise<void>(resolve => {

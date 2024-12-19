@@ -42,11 +42,7 @@ function loadImg(file: string): Promise<HTMLImageElement> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.onload = () => resolve(img);
-		img.onerror = () => {
-			debugger;
-			console.log("failed", file, location.href);
-			reject();
-		};
+		img.onerror = () => reject();
 		img.src = file;
 	});
 }

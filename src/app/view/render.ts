@@ -28,9 +28,9 @@ function getExportDPR(): number {
 
 export async function load(): Promise<void> {
 	status.loading = true;
-	const tasks = [loadAsset("assets", store.board, dpr)];
+	const tasks = [loadAsset("./assets", store.board, dpr)];
 	const exDPR = getExportDPR();
-	if(dpr != exDPR) tasks.push(loadAsset("assets", store.board, exDPR));
+	if(dpr != exDPR) tasks.push(loadAsset("./assets", store.board, exDPR));
 	await Promise.all(tasks);
 	status.loading = false;
 }
