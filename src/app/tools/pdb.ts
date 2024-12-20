@@ -2,7 +2,7 @@ import { shallowRef } from "vue";
 
 import { store } from "app/store";
 import { squares, setFEN } from "app/interface/squares";
-import { types } from "app/view/draw";
+import { types } from "app/view/piece";
 import { toSquare } from "app/meta/fen";
 import { alert } from "app/meta/dialogs";
 

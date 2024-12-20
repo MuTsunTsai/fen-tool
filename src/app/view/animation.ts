@@ -1,8 +1,9 @@
 import { getAsset } from "./asset";
-import { drawBoard, drawPiece } from "./draw";
+import { drawBoard } from "./draw";
 import { dpr } from "app/meta/env";
 import { parseFEN, parseSquare, parseXY } from "app/meta/fen";
 import { getDimensions } from "app/meta/option";
+import { drawPiece } from "./piece";
 
 import type { BoardOptions } from "app/meta/option";
 
@@ -120,16 +121,16 @@ class Animation {
 		}
 
 		// Draw moving pieces
-		const dim = getDimensions(options);
+		const info = getDimensions(options);
 		ctx.save();
-		ctx.translate(dim.offset.x, dim.offset.y);
+		ctx.translate(info.offset.x, info.offset.y);
 		const assets = getAsset(options, dpr);
 		let offset = delta - Math.floor(delta);
 		if(this.reverse) offset = 1 - offset;
 		for(const move of this.stages[stageIndex].moves) {
 			const x = move.from.x * (1 - offset) + move.to.x * offset;
 			const y = move.from.y * (1 - offset) + move.to.y * offset;
-			drawPiece(ctx, y, x, move.p, { assets, options, dpr });
+			drawPiece(ctx, y, x, move.p, { info, assets, options, dpr });
 		}
 		ctx.restore();
 

@@ -3,7 +3,7 @@ import { squares, toFEN, setSquare, pushState } from "./squares";
 import { cnvMain, imgOverlay, cnvTemplate, cnvGhost, cnvTempGhost } from "app/meta/el";
 import { drawTemplate, templateValues } from "app/view/render";
 import { checkDragPrecondition, checkPromotion, confirmPromotion, makeMove, retroClick, sync } from "app/tools/play/play";
-import { types } from "app/view/draw";
+import { types } from "app/view/piece";
 import { LABEL_MARGIN } from "app/meta/option";
 import { env } from "app/meta/env";
 import { animate } from "app/view/animation";

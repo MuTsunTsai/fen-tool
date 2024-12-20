@@ -85,7 +85,7 @@ export interface Border {
 	size: number;
 }
 
-interface DimensionInfo extends Dimension {
+export interface DimensionInfo extends Dimension {
 	border: Border;
 	offset: IPoint;
 	margin: IPoint;

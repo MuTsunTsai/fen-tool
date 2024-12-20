@@ -1,7 +1,7 @@
 import { cnvMain, cnvGhost, cnvTemplate, cnvTempGhost, imgOverlay, cnvSquares } from "app/meta/el";
 import { store, state, noEditing, status } from "app/store";
 import { pushState, createSnapshot } from "app/interface/squares";
-import { drawBoard, types } from "./draw";
+import { drawBoard } from "./draw";
 import { loadAsset } from "./asset";
 import { getDimensions } from "app/meta/option";
 import { dpr } from "app/meta/env";
@@ -10,6 +10,7 @@ import { emptyBoard } from "app/meta/fen";
 import { redrawSDK } from "app/api/sdk-base";
 import { BOARD_SIZE, TEMPLATE_SIZE } from "app/meta/constants";
 import { TemplateMap, TemplateRow } from "app/meta/enum";
+import { types } from "./piece";
 
 const SELECTION_WIDTH_FACTOR = 12;
 const SELECTION_GRID = 8;

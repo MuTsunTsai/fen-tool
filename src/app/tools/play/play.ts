@@ -1,6 +1,6 @@
 import { animate, stopAnimation } from "app/view/animation";
 import { readText } from "app/interface/copy";
-import { types } from "app/view/draw";
+import { types } from "app/view/piece";
 import { makeForsyth, parseFEN, parseSquare, toSquare } from "app/meta/fen";
 import { drawTemplate, load } from "app/view/render";
 import { orthodoxFEN, parseFullFEN, setFEN, setSquare, squares, toggleReadOnly } from "app/interface/squares";
