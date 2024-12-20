@@ -49,6 +49,7 @@ export default defineConfig({
 	},
 	server: {
 		port: 3000,
+		base: "/fen-tool",
 		publicDir: {
 			name: "src/public",
 			copyOnBuild: true,
@@ -103,7 +104,6 @@ export default defineConfig({
 			{ from: "src/public/assets/icon/icon-192.png", to: "assets/icon" },
 		],
 		dataUriLimit: 100,
-		assetPrefix: "/fen-tool/",
 		legalComments: inspectBuild ? "inline" : "none",
 		polyfill: "off",
 		minify: !inspectBuild,

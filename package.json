@@ -7,7 +7,7 @@
 		"build": "rsbuild build",
 		"lint": "eslint src",
 		"prebuild": "gulp",
-		"preview": "rsbuild preview",
+		"preview": "rsbuild preview --port 3001 --open http://localhost:3001",
 		"start": "rsbuild dev",
 		"test": "mocha"
 	},
