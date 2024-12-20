@@ -33,7 +33,8 @@
 						</div>
 					</div>
 				</div>
-				<Checkbox class="mb-2" v-model="store.board.exHigh" @change="drawExport">Export to high-resolution image</Checkbox>
+				<Checkbox class="mb-2" v-model="store.board.exHigh" @change="drawExport">Export to high-resolution image
+				</Checkbox>
 				<div class="row gx-3">
 					<div class="col" style="flex-basis: 15rem;">
 						<div class="row gx-3 mb-2">
@@ -78,7 +79,8 @@
 								</div>
 							</div>
 							<div class="col mb-2 text-end">
-								<button type="button" class="btn btn-secondary" @click="Layout.setDimension({ w: 8, h: 8 })">Reset</button>
+								<button type="button" class="btn btn-secondary"
+										@click="Layout.setDimension({ w: 8, h: 8 })">Reset</button>
 							</div>
 						</div>
 					</div>
@@ -87,7 +89,8 @@
 							<label class="col-auto col-form-label">Border pattern:</label>
 							<div class="col">
 								<input type="text" placeholder="Use comma-separated numbers" title="Use comma-separated numbers"
-									   class="form-control" :value="store.board.border" @change="Layout.setBorder($event.target as HTMLInputElement)">
+									   class="form-control" :value="store.board.border"
+									   @change="Layout.setBorder($event.target as HTMLInputElement)">
 							</div>
 						</div>
 					</div>
@@ -97,7 +100,7 @@
 					<div class="col" style="flex-basis: 15rem;">
 						<Checkbox v-model="store.board.blackWhite" @change="redraw">Black/White neutral piece</Checkbox>
 					</div>
-					<div class="col" style="flex-basis: 15rem;" v-show="store.board.blackWhite">
+					<div class="col" style="flex-basis: 15rem;" v-show="ready && store.board.blackWhite">
 						<div class="row align-items-center">
 							<label class="col-auto col-form-label">Knight offset:</label>
 							<div class="col">
@@ -118,12 +121,18 @@
 </template>
 
 <script setup lang="ts">
+	import { onMounted, shallowRef } from "vue";
+
 	import { store, state } from "app/store";
 	import { redraw, updateBG, drawExport } from "app/view/render";
 	import { resize, setOption, Layout } from "app/interface/layout";
 	import { toFEN, updateSN } from "app/interface/squares";
 	import Checkbox from "@/components/checkbox.vue";
 	import InputNumber from "@/components/inputNumber.vue";
+
+	const ready = shallowRef(false);
+	const TIMEOUT = 50;
+	onMounted(() => setTimeout(() => ready.value = true, TIMEOUT));
 
 	function toggleCoordinates(): void {
 		setOption({}, true);

@@ -138,6 +138,9 @@ importers:
       gulp-fontawesome:
         specifier: ^1.0.4
         version: 1.0.4(@fortawesome/fontawesome-free@6.7.2)
+      gulp-html-minifier-terser:
+        specifier: ^7.1.0
+        version: 7.1.0
       gulp-newer:
         specifier: ^1.4.0
         version: 1.4.0
@@ -156,9 +159,6 @@ importers:
       purgecss:
         specifier: ^7.0.2
         version: 7.0.2
-      rsbuild-plugin-html-minifier-terser:
-        specifier: ^1.1.1
-        version: 1.1.1(@rsbuild/core@1.1.10)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.10.1(@swc/helpers@0.5.15))(@types/node@22.10.2)(typescript@5.7.2)
@@ -1560,9 +1560,6 @@ packages:
   '@types/gulp-load-plugins@0.0.37':
     resolution: {integrity: sha512-gmQpE77bVR5bbT7xUltn3eXQ+EEa0D3aplJHeZhnefOvPxm3cEjfJTa8UMnkVpAmi6b465vmmQqkIpDM/5H+HA==}
 
-  '@types/html-minifier-terser@7.0.2':
-    resolution: {integrity: sha512-mm2HqV22l8lFQh4r2oSsOEVea+m0qqxEmwpc9kC1p/XzmjLWrReR9D/GRs8Pex2NX/imyEH9c5IU/7tMBQCHOA==}
-
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -2871,6 +2868,10 @@ packages:
   gulp-fontawesome@1.0.4:
     resolution: {integrity: sha512-5Gplt3zS3K2rSFLwL4MNHP0ebfd+yj0a2CseEYAOoSqfMpo8g6vKIjmkEMFOEqbBBb/uJxM7yhsDOZwCF+NR8Q==}
 
+  gulp-html-minifier-terser@7.1.0:
+    resolution: {integrity: sha512-5aZUMmF2NhQ+eBxfK3YNhYXcqgdbAQfrIe9Nq4BbI5p4AO9zbk3Kz7teZTyyvNizWRI8eA22Q25H4yE+a+3B+g==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   gulp-newer@1.4.0:
     resolution: {integrity: sha512-h79fGO55S/P9eAADbLAP9aTtVYpLSR1ONj08VPaSdVVNVYhTS8p1CO1TW7kEMu+hC+sytmCqcUr5LesvZEtDoQ==}
 
@@ -3985,14 +3986,6 @@ packages:
   rrweb-cssom@0.7.1:
     resolution: {integrity: sha512-TrEMa7JGdVm0UThDJSx7ddw5nVm3UJS9o9CCIZ72B1vSyEZoziDqBYP3XIoi/12lKrJR8rE3jeFHMok2F/Mnsg==}
 
-  rsbuild-plugin-html-minifier-terser@1.1.1:
-    resolution: {integrity: sha512-rbDLv+XmGeSQo9JWKSwBst3Qwx1opLqtQCnQ3t9Z0F0ZTxKOC1S/ypPv5tSn/S3GMHct5Yb76mMgh6p80hjOAQ==}
-    peerDependencies:
-      '@rsbuild/core': 1.x || ^1.0.1-beta.0
-    peerDependenciesMeta:
-      '@rsbuild/core':
-        optional: true
-
   rslog@1.2.3:
     resolution: {integrity: sha512-antALPJaKBRPBU1X2q9t085K4htWDOOv/K1qhTUk7h0l1ePU/KbDqKJn19eKP0dk7PqMioeA0+fu3gyPXCsXxQ==}
     engines: {node: '>=14.17.6'}
@@ -4404,6 +4397,9 @@ packages:
 
   text-decoder@1.2.3:
     resolution: {integrity: sha512-3/o9z3X0X0fTupwsYvR03pJ/DjWuqqrfwBgTQzdWDiQSm9KitAyz/9WqsT2JQW7KV2m+bC2ol/zqpW37NHxLaA==}
+
+  through2@4.0.2:
+    resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
 
   tldts-core@6.1.68:
     resolution: {integrity: sha512-85TdlS/DLW/gVdf2oyyzqp3ocS30WxjaL4la85EArl9cHUR/nizifKAJPziWewSZjDZS71U517/i6ciUeqtB5Q==}
@@ -6437,8 +6433,6 @@ snapshots:
     dependencies:
       '@types/node': 22.10.2
 
-  '@types/html-minifier-terser@7.0.2': {}
-
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
@@ -7971,6 +7965,12 @@ snapshots:
       - '@fortawesome/fontawesome-free'
       - '@fortawesome/fontawesome-pro'
 
+  gulp-html-minifier-terser@7.1.0:
+    dependencies:
+      html-minifier-terser: 7.2.0
+      plugin-error: 2.0.1
+      through2: 4.0.2
+
   gulp-newer@1.4.0:
     dependencies:
       glob: 7.2.3
@@ -9115,13 +9115,6 @@ snapshots:
 
   rrweb-cssom@0.7.1: {}
 
-  rsbuild-plugin-html-minifier-terser@1.1.1(@rsbuild/core@1.1.10):
-    dependencies:
-      '@types/html-minifier-terser': 7.0.2
-      html-minifier-terser: 7.2.0
-    optionalDependencies:
-      '@rsbuild/core': 1.1.10
-
   rslog@1.2.3: {}
 
   run-parallel@1.2.0:
@@ -9573,6 +9566,10 @@ snapshots:
   text-decoder@1.2.3:
     dependencies:
       b4a: 1.6.7
+
+  through2@4.0.2:
+    dependencies:
+      readable-stream: 3.6.2
 
   tldts-core@6.1.68: {}
 

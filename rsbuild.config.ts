@@ -6,7 +6,6 @@ import { pluginAssetsRetry } from "@rsbuild/plugin-assets-retry";
 import { InjectManifest } from "@aaroon/workbox-rspack-plugin";
 import { pluginSass } from "@rsbuild/plugin-sass";
 import { RsdoctorRspackPlugin } from "@rsdoctor/rspack-plugin";
-import { pluginHtmlMinifierTerser } from "rsbuild-plugin-html-minifier-terser";
 import postcssPresetEnv from "postcss-preset-env";
 import { createDescendantRegExp, makeTest } from "@mutsuntsai/rsbuild-utils";
 
@@ -36,6 +35,7 @@ export default defineConfig({
 			},
 		},
 		define: {
+			// __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
 			__VUE_I18N_LEGACY_API__: false,
 		},
 		tsconfigPath: "./src/app/tsconfig.json",
@@ -120,14 +120,13 @@ export default defineConfig({
 			},
 		}),
 		pluginVue(),
-		pluginHtmlMinifierTerser(),
 		pluginCheckSyntax({
 			ecmaVersion: 2019,
 		}),
 		pluginAssetsRetry({
 			addQuery: true,
 			max: 2,
-			minify: true,
+			test: url => !url.includes("gtag"),
 		}),
 	],
 	tools: {

@@ -2,6 +2,7 @@ const esbuild = require("gulp-esbuild");
 const esVue = require("@mutsuntsai/esbuild-plugin-vue");
 const fontawesome = require("gulp-fontawesome");
 const gulp = require("gulp");
+const htmlMinifierTerser = require("gulp-html-minifier-terser");
 const newer = require("gulp-newer");
 const vueSsg = require("gulp-vue-ssg");
 
@@ -13,6 +14,14 @@ globalThis.HTMLCanvasElement.prototype.getContext = () => ({});
 globalThis.addEventListener = globalThis.window.addEventListener.bind(globalThis.window);
 
 const vueSource = "src/vue/**/*.vue";
+
+const htmlMinOption = {
+	collapseWhitespace: true,
+	removeComments: true,
+	minifyJS: {
+		ie8: true,
+	},
+};
 
 const vueOption = {
 	templateOptions: {
@@ -30,9 +39,9 @@ const esbuildOption = {
 	pure: ["RegExp"],
 	logLevel: "error", // silence warnings
 	define: {
-		"__VUE_OPTIONS_API__": "true", // Slicksort needs this
-		"__VUE_PROD_DEVTOOLS__": "false",
-		"__VUE_PROD_HYDRATION_MISMATCH_DETAILS__": "false",
+		__VUE_OPTIONS_API__: "true", // Slicksort needs this
+		__VUE_PROD_DEVTOOLS__: "false",
+		__VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "false",
 	},
 };
 
@@ -40,8 +49,9 @@ gulp.task("html", () =>
 	gulp.src("src/app/index.html")
 		.pipe(newer({
 			dest: "build/index.html",
-			extra: [__filename, vueSource]
+			extra: [__filename, vueSource],
 		}))
+		.pipe(htmlMinifierTerser(htmlMinOption))
 		.pipe(vueSsg({
 			appRoot: "src/vue/app.vue",
 			esbuildOptions: Object.assign({}, esbuildOption, {
