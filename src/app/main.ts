@@ -10,6 +10,8 @@ import { Popeye } from "./tools/popeye/popeye";
 import "./tools/stockfish";
 import "./tools/syzygy";
 import App from "../vue/app.vue";
+import { testResistFingerprinting } from "./meta/env";
+import { alert } from "./meta/dialogs";
 
 import "../../lib/bootstrap/bootstrap.scss";
 import "./style.scss";
@@ -60,3 +62,7 @@ watchEffect(() => {
 	Promise.resolve().then(() => setOption({}));
 });
 watchEffect(updateEdwards);
+
+if(testResistFingerprinting()) {
+	alert(`It seems that you have turned on "privacy.resistFingerprinting" in your browser. FEN Tool would not work properly with this setting.\nPlease add "mutsuntsai.github.io" to "privacy.resistFingerprinting.exemptedDomains" and reload the tool to fix this.`);
+}

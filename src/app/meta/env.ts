@@ -22,6 +22,22 @@ function testPngShare(): boolean {
 
 const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
 
+/**
+ * Firefox has this `privacy.resistFingerprinting` settings that would result
+ * in canvas malfunctioning. This function detects if the setting is on.
+ */
+export function testResistFingerprinting(): boolean {
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d")!;
+	ctx.fillStyle = "rgb(255, 0, 0)";
+	ctx.fillRect(0, 0, 1, 1);
+	const data = ctx.getImageData(0, 0, 2, 2).data;
+	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+	const expect = [255, 0, 0, 255];
+	for(let i = 0; i < expect.length; i++) if(data[i] != expect[i]) return true;
+	return false;
+}
+
 export const env = {
 	isTop: top == self,
 	thread: typeof SharedArrayBuffer != "undefined",
