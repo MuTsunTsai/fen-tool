@@ -1,5 +1,9 @@
 # FEN-Tool
 
+<p align="center">
+<a href="https://www.buymeacoffee.com/mutsuntsai" target="_blank"><img width="235" height="50" src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=mutsuntsai&button_colour=6f431f&font_colour=ffffff&font_family=Lato&outline_colour=ffffff&coffee_colour=FFDD00" /></a>
+</p>
+
 This is a quick online tool for editing FEN (Forsyth-Edwards Notation) in chess,
 specifically designed with the needs of the chess composition community in mind.
 
