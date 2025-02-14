@@ -360,11 +360,12 @@ export default [
 		},
 	},
 	{
-		files: ["eslint.config.mjs"],
+		files: ["eslint.config.mjs", "scripts/*.js"],
 		languageOptions: {
 			globals: globals.nodeBuiltin,
 		},
 		rules: {
+			"@stylistic/max-len": "off",
 			"@typescript-eslint/no-magic-numbers": "off",
 			"import/no-unresolved": "off",
 			"max-lines": "off",

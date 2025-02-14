@@ -22,7 +22,7 @@ function flush() {
 	if(result.length == 1) {
 		console.log(`${start}:${bits},`);
 	} else {
-		const map = btoa(result).replace(/=+$/, "");
+		const map = btoa(result).replace(/[=]+$/, "");
 		console.log(`${start}:"${map}",`);
 	}
 }
