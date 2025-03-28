@@ -36,7 +36,9 @@ export async function load(): Promise<void> {
 	status.loading = false;
 }
 
-export const ctxMain = cnvMain.getContext("2d")!;
+export const ctxMain = cnvMain.getContext("2d", {
+	willReadFrequently: true, // This is necessary for the quality of animation
+})!;
 const ctxGhost = cnvGhost.getContext("2d")!;
 const ctxTemplate = cnvTemplate.getContext("2d")!;
 const ctxTempGhost = cnvTempGhost.getContext("2d")!;

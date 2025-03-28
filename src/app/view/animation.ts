@@ -103,18 +103,24 @@ class Animation {
 
 	step(timestamp: DOMHighResTimeStamp): void {
 		const { ctx, options, callback } = animeSettings;
+		const maxStage = this.stages.length - 1;
 
 		if(!this.startTime) this.startTime = timestamp;
-		const delta = (timestamp - this.startTime) / speed;
-		const cursor = Math.floor(delta);
+		let delta = (timestamp - this.startTime) / speed;
+		let cursor = Math.floor(delta);
 
-		if(cursor >= this.stages.length) return this.stop(callback);
+		const shouldStop = cursor > maxStage;
+		if(shouldStop) {
+			cursor = maxStage;
+			delta = 1;
+		}
 
 		// Draw background
-		const stageIndex = this.reverse ? this.stages.length - 1 - cursor : cursor;
+		const stageIndex = this.reverse ? maxStage - cursor : cursor;
 		if(cursor > this.cursor) {
 			this.cursor = cursor;
 			drawBoard(ctx, this.stages[stageIndex].board, options, dpr);
+			// The next line depends on the `willReadFrequently` setting
 			this.background = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 		} else {
 			ctx.putImageData(this.background, 0, 0);
@@ -134,6 +140,7 @@ class Animation {
 		}
 		ctx.restore();
 
+		if(shouldStop) return this.stop(callback);
 		this.request = requestAnimationFrame(this.anime);
 	}
 }
