@@ -1,6 +1,6 @@
-const esbuild = require("gulp-esbuild");
 const esVue = require("@mutsuntsai/esbuild-plugin-vue");
 const fontawesome = require("gulp-fontawesome");
+const fs = require("fs");
 const gulp = require("gulp");
 const htmlMinifierTerser = require("gulp-html-minifier-terser");
 const newer = require("gulp-newer");
@@ -61,10 +61,16 @@ gulp.task("html", () =>
 		.pipe(gulp.dest("build"))
 );
 
-gulp.task("fa", () =>
-	gulp.src("src/vue/**/*.vue")
+const fontAwesome = () =>
+	gulp.src(vueSource)
 		.pipe(fontawesome())
-		.pipe(gulp.dest("build"))
-);
+		.pipe(gulp.dest("build"));
 
-gulp.task("default", gulp.series("html"));
+gulp.task("prebuild", cb => {
+	if(!fs.existsSync("build/webfonts")) return fontAwesome();
+	cb();
+});
+
+gulp.task("fa", fontAwesome);
+
+gulp.task("default", gulp.parallel("prebuild", "html"));
