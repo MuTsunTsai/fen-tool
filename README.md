@@ -210,3 +210,25 @@ The internal mechanism used in our SDK is compatible with most front-end framewo
 - `Merida` is designed by Armando Hernandez Marroquin.
 - [`MPChess`](https://github.com/chupinmaxime/mpchess) is designed by Maxime Chupin. Slightly modified for this app.
 - [`Skak`](https://github.com/lehoff/skak) is designed by Piet Tutelaers and modified by Torben Hoffmann.
+
+
+## Build instructions
+
+To build and run this project, you will need the following:
+- [Node.js](https://nodejs.org/)
+- [PNPM](https://pnpm.io/) (recommended over NPM), and then execute the following in the project folder: `pnpm install`.
+
+Then you can run the project by the following:
+
+```bash
+pnpm start
+```
+
+This will build the project and start the development server.
+
+To build and start the release server, run the following:
+
+```bash
+pnpm build
+pnpm preview
+```
