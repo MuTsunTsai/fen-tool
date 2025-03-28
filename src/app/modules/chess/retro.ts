@@ -44,7 +44,7 @@ export function createRetractContext(arg: RetroMove, chess: Chess): RetractConte
 	const ep = arg.uncapture == "c";
 	const uncapture = ep ? "p" : arg.uncapture;
 
-	const type = chess.get(from)?.type;
+	const type = chess.get(from)!.type;
 	if(!basicLegalCheck(type, ep, unpromote)) return null;
 	if(!epLegalCheck(chess.state.history[chess.state.moveNumber], from, to)) return null;
 
@@ -55,7 +55,7 @@ export function createRetractContext(arg: RetroMove, chess: Chess): RetractConte
 	// Move the piece
 	const fen = manipulateFEN(chess.fen(), switchSide);
 	const temp = new ChessBase(fen);
-	const piece = temp.remove(from);
+	const piece = temp.remove(from)!;
 	const rank = from[1];
 	if(unpromote) piece.type = "p";
 	if(piece.type == "p" && (isWhite && rank == "2" || !isWhite && rank == "7")) return null;

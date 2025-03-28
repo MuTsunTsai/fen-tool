@@ -124,7 +124,7 @@ export function checkPromotion(from: number, to: number): boolean {
 }
 
 function getSquareColor(index: number): Color {
-	return chess.get(toSquare(index) as Square).color as Color;
+	return chess.get(toSquare(index) as Square)!.color as Color;
 }
 
 export function checkDragPrecondition(index: number): boolean {
