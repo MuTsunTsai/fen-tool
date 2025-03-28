@@ -20,7 +20,6 @@ const Main_raw = Main.replace(/\?<[^>]+>/g, "");
 export const Step = String.raw`(?<count>\d+\.(?:\.\.)?)?(?<main>${Main_raw}(?:\/${Main_raw})*)(?: [+#=])?`;
 
 export function setPiece(board: Board, sq: string, piece: string, color?: Color): string {
-	piece = toNormalPiece(piece);
 	if(color == "w") piece = piece.toUpperCase();
 	if(color == "b") piece = piece.toLowerCase();
 	if(color == "n") piece = "-" + piece.toLowerCase();
@@ -92,6 +91,7 @@ for(const key in defaultPieceMap) {
 }
 
 export function toNormalPiece(p: string): string {
+	if(!p) return p;
 	const upper = p.toUpperCase();
 	const normal = findCustom(upper) || pieceMap.default[upper];
 	if(normal) return p == upper ? normal : normal.toLowerCase();

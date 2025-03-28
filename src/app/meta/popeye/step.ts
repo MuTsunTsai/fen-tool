@@ -1,5 +1,5 @@
 import { INIT_FORSYTH, makeForsyth, parseFEN, parseXY, toSquare } from "../fen";
-import { Main, Step, setPiece, movePiece, SQ, Promotion } from "./base";
+import { Main, Step, setPiece, movePiece, SQ, Promotion, toPopeyePiece, toNormalPiece } from "./base";
 import { makeEffect } from "./effect";
 import { Color } from "../enum";
 
@@ -91,11 +91,13 @@ function makeMove(board: Board, color: Color, g: Groups, imitators: string[], an
 	}
 	if(g.p == "I") {
 		imitators.push(to);
-		setPiece(board, to, "I", Color.neutral);
+		setPiece(board, to, toNormalPiece("I"), Color.neutral);
 	} else if(g.p) {
-		setPiece(board, to, p = g.p, g.pc ? g.pc as Color : color); // promotion & Einstein
+		setPiece(board, to, p = toNormalPiece(g.p), g.pc ? g.pc as Color : color); // promotion & Einstein
 	}
-	if(g.cc) setPiece(board, to, p, g.cc as Color); // Volage
+	if(g.cc) {
+		setPiece(board, to, p, g.cc as Color); // Volage
+	}
 }
 
 function makeAfterMove(board: Board, g: Groups, animation: string[]): void {
@@ -104,7 +106,7 @@ function makeAfterMove(board: Board, g: Groups, animation: string[]): void {
 	for(const token of tokens) {
 		const promote = token.match(new RegExp(Promotion));
 		if(promote) {
-			const piece = setPiece(board, from, promote.groups!.p, promote.groups!.pc as Color);
+			const piece = setPiece(board, from, toNormalPiece(promote.groups!.p), promote.groups!.pc as Color);
 			if(animation) animation[animation.length - 1] += "=" + piece;
 		} else {
 			movePiece(board, from, token, animation);

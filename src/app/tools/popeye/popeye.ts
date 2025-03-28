@@ -36,9 +36,6 @@ const MIN_MEMORY = 16;
 /** Initial memory setting. */
 const INIT_MEMORY = 512;
 
-/** Path of worker. */
-const path = "modules/py489.js";
-
 // Session
 onSession(() => {
 	state.popeye.running = false; // Do not restore this state

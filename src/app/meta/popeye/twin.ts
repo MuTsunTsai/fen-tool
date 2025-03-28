@@ -50,7 +50,7 @@ function processExchange(command: string, board: Board): boolean {
 function processAddRemove(command: string, board: Board): boolean {
 	const arr = command.match(TW_ADD_REMOVE);
 	if(!arr) return false;
-	if(arr[1] == "+" || arr[1] == "") setPiece(board, arr[4], arr[3], arr[2] as Color);
+	if(arr[1] == "+" || arr[1] == "") setPiece(board, arr[4], toNormalPiece(arr[3]), arr[2] as Color);
 	else setPiece(board, arr[4], "");
 	return true;
 }

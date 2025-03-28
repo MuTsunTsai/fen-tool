@@ -1,6 +1,6 @@
 
 import { parseSquare } from "../fen";
-import { exchange, setPiece, P, SQ, movePiece } from "./base";
+import { exchange, setPiece, P, SQ, movePiece, toNormalPiece } from "./base";
 import { Color } from "../enum";
 
 const EF_ADD = new RegExp(String.raw`^\+(?<c>[nwb])(?<is>${P})(?<at>${SQ})(=(?<p>${P}))?$`);
@@ -12,7 +12,7 @@ const EF_IMITATOR = new RegExp(`^I${SQ}(,${SQ})*$`);
 
 export function makeEffect(board: Board, extra: string, imitators: string[]): string | void {
 	let g = extra.match(EF_ADD)?.groups;
-	if(g) return setPiece(board, g.at, g.p || g.is, g.c as Color);
+	if(g) return setPiece(board, g.at, toNormalPiece(g.p || g.is), g.c as Color);
 
 	g = extra.match(EF_REMOVE)?.groups;
 	if(g) return setPiece(board, g.at, "");
@@ -20,7 +20,7 @@ export function makeEffect(board: Board, extra: string, imitators: string[]): st
 	g = extra.match(EF_MOVE)?.groups;
 	if(g) {
 		movePiece(board, g.from, g.to);
-		if(g.p) setPiece(board, g.to, g.p, g.c as Color);
+		if(g.p) setPiece(board, g.to, toNormalPiece(g.p), g.c as Color);
 		return;
 	}
 
@@ -30,14 +30,14 @@ export function makeEffect(board: Board, extra: string, imitators: string[]): st
 	g = extra.match(EF_CHANGE)?.groups;
 	if(g) {
 		return setPiece(board, g.at,
-			g.p || getPiece(board, g.at),
+			toNormalPiece(g.p) || getPiece(board, g.at),
 			g.c as Color || getColor(board, g.at)
 		);
 	}
 
 	if(extra.match(EF_IMITATOR)) {
 		imitators.push(...extra.match(new RegExp(SQ, "g"))!);
-		for(const sq of imitators) setPiece(board, sq, "I", Color.neutral);
+		for(const sq of imitators) setPiece(board, sq, toNormalPiece("I"), Color.neutral);
 	}
 }
 

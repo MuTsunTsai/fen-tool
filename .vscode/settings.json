@@ -37,9 +37,10 @@
 		"package.json": "pnpm-lock.yaml, .npmrc"
 	},
 	"files.exclude": {
+		"**/.rsdoctor": true,
 		"**/node_modules": true,
-		"test-results/": true,
-		"**/.rsdoctor": true
+		"test-results/": true
 	},
+	"mochaExplorer.multiFileSuites": true,
 	"npm.packageManager": "pnpm"
 }

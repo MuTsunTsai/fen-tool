@@ -106,14 +106,9 @@ class Animation {
 		const maxStage = this.stages.length - 1;
 
 		if(!this.startTime) this.startTime = timestamp;
-		let delta = (timestamp - this.startTime) / speed;
-		let cursor = Math.floor(delta);
-
-		const shouldStop = cursor > maxStage;
-		if(shouldStop) {
-			cursor = maxStage;
-			delta = 1;
-		}
+		const delta = (timestamp - this.startTime) / speed;
+		const cursor = Math.floor(delta);
+		if(cursor > maxStage) return this.stop(callback);
 
 		// Draw background
 		const stageIndex = this.reverse ? maxStage - cursor : cursor;
@@ -140,7 +135,6 @@ class Animation {
 		}
 		ctx.restore();
 
-		if(shouldStop) return this.stop(callback);
 		this.request = requestAnimationFrame(this.anime);
 	}
 }
