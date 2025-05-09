@@ -19,7 +19,9 @@ export function formatSolution(input: string, initFEN: string, output: string): 
 export function parseSolution(input: string, initFEN: string, output: string, factory: MakeStepFactory): string {
 	if(!initFEN) return output;
 	console.log(output);
-	output = output.replace(/<br>/g, "\n");
+	output = output
+		.replace(/<br>/g, "\n")
+		.replace(/<span class="text-secondary">.+?<\/span>/g, "");
 	const context = createParseContext(input, initFEN, output);
 
 	// Main replacement

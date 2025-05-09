@@ -12,29 +12,8 @@ import { animate, stopAnimation } from "app/view/animation";
 import { parsePieceCommand } from "app/meta/popeye/piece";
 import { BOARD_SIZE } from "app/meta/constants";
 import { alert } from "app/meta/dialogs";
-
-const INSUFFICIENT_MEMORY = -2;
-
-/**
- * Restrict the output to 3000 lines.
- *
- * Too much output is bad for user experience, and is not what this app is meant for.
- */
-const MAX_LINES = 3000;
-
-/** Interval to flush the output message. */
-const OUTPUT_INTERVAL = 500;
-
-/**
- * Minimal amount of memory required to run Popeye.
- *
- * Popeye is highly recursive and requires quite some stack memory to run.
- * We have set the stack size of Popeye WASM to 8MB, so 16MB total sounds reasonable.
- */
-const MIN_MEMORY = 16;
-
-/** Initial memory setting. */
-const INIT_MEMORY = 512;
+import { scrollTo, resetScroll, getSteps } from "./output";
+import { initMemory, cancel, start } from "./bridge";
 
 // Session
 onSession(() => {
@@ -44,118 +23,6 @@ onSession(() => {
 		load().then(() => nextTick(() => setupStepElements(true)));
 	}
 });
-
-let worker: Worker | undefined;
-
-/** Current memory setting. */
-let memory: number;
-
-let startTime: number;
-let interval: number;
-let outputCount: number;
-let shouldScroll = false;
-
-const el = document.getElementById("Output") as HTMLDivElement;
-
-function flush(): void {
-	state.popeye.output = state.popeye.intOutput + `<br><i class="fa-solid fa-spinner fa-spin"></i>`;
-	tryScroll();
-}
-
-function tryScroll(): void {
-	if(shouldScroll) {
-		shouldScroll = false;
-		nextTick(() => el.scrollTop = el.scrollHeight - el.clientHeight);
-	}
-}
-
-function stop(restart?: boolean): void {
-	if(worker) worker.terminate();
-	worker = undefined;
-	const remain = OUTPUT_INTERVAL - (performance.now() - startTime);
-	tryScroll();
-	clearInterval(interval);
-	if(!restart) {
-		state.popeye.output = state.popeye.intOutput;
-		setTimeout(() => state.popeye.running = false, Math.max(0, remain));
-		createWorker();
-	} else {
-		start();
-	}
-}
-
-function createWorker(): Worker {
-	if(worker) return worker;
-	const w = new Worker(new URL("../../modules/popeye.js", import.meta.url), { name: "py" });
-	worker = w;
-	w.onerror = event => {
-		event.preventDefault();
-		clearInterval(interval);
-		state.popeye.running = false;
-		let msg;
-		if(!event.filename) {
-			msg = "Unable to load the Popeye module; please check your network connection.";
-		} else {
-			w.terminate();
-			msg = "An error occur in the Popeye module. Please submit an issue about this.\n" + event.message;
-		}
-		state.popeye.output = error(msg);
-		worker = undefined;
-	};
-	w.onmessage = event => {
-		const data = event.data;
-		if(++outputCount > MAX_LINES) {
-			state.popeye.intOutput += `<br>${error("Too much output. Please modify the input to prevent excessive output.")}<br>`;
-			stop();
-		} else if(data === INSUFFICIENT_MEMORY) {
-			memory /= 2;
-			if(memory < MIN_MEMORY) {
-				state.popeye.intOutput += `<br>${error("Not enough memory to run Popeye.")}<br>`;
-			}
-			stop(memory >= MIN_MEMORY);
-		} else if(data === null) {
-			stop();
-		} else {
-			shouldScroll = shouldScroll || elIsAlmostBottom();
-			if(typeof data.text == "string") state.popeye.intOutput += escapeHtml(data.text) + "<br>";
-			if(typeof data.err == "string") {
-				if(data.err == "Calling stub instead of signal()") return; // It seems that this error can be ignored
-				state.popeye.error = true;
-				state.popeye.intOutput += error(escapeHtml(data.err));
-			}
-		}
-	};
-	return w;
-}
-
-function elIsAlmostBottom(): boolean {
-	const threshold = 30;
-	return Boolean(el) && el.scrollTop + el.clientHeight + threshold > el.scrollHeight;
-}
-
-function start(): void {
-	const w = createWorker();
-
-	const p = state.popeye;
-	outputCount = 0;
-	p.intOutput = "";
-	p.error = false;
-	p.running = true;
-	interval = setInterval(flush, OUTPUT_INTERVAL);
-	startTime = performance.now();
-	w.postMessage({
-		mem: memory,
-		input: "Opti NoBoard\n" + p.intInput,
-	}); // NoBoard is used in any case
-}
-
-function error(text: string): string {
-	return `<span class="text-danger">${text}</span>`;
-}
-
-function escapeHtml(text: string): string {
-	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
 
 const Commands = ["remark", "2author", "2origin", "3title"];
 const COMMANDS = new RegExp(String.raw`(?:${Commands.map(createAbbrExp).join("|")})\s.+$`, "igm");
@@ -218,7 +85,7 @@ export function getPopeyeFEN(input: string): PopeyeBoardInfo {
 
 async function setupStepElements(restore?: boolean): Promise<void> {
 	const p = state.popeye;
-	p.steps = [...el.querySelectorAll("span")];
+	p.steps = getSteps();
 	if(p.steps.length == 0) return;
 	goTo(0, true);
 	p.playing = true;
@@ -257,24 +124,10 @@ async function goTo(index: number, init?: boolean): Promise<void> {
 	nextTick(() => scrollTo(newStep));
 }
 
-function scrollTo(step: HTMLSpanElement): void {
-	// We cannot simply use scrollIntoView here, as that will also scroll the entire page,
-	// which is not the desired behavior.
-	const margin = 10;
-	const top = step.offsetTop - margin;
-	if(el.scrollTop > top) el.scrollTop = top;
-	const bottom = step.offsetTop + step.clientHeight - el.clientHeight + margin;
-	if(el.scrollTop < bottom) el.scrollTop = bottom;
-	const left = step.offsetLeft - margin;
-	if(el.scrollLeft > left) el.scrollLeft = left;
-	const right = step.offsetLeft + step.clientWidth - el.clientWidth + margin;
-	if(el.scrollLeft < right) el.scrollLeft = right;
-}
-
 export const Popeye = {
 	run() {
 		gtag("event", "fen_popeye_run");
-		memory = INIT_MEMORY;
+		initMemory();
 		try {
 			const p = state.popeye;
 			p.intInput = parseInput(p.input);
@@ -283,12 +136,10 @@ export const Popeye = {
 			// ignore error
 		}
 	},
-	cancel() {
-		if(worker) stop();
-	},
+	cancel,
 	play() {
 		const p = state.popeye;
-		el.scrollTop = el.scrollLeft = 0; // Reset
+		resetScroll();
 		gtag("event", "fen_popeye_play");
 		p.output = formatSolution(p.intInput, p.initFEN, p.intOutput);
 		nextTick(setupStepElements);
