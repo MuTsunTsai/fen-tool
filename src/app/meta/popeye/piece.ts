@@ -16,6 +16,7 @@ const oneColor = String.raw`\s+(?<c>${colors})(?:\s+(?:${specs}))?(?<l>(?:\s+${o
 export const pieceCommand = String.raw`${createAbbrExp("2pieces")}(?:${oneColor})+(?=\s+(?:${Commands})|$)`;
 
 export function parsePieceCommand(input: string): string | null {
+	input = input.split("a=>b")[0]; // Take only the part before the "a=>b", if presented
 	const commands = input.match(new RegExp(pieceCommand, "ig"));
 	if(!commands) return null;
 	const board = emptyBoard(INIT_SQ_COUNT);
