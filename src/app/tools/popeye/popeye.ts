@@ -13,7 +13,15 @@ import { parsePieceCommand } from "app/meta/popeye/piece";
 import { BOARD_SIZE } from "app/meta/constants";
 import { alert } from "app/meta/dialogs";
 import { scrollTo, resetScroll, getSteps } from "./output";
-import { initMemory, cancel, start } from "./bridge";
+
+interface Bridge {
+	initMemory(): void;
+	cancel(): void;
+	start(): void;
+}
+
+/** For DIP */
+export const bridge = {} as Bridge;
 
 // Session
 onSession(() => {
@@ -127,16 +135,16 @@ async function goTo(index: number, init?: boolean): Promise<void> {
 export const Popeye = {
 	run() {
 		gtag("event", "fen_popeye_run");
-		initMemory();
+		bridge.initMemory();
 		try {
 			const p = state.popeye;
 			p.intInput = parseInput(p.input);
-			start();
+			bridge.start();
 		} catch {
 			// ignore error
 		}
 	},
-	cancel,
+	cancel: () => bridge.cancel(),
 	play() {
 		const p = state.popeye;
 		resetScroll();

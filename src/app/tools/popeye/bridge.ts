@@ -1,4 +1,5 @@
 import { state } from "app/store";
+import { bridge } from "./popeye";
 import { tryScroll, updateShouldScroll } from "./output";
 
 const INSUFFICIENT_MEMORY = -2;
@@ -83,11 +84,11 @@ function createWorker(): Worker {
 	return w;
 }
 
-export function initMemory(): void {
+function initMemory(): void {
 	memory = INIT_MEMORY;
 }
 
-export function start(): void {
+function start(): void {
 	const w = createWorker();
 
 	const p = state.popeye;
@@ -123,7 +124,7 @@ function stop(restart?: boolean): void {
 	}
 }
 
-export function cancel(): void {
+function cancel(): void {
 	if(worker) stop();
 }
 
@@ -134,3 +135,8 @@ function error(text: string): string {
 function escapeHtml(text: string): string {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+
+// DIP for SSG
+bridge.cancel = cancel;
+bridge.initMemory = initMemory;
+bridge.start = start;

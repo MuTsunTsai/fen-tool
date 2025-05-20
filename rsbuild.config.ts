@@ -1,6 +1,7 @@
 
 import { defineConfig } from "@rsbuild/core";
 import { pluginVue } from "@rsbuild/plugin-vue";
+import { pluginVueSSG } from "@mutsuntsai/rsbuild-plugin-vue-ssg";
 import { pluginCheckSyntax } from "@rsbuild/plugin-check-syntax";
 import { pluginAssetsRetry } from "@rsbuild/plugin-assets-retry";
 import { InjectManifest } from "@aaroon/workbox-rspack-plugin";
@@ -42,7 +43,7 @@ export default defineConfig({
 	},
 	html: {
 		template: ({ entryName }) => ({
-			"index": "./build/index.html",
+			"index": "./src/app/index.html",
 			"api/index": "./src/api/index.html",
 			"gen/index": "./src/gen/index.html",
 		})[entryName],
@@ -112,6 +113,19 @@ export default defineConfig({
 		},
 	},
 	plugins: [
+		pluginVue(),
+		pluginVueSSG({
+			entry: {
+				index: "./src/vue/app.vue",
+			},
+			jsdom(global) {
+				global.matchMedia = () => ({ matches: false });
+				global.HTMLCanvasElement.prototype.getContext = () => ({});
+				global.addEventListener = global.window.addEventListener.bind(globalThis.window);
+				global.__VUE_OPTIONS_API__ = true; // Slicksort needs this
+				global.__VUE_PROD_DEVTOOLS__ = false;
+			},
+		}),
 		pluginSass({
 			sassLoaderOptions: {
 				sassOptions: {
@@ -119,7 +133,6 @@ export default defineConfig({
 				},
 			},
 		}),
-		pluginVue(),
 		pluginCheckSyntax({
 			ecmaVersion: 2019,
 		}),

@@ -7,6 +7,7 @@ import { initDrag } from "./interface/drag";
 import { init as initSDK } from "./api/sdk-base";
 import { moveHistory } from "./tools/play/play";
 import { Popeye } from "./tools/popeye/popeye";
+import "./tools/popeye/bridge";
 import "./tools/stockfish";
 import "./tools/syzygy";
 import App from "../vue/app.vue";

@@ -265,6 +265,7 @@ export default [
 		settings: {
 			"import/resolver": {
 				typescript: {
+					noWarnOnMultipleProjects: true,
 					project: [
 						"src/app",
 						"src/api",
@@ -319,7 +320,7 @@ export default [
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	{
-		...pluginMocha.configs.flat.recommended,
+		...pluginMocha.configs.recommended,
 		files: ["test/**"],
 	},
 	{
