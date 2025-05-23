@@ -16,12 +16,12 @@
 		var isHttps = location.protocol == "https:";
 		var isSelf = document.referrer && document.referrer.includes("mutsuntsai.github.io");
 		if(isHttps && !isSelf) {
-			gtag('js', new Date());
-			gtag('config', 'G-NCH5HC15TN');
+			gtag("js", new Date());
+			gtag("config", "G-NCH5HC15TN");
 			gtag("event", "fen_sdk", { url: location.href });
 		}
-		if(isHttps && 'serviceWorker' in navigator) {
-			navigator.serviceWorker.register('../sw.js', { scope: "/fen-tool/" });
+		if(isHttps && "serviceWorker" in navigator) {
+			navigator.serviceWorker.register("../sw.js", { scope: "/fen-tool/" });
 		}
 	</script>
 </head>

@@ -9,7 +9,7 @@
 		}
 
 		function g(x, h, r = 1) {
-			return .5 * (Math.sqrt(1 - x * x / (r * r)) * x * r + r * r * Math.asin(x / r) - 2 * h * x);
+			return 0.5 * (Math.sqrt(1 - x * x / (r * r)) * x * r + r * r * Math.asin(x / r) - 2 * h * x);
 		}
 
 		function area4(x0, x1, h, r) {
@@ -28,6 +28,7 @@
 			}
 		}
 
+		// eslint-disable-next-line max-params
 		function area(x0, x1, y0, y1, cx, cy, r) {
 			x0 -= cx; x1 -= cx;
 			y0 -= cy; y1 -= cy;
@@ -54,7 +55,7 @@
 			}
 		}
 
-		const binary = array.map(c => String.fromCharCode(c)).join("");
+		const binary = array.map(char => String.fromCharCode(char)).join("");
 		const b64 = btoa(binary);
 		document.write(b64);
 

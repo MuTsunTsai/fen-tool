@@ -18,11 +18,11 @@
 		function gtag() { dataLayer.push(arguments); }
 		var isHttps = location.protocol == "https:";
 		if(isHttps) {
-			gtag('js', new Date());
-			gtag('config', 'G-NCH5HC15TN');
+			gtag("js", new Date());
+			gtag("config", "G-NCH5HC15TN");
 		}
-		if(isHttps && 'serviceWorker' in navigator) {
-			navigator.serviceWorker.register('../sw.js', { scope: "/fen-tool/" });
+		if(isHttps && "serviceWorker" in navigator) {
+			navigator.serviceWorker.register("../sw.js", { scope: "/fen-tool/" });
 		}
 	</script>
 

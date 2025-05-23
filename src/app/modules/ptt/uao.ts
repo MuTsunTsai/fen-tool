@@ -1,3 +1,4 @@
+/* eslint-disable local-rules/ascii-comments */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 
 /** The actual map in use. */
