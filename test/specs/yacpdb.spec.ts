@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { toYACPDB } from "app/meta/fen";
 
 describe("YACPDB syntax", function() {

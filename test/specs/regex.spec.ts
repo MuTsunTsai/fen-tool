@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { createAbbrExp } from "app/meta/regex";
 
 describe("RegExp utility", function() {

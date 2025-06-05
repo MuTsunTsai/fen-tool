@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { INIT_FORSYTH } from "app/meta/fen";
 import { parse } from "./utils";
 

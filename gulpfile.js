@@ -1,17 +1,13 @@
-const fontawesome = require("gulp-fontawesome");
-const fs = require("fs");
-const gulp = require("gulp");
+import gulp from "gulp";
+import fontawesome from "gulp-fontawesome";
+import fs from "fs";
 
-const vueSource = "src/vue/**/*.vue";
-
-const fontAwesome = () =>
-	gulp.src(vueSource)
+export const fa = () =>
+	gulp.src("src/vue/**/*.vue")
 		.pipe(fontawesome())
 		.pipe(gulp.dest("build"));
 
-gulp.task("fa", fontAwesome);
-
-gulp.task("default", cb => {
-	if(!fs.existsSync("build/webfonts")) return fontAwesome();
+export default cb => {
+	if(!fs.existsSync("build/webfonts")) return fa();
 	cb();
-});
+};

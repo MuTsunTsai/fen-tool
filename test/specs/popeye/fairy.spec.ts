@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { parse } from "./utils";
 
 export default function() {

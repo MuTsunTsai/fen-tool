@@ -5,7 +5,7 @@ import { createConfig } from "@mutsuntsai/eslint";
 export default defineConfig([
 	...createConfig({
 		ignores: ["docs/**/*", "lib/**/*.js"],
-		import: ["src/**/*.vue", "src/app/**/*.js", "**/*.ts", "eslint.config.mjs"],
+		import: ["src/**/*.vue", "src/app/**/*.js", "**/*.ts", "./*.js"],
 		project: [
 			"src/app",
 			"src/api",
@@ -13,8 +13,7 @@ export default defineConfig([
 			"src/vue",
 		],
 		globals: {
-			cjs: ["gulpfile.js"],
-			esm: ["eslint.config.mjs", "test/mocha.env.mjs", "scripts/*.js"],
+			esm: ["./*.{js,ts}", "test/mocha.env.js", "scripts/*.js"],
 			browser: ["src/**"],
 		},
 		html: {

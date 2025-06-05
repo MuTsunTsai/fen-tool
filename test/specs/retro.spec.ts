@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { Chess } from "app/modules/chess/chess";
 
 describe("Retro mode", function() {

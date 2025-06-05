@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { inferDimension, makeForsyth, normalizeSpaceRepresentation, parseFEN } from "app/meta/fen";
 
 describe("FEN", function() {

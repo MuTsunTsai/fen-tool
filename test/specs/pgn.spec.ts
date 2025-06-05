@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { parseMoves } from "app/modules/chess/pgn";
 
 describe("PGN Parsing", function() {

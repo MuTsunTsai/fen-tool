@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { getStipulations, inferMoveOrdering } from "app/meta/popeye/popeye";
 import { pieceMap, toPopeyePiece } from "app/meta/popeye/base";
 import { parsePieceCommand } from "app/meta/popeye/piece";

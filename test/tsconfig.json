@@ -1,23 +1,23 @@
 {
 	"compilerOptions": {
 		"baseUrl": "../src/",
+		"rootDir": "../",
+		"outDir": "../build/",
 		"allowJs": true,
 		"isolatedModules": true,
 		"moduleResolution": "node",
 		"noEmit": true,
 		"strict": true,
 		"target": "ESNext",
+		"sourceMap": true,
 		"types": [
 			"mocha",
 			"node"
-		]
+		],
+		"paths": {}
 	},
 	"include": [
 		"./**/*.ts",
 		"../src/**/*.d.ts"
-	],
-	"ts-node": {
-		"files": true,
-		"swc": true
-	}
+	]
 }

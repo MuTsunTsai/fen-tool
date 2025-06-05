@@ -1,3 +1,5 @@
+import { expect } from "chai";
+
 import { isInUAO } from "app/modules/ptt/uao";
 
 describe("UAO code page", function() {

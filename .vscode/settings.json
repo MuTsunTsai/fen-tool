@@ -43,5 +43,8 @@
 		"test-results/": true
 	},
 	"mochaExplorer.multiFileSuites": true,
+	"mochaExplorer.nodeArgv": [
+		"--enable-source-maps" // https://github.com/hbenl/vscode-mocha-test-adapter/issues/254
+	],
 	"npm.packageManager": "pnpm"
 }
