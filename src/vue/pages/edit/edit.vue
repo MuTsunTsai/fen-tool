@@ -21,7 +21,8 @@
 						:disabled="noEditing()">
 					<i class="fa-solid fa-arrow-right"></i>
 				</button>
-				<button type="button" class="btn btn-secondary" title="Shift upwards" @click="shiftBy(0, -1)" :disabled="noEditing()">
+				<button type="button" class="btn btn-secondary" title="Shift upwards" @click="shiftBy(0, -1)"
+						:disabled="noEditing()">
 					<i class="fa-solid fa-arrow-up"></i>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Shift downwards" @click="shiftBy(0, 1)"
@@ -34,7 +35,8 @@
 						:disabled="noEditing()">
 					<i class="fa-solid fa-rotate-left"></i>
 				</button>
-				<button type="button" class="btn btn-secondary" title="Rotate clockwise" @click="rotateBy(1)" :disabled="noEditing()">
+				<button type="button" class="btn btn-secondary" title="Rotate clockwise" @click="rotateBy(1)"
+						:disabled="noEditing()">
 					<i class="fa-solid fa-rotate-right"></i>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Mirror horizontally" @click="mirrorBy('-')"
@@ -60,7 +62,8 @@
 						   style="margin-left:-1.25em; clip-path: polygon(51.5% 0, 100% 0, 100% 100%, 51.5% 100%);"></i>
 					</template>
 				</button>
-				<button type="button" class="btn btn-secondary px-2" title="All White" @click="FEN.color(1)" :disabled="noEditing()">
+				<button type="button" class="btn btn-secondary px-2" title="All White" @click="FEN.color(1)"
+						:disabled="noEditing()">
 					<i class="fa-solid fa-chess-king fa-fw text-white shadow-black"></i>
 				</button>
 			</span>
@@ -68,14 +71,16 @@
 				<button type="button" class="btn btn-secondary" title="Switch side" @click="FEN.invert(false)"
 						:disabled="noEditing()">
 					<i class="fa-solid fa-chess-king text-black shadow-white"></i>&ensp;<i
-					   class="fa-solid fa-arrows-left-right"></i>&ensp;<i class="fa-solid fa-chess-king text-white shadow-black"></i>
+					   class="fa-solid fa-arrows-left-right"></i>&ensp;<i
+					   class="fa-solid fa-chess-king text-white shadow-black"></i>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Switch case (including text)" @click="FEN.invert(true)"
 						:disabled="noEditing()">
 					A&ensp;<i class="fa-solid fa-arrows-left-right"></i>&ensp;a
 				</button>
 				<button v-if="!store.board.SN" type="button" class="btn btn-secondary"
-						title="Change all S to N when 'Use S for knight' mode is off" @click="FEN.fixSN()" :disabled="noEditing()">
+						title="Change all S to N when 'Use S for knight' mode is off" @click="FEN.fixSN()"
+						:disabled="noEditing()">
 					S&ensp;<i class="fa-solid fa-arrow-right"></i>&ensp;N
 				</button>
 			</span>
@@ -84,13 +89,14 @@
 		<div class="text-end btn-gap">
 			<span class="d-inline-block">
 				<CopyButton v-if="store.feature.janko" :factory="API.copyJanko" class="btn-primary">Create Janko URL</CopyButton>
-				<CopyButton v-if="status.envReady && !env.isTouch" :factory="() => copyImage(getBlob)" class="btn-primary">Copy image
+				<CopyButton v-if="status.envReady && !env.isTouch" :factory="() => copyImage(getBlob)" class="btn-primary">Copy
+					image
 				</CopyButton>
 				<CopyButton :factory="API.copyUrl" class="btn-primary">Create image URL</CopyButton>
 			</span>
 			<span class="d-inline-block">
 				<ShareButton />
-				<a class="btn btn-primary" download="board.png" id="Save" onclick="gtag('event', 'img_save')">
+				<a class="btn btn-primary" download="board.png" id="Save" :click="onSave">
 					<i class="fa-solid fa-download"></i>&ensp;Save image
 				</a>
 			</span>
@@ -137,6 +143,10 @@
 		const { w, h } = store.board;
 		if(w !== h) setOption({ w: h, h: w });
 		replace(rotate(createSnapshot(), d, w, h));
+	}
+
+	function onSave(): void {
+		gtag("event", "img_save");
 	}
 
 </script>
