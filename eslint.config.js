@@ -1,17 +1,20 @@
 import { defineConfig } from "eslint/config";
 import pluginMocha from "eslint-plugin-mocha";
+import pluginPlaywright from "eslint-plugin-playwright";
 import { createConfig } from "@mutsuntsai/eslint";
 
 export default defineConfig([
 	...createConfig({
 		ignores: ["docs/**/*", "lib/**/*.js"],
-		import: ["src/**/*.vue", "src/app/**/*.js", "**/*.ts", "./*.js"],
-		project: [
-			"src/app",
-			"src/api",
-			"src/gen",
-			"src/vue",
-		],
+		import: {
+			files: ["src/**/*.vue", "src/app/**/*.js", "**/*.ts", "./*.js"],
+			project: [
+				"src/app",
+				"src/api",
+				"src/gen",
+				"src/vue",
+			],
+		},
 		globals: {
 			esm: ["./*.{js,ts}", "test/mocha.env.js", "scripts/*.js"],
 			browser: ["src/**"],
@@ -41,16 +44,26 @@ export default defineConfig([
 	{
 		files: ["{test,e2e}/**"],
 		rules: {
+			"max-classes-per-file": "off",
+			"max-lines-per-function": "off",
+			"prefer-arrow-callback": "off",
+		},
+	},
+	{
+		files: ["{test,e2e}/**/*.ts"],
+		rules: {
 			"@typescript-eslint/explicit-function-return-type": ["warn", {
 				allowFunctionsWithoutTypeParameters: true,
 			}],
 			"@typescript-eslint/no-invalid-this": "off",
 			"@typescript-eslint/no-magic-numbers": "off",
 			"@typescript-eslint/no-unused-expressions": "off",
-			"max-classes-per-file": "off",
-			"max-lines-per-function": "off",
-			"prefer-arrow-callback": "off",
 		},
+	},
+	{
+		...pluginPlaywright.configs["flat/recommended"],
+		name: "Playwright",
+		files: ["e2e/**"],
 	},
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
