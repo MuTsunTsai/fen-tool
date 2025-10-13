@@ -4,10 +4,10 @@
 		<div class="btn-gap">
 			<div class="btn-group">
 				<button type="button" class="btn btn-primary pe-2" @click="Project.add()">
-					<i class="fa-solid fa-plus"></i>&ensp;Add
+					<i class="fa-solid fa-plus"/>&ensp;Add
 				</button>
 				<button type="button" class="ps-2 btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-						aria-haspopup="true" aria-expanded="false">
+					aria-haspopup="true" aria-expanded="false">
 					<span class="visually-hidden">Toggle Dropdown</span>
 				</button>
 				<div class="dropdown-menu">
@@ -16,14 +16,14 @@
 			</div>
 
 			<label for="project_file" class="btn btn-secondary" title="Open a project file">
-				<i class="fa-regular fa-folder-open"></i>&ensp;Open
+				<i class="fa-regular fa-folder-open"/>&ensp;Open
 			</label>
 			<a :href="status.envReady ? Project.link.value : undefined" download="project.fentool" class="btn btn-secondary"
-			   title="Save project file">
-				<i class="fa-solid fa-download"></i>&ensp;Save
+				title="Save project file">
+				<i class="fa-solid fa-download"/>&ensp;Save
 			</a>
 			<button class="btn btn-secondary" @click="Project.reset()" title="Clear all positions in the project">
-				<i class="fa-regular fa-file"></i>&ensp;Clear
+				<i class="fa-regular fa-file"/>&ensp;Clear
 			</button>
 		</div>
 		<div @mousedown.stop v-if="status.envReady" class="mt-3">
@@ -38,12 +38,12 @@
 				</div>
 			</div>
 			<SlickList axis="xy" v-model:list="store.project" :distance="env.isTouch ? 0 : 10" class="thumbnail-container"
-					   :class="{ sorting: sorting }" @sort-start="sorting = true" @sort-end="sorting = false"
-					   :press-delay="env.isTouch ? 200 : 0" helper-class="thumbnail-ghost">
+				:class="{ sorting: sorting }" @sort-start="sorting = true" @sort-end="sorting = false"
+				:press-delay="env.isTouch ? 200 : 0" helper-class="thumbnail-ghost">
 				<SlickItem v-for="(item, i) of store.project" :index="i" :key="item.id">
 					<div class="thumbnail-wrapper" :class="{ touch: env.isTouch }" @dragstart.prevent>
 						<img :fen="getFen(item)" @click="set(item)" class="thumbnail" :class="{ disabled: noEditing() }">
-						<i class="fa-solid fa-circle-xmark text-danger" @click="Project.remove(i)"></i>
+						<i class="fa-solid fa-circle-xmark text-danger" @click="Project.remove(i)"/>
 					</div>
 				</SlickItem>
 			</SlickList>

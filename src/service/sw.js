@@ -74,12 +74,19 @@ routing.registerRoute(
 	}
 );
 
-const netOnly = new strategies.NetworkOnly({
-	fetchOptions: { cache: "reload" },
-});
-
 // Third-party requests
-routing.registerRoute(({ url }) => url.host != "mutsuntsai.github.io" && !url.host.startsWith("localhost"), netOnly);
+routing.registerRoute(
+	({ url }) => url.host == "img.buymeacoffee.com",
+	new strategies.NetworkFirst({ cacheName: "thirdParty" })
+);
+
+// API requests
+routing.registerRoute(
+	({ url }) => url.host != "mutsuntsai.github.io" && !url.host.startsWith("localhost"),
+	new strategies.NetworkOnly({
+		fetchOptions: { cache: "reload" },
+	})
+);
 
 self.addEventListener("install", event => {
 	self.skipWaiting();

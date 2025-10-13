@@ -1,0 +1,11 @@
+minimumReleaseAge: 600
+minimumReleaseAgeExclude:
+  - "@mutsuntsai/*"
+onlyBuiltDependencies:
+  - "@swc/core"
+  - core-js
+  - esbuild
+  - unrs-resolver
+updateConfig:
+  ignoreDependencies:
+  - chess.js

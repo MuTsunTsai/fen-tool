@@ -5,22 +5,22 @@
 			<div class="mb-3">
 				<span class="btn-gap">
 					<button type="button" class="py-0 btn btn-secondary" @click="PLAY.move(-1)" :disabled="isMin()">
-						<i class="fa-solid fa-angles-left fa-fw"></i>
+						<i class="fa-solid fa-angles-left fa-fw"/>
 					</button>
 					<button type="button" class="py-0 btn btn-secondary" @click="PLAY.moveBy(-1)" :disabled="isMin()">
-						<i class="fa-solid fa-angle-left fa-fw"></i>
+						<i class="fa-solid fa-angle-left fa-fw"/>
 					</button>
 					<button type="button" class="py-0 btn btn-secondary" @click="PLAY.moveBy(1)" :disabled="isMax()">
-						<i class="fa-solid fa-angle-right fa-fw"></i>
+						<i class="fa-solid fa-angle-right fa-fw"/>
 					</button>
 					<button type="button" class="py-0 btn btn-secondary" @click="PLAY.move(state.play.history.length - 1)"
-							:disabled="isMax()">
-						<i class="fa-solid fa-angles-right fa-fw"></i>
+						:disabled="isMax()">
+						<i class="fa-solid fa-angles-right fa-fw"/>
 					</button>
 				</span>
 				<span>
 					<span class="btn step px-1 py-0 ms-3" @click="PLAY.goto()"
-						  :class="{ active: -1 == state.play.moveNumber }">*</span>
+						:class="{ active: -1 == state.play.moveNumber }">*</span>
 				</span>
 				<span class="btn-gap" v-if="status.module.chess">
 					<span v-for="(h, i) in state.play.history" :key="i">
@@ -50,28 +50,28 @@
 					Copy PGN
 				</CopyButton>
 				<button v-if="env.canPaste" class="btn btn-secondary" @click="PLAY.pasteMoves">
-					<i class="fa-solid fa-paste"></i> Paste moves
+					<i class="fa-solid fa-paste"/> Paste moves
 				</button>
 			</div>
 			<div class="mt-2">
 				<span class="me-3">Symbol:</span>
 				<div class="form-check d-inline-block me-3">
 					<input class="form-check-input" type="radio" :checked="store.PLAY.symbol == null"
-						   @change="store.PLAY.symbol = null" name="SYM" id="sEng">
+						@change="store.PLAY.symbol = null" name="SYM" id="sEng">
 					<label class="form-check-label" for="sEng">
 						English
 					</label>
 				</div>
 				<div class="form-check d-inline-block me-3">
 					<input class="form-check-input" type="radio" :checked="store.PLAY.symbol == 'german'"
-						   @change="store.PLAY.symbol = 'german'" name="SYM" id="sGer">
+						@change="store.PLAY.symbol = 'german'" name="SYM" id="sGer">
 					<label class="form-check-label" for="sGer">
 						German
 					</label>
 				</div>
 				<div class="form-check d-inline-block">
 					<input class="form-check-input" type="radio" :checked="store.PLAY.symbol == 'unicode'"
-						   @change="store.PLAY.symbol = 'unicode'" name="SYM" id="sUni">
+						@change="store.PLAY.symbol = 'unicode'" name="SYM" id="sUni">
 					<label class="form-check-label" for="sUni">
 						Unicode
 					</label>
@@ -93,10 +93,10 @@
 				<button class="btn btn-primary" @click="PLAY.start" :disabled="state.popeye.playing">Start
 					playing</button>
 				<button type="button" class="btn btn-secondary" @click="FEN.reset(true)" :disabled="state.popeye.playing">
-					<i class="fa-solid fa-flag-checkered"></i> &ensp;Starting position
+					<i class="fa-solid fa-flag-checkered"/> &ensp;Starting position
 				</button>
 				<button class="btn btn-secondary" @click="PLAY.pasteGame" :disabled="state.popeye.playing">
-					<i class="fa-solid fa-paste"></i> Paste PGN
+					<i class="fa-solid fa-paste"/> Paste PGN
 				</button>
 			</div>
 			<div class="mt-2 gx-3 row">
@@ -104,7 +104,7 @@
 					<div class="d-flex align-items-center flex-wrap-reverse mb-2">
 						<div class="flex-grow-1 col-form-label" style="flex-basis: max-content;">
 							<Radio v-model="state.play.turn" label="Turn:" :text="['White', 'Black']" :value="['w', 'b']"
-								   :disabled="state.play.mode == PlayMode.pass" />
+								:disabled="state.play.mode == PlayMode.pass" />
 						</div>
 						<div class="flex-grow-1" style="flex-basis: max-content;">
 							<div class="row gx-3">
@@ -136,7 +136,7 @@
 						<label class="col-auto col-form-label">En passant square: </label>
 						<div class="col">
 							<input type="text" class="form-control" maxlength="2" v-model="state.play.enPassant"
-								   :disabled="isRetro()">
+								:disabled="isRetro()">
 						</div>
 					</div>
 					<div class="row gx-3">
@@ -145,7 +145,7 @@
 								<label class="col-auto col-form-label">Half moves: </label>
 								<div class="col">
 									<input type="number" class="form-control" min="0" v-model.number="state.play.halfMove"
-										   :disabled="isRetro()">
+										:disabled="isRetro()">
 								</div>
 							</div>
 						</div>
@@ -154,7 +154,7 @@
 								<label class="col-auto col-form-label">Full moves: </label>
 								<div class="col">
 									<input type="number" class="form-control" min="1" v-model.number="state.play.fullMove"
-										   :disabled="isRetro()">
+										:disabled="isRetro()">
 								</div>
 							</div>
 						</div>

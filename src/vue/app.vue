@@ -14,7 +14,7 @@
 		</main>
 		<Alert />
 		<Confirm />
-		<iframe v-if="state.split" src="."></iframe>
+		<iframe v-if="state.split" src="."/>
 	</div>
 </template>
 

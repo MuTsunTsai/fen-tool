@@ -1,9 +1,9 @@
 <template>
 	<li class="nav-item">
 		<div class="nav-link" :class="{ active: state.tab == index }" @click="state.tab = index" :title="title">
-			<span class="d-sm-none"><i :class="icon"></i></span>
+			<span class="d-sm-none"><i :class="icon"/></span>
 			<span class="d-none d-sm-inline">
-				<slot></slot>
+				<slot/>
 			</span>
 		</div>
 	</li>

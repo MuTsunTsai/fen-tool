@@ -5,13 +5,13 @@
 				<input type="text" class="form-control" placeholder="Enter FEN here" v-model="currentFEN" @change="FEN.update">
 			</div>
 			<div v-cloak class="col ps-0 mb-2 text-end" style="white-space:nowrap; flex-basis:max-content;">
-				<label class="col-form-label pe-2" v-text="status.pieceCount"></label>
+				<label class="col-form-label pe-2" v-text="status.pieceCount"/>
 				<div v-if="status.envReady && env.canCopy" class="btn-group">
 					<button class="btn btn-secondary" title="Copy" @click="copy">
-						<i class="fa-solid fa-clipboard"></i>
+						<i class="fa-solid fa-clipboard"/>
 					</button>
 					<button v-if="env.canPaste" class="btn btn-secondary" :disabled="noEditing()" title="Paste" @click="paste">
-						<i class="fa-solid fa-paste"></i>
+						<i class="fa-solid fa-paste"/>
 					</button>
 				</div>
 			</div>

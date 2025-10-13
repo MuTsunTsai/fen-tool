@@ -80,7 +80,7 @@
 							</div>
 							<div class="col mb-2 text-end">
 								<button type="button" class="btn btn-secondary"
-										@click="Layout.setDimension({ w: 8, h: 8 })">Reset</button>
+									@click="Layout.setDimension({ w: 8, h: 8 })">Reset</button>
 							</div>
 						</div>
 					</div>
@@ -89,8 +89,8 @@
 							<label class="col-auto col-form-label">Border pattern:</label>
 							<div class="col">
 								<input type="text" placeholder="Use comma-separated numbers" title="Use comma-separated numbers"
-									   class="form-control" :value="store.board.border"
-									   @change="Layout.setBorder($event.target as HTMLInputElement)">
+									class="form-control" :value="store.board.border"
+									@change="Layout.setBorder($event.target as HTMLInputElement)">
 							</div>
 						</div>
 					</div>
@@ -105,7 +105,7 @@
 							<label class="col-auto col-form-label">Knight offset:</label>
 							<div class="col">
 								<input type="range" class="form-range" min="0.25" max="0.75" step="0.025"
-									   v-model.number="store.board.knightOffset" @input="redraw">
+									v-model.number="store.board.knightOffset" @input="redraw">
 							</div>
 						</div>
 					</div>

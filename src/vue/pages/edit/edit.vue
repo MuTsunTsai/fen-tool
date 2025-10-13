@@ -3,85 +3,85 @@
 		<div class="mb-3 btn-gap">
 			<span class="d-inline-block">
 				<button type="button" class="btn btn-secondary" @click="FEN.empty" :disabled="noEditing()" title="Empty board">
-					<i class="fa-solid fa-trash-can"></i>
+					<i class="fa-solid fa-trash-can"/>
 					<span>&ensp;Empty board</span>
 				</button>
 				<button type="button" class="btn btn-secondary" @click="FEN.reset()" :disabled="noEditing()"
-						title="Starting position">
-					<i class="fa-solid fa-flag-checkered"></i>
+					title="Starting position">
+					<i class="fa-solid fa-flag-checkered"/>
 					<span>&ensp;Starting position</span>
 				</button>
 			</span>
 			<span class="btn-group">
 				<button type="button" class="btn btn-secondary" title="Shift leftwards" @click="shiftBy(-1, 0)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-arrow-left"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-left"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Shift rightwards" @click="shiftBy(1, 0)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-arrow-right"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-right"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Shift upwards" @click="shiftBy(0, -1)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-arrow-up"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-up"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Shift downwards" @click="shiftBy(0, 1)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-arrow-down"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-arrow-down"/>
 				</button>
 			</span>
 			<span class="btn-group">
 				<button type="button" class="btn btn-secondary" title="Rotate counterclockwise" @click="rotateBy(-1)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-rotate-left"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-rotate-left"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Rotate clockwise" @click="rotateBy(1)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-rotate-right"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-rotate-right"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Mirror horizontally" @click="mirrorBy('-')"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-arrows-left-right"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-arrows-left-right"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Mirror vertically" @click="mirrorBy('|')"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-arrows-up-down"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-arrows-up-down"/>
 				</button>
 			</span>
 			<span class="btn-group">
 				<button type="button" class="btn btn-secondary px-2" title="All Black" @click="FEN.color(-1)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-chess-king fa-fw text-black shadow-white"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-chess-king fa-fw text-black shadow-white"/>
 				</button>
 				<button type="button" class="btn btn-secondary px-2" title="All Neutral" @click="FEN.color(0)"
-						:disabled="noEditing()">
-					<i v-if="!store.board.blackWhite" class="fa-solid fa-chess-king fa-fw shadow-neutral" style="color:gray;"></i>
+					:disabled="noEditing()">
+					<i v-if="!store.board.blackWhite" class="fa-solid fa-chess-king fa-fw shadow-neutral" style="color:gray;"/>
 					<template v-else>
-						<i class="fa-solid fa-chess-king fa-fw text-black shadow-white"></i><i
-						   class="fa-solid fa-chess-king fa-fw text-white shadow-black"
-						   style="margin-left:-1.25em; clip-path: polygon(51.5% 0, 100% 0, 100% 100%, 51.5% 100%);"></i>
+						<i class="fa-solid fa-chess-king fa-fw text-black shadow-white"/><i
+							class="fa-solid fa-chess-king fa-fw text-white shadow-black"
+							style="margin-left:-1.25em; clip-path: polygon(51.5% 0, 100% 0, 100% 100%, 51.5% 100%);"/>
 					</template>
 				</button>
 				<button type="button" class="btn btn-secondary px-2" title="All White" @click="FEN.color(1)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-chess-king fa-fw text-white shadow-black"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-chess-king fa-fw text-white shadow-black"/>
 				</button>
 			</span>
 			<span class="btn-group">
 				<button type="button" class="btn btn-secondary" title="Switch side" @click="FEN.invert(false)"
-						:disabled="noEditing()">
-					<i class="fa-solid fa-chess-king text-black shadow-white"></i>&ensp;<i
-					   class="fa-solid fa-arrows-left-right"></i>&ensp;<i
-					   class="fa-solid fa-chess-king text-white shadow-black"></i>
+					:disabled="noEditing()">
+					<i class="fa-solid fa-chess-king text-black shadow-white"/>&ensp;<i
+						class="fa-solid fa-arrows-left-right"/>&ensp;<i
+						class="fa-solid fa-chess-king text-white shadow-black"/>
 				</button>
 				<button type="button" class="btn btn-secondary" title="Switch case (including text)" @click="FEN.invert(true)"
-						:disabled="noEditing()">
-					A&ensp;<i class="fa-solid fa-arrows-left-right"></i>&ensp;a
+					:disabled="noEditing()">
+					A&ensp;<i class="fa-solid fa-arrows-left-right"/>&ensp;a
 				</button>
 				<button v-if="!store.board.SN" type="button" class="btn btn-secondary"
-						title="Change all S to N when 'Use S for knight' mode is off" @click="FEN.fixSN()"
-						:disabled="noEditing()">
-					S&ensp;<i class="fa-solid fa-arrow-right"></i>&ensp;N
+					title="Change all S to N when 'Use S for knight' mode is off" @click="FEN.fixSN()"
+					:disabled="noEditing()">
+					S&ensp;<i class="fa-solid fa-arrow-right"/>&ensp;N
 				</button>
 			</span>
 		</div>
@@ -97,7 +97,7 @@
 			<span class="d-inline-block">
 				<ShareButton />
 				<a class="btn btn-primary" download="board.png" id="Save" :click="onSave">
-					<i class="fa-solid fa-download"></i>&ensp;Save image
+					<i class="fa-solid fa-download"/>&ensp;Save image
 				</a>
 			</span>
 		</div>

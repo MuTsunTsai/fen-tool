@@ -1,6 +1,6 @@
 <template>
 	<button v-if="status.envReady && env.canShare" class="btn btn-primary" :disabled="sharing" @click="share">
-		<i  :class="sharing ? 'fa-spin fa-solid fa-spinner' : 'fa-solid fa-share-nodes'"></i>&ensp;Share image
+		<i  :class="sharing ? 'fa-spin fa-solid fa-spinner' : 'fa-solid fa-share-nodes'"/>&ensp;Share image
 	</button>
 </template>
 

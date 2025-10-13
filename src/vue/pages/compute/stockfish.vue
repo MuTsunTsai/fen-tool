@@ -3,17 +3,17 @@
 		<div v-if="status.stockfish.status < StockfishStatus.needReload">
 			<div class="mb-3">To use this feature, we need to download Stockfish modules first.</div>
 			<button v-if="status.stockfish.status == StockfishStatus.notDownloaded" type="button" class="btn btn-primary"
-					@click="Stockfish.download">
-				<i class="fa-solid fa-download"></i>&ensp;Download now! (39.5MB)
+				@click="Stockfish.download">
+				<i class="fa-solid fa-download"/>&ensp;Download now! (39.5MB)
 			</button>
 			<button v-else type="button" class="btn btn-primary" disabled>
-				<i class="fa-solid fa-download"></i>&ensp;Downloading...&ensp;<i class="fa-solid fa-spinner fa-spin"></i>
+				<i class="fa-solid fa-download"/>&ensp;Downloading...&ensp;<i class="fa-solid fa-spinner fa-spin"/>
 			</button>
 		</div>
 		<div v-else-if="status.stockfish.status == StockfishStatus.needReload">
 			<div class="mb-3">Download complete. Please restart FEN Tool.</div>
 			<button type="button" class="btn btn-primary" onclick="location.reload()">
-				<i class="fa-solid fa-rotate-right"></i>&ensp;Restart FEN Tool now
+				<i class="fa-solid fa-rotate-right"/>&ensp;Restart FEN Tool now
 			</button>
 		</div>
 		<div v-else>
@@ -41,13 +41,13 @@
 
 			<div class="btn-gap">
 				<button v-if="!status.stockfish.running" type="button" class="btn btn-primary" @click="Stockfish.analyze">
-					<i class="fa-solid fa-play"></i>&ensp;Analyze with Stockfish 16
+					<i class="fa-solid fa-play"/>&ensp;Analyze with Stockfish 16
 				</button>
 				<button v-else-if="status.stockfish.running == StockfishRunning.starting" disabled class="btn btn-primary">
-					<i class="fa-solid fa-play"></i>&ensp;Initializing...
+					<i class="fa-solid fa-play"/>&ensp;Initializing...
 				</button>
 				<button v-else type="button" class="btn btn-secondary" @click="Stockfish.stop">
-					<i class="fa-solid fa-stop"></i>&ensp;Stop
+					<i class="fa-solid fa-stop"/>&ensp;Stop
 				</button>
 			</div>
 
@@ -55,7 +55,7 @@
 				<div v-if="state.stockfish.depth">
 					<span>Depth: {{ state.stockfish.depth }}</span>
 					<span v-if="status.stockfish.running == StockfishRunning.running">
-						/{{ store.Stockfish.depth }} <i class="fa-solid fa-spinner fa-spin ms-2"></i>
+						/{{ store.Stockfish.depth }} <i class="fa-solid fa-spinner fa-spin ms-2"/>
 					</span>
 				</div>
 				<div v-if="state.stockfish.mate">
@@ -76,12 +76,12 @@
 								<div class="nowrap">{{ line.score }}</div>
 								<div class="mt-2">
 									<button type="button" class="btn btn-primary px-2 py-0 m-0" title="Play this line"
-											@click="Stockfish.play(line)">
-										<i class="fa-solid fa-play"></i>
+										@click="Stockfish.play(line)">
+										<i class="fa-solid fa-play"/>
 									</button>
 								</div>
 							</td>
-							<td class="align-top w-100" v-text="Stockfish.format(line.moves)"></td>
+							<td class="align-top w-100" v-text="Stockfish.format(line.moves)"/>
 						</tr>
 					</tbody>
 				</table>

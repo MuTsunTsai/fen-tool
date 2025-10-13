@@ -35,7 +35,7 @@
 		".eslintrc.json": "eslint-local-rules.js",
 		".gitignore": ".gitattributes",
 		"README.md": "LICENSE.md",
-		"package.json": "pnpm-lock.yaml, .npmrc"
+		"package.json": "pnpm-*.yaml, .npmrc"
 	},
 	"files.exclude": {
 		"**/.rsdoctor": true,

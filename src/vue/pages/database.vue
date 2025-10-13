@@ -5,14 +5,14 @@
 			<div class="col">
 				<div class="form-check d-inline-block me-3">
 					<input class="form-check-input" type="radio" :checked="store.DB.use == 'PDB'" @change="store.DB.use = 'PDB'"
-						   name="DB" id="rPDB">
+						name="DB" id="rPDB">
 					<label class="form-check-label" for="rPDB">
 						PDB
 					</label>
 				</div>
 				<div class="form-check d-inline-block">
 					<input class="form-check-input" type="radio" :checked="store.DB.use == 'YACPDB'" @change="store.DB.use = 'YACPDB'"
-						   name="DB" id="rYACPDB">
+						name="DB" id="rYACPDB">
 					<label class="form-check-label" for="rYACPDB">
 						YACPDB
 					</label>
@@ -45,7 +45,7 @@
 					Copy search query
 				</CopyButton>
 				<button class="btn btn-primary nowrap" @click="DB.search">
-					<i class="fa-solid fa-magnifying-glass"></i>&ensp;Search position
+					<i class="fa-solid fa-magnifying-glass"/>&ensp;Search position
 				</button>
 			</div>
 		</div>

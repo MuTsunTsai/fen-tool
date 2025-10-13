@@ -1,6 +1,6 @@
 <template>
 	<button type="button" class="btn nowrap" :class="props.class" @click="copy" :disabled="disabled || state == 1">
-		<i :class="['fa-solid fa-clipboard', 'fa-spin fa-solid fa-spinner', 'fa-solid fa-check'][state]"></i>&ensp;<slot></slot>
+		<i :class="['fa-solid fa-clipboard', 'fa-spin fa-solid fa-spinner', 'fa-solid fa-check'][state]"/>&ensp;<slot/>
 	</button>
 </template>
 
