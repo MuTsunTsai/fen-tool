@@ -9,10 +9,20 @@ const assets = document.createElement("canvas");
 const ctx = assets.getContext("2d")!;
 const imgs = new Map<string, CanvasImageSource>();
 
-/** One must call this function after {@link loadAsset}. */
+/** One must call this function after {@link loadAsset} or {@link setAsset}. */
 export function getAsset(options: BoardOptions, dpr: number): CanvasImageSource {
 	const key = options.set + options.size * dpr;
 	return imgs.get(key)!;
+}
+
+export function hasAsset(set: string, size: number, dpr: number): boolean {
+	const key = set + size * dpr;
+	return imgs.has(key);
+}
+
+export function setAsset(set: string, size: number, dpr: number, asset: CanvasImageSource): void {
+	const key = set + size * dpr;
+	imgs.set(key, asset);
 }
 
 export async function loadAsset(path: string, options: BoardOptions, dpr: number): Promise<CanvasImageSource> {

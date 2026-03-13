@@ -1,0 +1,60 @@
+:host {
+	display: block;
+	font-family: monospace;
+	white-space: pre-wrap;
+	line-height: 1.4;
+	outline: none;
+	color-scheme: dark;
+	border: 1px solid #6c757d;
+	border-radius: 5px;
+	overflow: hidden;
+}
+
+.content {
+	background-color: #343a40;
+	color: #fff;
+	padding: 0.5rem;
+	box-sizing: border-box;
+	height: 100%;
+	overflow: auto;
+	scroll-padding: 0.5rem;
+}
+
+.step {
+	cursor: pointer;
+	padding: 1px 4px;
+	border-radius: 3px;
+	background: #e0e0e0;
+	color: #000;
+}
+
+.step:hover {
+	background: #c0c0c0;
+}
+
+.step.active {
+	background: #0d6efd;
+	color: #fff;
+}
+
+.error {
+	color: red;
+	font-size: 14px;
+	padding: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+	.step {
+		background: #555;
+		color: #eee;
+	}
+
+	.step:hover {
+		background: #666;
+	}
+
+	.step.active {
+		background: #0d6efd;
+		color: #fff;
+	}
+}

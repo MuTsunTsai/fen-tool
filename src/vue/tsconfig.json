@@ -7,6 +7,7 @@
 		"noEmit": true,
 		"strict": true,
 		"target": "ESNext",
+		"skipLibCheck": true,
 		"types": [
 			"gtag.js"
 		],

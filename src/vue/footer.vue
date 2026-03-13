@@ -6,7 +6,7 @@
 				For more information and API, see
 				<a href="https://github.com/MuTsunTsai/fen-tool" target="_blank">README</a>.
 			</div>
-			<div class="col-auto text-end">Copyright © 2023-2025 Mu-Tsun Tsai</div>
+			<div class="col-auto text-end">Copyright © 2023-2026 Mu-Tsun Tsai</div>
 		</div>
 		<div class="text-center mt-3">
 			<a href="https://www.buymeacoffee.com/mutsuntsai" target="_blank">

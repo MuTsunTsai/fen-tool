@@ -1,0 +1,29 @@
+:host {
+	display: inline-block;
+}
+
+.nav {
+	display: flex;
+	gap: 2px;
+	padding: 4px 0;
+	justify-content: center;
+}
+
+.nav button {
+	border: none;
+	background: #555;
+	color: #fff;
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 3px;
+	display: flex;
+	align-items: center;
+}
+
+.nav button:hover {
+	background: #777;
+}
+
+.nav button:active {
+	background: #999;
+}

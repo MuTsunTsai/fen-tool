@@ -79,7 +79,7 @@ export class Chess extends ChessBase {
 		} catch(e) {
 			if(e instanceof Error) {
 				const msg = e.message.replace(/^.+:/, "").trim().replace(/[^.]$/, "$&.");
-				throw new Error("The position is not playable: " + msg);
+				throw new Error("The position is not playable: " + msg, { cause: e });
 			}
 		}
 	}

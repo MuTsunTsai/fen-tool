@@ -6,7 +6,8 @@ import { getRenderSize, search, state, status, store } from "app/store";
 import { draw, drawEmpty, drawTemplate, load } from "app/view/render";
 import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, createSnapshot, toFEN } from "./squares";
 import { getDimensions, sanitizeBorder } from "app/meta/option";
-import { dpr, env } from "app/meta/env";
+import { env } from "app/meta/env";
+import { dpr } from "app/meta/dpr";
 import { redrawSDK } from "app/api/sdk-base";
 import { BOARD_SIZE, ONE_SECOND, TEMPLATE_SIZE } from "app/meta/constants";
 

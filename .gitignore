@@ -1,4 +1,10 @@
 node_modules/
 **/*.js.map
 build/
-docs/.rsdoctor/
+
+# We use GitHub deploy
+docs/
+
+# AI
+CLAUDE.md
+.claude/

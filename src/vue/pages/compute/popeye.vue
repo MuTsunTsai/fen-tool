@@ -2,13 +2,13 @@
 	<div v-show="state.compute == 'py'">
 		<div v-show="!state.popeye.playing && !state.popeye.editMap">
 			<textarea class="form-control mb-2" rows="5" v-model="state.popeye.input" :disabled="state.popeye.running"
-				:placeholder="placeholder"/>
+				:placeholder="placeholder" />
 			<div class="mb-3 row gx-2">
 				<div class="col">
 					<div class="w-passive-100">
 						<button type="button" class="btn btn-secondary" @click="Popeye.editMap" :disabled="state.popeye.running"
 							style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%;">
-							<i class="fa-solid fa-pen-to-square"/>&ensp;Fairy piece mapping
+							<i class="fa-solid fa-pen-to-square" />&ensp;Fairy piece mapping
 						</button>
 					</div>
 				</div>
@@ -22,15 +22,15 @@
 							<button type="button" class="btn btn-primary disabled"
 								v-if="state.play.playing || !state.popeye.input.trim()"
 								:title="state.play.playing ? 'Need to exit play mode first' : 'Input instructions first'">
-								<i class="fa-solid fa-play"/>&ensp;Run
+								<i class="fa-solid fa-play" />&ensp;Run
 							</button>
 							<button type="button" class="btn btn-primary" @click="Popeye.run" v-else
 								title="Run Popeye on your device!">
-								<i class="fa-solid fa-play"/>&ensp;Run
+								<i class="fa-solid fa-play" />&ensp;Run
 							</button>
 						</span>
 						<button v-else type="button" class="btn btn-secondary" @click="Popeye.cancel">
-							<i class="fa-solid fa-stop"/>&ensp;Cancel
+							<i class="fa-solid fa-stop" />&ensp;Cancel
 						</button>
 					</div>
 				</div>
@@ -38,7 +38,7 @@
 		</div>
 		<div v-if="!state.popeye.playing && state.popeye.editMap">
 			<textarea class="form-control mb-2" rows="5" v-model="state.popeye.mapping"
-				placeholder="Use the format like *2Q=G for each line."/>
+				placeholder="Use the format like *2Q=G for each line." />
 			<div class="mb-3 row">
 				<div class="col">
 					<div class="btn-gap">
@@ -61,18 +61,19 @@
 			<div class="col">
 				<div class="btn-gap">
 					<button type="button" class="btn btn-secondary" @click="Popeye.move(0)" :disabled="state.popeye.index <= 0">
-						<i class="fa-solid fa-angles-left fa-fw"/>
+						<i class="fa-solid fa-angles-left fa-fw" />
 					</button>
-					<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(-1)" :disabled="state.popeye.index <= 0">
-						<i class="fa-solid fa-angle-left fa-fw"/>
+					<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(-1)"
+						:disabled="state.popeye.index <= 0">
+						<i class="fa-solid fa-angle-left fa-fw" />
 					</button>
 					<button type="button" class="btn btn-secondary" @click="Popeye.moveBy(1)"
 						:disabled="state.popeye.index >= state.popeye.steps.length - 1">
-						<i class="fa-solid fa-angle-right fa-fw"/>
+						<i class="fa-solid fa-angle-right fa-fw" />
 					</button>
 					<button type="button" class="btn btn-secondary" @click="Popeye.move(state.popeye.steps.length - 1)"
 						:disabled="state.popeye.index >= state.popeye.steps.length - 1">
-						<i class="fa-solid fa-angles-right fa-fw"/>
+						<i class="fa-solid fa-angles-right fa-fw" />
 					</button>
 				</div>
 			</div>
@@ -83,11 +84,18 @@
 			</div>
 		</div>
 		<div id="Output" v-show="state.popeye.output && state.tab == 7" class="form-control" v-html="state.popeye.output"
-			@click="Popeye.step($event)"/>
-		<div class="mt-2">
-			<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
-				Popeye documentation
-			</a>
+			@click="Popeye.step($event)" />
+		<div class="mt-2 row">
+			<div class="col">
+				<a href="https://github.com/thomas-maeder/popeye/blob/master/py-engl.txt" target="_blank">
+					Popeye documentation
+				</a>
+			</div>
+			<div class="col text-end">
+				<CopyButton v-if="state.popeye.intOutput" :factory="Popeye.copyAPI" class="btn-secondary">
+					Copy API tags
+				</CopyButton>
+			</div>
 		</div>
 	</div>
 </template>
@@ -95,6 +103,7 @@
 <script setup lang="ts">
 	import { state } from "app/store";
 	import { Popeye } from "app/tools/popeye/popeye";
+	import CopyButton from "@/components/copyButton.vue";
 
 	const placeholder = "For example:\n=============\nStipulation #2\nOption Variation";
 </script>

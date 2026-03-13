@@ -200,7 +200,9 @@ async function tryInitMemory(ready, memory) {
 		// Reduce memory and try again
 		Stockfish.stop();
 		memory /= 2;
-		if(memory < MIN_MEMORY) throw new Error("Not enough memory.");
+		if(memory < MIN_MEMORY) {
+			throw new Error("Not enough memory.", { cause: e });
+		}
 		await tryInitMemory(init(memory), memory);
 	}
 }

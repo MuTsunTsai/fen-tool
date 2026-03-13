@@ -34,6 +34,10 @@ export default defineConfig({
 				import: "./src/app/api/sdk.ts",
 				html: false,
 			},
+			"popeye": {
+				import: "./src/app/api/popeye.ts",
+				html: false,
+			},
 		},
 		define: {
 			// __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
@@ -64,6 +68,7 @@ export default defineConfig({
 		chunkSplit: {
 			strategy: "custom",
 			splitChunks: {
+				chunks: chunk => !chunk.runtime?.has("popeye"),
 				cacheGroups: {
 					vue: {
 						test: createDescendantRegExp("vue"),
@@ -93,6 +98,7 @@ export default defineConfig({
 		filename: {
 			js(pathData) {
 				if(pathData.runtime == "sdk") return "../../sdk.js";
+				if(pathData.runtime == "popeye") return "../../popeye.js";
 				return isProduction ? "[name].[contenthash:8].js" : "[name].js";
 			},
 		},

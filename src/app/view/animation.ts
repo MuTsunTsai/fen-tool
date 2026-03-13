@@ -1,8 +1,8 @@
-import { getAsset } from "./asset";
 import { drawBoard } from "./draw";
-import { dpr } from "app/meta/env";
+import { dpr } from "app/meta/dpr";
 import { parseFEN, parseSquare, parseXY } from "app/meta/fen";
 import { getDimensions } from "app/meta/option";
+import { getAsset } from "./asset";
 import { drawPiece } from "./piece";
 
 import type { BoardOptions } from "app/meta/option";

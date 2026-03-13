@@ -1,6 +1,7 @@
 import { makeOption } from "app/meta/option";
 import { inferDimension, parseFEN } from "app/meta/fen";
-import { dpr, draw } from "app/api/draw";
+import { draw } from "app/api/draw";
+import { dpr } from "app/meta/dpr";
 import { loadAsset } from "app/view/asset";
 
 import type { Background } from "app/meta/enum";

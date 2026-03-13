@@ -4,7 +4,7 @@ import { pushState, createSnapshot } from "app/interface/squares";
 import { drawBoard } from "./draw";
 import { loadAsset } from "./asset";
 import { getDimensions } from "app/meta/option";
-import { dpr } from "app/meta/env";
+import { dpr } from "app/meta/dpr";
 import { animeSettings } from "./animation";
 import { emptyBoard } from "app/meta/fen";
 import { redrawSDK } from "app/api/sdk-base";

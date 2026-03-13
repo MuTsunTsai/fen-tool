@@ -169,6 +169,19 @@ You don't need to worry about the details,
 as our `Copy SDK script tag` button will help you generate it based on your settings
 (except for board pattern and custom dimensions, which are not included for practical reasons).
 
+#### Board options
+
+| Attribute | Description |
+|---|---|
+| `data-size` | Square size in pixels (default: 26) |
+| `data-set` | Piece set name (e.g. `alpha`, `merida`) |
+| `data-bg` | Background color (e.g. `gray`, `brown`) |
+| `data-pattern` | Board pattern |
+| `data-border` | Border style |
+| `data-black-white` | Black and white mode (presence enables it) |
+| `data-coordinates` | Show coordinates (presence enables it) |
+| `data-sn` | Use S for knight (presence enables it) |
+
 Then all you have to do is something like this:
 
 ```html
@@ -197,6 +210,90 @@ The internal mechanism used in our SDK is compatible with most front-end framewo
 ```html
 <img v-if="shouldShowBoard" :fen="myFEN" :data-size="mySize">
 ```
+
+<br>
+
+## 🖥️ Popeye Playback API (Experimental)
+
+If you want to embed interactive Popeye solution playback on your webpage,
+you can use our Popeye Playback API. It provides two Web Components:
+`<popeye-board>` for the chess board, and `<popeye-solution>` for the interactive solution panel.
+
+### Quick start
+
+First, add the script to your page:
+
+```html
+<!-- data- attributes are global settings -->
+<script src="https://mutsuntsai.github.io/fen-tool/popeye.js"
+    data-size="26" data-set="alpha"></script>
+```
+
+Then use the two components together:
+
+```html
+<!-- data- attributes are local settings -->
+<popeye-board id="demo" data-bg="gray"></popeye-board>
+<popeye-solution for="demo">
+    <script type="text/plain" data-input>
+        pieces white kf5 qd1
+        pieces black ke8
+        stipulation #2
+        opti vari
+    </script>
+    <script type="text/plain" data-output>
+        1.Kf5-f6 ! zugzwang.
+            1...Ke8-f8
+                2.Qd1-d8 #
+    </script>
+</popeye-solution>
+```
+
+### Copy API tags
+
+In the main app's Popeye tool panel, after running a solution, you can use the `Copy API tags` button
+to copy ready-to-use HTML code for `<popeye-board>` and `<popeye-solution>` to your clipboard.
+The generated code includes your current board settings and piece mappings,
+so you can paste it directly into your webpage.
+
+### `<popeye-board>`
+
+This component renders the chess board canvas.
+It supports the same `data-` board options as the SDK mode (see [Board options](#board-options) above).
+These can be set globally on the `<script>` tag or locally on each `<popeye-board>` element.
+
+### `<popeye-solution>`
+
+This component parses and renders the Popeye output as interactive, clickable steps.
+Use the `for` attribute to link it to a `<popeye-board>` by its `id`.
+
+It expects two `<script type="text/plain">` children:
+
+- `<script type="text/plain" data-input>`: the Popeye input (problem description).
+- `<script type="text/plain" data-output>`: the raw Popeye output (solution text).
+
+Using `<script type="text/plain">` instead of `<template>` ensures that whitespace indentation
+(which is significant for Popeye output) is preserved by HTML formatters.
+
+#### Attributes
+
+| Attribute | Description |
+|---|---|
+| `for` | **Required.** The `id` of the linked `<popeye-board>`. |
+| `data-piece-map` | Custom fairy piece mapping, as comma-separated `KEY=VALUE` pairs (e.g. `*2Q=G,C=I`). |
+
+#### Navigation
+
+The `<popeye-board>` component includes navigation buttons (first, previous, next, last) below the board.
+When the solution panel is focused, you can also use keyboard shortcuts:
+
+| Key | Action |
+|---|---|
+| Left / Up | Previous step |
+| Right / Down | Next step |
+| Home | First step |
+| End | Last step |
+
 
 <br>
 
