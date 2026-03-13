@@ -218,6 +218,8 @@ The internal mechanism used in our SDK is compatible with most front-end framewo
 If you want to embed interactive Popeye solution playback on your webpage,
 you can use our Popeye Playback API. It provides two Web Components:
 `<popeye-board>` for the chess board, and `<popeye-solution>` for the interactive solution panel.
+They are designed as two separate elements so that you have full control over their layout and positioning,
+and you can use CSS to customize the size and appearance of each component independently.
 
 ### Quick start
 
