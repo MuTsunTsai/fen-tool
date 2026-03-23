@@ -1,6 +1,6 @@
 <template>
 	<section :class="{ show: state.tab == 8 }">
-		<input type="file" class="d-none" id="project_file" @change="open($event.target)" accept=".fentool,.olv">
+		<input type="file" class="d-none" id="project_file" @change="open($event.target)" accept=".fentool,.olv,.yml,.yaml">
 		<div class="btn-gap">
 			<div class="btn-group">
 				<button type="button" class="btn btn-primary pe-2" @click="Project.add()">
@@ -60,6 +60,7 @@
 	import { Project } from "app/tools/project/project";
 	import { setFEN } from "app/interface/squares";
 	import { toNormalFEN } from "app/meta/popeye/popeye";
+	import { getPopeyeFEN } from "app/tools/popeye/popeye";
 
 	import type { ProjectEntry } from "app/tools/project/entry";
 
@@ -72,6 +73,13 @@
 			state.tab = 7;
 			state.compute = "py";
 			state.popeye.input = item.popeye;
+			if(item.solution) {
+				const info = getPopeyeFEN(item.popeye);
+				state.popeye.initFEN = info.fen;
+				state.popeye.intInput = info.fromInput ? item.popeye : `fors ${info.fen}\n${item.popeye}`;
+				state.popeye.intOutput = item.solution.replace(/\n/g, "<br>");
+				state.popeye.output = state.popeye.intOutput;
+			}
 		}
 		if(env.isTouch) {
 			document.body.scrollTo({ behavior: "smooth", top: 0 });

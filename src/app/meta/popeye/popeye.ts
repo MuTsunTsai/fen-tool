@@ -39,7 +39,11 @@ export function parseSolution(input: string, initFEN: string, output: string, fa
 			return text;
 		}
 	});
-	return output.replace(/ {2} ?<span init/g, "<span").replace(/\n/g, "<br>");
+	return output
+		.replace(/ {2} ?<span init/g, "<span")
+		.replace(/\{display-departure-(?:file|rank|square)\}/g, "")
+		.replace(/\{([^}]*)\}/g, '<span class="solution-comment">$1</span>')
+		.replace(/\n/g, "<br>");
 }
 
 function createParseContext(input: string, initFEN: string, output: string): ParseContext {

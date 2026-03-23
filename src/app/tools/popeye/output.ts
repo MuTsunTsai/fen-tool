@@ -39,5 +39,5 @@ export function resetScroll(): void {
 }
 
 export function getSteps(): HTMLSpanElement[] {
-	return [...el.querySelectorAll("span")];
+	return [...el.querySelectorAll("span.step")] as HTMLSpanElement[];
 }

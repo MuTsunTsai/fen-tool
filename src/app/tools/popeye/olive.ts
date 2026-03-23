@@ -21,6 +21,7 @@ interface OliveFormat {
 	algebraic: Algebraic;
 	options?: string[];
 	stipulation?: string;
+	solution?: string;
 }
 
 export function parseOliveFormat(content: string): ProjectEntry[] | null {
@@ -37,10 +38,17 @@ export function parseOliveFormat(content: string): ProjectEntry[] | null {
 			const { options, conditions } = parseOptionCondition(json.options);
 			popeye.push("Option " + options.join(" "));
 			if(conditions.length) popeye.push("Condition " + conditions.join(" "));
-			entries.push(makeEntry({
+			const entry: Omit<ProjectEntry, "id"> = {
 				fen,
 				popeye: popeye.join("\n"),
-			}, i));
+			};
+			if(json.solution) {
+				let sol = json.solution.trim();
+				// Some samples have the solution wrapped in quotes for unknown reasons
+				if(sol.startsWith("\"") && sol.endsWith("\"")) sol = sol.slice(1, -1);
+				entry.solution = sol;
+			}
+			entries.push(makeEntry(entry, i));
 		}
 		return entries;
 	} catch(e) {

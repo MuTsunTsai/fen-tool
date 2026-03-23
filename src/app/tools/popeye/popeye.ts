@@ -93,7 +93,10 @@ export function getPopeyeFEN(input: string): PopeyeBoardInfo {
 async function setupStepElements(restore?: boolean): Promise<void> {
 	const p = state.popeye;
 	p.steps = getSteps();
-	if(p.steps.length == 0) return;
+	if(p.steps.length == 0) {
+		alert("Unable to parse the solution for playback.");
+		return;
+	}
 	goTo(0, true);
 	p.playing = true;
 	if(restore) await load();

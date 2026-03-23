@@ -262,6 +262,10 @@ label[for] {
 	overflow: auto;
 	font-family: monospace;
 	white-space: pre;
+
+	.solution-comment {
+		color: darkgreen;
+	}
 }
 
 @media (min-width: 400px) {
@@ -431,6 +435,10 @@ label[for] {
 		&.active {
 			color: yellow;
 		}
+	}
+
+	#Output .solution-comment {
+		color: #6fbf6f;
 	}
 
 	a.btn {
