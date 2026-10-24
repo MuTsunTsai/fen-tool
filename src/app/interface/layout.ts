@@ -2,7 +2,7 @@ import { nextTick } from "vue";
 
 import { deepAssign } from "app/meta/clone";
 import { cnvGhost, cnvMain, cnvSquares, cnvTemplate, cnvTempGhost } from "app/meta/el";
-import { getRenderSize, search, state, status, store } from "app/store";
+import { SETTINGS_KEY, getRenderSize, search, state, status, store } from "app/store";
 import { draw, drawEmpty, drawTemplate, load } from "app/view/render";
 import { callback, container, createSquares, paste, pushState, setFEN, setSquareSize, createSnapshot, toFEN } from "./squares";
 import { getDimensions, sanitizeBorder } from "app/meta/option";
@@ -225,8 +225,8 @@ export const Layout = {
 };
 
 addEventListener("storage", e => {
-	if(e.storageArea == localStorage && e.key == "settings") {
-		const settingsString = localStorage.getItem("settings");
+	if(e.storageArea == localStorage && e.key == SETTINGS_KEY) {
+		const settingsString = localStorage.getItem(SETTINGS_KEY);
 		const settings = settingsString ? JSON.parse(settingsString) : null;
 		deepAssign(store, settings, true);
 		setOption({}, true);

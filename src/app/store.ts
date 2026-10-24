@@ -132,8 +132,42 @@ export function onSession(callback: Action): void {
 	onSessionLoad.push(callback);
 }
 
+// localStorage and sessionStorage are shared by all apps on mutsuntsai.github.io,
+// so the keys must be prefixed.
+export const SETTINGS_KEY = "fen-tool:settings";
+const STATE_KEY = "fen-tool:state";
+
+/**
+ * Moves the data from the old unprefixed keys, which collide with other apps on the same origin
+ * (in particular, ReferenceFinder also used "settings").
+ *
+ * TODO: Migration code; can be removed after 2027-10.
+ */
+function migrateStorage(): void {
+	try {
+		const oldSettings = localStorage.getItem("settings");
+		if(oldSettings !== null && localStorage.getItem(SETTINGS_KEY) === null) {
+			const data = JSON.parse(oldSettings);
+			// Settings persisted by ReferenceFinder (zustand) have the shape { state, version }; leave those alone.
+			const isReferenceFinder = data && typeof data == "object" && "state" in data && "version" in data;
+			if(!isReferenceFinder) {
+				localStorage.setItem(SETTINGS_KEY, oldSettings);
+				localStorage.removeItem("settings");
+			}
+		}
+		const oldState = sessionStorage.getItem("state");
+		if(oldState !== null && sessionStorage.getItem(STATE_KEY) === null) {
+			sessionStorage.setItem(STATE_KEY, oldState);
+			sessionStorage.removeItem("state");
+		}
+	} catch {
+		// Ignore broken data or unavailable storage
+	}
+}
+
 export function initSession(): void {
-	const savedSettings = JSON.parse(localStorage.getItem("settings") || "{}");
+	migrateStorage();
+	const savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
 	deepAssign(settings, savedSettings, true);
 
 	// These are the exceptions
@@ -146,7 +180,7 @@ export function initSession(): void {
 
 	if(search.has("janko")) settings.feature.janko = true;
 
-	const savedState = env.isTop ? JSON.parse(sessionStorage.getItem("state") || "null") : null;
+	const savedState = env.isTop ? JSON.parse(sessionStorage.getItem(STATE_KEY) || "null") : null;
 	if(savedState) {
 		deepAssign(state, savedState);
 	}
@@ -160,12 +194,12 @@ export function initSession(): void {
 }
 
 function saveSettings(): void {
-	localStorage.setItem("settings", JSON.stringify(store));
+	localStorage.setItem(SETTINGS_KEY, JSON.stringify(store));
 }
 
 function saveSession(): void {
 	// Save session only for top
-	if(env.isTop) sessionStorage.setItem("state", JSON.stringify(state));
+	if(env.isTop) sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
 }
 
 interface RenderSizeInfo {
